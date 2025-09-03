@@ -25,6 +25,12 @@ public class Request extends ProcessItem {
     private boolean chargeable;
 
     @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
+
+
 }
