@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.Set;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @Getter
 @Setter
 @AllArgsConstructor
