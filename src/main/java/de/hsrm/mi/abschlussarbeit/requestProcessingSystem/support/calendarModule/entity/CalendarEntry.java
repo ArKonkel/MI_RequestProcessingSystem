@@ -1,5 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.entity;
 
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.entity.Task;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,4 +31,8 @@ public class CalendarEntry {
     @ManyToOne
     @JoinColumn(name = "calendar_id")
     private Calendar calendar;
+
+    @OneToOne
+    @JoinColumn(name = "task_id")
+    private Task task;
 }

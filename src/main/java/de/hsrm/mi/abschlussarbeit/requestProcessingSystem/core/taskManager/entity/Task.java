@@ -2,7 +2,9 @@ package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.enti
 
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.entity.ProcessItem;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.Priority;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.entity.CalendarEntry;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,4 +24,7 @@ public class Task extends ProcessItem {
     private Date dueDate;
 
     private Priority priority;
+
+    @OneToOne(mappedBy = "task")
+    private CalendarEntry calendarEntry;
 }
