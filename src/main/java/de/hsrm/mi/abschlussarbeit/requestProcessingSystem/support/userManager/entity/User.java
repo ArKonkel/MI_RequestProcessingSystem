@@ -22,4 +22,8 @@ public class User {
 
     private String description;
 
+    @OneToOne
+    @JoinColumn(name = "employee_id")
+    private Employee employee;
+
 }
