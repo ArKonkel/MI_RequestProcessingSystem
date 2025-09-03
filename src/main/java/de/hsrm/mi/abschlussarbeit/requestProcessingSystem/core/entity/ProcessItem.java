@@ -1,6 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.entity;
 
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.interactionManager.entity.Comment;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.entity.Employee;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,4 +30,8 @@ public abstract class ProcessItem {
 
     @OneToMany(mappedBy = "processItem", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Comment> comments;
+
+    @ManyToOne
+    @JoinColumn(name = "employee_id")
+    private Employee assignee;
 }
