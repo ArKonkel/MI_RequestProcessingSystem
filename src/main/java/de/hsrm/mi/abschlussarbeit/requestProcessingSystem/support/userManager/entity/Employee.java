@@ -1,6 +1,5 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.entity;
 
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.entity.ProcessItem;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.entity.Calendar;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -51,6 +50,4 @@ public class Employee {
     @JoinColumn(name = "calendar_id")
     private Calendar calendar;
 
-    @OneToMany(mappedBy = "assignee")
-    private Set<ProcessItem> processItems;
 }

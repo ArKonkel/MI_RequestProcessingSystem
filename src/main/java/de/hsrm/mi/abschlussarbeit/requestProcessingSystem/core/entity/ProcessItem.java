@@ -1,7 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.entity;
 
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.interactionManager.entity.Comment;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.entity.Employee;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,6 +32,6 @@ public abstract class ProcessItem {
     private Set<Comment> comments;
 
     @ManyToOne
-    @JoinColumn(name = "employee_id")
-    private Employee assignee;
+    @JoinColumn(name = "user_id")
+    private User assignee;
 }
