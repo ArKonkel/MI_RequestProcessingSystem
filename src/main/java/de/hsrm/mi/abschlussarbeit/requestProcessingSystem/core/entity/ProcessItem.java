@@ -1,5 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.entity;
 
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.statusManager.entity.Status;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.interactionManager.entity.Comment;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.entity.User;
 import jakarta.persistence.*;
@@ -35,4 +36,8 @@ public abstract class ProcessItem {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User assignee;
+
+    @ManyToOne
+    @JoinColumn(name = "status_id")
+    private Status status;
 }
