@@ -2,7 +2,10 @@ package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.e
 
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.entity.ProcessItem;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.Priority;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.customerManager.entity.Customer;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,4 +23,8 @@ public class Request extends ProcessItem {
     private Long estimatedScope;
 
     private boolean chargeable;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 }

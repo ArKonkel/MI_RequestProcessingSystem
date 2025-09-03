@@ -1,13 +1,13 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.customerManager.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.entity.Request;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Set;
 
 @Entity
 @Getter
@@ -27,4 +27,7 @@ public class Customer {
     private String email;
 
     private String address;
+
+    @OneToMany(mappedBy = "customer")
+    private Set<Request> requests;
 }
