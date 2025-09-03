@@ -13,8 +13,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "users") // --> needed because it is reserved in the database
-public class User {
+public class Permission {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -24,16 +23,6 @@ public class User {
 
     private String description;
 
-    @OneToOne
-    @JoinColumn(name = "employee_id")
-    private Employee employee;
-
-    @ManyToMany
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
+    @ManyToMany(mappedBy = "permissions")
     private Set<Role> roles;
-
 }

@@ -1,16 +1,12 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.entity;
 
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.enums.Permission;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -27,5 +23,14 @@ public class Role {
 
     private String description;
 
-    private List<Permission> permissions;
+    @ManyToMany
+    @JoinTable(
+            name = "role_permission",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id")
+    )
+    private Set<Permission> permissions;
+
+    @ManyToMany(mappedBy = "roles")
+    private Set<User> users;
 }
