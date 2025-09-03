@@ -1,13 +1,13 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.entity.Employee;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Set;
 
 @Entity
 @Getter
@@ -19,4 +19,10 @@ public class Calendar {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
+
+    @OneToMany(mappedBy = "calendar")
+    private Set<CalendarEntry> entries;
+
+    @OneToOne(mappedBy = "calendar")
+    private Employee employee;
 }

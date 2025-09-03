@@ -1,5 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.entity;
 
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.entity.Calendar;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -44,4 +45,8 @@ public class Employee {
 
     @OneToOne(mappedBy = "employee")
     private User user;
+
+    @OneToOne
+    @JoinColumn(name = "calendar_id")
+    private Calendar calendar;
 }
