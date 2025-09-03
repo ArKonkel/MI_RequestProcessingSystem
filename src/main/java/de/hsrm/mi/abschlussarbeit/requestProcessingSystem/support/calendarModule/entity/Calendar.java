@@ -20,7 +20,7 @@ public class Calendar {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
 
-    @OneToMany(mappedBy = "calendar")
+    @OneToMany(mappedBy = "calendar", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CalendarEntry> entries;
 
     @OneToOne(mappedBy = "calendar")
