@@ -1,5 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.entity;
 
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.interactionManager.entity.Comment;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,4 +37,6 @@ public class User {
     )
     private Set<Role> roles;
 
+    @OneToMany(mappedBy = "author")
+    private Set<Comment> comments;
 }

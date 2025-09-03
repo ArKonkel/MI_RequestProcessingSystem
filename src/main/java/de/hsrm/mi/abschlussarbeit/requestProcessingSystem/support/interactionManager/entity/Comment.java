@@ -1,9 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.interactionManager.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.entity.User;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,5 +23,9 @@ public class Comment {
     private String text;
 
     private LocalDateTime writtenOn;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User author;
 }
 
