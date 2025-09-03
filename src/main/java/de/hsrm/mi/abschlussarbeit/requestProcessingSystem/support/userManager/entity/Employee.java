@@ -38,4 +38,7 @@ public class Employee {
     )
     private Set<Competence> competences;
 
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
 }
