@@ -2,6 +2,7 @@ package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.e
 
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.entity.ProcessItem;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.Priority;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.projectPlanner.entity.Project;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.entity.Task;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.customerManager.entity.Customer;
 import jakarta.persistence.Entity;
@@ -38,5 +39,8 @@ public class Request extends ProcessItem {
 
     @OneToMany(mappedBy = "request")
     private Set<Task> tasks;
+
+    @OneToMany(mappedBy = "request")
+    private Set<Project> projects;
 
 }
