@@ -2,15 +2,18 @@ package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.projectPlanner.e
 
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.entity.ProcessItem;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.entity.Request;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.entity.Task;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -26,4 +29,7 @@ public class Project extends ProcessItem {
     @ManyToOne
     @JoinColumn(name = "request_id")
     private Request request;
+
+    @OneToMany(mappedBy = "project")
+    private Set<Task> tasks;
 }
