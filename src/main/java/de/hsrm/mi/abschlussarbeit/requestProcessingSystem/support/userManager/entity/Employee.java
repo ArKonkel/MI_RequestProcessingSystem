@@ -31,6 +31,9 @@ public class Employee {
 
     private Date hireDate;
 
+    @OneToMany(mappedBy = "employee")
+    private Set<EmployeeExpertise> employeeCompetences;
+
     @ManyToMany
     @JoinTable(
             name = "employee_competence",
