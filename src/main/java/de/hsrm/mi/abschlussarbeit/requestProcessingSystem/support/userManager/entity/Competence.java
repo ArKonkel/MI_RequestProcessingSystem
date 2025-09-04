@@ -1,5 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.entity;
 
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.entity.Task;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,4 +26,7 @@ public abstract class Competence {
 
     @ManyToMany(mappedBy = "competences")
     private Set<Employee> employees;
+
+    @ManyToMany(mappedBy = "competences")
+    private Set<Task> tasks;
 }

@@ -5,6 +5,7 @@ import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.Priority;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.projectPlanner.entity.Project;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.entity.Request;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.entity.CalendarEntry;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.entity.Competence;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,6 +30,14 @@ public class Task extends ProcessItem {
 
     @OneToOne(mappedBy = "task")
     private CalendarEntry calendarEntry;
+
+    @ManyToMany
+    @JoinTable(
+            name = "task_competence",
+            joinColumns = @JoinColumn(name = "task_id"),
+            inverseJoinColumns = @JoinColumn(name = "competence_id")
+    )
+    private Set<Competence> competences;
 
     @ManyToOne
     @JoinColumn(name = "blocker_id")
