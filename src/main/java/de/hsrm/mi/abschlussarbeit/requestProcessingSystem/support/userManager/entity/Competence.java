@@ -17,7 +17,8 @@ import java.util.Set;
 public abstract class Competence {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "competence_seq")
+    @SequenceGenerator(name = "competence_seq", sequenceName = "competence_seq", allocationSize = 1)
     private long id;
 
     private String name;
