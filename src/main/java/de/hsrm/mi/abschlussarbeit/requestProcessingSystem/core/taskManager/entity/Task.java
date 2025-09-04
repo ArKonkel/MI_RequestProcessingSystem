@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -28,6 +29,21 @@ public class Task extends ProcessItem {
 
     @OneToOne(mappedBy = "task")
     private CalendarEntry calendarEntry;
+
+    @ManyToOne
+    @JoinColumn(name = "blocker_id")
+    private Task blocker;
+
+    @ManyToOne
+    @JoinColumn(name = "blocked_id")
+    private Task blocked;
+
+    @ManyToOne
+    @JoinColumn(name = "reference_id") //parent of subtasks
+    private Task referenceTask;
+
+    @OneToMany(mappedBy = "referenceTask")
+    private Set<Task> referencedBy;
 
     @ManyToOne
     @JoinColumn(name = "request_id")
