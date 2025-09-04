@@ -32,4 +32,19 @@ public class Project extends ProcessItem {
 
     @OneToMany(mappedBy = "project")
     private Set<Task> tasks;
+
+    @ManyToOne
+    @JoinColumn(name = "blocker_id")
+    private Project blocker;
+
+    @ManyToOne
+    @JoinColumn(name = "blocked_id")
+    private Project blocked;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id") //parent of subprojects
+    private Project parent;
+
+    @OneToMany(mappedBy = "parent")
+    private Set<Project> subProjects;
 }
