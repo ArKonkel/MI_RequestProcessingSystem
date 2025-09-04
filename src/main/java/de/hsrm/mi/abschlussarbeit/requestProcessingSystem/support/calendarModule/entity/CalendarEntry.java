@@ -24,9 +24,9 @@ public class CalendarEntry {
 
     private String description;
 
-    private LocalDateTime startDate;
+    private LocalDateTime start;
 
-    private LocalDateTime endDate;
+    private LocalDateTime end;
 
     @ManyToOne
     @JoinColumn(name = "calendar_id")
