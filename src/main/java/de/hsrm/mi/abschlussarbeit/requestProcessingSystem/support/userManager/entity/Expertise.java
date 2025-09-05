@@ -10,9 +10,5 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class Expertise extends Competence {
-/*
-    @Enumerated(EnumType.STRING)
-    private ExpertiseLevel expertiseLevel;
 
- */
 }

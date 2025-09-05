@@ -1,0 +1,27 @@
+package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.service;
+
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.EmployeeDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.EmployeeExpertiseDto;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@AllArgsConstructor
+@Slf4j
+public class UserManagerImpl implements UserManager{
+
+    private final EmployeeService employeeService;
+
+    @Override
+    public List<EmployeeExpertiseDto> getAllEmployeeExpertises() {
+        return employeeService.getAllEmployeeExpertises();
+    }
+
+    @Override
+    public List<EmployeeDto> getEmployeesByIds(List<Long> ids) {
+        return employeeService.getEmployeesByIds(ids);
+    }
+}
