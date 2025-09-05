@@ -24,7 +24,7 @@ public abstract class ProcessItem {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
 
-    private String name;
+    private String title;
 
     private String description;
 

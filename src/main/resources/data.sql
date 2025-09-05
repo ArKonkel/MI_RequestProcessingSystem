@@ -108,7 +108,7 @@ INSERT INTO status(id, name, description, type) VALUES
 
 --------------------------------- Baseobject - PROCESS_ITEM ------------------------------------------------
 
-INSERT INTO process_item (id, name, description, creation_date) VALUES
+INSERT INTO process_item (id, title, description, creation_date) VALUES
 (1, 'Customizing der Software beim Kunden für Produktdruck', '', '2025-09-05');
 
 -------------- Subobject - TASK
