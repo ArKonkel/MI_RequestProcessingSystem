@@ -89,6 +89,15 @@ INSERT INTO user_roles (user_id, role_id) VALUES
 (2, 3),
 (2, 4);
 
+--------------------------------- employee_expertise ------------------------------------------------
+INSERT INTO employee_expertise(id, employee_id, expertise_id, level) VALUES
+(1, 1, 7, 'EXPERT'),
+(2, 1, 9, 'ADVANCED'),
+(3, 1, 6, 'INTERMEDIATE'),
+(4, 2, 3, 'EXPERT'),
+(5,2,4, 'EXPERT'),
+(6,2,11, 'INTERMEDIATE');
+
 
 
 
