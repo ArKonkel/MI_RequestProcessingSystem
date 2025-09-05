@@ -25,6 +25,7 @@ public class Status {
 
     private String description;
 
+    @Enumerated(EnumType.STRING)
     private StatusType type;
 
     @OneToMany(mappedBy = "status")

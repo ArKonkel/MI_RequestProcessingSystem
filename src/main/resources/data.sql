@@ -89,7 +89,7 @@ INSERT INTO user_roles (user_id, role_id) VALUES
 (2, 3),
 (2, 4);
 
---------------------------------- employee_expertise ------------------------------------------------
+--------------------------------- EMPLOYEE_EXPERTISE ------------------------------------------------
 INSERT INTO employee_expertise(id, employee_id, expertise_id, level) VALUES
 (1, 1, 7, 'EXPERT'),
 (2, 1, 9, 'ADVANCED'),
@@ -98,7 +98,25 @@ INSERT INTO employee_expertise(id, employee_id, expertise_id, level) VALUES
 (5,2,4, 'EXPERT'),
 (6,2,11, 'INTERMEDIATE');
 
+--------------------------------- STATUS ------------------------------------------------
 
+INSERT INTO status(id, name, description, type) VALUES
+(1, 'Zu Bearbeiten', '', 'TASK'),
+(2, 'In Bearbeitung', '', 'TASK'),
+(3, 'Im Testprozess', '', 'TASK'),
+(4, 'Fertig', '', 'TASK');
+
+--------------------------------- Baseobject - PROCESS_ITEM ------------------------------------------------
+
+INSERT INTO process_item (id, name, description, creation_date) VALUES
+(1, 'Den Ring in den Schicksalsberg werfen.', '', '2025-09-05'),
+(2, 'Saruman besuchen', '', '2025-09-05');
+
+-------------- Subobject - TASK
+
+INSERT INTO task (id, estimated_time, due_date, priority) VALUES
+(1, 120, '2025-11-05', 'HIGH'),
+(2, 60, '2025-10-01', 'MEDIUM');
 
 
 

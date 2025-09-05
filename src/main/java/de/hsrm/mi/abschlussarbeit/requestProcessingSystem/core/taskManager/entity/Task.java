@@ -26,6 +26,7 @@ public class Task extends ProcessItem {
 
     private Date dueDate;
 
+    @Enumerated(EnumType.STRING)
     private Priority priority;
 
     @OneToOne(mappedBy = "task")
