@@ -32,7 +32,7 @@ public class Employee {
     private Date hireDate;
 
     @OneToMany(mappedBy = "employee")
-    private Set<EmployeeExpertise> employeeCompetences;
+    private Set<EmployeeExpertise> employeeExpertise;
 
     @ManyToMany
     @JoinTable(
