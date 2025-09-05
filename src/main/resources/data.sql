@@ -73,14 +73,14 @@ INSERT INTO role_permission(role_id, permission_id) VALUES
 --------------------------------- EMPLOYEE ------------------------------------------------
 
 INSERT INTO employee(id, email, first_name, last_name, phone_number, department_id) VALUES
-(1, 'gandalf@mittelerde.de', 'Gandalf', 'der Graue', '', null),
-(2,'Frodo@mittelerde.de', 'Frodo', 'Beutlin', '', 1);
+(1, 'Max@test.de', 'Max', 'Mustermann', '', null),
+(2,'Sabine@test.de', 'Sabine', 'Musterfrau', '', 1);
 
 --------------------------------- USER ------------------------------------------------
 
 INSERT INTO users (id, name, description, employee_id) VALUES
-(1, 'Gandalf der Graue', 'Kann alles. Ist eine Zauberer.', 1),
-(2, 'Frodo Beutlin', 'Ein lustiger Hobbit', 2);
+(1, 'Max Mustermann', 'Kann alles.', 1),
+(2, 'Sabine Musterfrau', '', 2);
 
 --------------------------------- USER_ROLES ------------------------------------------------
 
@@ -96,7 +96,7 @@ INSERT INTO employee_expertise(id, employee_id, expertise_id, level) VALUES
 (3, 1, 6, 'INTERMEDIATE'),
 (4, 2, 3, 'EXPERT'),
 (5,2,4, 'EXPERT'),
-(6,2,11, 'INTERMEDIATE');
+(6,2,7, 'INTERMEDIATE');
 
 --------------------------------- STATUS ------------------------------------------------
 
@@ -109,14 +109,20 @@ INSERT INTO status(id, name, description, type) VALUES
 --------------------------------- Baseobject - PROCESS_ITEM ------------------------------------------------
 
 INSERT INTO process_item (id, name, description, creation_date) VALUES
-(1, 'Den Ring in den Schicksalsberg werfen.', '', '2025-09-05'),
-(2, 'Saruman besuchen', '', '2025-09-05');
+(1, 'Customizing der Software beim Kunden für Produktdruck', '', '2025-09-05'),
 
 -------------- Subobject - TASK
 
 INSERT INTO task (id, estimated_time, due_date, priority) VALUES
 (1, 120, '2025-11-05', 'HIGH'),
-(2, 60, '2025-10-01', 'MEDIUM');
+
+--------------------------------- TASK_COMPETENCE ------------------------------------------------
+
+INSERT INTO task_competence (task_id, competence_id) VALUES
+(1, 7),
+(1, 9),
+(2, 7);
+
 
 
 
