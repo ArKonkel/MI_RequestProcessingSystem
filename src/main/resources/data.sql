@@ -109,20 +109,18 @@ INSERT INTO status(id, name, description, type) VALUES
 --------------------------------- Baseobject - PROCESS_ITEM ------------------------------------------------
 
 INSERT INTO process_item (id, name, description, creation_date) VALUES
-(1, 'Customizing der Software beim Kunden für Produktdruck', '', '2025-09-05'),
+(1, 'Customizing der Software beim Kunden für Produktdruck', '', '2025-09-05');
 
 -------------- Subobject - TASK
 
 INSERT INTO task (id, estimated_time, due_date, priority) VALUES
-(1, 120, '2025-11-05', 'HIGH'),
+(1, 120, '2025-11-05', 'HIGH');
 
 --------------------------------- TASK_COMPETENCE ------------------------------------------------
 
 INSERT INTO task_competence (task_id, competence_id) VALUES
 (1, 7),
-(1, 9),
-(2, 7);
-
+(1, 9);
 
 
 
