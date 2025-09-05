@@ -15,7 +15,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "users") // --> needed because it is reserved in the database
+@Table(name = "users") // --> needed because 'user' is reserved by the database
 public class User {
 
     @Id

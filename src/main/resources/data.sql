@@ -33,4 +33,63 @@ INSERT INTO competence (id, name, description, dtype, obtained_date) VALUES
 (18, 'SAFe Agilist', 'Zertifizierung für Skalierung agiler Methoden in großen ERP-Projekten.', 'Qualification', DATE '2020-09-28');
 
 
---------------------------------- COMPETENCES ------------------------------------------------
+--------------------------------- DEPARTMENT ------------------------------------------------
+
+INSERT INTO department (id, name, description) VALUES
+(1, 'Entwicklung', 'Abteilung für Software- und Produktentwicklung'),
+(2, 'SystemService', 'Abteilung für IT-Systembetreuung und Infrastruktur'),
+(3, 'Projekte', 'Abteilung für Projektmanagement und -koordination'),
+(4, 'ProjectSpecialists', 'Backoffice-Abteilung für Projektunterstützung'),
+(5, 'Support', 'Abteilung für Kunden- und Anwendersupport');
+--------------------------------- PERMISSION ------------------------------------------------
+
+INSERT INTO permission (id, name, description) VALUES
+(1, 'Projektplanung', 'Befugnis Projekte zu planen'),
+(2, 'Kapazitätsplanung', 'Befugnis Kapazitäten einzusehen und Aufgaben zuzuweisen'),
+(3, 'Aufgabenbearbeitung', 'Befugnis Aufgaben zu bearbeiten'),
+(4, 'Anfrageeingangsprüfung', 'Befugnis Anfragen zu korrigieren und weiterzuleiten');
+
+--------------------------------- ROLE ------------------------------------------------
+
+INSERT INTO role (id, name, description) VALUES
+(1, 'Projektplaner', 'Plant Projekte'),
+(2, 'Anfragenbearbeiter', 'Nimmt Anfragen entgegen und leitet diese weiter.'),
+(3, 'Kapazitätsplaner', 'Plant Kapazitäten bei Aufgabenzuweisungen'),
+(4, 'Aufgabenbearbeiter', 'Bearbeitet aufgaben'),
+(5,'Admin', 'Hat Zugriff auf alles');
+
+--------------------------------- ROLE_PERMISSION ------------------------------------------------
+
+INSERT INTO role_permission(role_id, permission_id) VALUES
+(1, 1),
+(2, 4),
+(3, 2),
+(4, 3),
+(5, 1),
+(5, 2),
+(5, 3),
+(5, 4);
+
+--------------------------------- EMPLOYEE ------------------------------------------------
+
+INSERT INTO employee(id, email, first_name, last_name, phone_number, department_id) VALUES
+(1, 'gandalf@mittelerde.de', 'Gandalf', 'der Graue', '', null),
+(2,'Frodo@mittelerde.de', 'Frodo', 'Beutlin', '', 1);
+
+--------------------------------- USER ------------------------------------------------
+
+INSERT INTO users (id, name, description, employee_id) VALUES
+(1, 'Gandalf der Graue', 'Kann alles. Ist eine Zauberer.', 1),
+(2, 'Frodo Beutlin', 'Ein lustiger Hobbit', 2);
+
+--------------------------------- USER_ROLES ------------------------------------------------
+
+INSERT INTO user_roles (user_id, role_id) VALUES
+(1, 5),
+(2, 3),
+(2, 4);
+
+
+
+
+
