@@ -2,6 +2,7 @@ package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacity
 
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.dto.ProcessItemDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.Priority;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.exception.NoCapacityUntilDueDateException;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.dto.TaskDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.dto.CalendarDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.dto.CalendarEntryDto;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 class CapacityCalculatorEngineImplTest {
@@ -123,7 +125,7 @@ class CapacityCalculatorEngineImplTest {
         );
 
         // Already given entries:
-        // Day 1: two meetings 3h = 6h: 2 free
+        // Day 1: two meetings 3h = 6h: 2h free
         CalendarEntryDto entry1 = createEntryDto(10L, firstDay, 180L);
         CalendarEntryDto entry2 = createEntryDto(20L, firstDay, 180L);
 
@@ -175,6 +177,68 @@ class CapacityCalculatorEngineImplTest {
 
         assertEquals(List.of(expectedEntryFirstDay, expectedEntrySecondDay), result);
     }
+
+    @Test
+    void testCalculateNextFreeCapacity_throwNoCapacityUntilDueDateException() {
+        // GIVEN
+        Long employeeId = 1L;
+        BigDecimal employeeWorkingHoursPerDay = BigDecimal.valueOf(8); // 8h working day
+        Long estimatedTaskDuration = 300L; // 4h new task
+
+
+        LocalDate firstDay = LocalDate.parse("2025-09-08");
+        LocalDate lastDayToCheck = firstDay.plusDays(2); // range: 3 days
+        LocalDate dueDate = lastDayToCheck;
+
+        // task, that need to be planned
+        TaskDto taskDto = createTaskDto(
+                10L,
+                "Customizing the Software",
+                estimatedTaskDuration,
+                dueDate
+        );
+
+        // Already given entries:
+        // Day 1: One Meeting = 6h: 2h free
+        CalendarEntryDto entry1 = createEntryDto(10L, firstDay, 6 * 60L);
+
+        // Day 2: 8h-Meeting: 0h free
+        CalendarEntryDto entry2 = createEntryDto(30L, firstDay.plusDays(1), 8 * 60L);
+
+        //Day 3: 7h-Meeting: 1h free
+        CalendarEntryDto entry3 = createEntryDto(30L, firstDay.plusDays(2), 7 * 60L);
+
+        CalendarDto calendarDto = new CalendarDto(
+                99L,
+                List.of(entry1, entry2, entry3),
+                employeeId
+        );
+
+        Long taskOccupiedTimeFirstDay = 120L; //2h
+        Long taskOccupiedTimeSecondDay = 0L; //0h
+        Long taskOccupiedTimeThirdDay = 60L; //1h
+
+        EmployeeDto employeeDto = createEmployeeDto(
+                employeeId,
+                "Max",
+                "Mustermann",
+                employeeWorkingHoursPerDay,
+                99L
+        );
+
+        // WHEN
+        Mockito.when(userManager.getEmployeeById(employeeId)).thenReturn(employeeDto);
+        Mockito.when(calendarModule.getCalendarOfEmployee(employeeId, firstDay, lastDayToCheck))
+                .thenReturn(calendarDto);
+
+        //Excepted: Throws Exception, because in the given range is no capacity for the task
+        assertThrows(
+                NoCapacityUntilDueDateException.class,
+                () -> capacityCalculatorEngine.calculateNextFreeCapacity(taskDto, employeeId, firstDay, dueDate)
+        );
+
+    }
+
 
     @Test
     void testCalculateNextFreeCapacity_OnlyMondayUntilFriday() {

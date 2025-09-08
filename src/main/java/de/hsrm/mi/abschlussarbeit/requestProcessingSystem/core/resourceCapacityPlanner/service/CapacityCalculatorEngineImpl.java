@@ -1,5 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.service;
 
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.exception.NoCapacityUntilDueDateException;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.dto.TaskDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.dto.CalendarDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.dto.CalendarEntryDto;
@@ -81,7 +82,10 @@ public class CapacityCalculatorEngineImpl implements CapacityCalculatorEngine {
             }
         }
 
-        //TODO if remainingTaskTime left, then throw exception, that Task cannot be scheduled.
+        if (remainingTaskTime > 0) {
+            throw new NoCapacityUntilDueDateException("No capacity for task " + taskDto.processItem().id() + " until due date");
+        }
+
         return createdSlots;
     }
 }
