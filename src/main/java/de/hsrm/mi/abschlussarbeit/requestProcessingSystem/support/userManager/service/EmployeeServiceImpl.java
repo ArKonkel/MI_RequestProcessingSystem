@@ -35,4 +35,9 @@ public class EmployeeServiceImpl implements EmployeeService{
     public List<EmployeeDto> getEmployeesByIds(List<Long> ids) {
         return employeeRepository.findByIdIn(ids).stream().map(employeeMapper::toDto).toList();
     }
+
+    @Override
+    public EmployeeDto getEmployeeById(Long employeeId) {
+        return employeeRepository.findById(employeeId).map(employeeMapper::toDto).orElseThrow();
+    }
 }

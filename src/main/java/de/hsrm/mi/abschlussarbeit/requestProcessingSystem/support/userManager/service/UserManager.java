@@ -11,4 +11,6 @@ public interface UserManager {
 
     List<EmployeeDto> getEmployeesByIds(List<Long> ids);
 
+    EmployeeDto getEmployeeById(Long employeeId);
+
 }

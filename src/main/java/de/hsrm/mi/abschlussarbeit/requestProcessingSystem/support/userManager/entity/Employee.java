@@ -30,7 +30,9 @@ public class Employee {
 
     private String phoneNumber;
 
-    private Date hireDate;
+    private LocalDate hireDate;
+
+    private BigDecimal workingHoursPerDay;
 
     @OneToMany(mappedBy = "employee")
     private Set<EmployeeExpertise> employeeExpertise;

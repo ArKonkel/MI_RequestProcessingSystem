@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
@@ -28,7 +28,7 @@ public abstract class ProcessItem {
 
     private String description;
 
-    private Date creationDate;
+    private LocalDate creationDate;
 
     @OneToMany(mappedBy = "processItem", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Comment> comments;

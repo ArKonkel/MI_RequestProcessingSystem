@@ -11,7 +11,7 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class UserManagerImpl implements UserManager{
+public class UserManagerImpl implements UserManager {
 
     private final EmployeeService employeeService;
 
@@ -24,4 +24,11 @@ public class UserManagerImpl implements UserManager{
     public List<EmployeeDto> getEmployeesByIds(List<Long> ids) {
         return employeeService.getEmployeesByIds(ids);
     }
+
+    @Override
+    public EmployeeDto getEmployeeById(Long employeeId) {
+        return employeeService.getEmployeeById(employeeId);
+    }
+
+
 }
