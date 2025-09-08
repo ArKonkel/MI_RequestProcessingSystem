@@ -3,7 +3,7 @@ package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.d
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.enums.CompetenceType;
 
 public record CompetenceDto(
-        long id,
+        Long id,
         String name,
         String description,
         CompetenceType type

@@ -1,10 +1,11 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto;
 
-import java.util.Date;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Set;
 
 public record EmployeeDto(
-        long id,
+        Long id,
         String firstName,
         String lastName,
         String email,

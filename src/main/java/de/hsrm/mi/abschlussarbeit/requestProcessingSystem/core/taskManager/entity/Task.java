@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
@@ -22,9 +22,9 @@ import java.util.Set;
 @NoArgsConstructor
 public class Task extends ProcessItem {
 
-    private long estimatedTime;
+    private Long estimatedTime;
 
-    private Date dueDate;
+    private LocalDate dueDate;
 
     @Enumerated(EnumType.STRING)
     private Priority priority;

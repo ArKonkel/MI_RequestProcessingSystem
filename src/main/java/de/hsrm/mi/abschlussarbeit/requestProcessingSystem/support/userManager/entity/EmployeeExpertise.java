@@ -18,7 +18,7 @@ public class EmployeeExpertise {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employee_expertise_seq")
     @SequenceGenerator(name = "employee_expertise_seq", sequenceName = "employee_expertise_seq", allocationSize = 1)
-    private long id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "employee_id")

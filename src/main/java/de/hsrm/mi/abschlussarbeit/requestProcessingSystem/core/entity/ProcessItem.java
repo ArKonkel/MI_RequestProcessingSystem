@@ -22,7 +22,7 @@ public abstract class ProcessItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private long id;
+    private Long id;
 
     private String title;
 

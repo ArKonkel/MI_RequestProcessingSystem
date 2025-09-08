@@ -1,13 +1,13 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.dto;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Set;
 
 public record ProcessItemDto (
-        long id,
+        Long id,
         String title,
         String description,
-        Date creationDate,
+        LocalDate creationDate,
         Long assigneeId,
         Long statusId,
         Set<Long> commentIds

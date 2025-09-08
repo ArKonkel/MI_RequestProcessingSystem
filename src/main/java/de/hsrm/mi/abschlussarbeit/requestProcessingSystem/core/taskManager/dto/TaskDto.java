@@ -4,13 +4,13 @@ import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.dto.ProcessItemDt
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.Priority;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.CompetenceDto;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Set;
 
 public record TaskDto(
         ProcessItemDto processItem,
-        long estimatedTime,
-        Date dueDate,
+        Long estimatedTime,
+        LocalDate dueDate,
         Priority priority,
         Long calendarEntryId,
         Set<CompetenceDto> competence,

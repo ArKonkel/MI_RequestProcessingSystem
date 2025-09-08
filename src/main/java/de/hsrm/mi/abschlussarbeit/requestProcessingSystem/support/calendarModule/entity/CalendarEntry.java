@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -18,15 +18,15 @@ public class CalendarEntry {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private long id;
+    private Long id;
 
     private String title;
 
     private String description;
 
-    private LocalDateTime startDateTime;
+    private LocalDate date;
 
-    private LocalDateTime endDateTime;
+    private Long duration;
 
     @ManyToOne
     @JoinColumn(name = "calendar_id")

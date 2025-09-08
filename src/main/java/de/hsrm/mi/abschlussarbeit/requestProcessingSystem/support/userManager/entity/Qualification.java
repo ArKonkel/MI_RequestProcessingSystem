@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -15,5 +16,5 @@ import java.util.Date;
 @NoArgsConstructor
 public class Qualification extends Competence{
 
-    private Date obtainedDate;
+    private LocalDate obtainedDate;
 }

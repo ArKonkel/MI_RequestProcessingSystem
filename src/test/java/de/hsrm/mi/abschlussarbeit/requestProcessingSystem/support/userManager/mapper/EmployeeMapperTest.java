@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,7 +39,8 @@ class EmployeeMapperTest {
         employee.setLastName("Mustermann");
         employee.setEmail("max@test.de");
         employee.setPhoneNumber("123456");
-        employee.setHireDate(new Date());
+        employee.setHireDate(LocalDate.of(2025, 9, 4));
+
         employee.setDepartment(department);
         employee.setUser(user);
         employee.setCalendar(calendar);
@@ -68,7 +69,7 @@ class EmployeeMapperTest {
         assertEquals("Mustermann", dto.lastName());
         assertEquals("max@test.de", dto.email());
         assertEquals("123456", dto.phoneNumber());
-        assertNotNull(dto.hireDate());
+        assertEquals(LocalDate.of(2025, 9, 4), dto.hireDate());
 
         assertEquals(10L, dto.departmentId());
         assertEquals(20L, dto.userId());
