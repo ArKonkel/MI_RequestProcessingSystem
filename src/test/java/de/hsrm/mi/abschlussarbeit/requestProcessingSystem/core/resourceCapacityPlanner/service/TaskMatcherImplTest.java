@@ -15,8 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,7 +39,8 @@ class TaskMatcherImplTest {
         CompetenceDto expertise2 = new CompetenceDto(2L, "Coding", "", CompetenceType.EXPERTISE);
         CompetenceDto expertise3 = new CompetenceDto(3L, "Printing", "", CompetenceType.EXPERTISE);
 
-        TaskDto taskDto = createTaskDto(1L, "Customizing der Software", 120L, Date.from(Instant.parse("2025-11-05T00:00:00Z")), Priority.HIGH, Set.of(expertise1, expertise3));
+        TaskDto taskDto = createTaskDto(1L, "Customizing der Software", 120L, LocalDate.parse("2025-11-05"),
+                Priority.HIGH, Set.of(expertise1, expertise3));
 
         EmployeeExpertiseDto employee1Expertise1 = new EmployeeExpertiseDto(1L, 1L, expertise1, ExpertiseLevel.ADVANCED);
         EmployeeExpertiseDto employee1Expertise3 = new EmployeeExpertiseDto(2L, 1L, expertise3, ExpertiseLevel.EXPERT);
@@ -76,15 +76,15 @@ class TaskMatcherImplTest {
 
     private EmployeeDto createEmployee(long id, String vorname, Set<EmployeeExpertiseDto> expertise) {
         return new EmployeeDto(id, vorname, "Nachname", "email@test.de",
-                null, null, expertise, Set.of(), null, null, null);
+                null, null, null, expertise, Set.of(), null, null, null);
     }
 
-    private TaskDto createTaskDto(long id, String title, Long estimatedTime, Date dueDate, Priority priority, Set<CompetenceDto> competenceIds) {
+    private TaskDto createTaskDto(long id, String title, Long estimatedTime, LocalDate dueDate, Priority priority, Set<CompetenceDto> competenceIds) {
         ProcessItemDto processItem = new ProcessItemDto(
                 id,
                 title,
                 "",
-                Date.from(Instant.parse("2025-09-05T00:00:00Z")),
+                LocalDate.parse("2025-09-05"),
                 null,
                 null,
                 Set.of()

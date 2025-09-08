@@ -42,6 +42,7 @@ public class TaskMatcherImpl implements TaskMatcher {
             if (!matchesById.containsKey(employeeId)) {
                 matchesById.put(employeeId, expertLevel.getPoints());
             } else {
+                //replace key with new value
                 matchesById.put(employeeId, matchesById.get(employeeId) + expertLevel.getPoints());
             }
         }
