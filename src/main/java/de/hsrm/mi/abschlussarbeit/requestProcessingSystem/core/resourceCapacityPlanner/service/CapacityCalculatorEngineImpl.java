@@ -10,7 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -35,13 +34,11 @@ public class CapacityCalculatorEngineImpl implements CapacityCalculatorEngine {
      */
     @Override
     public List<CalendarEntryDto> calculateNextFreeCapacity(TaskDto taskDto, Long employeeId, LocalDate from, LocalDate to) {
-
         EmployeeDto employeeDto = userManager.getEmployeeById(employeeId);
-        BigDecimal employeeDailyWorkingHours = employeeDto.workingHoursPerDay();
+        long dailyWorkingMinutes = employeeDto.workingHoursPerDay().longValue() * 60;
 
         CalendarDto calendarDto = calendarModule.getCalendarOfEmployee(employeeId, from, to);
         List<CalendarEntryDto> calendarEntryDtos = calendarDto.entries();
-
 
         for (LocalDate date = from; !date.isAfter(to); date = date.plusDays(1)) {
             Long occupiedTime = 0L;
@@ -53,7 +50,7 @@ public class CapacityCalculatorEngineImpl implements CapacityCalculatorEngine {
             }
 
             //when the task fits in the working day
-            if (occupiedTime + taskDto.estimatedTime() <= employeeDailyWorkingHours.longValue() * 60) {
+            if (occupiedTime + taskDto.estimatedTime() <= dailyWorkingMinutes) {
                 return List.of(new CalendarEntryDto (
                         null, taskDto.processItem().title(), taskDto.processItem().description(), date, taskDto.estimatedTime()
                 ));
@@ -61,6 +58,7 @@ public class CapacityCalculatorEngineImpl implements CapacityCalculatorEngine {
 
         }
 
+        //no free capacity found
         return List.of();
     }
 }

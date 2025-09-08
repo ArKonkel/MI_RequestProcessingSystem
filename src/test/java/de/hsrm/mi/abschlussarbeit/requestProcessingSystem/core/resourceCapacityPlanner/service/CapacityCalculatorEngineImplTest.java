@@ -44,34 +44,29 @@ class CapacityCalculatorEngineImplTest {
 
     @Test
     void calculateNextFreeCapacity_TaskFitsOneDay() {
-        //GIVEN
+        // GIVEN
         Long employeeId = 1L;
-        BigDecimal employeeWorkingTime = BigDecimal.valueOf(8);
-        Long estimatedTime = 240L; //4 hours
+        BigDecimal employeeWorkingHoursPerDay = BigDecimal.valueOf(8); // 8h working day
+        Long estimatedTaskDuration = 240L; // 4h new task
 
-        LocalDate entryDate = LocalDate.parse("2025-09-08");;
-        LocalDate entriesTo = entryDate.plusDays(2);
-        LocalDate dueDate = LocalDate.parse("2025-11-05");
+        LocalDate firstDay = LocalDate.parse("2025-09-08");
+        LocalDate lastDayToCheck = firstDay.plusDays(2); // range: 3 days
 
-        //Task
-        TaskDto taskDto = createTaskDto(10L,
+        // task, that need to be planned
+        TaskDto taskDto = createTaskDto(
+                10L,
                 "Customizing the Software",
-                estimatedTime,
-                dueDate);
+                estimatedTaskDuration,
+                LocalDate.parse("2025-11-05")
+        );
 
+        // Already given entries:
+        // Day 1: two meetings 2h = 4h
+        CalendarEntryDto entry1 = createEntryDto(10L, firstDay, 120L);
+        CalendarEntryDto entry2 = createEntryDto(20L, firstDay, 120L);
 
-        //Two hour meeting
-        Long durationEntry1 = 120L;
-        CalendarEntryDto entry1 = createEntryDto(10L, entryDate, durationEntry1);
-
-        //Two hour meeting same day
-        Long durationEntry2 = 120L;
-        CalendarEntryDto entry2 = createEntryDto(20L, entryDate, durationEntry2);
-
-        //eight hour meeting next day
-        Long durationEntry3 = 480L;
-        CalendarEntryDto entry3 = createEntryDto(30L, entryDate.plusDays(1), durationEntry3);
-
+        // Day 2: 8h-Meeting = Full day
+        CalendarEntryDto entry3 = createEntryDto(30L, firstDay.plusDays(1), 480L);
 
         CalendarDto calendarDto = new CalendarDto(
                 99L,
@@ -79,24 +74,35 @@ class CapacityCalculatorEngineImplTest {
                 employeeId
         );
 
-        EmployeeDto employeeDto = createEmployeeDto(employeeId, "Max", "Mustermann", employeeWorkingTime, 99L);
-
-        //WHEN
-        Mockito.when(userManager.getEmployeeById(employeeId)).thenReturn(employeeDto);
-        Mockito.when(calendarModule.getCalendarOfEmployee(employeeId, entryDate, entriesTo)).thenReturn(calendarDto);
-
-        List<CalendarEntryDto> result = capacityCalculatorEngine.calculateNextFreeCapacity(taskDto, employeeId, entryDate, entriesTo);
-
-        //THEN
-        //Long calculatedBusyTime = employeeWorkingTime.longValue() - (entry1.duration() + entry2.duration());
-        CalendarEntryDto expectedCalendarEntryDto = new CalendarEntryDto(
-                null, taskDto.processItem().title(), taskDto.processItem().description(), entryDate, taskDto.estimatedTime()//id null because it is calculated
+        EmployeeDto employeeDto = createEmployeeDto(
+                employeeId,
+                "Max",
+                "Mustermann",
+                employeeWorkingHoursPerDay,
+                99L
         );
 
-        List<CalendarEntryDto> expectedCalendarEntryDtos = List.of(expectedCalendarEntryDto);
+        // WHEN
+        Mockito.when(userManager.getEmployeeById(employeeId)).thenReturn(employeeDto);
+        Mockito.when(calendarModule.getCalendarOfEmployee(employeeId, firstDay, lastDayToCheck))
+                .thenReturn(calendarDto);
 
-        assertEquals(expectedCalendarEntryDtos, result);
+        List<CalendarEntryDto> result =
+                capacityCalculatorEngine.calculateNextFreeCapacity(taskDto, employeeId, firstDay, lastDayToCheck);
+
+        // THEN
+        // Expected: Task should fit in first day (4h are free)
+        CalendarEntryDto expectedEntry = new CalendarEntryDto(
+                null,                               // no Id, because its calculated
+                taskDto.processItem().title(),
+                taskDto.processItem().description(),
+                firstDay,
+                taskDto.estimatedTime()
+        );
+
+        assertEquals(List.of(expectedEntry), result);
     }
+
 
     @Test
     void testCalculateNextFreeCapacity_TaskFitsSeveralDays() {
