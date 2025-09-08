@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,10 +27,10 @@ public class CapacityCalculatorEngineImpl implements CapacityCalculatorEngine {
     /**
      * Methode to calculate the next free slot for a given task and employee.
      *
-     * @param taskDto the task to calculate the free capacity for
+     * @param taskDto    the task to calculate the free capacity for
      * @param employeeId the employee to calculate the free capacity for
-     * @param from the start date of the calculation
-     * @param to the end date of the calculation
+     * @param from       the start date of the calculation
+     * @param to         the end date of the calculation
      * @return a list of free calendar entries for the given task and employee
      */
     @Override
@@ -40,25 +41,47 @@ public class CapacityCalculatorEngineImpl implements CapacityCalculatorEngine {
         CalendarDto calendarDto = calendarModule.getCalendarOfEmployee(employeeId, from, to);
         List<CalendarEntryDto> calendarEntryDtos = calendarDto.entries();
 
+        Long remainingTaskTime = taskDto.estimatedTime();
+        List<CalendarEntryDto> createdSlots = new ArrayList<>();
+
+        // Iterate over each day in the range
         for (LocalDate date = from; !date.isAfter(to); date = date.plusDays(1)) {
-            Long occupiedTime = 0L;
+            Long occupiedMinutes = 0L;
 
-            for (CalendarEntryDto calendarEntryDto : calendarEntryDtos) {
-                if (calendarEntryDto.date().equals(date)) {
-                    occupiedTime += calendarEntryDto.duration();
+            // Only proceed if there is still task time left to schedule
+            if (remainingTaskTime > 0) {
+                // Calculate occupied time for this day
+                for (CalendarEntryDto entry : calendarEntryDtos) {
+                    if (entry.date().equals(date)) {
+                        occupiedMinutes += entry.duration();
+                    }
                 }
-            }
 
-            //when the task fits in the working day
-            if (occupiedTime + taskDto.estimatedTime() <= dailyWorkingMinutes) {
-                return List.of(new CalendarEntryDto (
-                        null, taskDto.processItem().title(), taskDto.processItem().description(), date, taskDto.estimatedTime()
-                ));
-            }
+                long freeMinutes = dailyWorkingMinutes - occupiedMinutes;
 
+                if (freeMinutes > remainingTaskTime) {
+                    freeMinutes = remainingTaskTime;
+                }
+
+                // Create new slot if there is free time
+                if (freeMinutes > 0) {
+                    CalendarEntryDto newSlot = new CalendarEntryDto(
+                            null,
+                            taskDto.processItem().title(),
+                            taskDto.processItem().description(),
+                            date,
+                            freeMinutes
+                    );
+                    createdSlots.add(newSlot);
+                    remainingTaskTime -= freeMinutes;
+                }
+            } else {
+                //don't check next days, when no task time left to schedule
+                break;
+            }
         }
 
-        //no free capacity found
-        return List.of();
+        //TODO if remainingTaskTime left, then throw exception, that Task cannot be scheduled.
+        return createdSlots;
     }
 }

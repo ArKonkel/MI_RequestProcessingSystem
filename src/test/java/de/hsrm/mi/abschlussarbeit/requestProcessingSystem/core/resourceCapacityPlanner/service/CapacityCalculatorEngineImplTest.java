@@ -106,7 +106,74 @@ class CapacityCalculatorEngineImplTest {
 
     @Test
     void testCalculateNextFreeCapacity_TaskFitsSeveralDays() {
+        // GIVEN
+        Long employeeId = 1L;
+        BigDecimal employeeWorkingHoursPerDay = BigDecimal.valueOf(8); // 8h working day
+        Long estimatedTaskDuration = 300L; // 4h new task
 
+        LocalDate firstDay = LocalDate.parse("2025-09-08");
+        LocalDate lastDayToCheck = firstDay.plusDays(2); // range: 3 days
+
+        // task, that need to be planned
+        TaskDto taskDto = createTaskDto(
+                10L,
+                "Customizing the Software",
+                estimatedTaskDuration,
+                LocalDate.parse("2025-11-05")
+        );
+
+        // Already given entries:
+        // Day 1: two meetings 3h = 6h: 2 free
+        CalendarEntryDto entry1 = createEntryDto(10L, firstDay, 180L);
+        CalendarEntryDto entry2 = createEntryDto(20L, firstDay, 180L);
+
+        // Day 2: 4h-Meeting: 4h free
+        CalendarEntryDto entry3 = createEntryDto(30L, firstDay.plusDays(1), 240L);
+
+        CalendarDto calendarDto = new CalendarDto(
+                99L,
+                List.of(entry1, entry2, entry3),
+                employeeId
+        );
+
+        Long taskOccupiedTimeFirstDay = 120L; //2h
+        Long taskOccupiedTimeSecondDay = 180L; //3h
+
+        EmployeeDto employeeDto = createEmployeeDto(
+                employeeId,
+                "Max",
+                "Mustermann",
+                employeeWorkingHoursPerDay,
+                99L
+        );
+
+        // WHEN
+        Mockito.when(userManager.getEmployeeById(employeeId)).thenReturn(employeeDto);
+        Mockito.when(calendarModule.getCalendarOfEmployee(employeeId, firstDay, lastDayToCheck))
+                .thenReturn(calendarDto);
+
+        List<CalendarEntryDto> result =
+                capacityCalculatorEngine.calculateNextFreeCapacity(taskDto, employeeId, firstDay, lastDayToCheck);
+
+        // THEN
+        // Expected: Task should fit first day 2h and second day 2h
+        CalendarEntryDto expectedEntryFirstDay = new CalendarEntryDto(
+                null,                               // no Id, because its calculated
+                taskDto.processItem().title(),
+                taskDto.processItem().description(),
+                firstDay,
+                taskOccupiedTimeFirstDay
+        );
+
+        CalendarEntryDto expectedEntrySecondDay = new CalendarEntryDto(
+                null,                               // no Id, because its calculated
+                taskDto.processItem().title(),
+                taskDto.processItem().description(),
+                firstDay.plusDays(1),
+                taskOccupiedTimeSecondDay
+        );
+
+        assertEquals(List.of(expectedEntryFirstDay, expectedEntrySecondDay), result);
     }
 
     @Test
