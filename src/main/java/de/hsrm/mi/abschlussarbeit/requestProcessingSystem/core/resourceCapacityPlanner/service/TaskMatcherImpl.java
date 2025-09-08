@@ -20,9 +20,13 @@ public class TaskMatcherImpl implements TaskMatcher {
 
     private final UserManager userManager;
 
+    /**
+     * Finds the best matching employees for a given task.
+     * @param task to find the best matching employees for
+     * @return a Map with the employees and the best match defined by the number. Higher number is better match
+     */
     @Override
     public Map<EmployeeDto, Integer> findBestMatchingEmployees(TaskDto task) {
-        //Die task kompetenzen müssen mit beachtet werden?
         List<EmployeeExpertiseDto> allEmployeeExpertises = userManager.getAllEmployeeExpertises();
         Map<Long, Integer> matchesById = new HashMap<>();
         Map<EmployeeDto, Integer> matchesByEmployee = new HashMap<>();
