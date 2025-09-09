@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,7 +46,7 @@ class CapacityCalculatorEngineImplTest {
     */
 
     @Test
-    void calculateNextFreeCapacity_TaskFitsOneDay() {
+    void calculateFreeCapacity_TaskFitsOneDay() {
         // GIVEN
         Long employeeId = 1L;
         BigDecimal employeeWorkingHoursPerDay = BigDecimal.valueOf(8); // 8h working day
@@ -90,7 +91,7 @@ class CapacityCalculatorEngineImplTest {
                 .thenReturn(calendarDto);
 
         List<CalendarEntryDto> result =
-                capacityCalculatorEngine.calculateNextFreeCapacity(taskDto, employeeId, firstDay, lastDayToCheck);
+                capacityCalculatorEngine.calculateFreeCapacity(taskDto, employeeId, firstDay, lastDayToCheck);
 
         // THEN
         // Expected: Task should fit in first day (4h are free)
@@ -107,7 +108,7 @@ class CapacityCalculatorEngineImplTest {
 
 
     @Test
-    void testCalculateNextFreeCapacity_TaskFitsSeveralDays() {
+    void testCalculateFreeCapacity_TaskFitsSeveralDays() {
         // GIVEN
         Long employeeId = 1L;
         BigDecimal employeeWorkingHoursPerDay = BigDecimal.valueOf(8); // 8h working day
@@ -158,7 +159,7 @@ class CapacityCalculatorEngineImplTest {
                 .thenReturn(calendarDto);
 
         List<CalendarEntryDto> result =
-                capacityCalculatorEngine.calculateNextFreeCapacity(taskDto, employeeId, firstDay, lastDayToCheck);
+                capacityCalculatorEngine.calculateFreeCapacity(taskDto, employeeId, firstDay, lastDayToCheck);
 
         // THEN
         // Expected: Task should fit first day 2h and second day 2h
@@ -178,7 +179,6 @@ class CapacityCalculatorEngineImplTest {
                 taskOccupiedTimeSecondDay
         );
 
-
         CalendarEntryDto expectedEntryThirdDay = new CalendarEntryDto(
                 null,                               // no Id, because its calculated
                 taskDto.processItem().title(),
@@ -187,13 +187,11 @@ class CapacityCalculatorEngineImplTest {
                 taskOccupiedTimeThirdDay
         );
 
-
-
         assertEquals(List.of(expectedEntryFirstDay, expectedEntrySecondDay, expectedEntryThirdDay), result);
     }
 
     @Test
-    void testCalculateNextFreeCapacity_throwNoCapacityUntilDueDateException() {
+    void testCalculateFreeCapacity_throwNoCapacityUntilDueDateException() {
         // GIVEN
         Long employeeId = 1L;
         BigDecimal employeeWorkingHoursPerDay = BigDecimal.valueOf(8); // 8h working day
@@ -248,14 +246,14 @@ class CapacityCalculatorEngineImplTest {
         //Excepted: Throws Exception, because in the given range is no capacity for the task
         assertThrows(
                 NoCapacityUntilDueDateException.class,
-                () -> capacityCalculatorEngine.calculateNextFreeCapacity(taskDto, employeeId, firstDay, dueDate)
+                () -> capacityCalculatorEngine.calculateFreeCapacity(taskDto, employeeId, firstDay, dueDate)
         );
 
     }
 
 
     @Test
-    void testCalculateNextFreeCapacity_shouldSplitBetweenFridayAndMonday() {
+    void testCalculateFreeCapacity_shouldSplitBetweenFridayAndMonday() {
         // GIVEN
         Long employeeId = 1L;
         BigDecimal employeeWorkingHoursPerDay = BigDecimal.valueOf(8); // 8h working day
@@ -303,7 +301,7 @@ class CapacityCalculatorEngineImplTest {
                 .thenReturn(calendarDto);
 
         List<CalendarEntryDto> result =
-                capacityCalculatorEngine.calculateNextFreeCapacity(taskDto, employeeId, friday, monday);
+                capacityCalculatorEngine.calculateFreeCapacity(taskDto, employeeId, friday, monday);
 
         // THEN
         // Expected: Task should fit Friday 2h and Monday 2h
@@ -378,6 +376,128 @@ class CapacityCalculatorEngineImplTest {
                 null,
                 null
         );
+
+    }
+
+    @Test
+    void calculateEmployeesAbleToCompleteEarliest_OneFit() {
+        //GIVEN
+        BigDecimal employeeWorkingHoursPerDay = BigDecimal.valueOf(8); // 8h working day
+
+        LocalDate firstDay = LocalDate.parse("2025-09-08");
+        LocalDate secondDay = firstDay.plusDays(1);
+        LocalDate thirdDay = firstDay.plusDays(2);
+
+        CalendarEntryDto employee1entry1 = createEntryDto(10L, firstDay, 180L);
+        CalendarEntryDto employee1entry2 = createEntryDto(20L, secondDay, 180L);
+        CalendarEntryDto employee1entry3 = createEntryDto(30L, thirdDay, 240L);
+
+        CalendarEntryDto employee2entry1 = createEntryDto(40L, firstDay, 180L);
+        CalendarEntryDto employee2entry2 = createEntryDto(50L, secondDay, 120L);
+
+        CalendarEntryDto employee3entry1 = createEntryDto(60L, firstDay, 180L);
+        CalendarEntryDto employee3entry2 = createEntryDto(70L, secondDay, 180L); //needs longer than employee 2
+
+        EmployeeDto employeeDto1 = createEmployeeDto(
+                1L,
+                "Max",
+                "Mustermann",
+                employeeWorkingHoursPerDay,
+                null
+        );
+
+        EmployeeDto employeeDto2 = createEmployeeDto(
+                2L,
+                "Sabine",
+                "Mustermann",
+                employeeWorkingHoursPerDay,
+                null
+        );
+
+        EmployeeDto employeeDto3 = createEmployeeDto(
+                2L,
+                "Erich",
+                "Mustermann",
+                employeeWorkingHoursPerDay,
+                null
+        );
+
+        List<CalendarEntryDto> employee1TaskEntries = List.of(employee1entry1, employee1entry2, employee1entry3);
+        List<CalendarEntryDto> employee2TaskEntries = List.of(employee2entry1, employee2entry2);
+        List<CalendarEntryDto> employee3TaskEntries = List.of(employee3entry1, employee3entry2);
+
+        Map<EmployeeDto, List<CalendarEntryDto>> employeeTaskEntries = Map.of(
+                employeeDto1, employee1TaskEntries,
+                employeeDto2, employee2TaskEntries,
+                employeeDto3, employee3TaskEntries);
+
+        //WHEN
+        List<EmployeeDto> result = capacityCalculatorEngine.calculateEmployeesAbleToCompleteTaskEarliest(employeeTaskEntries);
+
+        //THEN
+        //Second employee should be chosen because he can finish the task earliest
+        assertEquals(List.of(employeeDto2), result);
+
+    }
+
+    @Test
+    void calculateEmployeesAbleToCompleteEarliest_SeveralFits() {
+        //GIVEN
+        BigDecimal employeeWorkingHoursPerDay = BigDecimal.valueOf(8); // 8h working day
+
+        LocalDate firstDay = LocalDate.parse("2025-09-08");
+        LocalDate secondDay = firstDay.plusDays(1);
+        LocalDate thirdDay = firstDay.plusDays(2);
+
+        CalendarEntryDto employee1entry1 = createEntryDto(10L, firstDay, 180L);
+        CalendarEntryDto employee1entry2 = createEntryDto(20L, secondDay, 180L);
+        CalendarEntryDto employee1entry3 = createEntryDto(30L, thirdDay, 240L);
+
+        CalendarEntryDto employee2entry1 = createEntryDto(40L, firstDay, 180L);
+        CalendarEntryDto employee2entry2 = createEntryDto(50L, secondDay, 180L);
+
+        CalendarEntryDto employee3entry1 = createEntryDto(60L, firstDay, 180L);
+        CalendarEntryDto employee3entry2 = createEntryDto(70L, secondDay, 180L); //needs same time as employee 1
+
+        EmployeeDto employeeDto1 = createEmployeeDto(
+                1L,
+                "Max",
+                "Mustermann",
+                employeeWorkingHoursPerDay,
+                null
+        );
+
+        EmployeeDto employeeDto2 = createEmployeeDto(
+                2L,
+                "Sabine",
+                "Mustermann",
+                employeeWorkingHoursPerDay,
+                null
+        );
+
+        EmployeeDto employeeDto3 = createEmployeeDto(
+                2L,
+                "Erich",
+                "Mustermann",
+                employeeWorkingHoursPerDay,
+                null
+        );
+
+        List<CalendarEntryDto> employee1TaskEntries = List.of(employee1entry1, employee1entry2, employee1entry3);
+        List<CalendarEntryDto> employee2TaskEntries = List.of(employee2entry1, employee2entry2);
+        List<CalendarEntryDto> employee3TaskEntries = List.of(employee3entry1, employee3entry2);
+
+        Map<EmployeeDto, List<CalendarEntryDto>> employeeTaskEntries = Map.of(
+                employeeDto1, employee1TaskEntries,
+                employeeDto2, employee2TaskEntries,
+                employeeDto3, employee3TaskEntries);
+
+        //WHEN
+        List<EmployeeDto> result = capacityCalculatorEngine.calculateEmployeesAbleToCompleteTaskEarliest(employeeTaskEntries);
+
+        //THEN
+        //Second employee should be chosen because he can finish the task earliest
+        assertEquals(List.of(employeeDto2, employeeDto3), result);
 
     }
 }

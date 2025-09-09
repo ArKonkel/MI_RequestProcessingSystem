@@ -13,8 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -36,7 +35,7 @@ public class CapacityCalculatorEngineImpl implements CapacityCalculatorEngine {
      * @return a list of free calendar entries for the given task and employee
      */
     @Override
-    public List<CalendarEntryDto> calculateNextFreeCapacity(TaskDto taskDto, Long employeeId, LocalDate from, LocalDate to) {
+    public List<CalendarEntryDto> calculateFreeCapacity(TaskDto taskDto, Long employeeId, LocalDate from, LocalDate to) {
         EmployeeDto employeeDto = userManager.getEmployeeById(employeeId);
         long dailyWorkingMinutes = employeeDto.workingHoursPerDay().longValue() * 60;
 
@@ -93,5 +92,49 @@ public class CapacityCalculatorEngineImpl implements CapacityCalculatorEngine {
         }
 
         return createdSlots;
+    }
+
+    @Override
+    public List<EmployeeDto> calculateEmployeesAbleToCompleteTaskEarliest(Map<EmployeeDto, List<CalendarEntryDto>> employeeWithCalendarEntriesOfTask) {
+        Map<EmployeeDto, CalendarEntryDto> latestEntriesOfEmployees = new HashMap<>();
+        Map<EmployeeDto, CalendarEntryDto> earliestEntries = new HashMap<>();
+        List<EmployeeDto> earliestEmployees = new ArrayList<>();
+
+        //Find first the latest entries for each List of entries of the task
+        for (EmployeeDto employee : employeeWithCalendarEntriesOfTask.keySet()) {
+            List<CalendarEntryDto> entries = employeeWithCalendarEntriesOfTask.get(employee);
+
+            CalendarEntryDto latestEntry =
+                    entries.stream().max(Comparator.comparing(CalendarEntryDto::date)).orElseThrow();
+
+            latestEntriesOfEmployees.put(employee, latestEntry);
+        }
+
+        //Second: Find min date of latestEntriesOfEmployees
+        LocalDate earliestDate = latestEntriesOfEmployees.values().stream()
+                .map(entry -> entry.date())
+                .min((date1, date2) -> date1.compareTo(date2))
+                .orElseThrow();
+
+        for (EmployeeDto employee : latestEntriesOfEmployees.keySet()) {
+            if (latestEntriesOfEmployees.get(employee).date().equals(earliestDate)) {
+
+                earliestEntries.put(employee, latestEntriesOfEmployees.get(employee));
+            }
+        }
+
+        // Third: Find the shortest entry (smallest duration)
+        long minDuration = earliestEntries.values().stream()
+                .map(entry -> entry.duration())
+                .min((duration1, duration2) -> duration1.compareTo(duration2))
+                .orElseThrow();
+
+        for (EmployeeDto employee : earliestEntries.keySet()) {
+            if (earliestEntries.get(employee).duration() == minDuration) {
+                earliestEmployees.add(employee);
+            }
+        }
+
+        return earliestEmployees;
     }
 }
