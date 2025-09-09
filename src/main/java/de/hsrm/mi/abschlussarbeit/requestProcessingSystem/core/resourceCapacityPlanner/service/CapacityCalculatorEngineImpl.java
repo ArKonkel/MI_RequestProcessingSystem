@@ -1,5 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.service;
 
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.dto.CalculatedCalendarEntryDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.exception.NoCapacityUntilDueDateException;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.dto.TaskDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.dto.CalendarDto;
@@ -35,7 +36,7 @@ public class CapacityCalculatorEngineImpl implements CapacityCalculatorEngine {
      * @return a list of free calendar entries for the given task and employee
      */
     @Override
-    public List<CalendarEntryDto> calculateFreeCapacity(TaskDto taskDto, Long employeeId, LocalDate from, LocalDate to) {
+    public List<CalculatedCalendarEntryDto> calculateFreeCapacity(TaskDto taskDto, Long employeeId, LocalDate from, LocalDate to) {
         EmployeeDto employeeDto = userManager.getEmployeeById(employeeId);
         long dailyWorkingMinutes = employeeDto.workingHoursPerDay().longValue() * 60;
 
@@ -43,7 +44,7 @@ public class CapacityCalculatorEngineImpl implements CapacityCalculatorEngine {
         List<CalendarEntryDto> calendarEntryDtos = calendarDto.entries();
 
         Long remainingTaskTime = taskDto.estimatedTime();
-        List<CalendarEntryDto> createdSlots = new ArrayList<>();
+        List<CalculatedCalendarEntryDto> calculatedSlots = new ArrayList<>();
 
         // Iterate over each day in the range
         for (LocalDate date = from; !date.isAfter(to); date = date.plusDays(1)) {
@@ -71,14 +72,12 @@ public class CapacityCalculatorEngineImpl implements CapacityCalculatorEngine {
 
                 // Create new slot if there is free time
                 if (freeMinutes > 0) {
-                    CalendarEntryDto newSlot = new CalendarEntryDto(
-                            null,
+                    CalculatedCalendarEntryDto newSlot = new CalculatedCalendarEntryDto(
                             taskDto.processItem().title(),
-                            taskDto.processItem().description(),
                             date,
                             freeMinutes
                     );
-                    createdSlots.add(newSlot);
+                    calculatedSlots.add(newSlot);
                     remainingTaskTime -= freeMinutes;
                 }
             } else {
@@ -91,21 +90,21 @@ public class CapacityCalculatorEngineImpl implements CapacityCalculatorEngine {
             throw new NoCapacityUntilDueDateException("No capacity for task " + taskDto.processItem().id() + " until due date");
         }
 
-        return createdSlots;
+        return calculatedSlots;
     }
 
     @Override
-    public List<EmployeeDto> calculateEmployeesAbleToCompleteTaskEarliest(Map<EmployeeDto, List<CalendarEntryDto>> employeeWithCalendarEntriesOfTask) {
-        Map<EmployeeDto, CalendarEntryDto> latestEntriesOfEmployees = new HashMap<>();
-        Map<EmployeeDto, CalendarEntryDto> earliestEntries = new HashMap<>();
+    public List<EmployeeDto> calculateEmployeesAbleToCompleteTaskEarliest(Map<EmployeeDto, List<CalculatedCalendarEntryDto>> employeeWithCalendarEntriesOfTask) {
+        Map<EmployeeDto, CalculatedCalendarEntryDto> latestEntriesOfEmployees = new HashMap<>();
+        Map<EmployeeDto, CalculatedCalendarEntryDto> earliestEntries = new HashMap<>();
         List<EmployeeDto> earliestEmployees = new ArrayList<>();
 
         //Find first the latest entries for each List of entries of the task
         for (EmployeeDto employee : employeeWithCalendarEntriesOfTask.keySet()) {
-            List<CalendarEntryDto> entries = employeeWithCalendarEntriesOfTask.get(employee);
+            List<CalculatedCalendarEntryDto> entries = employeeWithCalendarEntriesOfTask.get(employee);
 
-            CalendarEntryDto latestEntry =
-                    entries.stream().max(Comparator.comparing(CalendarEntryDto::date)).orElseThrow();
+            CalculatedCalendarEntryDto latestEntry =
+                    entries.stream().max(Comparator.comparing(CalculatedCalendarEntryDto::date)).orElseThrow();
 
             latestEntriesOfEmployees.put(employee, latestEntry);
         }

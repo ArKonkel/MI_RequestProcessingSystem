@@ -10,7 +10,7 @@ import java.util.Map;
 
 public interface CapacityCalculatorEngine {
 
-    List<CalendarEntryDto> calculateFreeCapacity(TaskDto taskDto, Long employeeId, LocalDate from, LocalDate to);
+    List<CalculatedCalendarEntryDto> calculateFreeCapacity(TaskDto taskDto, Long employeeId, LocalDate from, LocalDate to);
 
     List<EmployeeDto> calculateEmployeesAbleToCompleteTaskEarliest(Map<EmployeeDto, List<CalendarEntryDto>> employeeWithCalendarEntriesOfTask);
 
