@@ -3,6 +3,7 @@ package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacity
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.dto.CalculatedCapacityCalendarEntryDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.dto.MatchCalculationResultDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.dto.MatchingEmployeeForTaskDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.exception.TaskNotReadyForResourcePlanningException;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.dto.TaskDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.EmployeeDto;
 import lombok.AllArgsConstructor;
@@ -21,7 +22,6 @@ import java.util.Map;
 public class ResourceCapacityServiceImpl implements ResourceCapacityService {
     //CHECKEN, ob Task bereit ist für capacity planning
 
-
     private final CapacityCalculatorEngine capacityCalculatorEngine;
 
     private final TaskMatcher taskMatcher;
@@ -35,6 +35,8 @@ public class ResourceCapacityServiceImpl implements ResourceCapacityService {
      */
     @Override
     public MatchingEmployeeForTaskDto findBestMatches(TaskDto task) {
+        checkIfTaskReadyForResourcePlanning(task);
+
         List<MatchCalculationResultDto> results = new ArrayList<>();
 
         // find best matching employees by competence
@@ -68,4 +70,25 @@ public class ResourceCapacityServiceImpl implements ResourceCapacityService {
 
         return new MatchingEmployeeForTaskDto(task, results);
     }
+
+    private void checkIfTaskReadyForResourcePlanning(TaskDto task) {
+        List<String> errors = new ArrayList<>();
+
+        if (task.estimatedTime() == 0) {
+            errors.add("No estimated time set");
+        }
+        if (task.dueDate().isBefore(LocalDate.now())) {
+            errors.add("Due date is in the past");
+        }
+        if (task.competence().isEmpty()) {
+            errors.add("No competence set");
+        }
+
+        if (!errors.isEmpty()) {
+            throw new TaskNotReadyForResourcePlanningException(
+                    "Task not ready for resource planning. " + String.join(", ", errors)
+            );
+        }
+    }
+
 }

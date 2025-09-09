@@ -5,7 +5,10 @@ import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.Priority;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.dto.CalculatedCapacityCalendarEntryDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.dto.MatchCalculationResultDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.dto.MatchingEmployeeForTaskDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.exception.TaskNotReadyForResourcePlanningException;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.dto.TaskDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.enums.CompetenceType;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.CompetenceDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.EmployeeDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,9 +37,8 @@ class ResourceCapacityServiceImplTest {
     ResourceCapacityServiceImpl resourceCapacityService;
 
 
-
     @Test
-    void findBestMatches() {
+    void findBestMatches_shouldFindMatches() {
         // GIVEN
         String taskTitle = "Customizing the Software";
         Long estimatedTime = 120L;
@@ -100,8 +102,55 @@ class ResourceCapacityServiceImplTest {
         assertEquals(capacitiesEmployee2, resultEmployee2.calculatedCalendarCapacities());
     }
 
+    @Test
+    void findBestMatches_ShouldThrowTaskNotReadyForResourcePlanningException_DueDateInPast() {
+        // GIVEN
+        String taskTitle = "Customizing the Software";
+        Long estimatedTime = 120L;
+        LocalDate dueDate = LocalDate.parse("1999-09-12"); // due date in the past
+        TaskDto taskDto = createTaskDto(1L, taskTitle, estimatedTime, dueDate);
 
-    private CalculatedCapacityCalendarEntryDto createCalculatedCapacityEntryDto(String title, LocalDate date, Long duration){
+        // WHEN + THEN
+        assertThrows(
+                TaskNotReadyForResourcePlanningException.class,
+                () -> resourceCapacityService.findBestMatches(taskDto)
+        );
+    }
+
+    @Test
+    void findBestMatches_ShouldThrowTaskNotReadyForResourcePlanningException_NoEstimation() {
+        // GIVEN
+        String taskTitle = "Customizing the Software";
+        Long estimatedTime = 0L;
+        LocalDate dueDate = LocalDate.parse("3000-09-12");
+        TaskDto taskDto = createTaskDto(1L, taskTitle, estimatedTime, dueDate);
+
+        // WHEN + THEN
+        assertThrows(
+                TaskNotReadyForResourcePlanningException.class,
+                () -> resourceCapacityService.findBestMatches(taskDto)
+        );
+    }
+
+    @Test
+    void findBestMatches_ShouldThrowTaskNotReadyForResourcePlanningException_NoCompetence() {
+        // GIVEN
+        String taskTitle = "Customizing the Software";
+        Long estimatedTime = 120L;
+        LocalDate dueDate = LocalDate.parse("3000-09-12");
+        TaskDto taskDto = createTaskDtoWithoutCompetence(1L, taskTitle, estimatedTime, dueDate);
+
+        // WHEN + THEN
+        assertThrows(
+                TaskNotReadyForResourcePlanningException.class,
+                () -> resourceCapacityService.findBestMatches(taskDto)
+        );
+    }
+
+
+
+
+    private CalculatedCapacityCalendarEntryDto createCalculatedCapacityEntryDto(String title, LocalDate date, Long duration) {
         return new CalculatedCapacityCalendarEntryDto(
                 title,
                 date,
@@ -127,6 +176,36 @@ class ResourceCapacityServiceImplTest {
     }
 
     private TaskDto createTaskDto(Long id, String title, Long estimatedTime, LocalDate dueDate) {
+        CompetenceDto competenceDto = new CompetenceDto(1L, "Customizing", "", CompetenceType.EXPERTISE);
+
+        ProcessItemDto processItem = new ProcessItemDto(
+                id,
+                title,
+                "",
+                dueDate,
+                null,
+                null,
+                Set.of()
+        );
+
+        return new TaskDto(
+                processItem,
+                estimatedTime,
+                dueDate,
+                Priority.MEDIUM,
+                null,
+                Set.of(competenceDto),
+                null,
+                null,
+                null,
+                Set.of(),
+                null,
+                null
+        );
+    }
+
+    private TaskDto createTaskDtoWithoutCompetence(Long id, String title, Long estimatedTime, LocalDate dueDate) {
+
         ProcessItemDto processItem = new ProcessItemDto(
                 id,
                 title,
