@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class CapacityCalculatorEngineImpl implements CapacityCalculatorEngine {
 
 
     /**
-     * Methode to calculate the next free slot for a given task and employee.
+     * Methode to calculate the next free slot for a given task and employee. Skips Weekends.
      *
      * @param taskDto    the task to calculate the free capacity for
      * @param employeeId the employee to calculate the free capacity for
@@ -48,6 +49,11 @@ public class CapacityCalculatorEngineImpl implements CapacityCalculatorEngine {
         // Iterate over each day in the range
         for (LocalDate date = from; !date.isAfter(to); date = date.plusDays(1)) {
             Long occupiedMinutes = 0L;
+
+            // Skip weekend days
+            if (date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                continue;
+            }
 
             // Only proceed if there is still task time left to schedule
             if (remainingTaskTime > 0) {

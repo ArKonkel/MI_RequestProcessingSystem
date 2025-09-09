@@ -111,7 +111,7 @@ class CapacityCalculatorEngineImplTest {
         // GIVEN
         Long employeeId = 1L;
         BigDecimal employeeWorkingHoursPerDay = BigDecimal.valueOf(8); // 8h working day
-        Long estimatedTaskDuration = 300L; // 4h new task
+        Long estimatedTaskDuration = 300L; // 5h new task
 
         LocalDate firstDay = LocalDate.parse("2025-09-08");
         LocalDate lastDayToCheck = firstDay.plusDays(2); // range: 3 days
@@ -241,8 +241,75 @@ class CapacityCalculatorEngineImplTest {
 
 
     @Test
-    void testCalculateNextFreeCapacity_OnlyMondayUntilFriday() {
+    void testCalculateNextFreeCapacity_shouldSplitBetweenFridayAndMonday() {
+        // GIVEN
+        Long employeeId = 1L;
+        BigDecimal employeeWorkingHoursPerDay = BigDecimal.valueOf(8); // 8h working day
+        Long estimatedTaskDuration = 300L; // 5h new task
 
+        LocalDate friday = LocalDate.parse("2025-09-12"); //Friday
+        LocalDate monday = LocalDate.parse("2025-09-15"); //Monday after Weekend
+
+        // task, that need to be planned
+        TaskDto taskDto = createTaskDto(
+                10L,
+                "Customizing the Software",
+                estimatedTaskDuration,
+                LocalDate.parse("2025-11-05")
+        );
+
+        // Already given entries:
+        // Friday: two meetings 3h = 6h: 2h free
+        CalendarEntryDto entry1 = createEntryDto(10L, friday, 180L);
+        CalendarEntryDto entry2 = createEntryDto(20L, friday, 180L);
+
+        // Monday: 4h-Meeting: 4h free
+        CalendarEntryDto entry3 = createEntryDto(30L, monday, 240L);
+
+        CalendarDto calendarDto = new CalendarDto(
+                99L,
+                List.of(entry1, entry2, entry3),
+                employeeId
+        );
+
+        Long taskOccupiedTimeFriday = 120L; //2h
+        Long taskOccupiedTimeMonday = 180L; //3h
+
+        EmployeeDto employeeDto = createEmployeeDto(
+                employeeId,
+                "Max",
+                "Mustermann",
+                employeeWorkingHoursPerDay,
+                99L
+        );
+
+        // WHEN
+        Mockito.when(userManager.getEmployeeById(employeeId)).thenReturn(employeeDto);
+        Mockito.when(calendarModule.getCalendarOfEmployee(employeeId, friday, monday))
+                .thenReturn(calendarDto);
+
+        List<CalendarEntryDto> result =
+                capacityCalculatorEngine.calculateNextFreeCapacity(taskDto, employeeId, friday, monday);
+
+        // THEN
+        // Expected: Task should fit Friday 2h and Monday 2h
+        CalendarEntryDto expectedFriday = new CalendarEntryDto(
+                null,                               // no Id, because its calculated
+                taskDto.processItem().title(),
+                taskDto.processItem().description(),
+                friday,
+                taskOccupiedTimeFriday
+        );
+
+        CalendarEntryDto expectedMonday = new CalendarEntryDto(
+                null,                               // no Id, because its calculated
+                taskDto.processItem().title(),
+                taskDto.processItem().description(),
+                monday,
+                taskOccupiedTimeMonday
+        );
+
+        assertEquals(List.of(expectedFriday, expectedMonday), result);
     }
 
     @Test
