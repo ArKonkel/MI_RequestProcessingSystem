@@ -43,7 +43,7 @@ Die Kommunikation erfolgt über **REST-Schnittstellen** sowie **STOMP-WebSockets
 ## Technologien
 - **Backend**: Spring Boot (Java 21)
 - **Frontend**: Vue.js
-- **Datenbank**: H2 (In-Memory)
+- **Datenbank**: Postgres (In-Memory)
 - **Externe API**: Microsoft Graph API
 - **Build-Tool**: Gradle
 - **Weitere Tools**: Lombok, MapStruct
@@ -52,7 +52,7 @@ Die Kommunikation erfolgt über **REST-Schnittstellen** sowie **STOMP-WebSockets
 
 ## Voraussetzungen
 - **Java 21** oder höher
-- **Node.js** (Version >= 20)
+- **Node.js** (Version >= 22)
 - Internetzugang für Microsoft Graph API-Anbindung
 
 ---
