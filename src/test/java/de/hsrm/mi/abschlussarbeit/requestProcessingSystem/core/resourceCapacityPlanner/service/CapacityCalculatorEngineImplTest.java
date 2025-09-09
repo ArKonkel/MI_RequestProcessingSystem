@@ -125,12 +125,14 @@ class CapacityCalculatorEngineImplTest {
         );
 
         // Already given entries:
-        // Day 1: two meetings 3h = 6h: 2h free
-        CalendarEntryDto entry1 = createEntryDto(10L, firstDay, 180L);
-        CalendarEntryDto entry2 = createEntryDto(20L, firstDay, 180L);
+        // Day 1: one meeting 6h: 2h free
+        CalendarEntryDto entry1 = createEntryDto(10L, firstDay, 6 * 60L);
 
-        // Day 2: 4h-Meeting: 4h free
-        CalendarEntryDto entry3 = createEntryDto(30L, firstDay.plusDays(1), 240L);
+        // Day 2: one meeting 6h: 2h free
+        CalendarEntryDto entry2 = createEntryDto(20L, firstDay.plusDays(1), 6 * 60L);
+
+        // Day 3:one meeting 4h: 4h free
+        CalendarEntryDto entry3 = createEntryDto(30L, firstDay.plusDays(2), 4 * 60L);
 
         CalendarDto calendarDto = new CalendarDto(
                 99L,
@@ -139,7 +141,8 @@ class CapacityCalculatorEngineImplTest {
         );
 
         Long taskOccupiedTimeFirstDay = 120L; //2h
-        Long taskOccupiedTimeSecondDay = 180L; //3h
+        Long taskOccupiedTimeSecondDay = 120L; //2h
+        Long taskOccupiedTimeThirdDay = 60L; //1h
 
         EmployeeDto employeeDto = createEmployeeDto(
                 employeeId,
@@ -175,7 +178,18 @@ class CapacityCalculatorEngineImplTest {
                 taskOccupiedTimeSecondDay
         );
 
-        assertEquals(List.of(expectedEntryFirstDay, expectedEntrySecondDay), result);
+
+        CalendarEntryDto expectedEntryThirdDay = new CalendarEntryDto(
+                null,                               // no Id, because its calculated
+                taskDto.processItem().title(),
+                taskDto.processItem().description(),
+                firstDay.plusDays(2),
+                taskOccupiedTimeThirdDay
+        );
+
+
+
+        assertEquals(List.of(expectedEntryFirstDay, expectedEntrySecondDay, expectedEntryThirdDay), result);
     }
 
     @Test
@@ -310,11 +324,6 @@ class CapacityCalculatorEngineImplTest {
         );
 
         assertEquals(List.of(expectedFriday, expectedMonday), result);
-    }
-
-    @Test
-    void testCalculateNextFreeCapacity_FridayToMonday() {
-
     }
 
     private CalendarEntryDto createEntryDto(Long id, LocalDate date, Long duration) {
