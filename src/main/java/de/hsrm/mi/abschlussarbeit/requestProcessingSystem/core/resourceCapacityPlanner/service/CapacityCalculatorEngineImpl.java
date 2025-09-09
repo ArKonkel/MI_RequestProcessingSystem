@@ -37,6 +37,8 @@ public class CapacityCalculatorEngineImpl implements CapacityCalculatorEngine {
      */
     @Override
     public List<CalculatedCapacityCalendarEntryDto> calculateFreeCapacity(TaskDto taskDto, Long employeeId, LocalDate from, LocalDate to) {
+        log.info("Calculating free capacity for task {} for employee {}", taskDto.processItem().id(), employeeId);
+
         EmployeeDto employeeDto = userManager.getEmployeeById(employeeId);
         long dailyWorkingMinutes = employeeDto.workingHoursPerDay().longValue() * 60;
 
@@ -95,6 +97,8 @@ public class CapacityCalculatorEngineImpl implements CapacityCalculatorEngine {
 
     @Override
     public List<EmployeeDto> calculateEmployeesAbleToCompleteTaskEarliest(Map<EmployeeDto, List<CalculatedCapacityCalendarEntryDto>> employeeWithCalendarEntriesOfTask) {
+        log.info("Calculating employees able to complete task earliest");
+
         Map<EmployeeDto, CalculatedCapacityCalendarEntryDto> latestEntriesOfEmployees = new HashMap<>();
         Map<EmployeeDto, CalculatedCapacityCalendarEntryDto> earliestEntries = new HashMap<>();
         List<EmployeeDto> earliestEmployees = new ArrayList<>();

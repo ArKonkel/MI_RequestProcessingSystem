@@ -20,7 +20,6 @@ import java.util.Map;
 @AllArgsConstructor
 @Slf4j
 public class ResourceCapacityServiceImpl implements ResourceCapacityService {
-    //CHECKEN, ob Task bereit ist für capacity planning
 
     private final CapacityCalculatorEngine capacityCalculatorEngine;
 
@@ -35,6 +34,8 @@ public class ResourceCapacityServiceImpl implements ResourceCapacityService {
      */
     @Override
     public MatchingEmployeeForTaskDto findBestMatches(TaskDto task) {
+        log.info("Finding best matches for task {}", task.processItem().id());
+
         checkIfTaskReadyForResourcePlanning(task);
 
         List<MatchCalculationResultDto> results = new ArrayList<>();
