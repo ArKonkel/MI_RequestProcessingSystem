@@ -2,7 +2,7 @@ package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacity
 
 import java.time.LocalDate;
 
-public record CalculatedCalendarEntryDto(
+public record CalculatedCapacityCalendarEntryDto(
         String title,
         LocalDate date,
         Long duration

@@ -1,6 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.service;
 
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.dto.CalculatedCalendarEntryDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.dto.CalculatedCapacityCalendarEntryDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.exception.NoCapacityUntilDueDateException;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.dto.TaskDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.dto.CalendarDto;
@@ -36,7 +36,7 @@ public class CapacityCalculatorEngineImpl implements CapacityCalculatorEngine {
      * @return a list of free calendar entries for the given task and employee
      */
     @Override
-    public List<CalculatedCalendarEntryDto> calculateFreeCapacity(TaskDto taskDto, Long employeeId, LocalDate from, LocalDate to) {
+    public List<CalculatedCapacityCalendarEntryDto> calculateFreeCapacity(TaskDto taskDto, Long employeeId, LocalDate from, LocalDate to) {
         EmployeeDto employeeDto = userManager.getEmployeeById(employeeId);
         long dailyWorkingMinutes = employeeDto.workingHoursPerDay().longValue() * 60;
 
@@ -44,7 +44,7 @@ public class CapacityCalculatorEngineImpl implements CapacityCalculatorEngine {
         List<CalendarEntryDto> calendarEntryDtos = calendarDto.entries();
 
         Long remainingTaskTime = taskDto.estimatedTime();
-        List<CalculatedCalendarEntryDto> calculatedSlots = new ArrayList<>();
+        List<CalculatedCapacityCalendarEntryDto> calculatedSlots = new ArrayList<>();
 
         // Iterate over each day in the range
         for (LocalDate date = from; !date.isAfter(to); date = date.plusDays(1)) {
@@ -72,7 +72,7 @@ public class CapacityCalculatorEngineImpl implements CapacityCalculatorEngine {
 
                 // Create new slot if there is free time
                 if (freeMinutes > 0) {
-                    CalculatedCalendarEntryDto newSlot = new CalculatedCalendarEntryDto(
+                    CalculatedCapacityCalendarEntryDto newSlot = new CalculatedCapacityCalendarEntryDto(
                             taskDto.processItem().title(),
                             date,
                             freeMinutes
@@ -94,17 +94,17 @@ public class CapacityCalculatorEngineImpl implements CapacityCalculatorEngine {
     }
 
     @Override
-    public List<EmployeeDto> calculateEmployeesAbleToCompleteTaskEarliest(Map<EmployeeDto, List<CalculatedCalendarEntryDto>> employeeWithCalendarEntriesOfTask) {
-        Map<EmployeeDto, CalculatedCalendarEntryDto> latestEntriesOfEmployees = new HashMap<>();
-        Map<EmployeeDto, CalculatedCalendarEntryDto> earliestEntries = new HashMap<>();
+    public List<EmployeeDto> calculateEmployeesAbleToCompleteTaskEarliest(Map<EmployeeDto, List<CalculatedCapacityCalendarEntryDto>> employeeWithCalendarEntriesOfTask) {
+        Map<EmployeeDto, CalculatedCapacityCalendarEntryDto> latestEntriesOfEmployees = new HashMap<>();
+        Map<EmployeeDto, CalculatedCapacityCalendarEntryDto> earliestEntries = new HashMap<>();
         List<EmployeeDto> earliestEmployees = new ArrayList<>();
 
         //Find first the latest entries for each List of entries of the task
         for (EmployeeDto employee : employeeWithCalendarEntriesOfTask.keySet()) {
-            List<CalculatedCalendarEntryDto> entries = employeeWithCalendarEntriesOfTask.get(employee);
+            List<CalculatedCapacityCalendarEntryDto> entries = employeeWithCalendarEntriesOfTask.get(employee);
 
-            CalculatedCalendarEntryDto latestEntry =
-                    entries.stream().max(Comparator.comparing(CalculatedCalendarEntryDto::date)).orElseThrow();
+            CalculatedCapacityCalendarEntryDto latestEntry =
+                    entries.stream().max(Comparator.comparing(CalculatedCapacityCalendarEntryDto::date)).orElseThrow();
 
             latestEntriesOfEmployees.put(employee, latestEntry);
         }

@@ -2,7 +2,7 @@ package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacity
 
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.dto.ProcessItemDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.Priority;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.dto.CalculatedCalendarEntryDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.dto.CalculatedCapacityCalendarEntryDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.exception.NoCapacityUntilDueDateException;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.dto.TaskDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.dto.CalendarDto;
@@ -91,12 +91,12 @@ class CapacityCalculatorEngineImplTest {
         Mockito.when(calendarModule.getCalendarOfEmployee(employeeId, firstDay, lastDayToCheck))
                 .thenReturn(calendarDto);
 
-        List<CalculatedCalendarEntryDto> result =
+        List<CalculatedCapacityCalendarEntryDto> result =
                 capacityCalculatorEngine.calculateFreeCapacity(taskDto, employeeId, firstDay, lastDayToCheck);
 
         // THEN
         // Expected: Task should fit in first day (4h are free)
-        CalculatedCalendarEntryDto expectedEntry = new CalculatedCalendarEntryDto(
+        CalculatedCapacityCalendarEntryDto expectedEntry = new CalculatedCapacityCalendarEntryDto(
                 taskDto.processItem().title(),
                 firstDay,
                 taskDto.estimatedTime()
@@ -157,24 +157,24 @@ class CapacityCalculatorEngineImplTest {
         Mockito.when(calendarModule.getCalendarOfEmployee(employeeId, firstDay, lastDayToCheck))
                 .thenReturn(calendarDto);
 
-        List<CalculatedCalendarEntryDto> result =
+        List<CalculatedCapacityCalendarEntryDto> result =
                 capacityCalculatorEngine.calculateFreeCapacity(taskDto, employeeId, firstDay, lastDayToCheck);
 
         // THEN
         // Expected: Task should fit first day 2h and second day 2h
-        CalculatedCalendarEntryDto expectedEntryFirstDay = new CalculatedCalendarEntryDto(
+        CalculatedCapacityCalendarEntryDto expectedEntryFirstDay = new CalculatedCapacityCalendarEntryDto(
                 taskDto.processItem().title(),
                 firstDay,
                 taskOccupiedTimeFirstDay
         );
 
-        CalculatedCalendarEntryDto expectedEntrySecondDay = new CalculatedCalendarEntryDto(
+        CalculatedCapacityCalendarEntryDto expectedEntrySecondDay = new CalculatedCapacityCalendarEntryDto(
                 taskDto.processItem().title(),
                 firstDay.plusDays(1),
                 taskOccupiedTimeSecondDay
         );
 
-        CalculatedCalendarEntryDto expectedEntryThirdDay = new CalculatedCalendarEntryDto(
+        CalculatedCapacityCalendarEntryDto expectedEntryThirdDay = new CalculatedCapacityCalendarEntryDto(
                 taskDto.processItem().title(),
                 firstDay.plusDays(2),
                 taskOccupiedTimeThirdDay
@@ -293,24 +293,148 @@ class CapacityCalculatorEngineImplTest {
         Mockito.when(calendarModule.getCalendarOfEmployee(employeeId, friday, monday))
                 .thenReturn(calendarDto);
 
-        List<CalculatedCalendarEntryDto> result =
+        List<CalculatedCapacityCalendarEntryDto> result =
                 capacityCalculatorEngine.calculateFreeCapacity(taskDto, employeeId, friday, monday);
 
         // THEN
         // Expected: Task should fit Friday 2h and Monday 2h
-        CalculatedCalendarEntryDto expectedFriday = new CalculatedCalendarEntryDto(
+        CalculatedCapacityCalendarEntryDto expectedFriday = new CalculatedCapacityCalendarEntryDto(
                 taskDto.processItem().title(),
                 friday,
                 taskOccupiedTimeFriday
         );
 
-        CalculatedCalendarEntryDto expectedMonday = new CalculatedCalendarEntryDto(
+        CalculatedCapacityCalendarEntryDto expectedMonday = new CalculatedCapacityCalendarEntryDto(
                 taskDto.processItem().title(),
                 monday,
                 taskOccupiedTimeMonday
         );
 
         assertEquals(List.of(expectedFriday, expectedMonday), result);
+    }
+
+    @Test
+    void calculateEmployeesAbleToCompleteEarliest_OneFit() {
+        //GIVEN
+        BigDecimal employeeWorkingHoursPerDay = BigDecimal.valueOf(8); // 8h working day
+
+        LocalDate firstDay = LocalDate.parse("2025-09-08");
+        LocalDate secondDay = firstDay.plusDays(1);
+        LocalDate thirdDay = firstDay.plusDays(2);
+        String taskTitle = "Customizing the Software";
+
+        CalculatedCapacityCalendarEntryDto employee1entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
+        CalculatedCapacityCalendarEntryDto employee1entry2 = createCalculatedEntryDto(taskTitle, secondDay, 180L);
+        CalculatedCapacityCalendarEntryDto employee1entry3 = createCalculatedEntryDto(taskTitle, thirdDay, 240L);
+
+        CalculatedCapacityCalendarEntryDto employee2entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
+        CalculatedCapacityCalendarEntryDto employee2entry2 = createCalculatedEntryDto(taskTitle, secondDay, 120L);
+
+        CalculatedCapacityCalendarEntryDto employee3entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
+        CalculatedCapacityCalendarEntryDto employee3entry2 = createCalculatedEntryDto(taskTitle, secondDay, 180L); //needs longer than employee 2
+
+        EmployeeDto employeeDto1 = createEmployeeDto(
+                1L,
+                "Max",
+                "Mustermann",
+                employeeWorkingHoursPerDay,
+                null
+        );
+
+        EmployeeDto employeeDto2 = createEmployeeDto(
+                2L,
+                "Sabine",
+                "Mustermann",
+                employeeWorkingHoursPerDay,
+                null
+        );
+
+        EmployeeDto employeeDto3 = createEmployeeDto(
+                2L,
+                "Erich",
+                "Mustermann",
+                employeeWorkingHoursPerDay,
+                null
+        );
+
+        List<CalculatedCapacityCalendarEntryDto> employee1TaskEntries = List.of(employee1entry1, employee1entry2, employee1entry3);
+        List<CalculatedCapacityCalendarEntryDto> employee2TaskEntries = List.of(employee2entry1, employee2entry2);
+        List<CalculatedCapacityCalendarEntryDto> employee3TaskEntries = List.of(employee3entry1, employee3entry2);
+
+        Map<EmployeeDto, List<CalculatedCapacityCalendarEntryDto>> employeeTaskEntries = Map.of(
+                employeeDto1, employee1TaskEntries,
+                employeeDto2, employee2TaskEntries,
+                employeeDto3, employee3TaskEntries);
+
+        //WHEN
+        List<EmployeeDto> result = capacityCalculatorEngine.calculateEmployeesAbleToCompleteTaskEarliest(employeeTaskEntries);
+
+        //THEN
+        //Second employee should be chosen because he can finish the task earliest
+        assertEquals(List.of(employeeDto2), result);
+
+    }
+
+    @Test
+    void calculateEmployeesAbleToCompleteEarliest_SeveralFits() {
+        //GIVEN
+        BigDecimal employeeWorkingHoursPerDay = BigDecimal.valueOf(8); // 8h working day
+        String taskTitle = "Customizing the Software";
+
+        LocalDate firstDay = LocalDate.parse("2025-09-08");
+        LocalDate secondDay = firstDay.plusDays(1);
+        LocalDate thirdDay = firstDay.plusDays(2);
+
+        CalculatedCapacityCalendarEntryDto employee1entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
+        CalculatedCapacityCalendarEntryDto employee1entry2 = createCalculatedEntryDto(taskTitle, secondDay, 180L);
+        CalculatedCapacityCalendarEntryDto employee1entry3 = createCalculatedEntryDto(taskTitle, thirdDay, 240L);
+
+        CalculatedCapacityCalendarEntryDto employee2entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
+        CalculatedCapacityCalendarEntryDto employee2entry2 = createCalculatedEntryDto(taskTitle, secondDay, 180L);
+
+        CalculatedCapacityCalendarEntryDto employee3entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
+        CalculatedCapacityCalendarEntryDto employee3entry2 = createCalculatedEntryDto(taskTitle, secondDay, 180L); //needs same time as employee 1
+
+        EmployeeDto employeeDto1 = createEmployeeDto(
+                1L,
+                "Max",
+                "Mustermann",
+                employeeWorkingHoursPerDay,
+                null
+        );
+
+        EmployeeDto employeeDto2 = createEmployeeDto(
+                2L,
+                "Sabine",
+                "Mustermann",
+                employeeWorkingHoursPerDay,
+                null
+        );
+
+        EmployeeDto employeeDto3 = createEmployeeDto(
+                2L,
+                "Erich",
+                "Mustermann",
+                employeeWorkingHoursPerDay,
+                null
+        );
+
+        List<CalculatedCapacityCalendarEntryDto> employee1TaskEntries = List.of(employee1entry1, employee1entry2, employee1entry3);
+        List<CalculatedCapacityCalendarEntryDto> employee2TaskEntries = List.of(employee2entry1, employee2entry2);
+        List<CalculatedCapacityCalendarEntryDto> employee3TaskEntries = List.of(employee3entry1, employee3entry2);
+
+        Map<EmployeeDto, List<CalculatedCapacityCalendarEntryDto>> employeeTaskEntries = Map.of(
+                employeeDto1, employee1TaskEntries,
+                employeeDto2, employee2TaskEntries,
+                employeeDto3, employee3TaskEntries);
+
+        //WHEN
+        List<EmployeeDto> result = capacityCalculatorEngine.calculateEmployeesAbleToCompleteTaskEarliest(employeeTaskEntries);
+
+        //THEN
+        //Second employee should be chosen because he can finish the task earliest
+        assertEquals(List.of(employeeDto2, employeeDto3), result);
+
     }
 
     private CalendarEntryDto createEntryDto(Long id, LocalDate date, Long duration) {
@@ -323,8 +447,8 @@ class CapacityCalculatorEngineImplTest {
         );
     }
 
-    private CalculatedCalendarEntryDto createCalculatedEntryDto(String title, LocalDate date, Long duration){
-        return new CalculatedCalendarEntryDto(
+    private CalculatedCapacityCalendarEntryDto createCalculatedEntryDto(String title, LocalDate date, Long duration){
+        return new CalculatedCapacityCalendarEntryDto(
                 title,
                 date,
                 duration
@@ -373,130 +497,6 @@ class CapacityCalculatorEngineImplTest {
                 null,
                 null
         );
-
     }
 
-    @Test
-    void calculateEmployeesAbleToCompleteEarliest_OneFit() {
-        //GIVEN
-        BigDecimal employeeWorkingHoursPerDay = BigDecimal.valueOf(8); // 8h working day
-
-        LocalDate firstDay = LocalDate.parse("2025-09-08");
-        LocalDate secondDay = firstDay.plusDays(1);
-        LocalDate thirdDay = firstDay.plusDays(2);
-        String taskTitle = "Customizing the Software";
-
-        CalculatedCalendarEntryDto employee1entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
-        CalculatedCalendarEntryDto employee1entry2 = createCalculatedEntryDto(taskTitle, secondDay, 180L);
-        CalculatedCalendarEntryDto employee1entry3 = createCalculatedEntryDto(taskTitle, thirdDay, 240L);
-
-        CalculatedCalendarEntryDto employee2entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
-        CalculatedCalendarEntryDto employee2entry2 = createCalculatedEntryDto(taskTitle, secondDay, 120L);
-
-        CalculatedCalendarEntryDto employee3entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
-        CalculatedCalendarEntryDto employee3entry2 = createCalculatedEntryDto(taskTitle, secondDay, 180L); //needs longer than employee 2
-
-        EmployeeDto employeeDto1 = createEmployeeDto(
-                1L,
-                "Max",
-                "Mustermann",
-                employeeWorkingHoursPerDay,
-                null
-        );
-
-        EmployeeDto employeeDto2 = createEmployeeDto(
-                2L,
-                "Sabine",
-                "Mustermann",
-                employeeWorkingHoursPerDay,
-                null
-        );
-
-        EmployeeDto employeeDto3 = createEmployeeDto(
-                2L,
-                "Erich",
-                "Mustermann",
-                employeeWorkingHoursPerDay,
-                null
-        );
-
-        List<CalculatedCalendarEntryDto> employee1TaskEntries = List.of(employee1entry1, employee1entry2, employee1entry3);
-        List<CalculatedCalendarEntryDto> employee2TaskEntries = List.of(employee2entry1, employee2entry2);
-        List<CalculatedCalendarEntryDto> employee3TaskEntries = List.of(employee3entry1, employee3entry2);
-
-        Map<EmployeeDto, List<CalculatedCalendarEntryDto>> employeeTaskEntries = Map.of(
-                employeeDto1, employee1TaskEntries,
-                employeeDto2, employee2TaskEntries,
-                employeeDto3, employee3TaskEntries);
-
-        //WHEN
-        List<EmployeeDto> result = capacityCalculatorEngine.calculateEmployeesAbleToCompleteTaskEarliest(employeeTaskEntries);
-
-        //THEN
-        //Second employee should be chosen because he can finish the task earliest
-        assertEquals(List.of(employeeDto2), result);
-
-    }
-
-    @Test
-    void calculateEmployeesAbleToCompleteEarliest_SeveralFits() {
-        //GIVEN
-        BigDecimal employeeWorkingHoursPerDay = BigDecimal.valueOf(8); // 8h working day
-        String taskTitle = "Customizing the Software";
-
-        LocalDate firstDay = LocalDate.parse("2025-09-08");
-        LocalDate secondDay = firstDay.plusDays(1);
-        LocalDate thirdDay = firstDay.plusDays(2);
-
-        CalculatedCalendarEntryDto employee1entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
-        CalculatedCalendarEntryDto employee1entry2 = createCalculatedEntryDto(taskTitle, secondDay, 180L);
-        CalculatedCalendarEntryDto employee1entry3 = createCalculatedEntryDto(taskTitle, thirdDay, 240L);
-
-        CalculatedCalendarEntryDto employee2entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
-        CalculatedCalendarEntryDto employee2entry2 = createCalculatedEntryDto(taskTitle, secondDay, 180L);
-
-        CalculatedCalendarEntryDto employee3entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
-        CalculatedCalendarEntryDto employee3entry2 = createCalculatedEntryDto(taskTitle, secondDay, 180L); //needs same time as employee 1
-
-        EmployeeDto employeeDto1 = createEmployeeDto(
-                1L,
-                "Max",
-                "Mustermann",
-                employeeWorkingHoursPerDay,
-                null
-        );
-
-        EmployeeDto employeeDto2 = createEmployeeDto(
-                2L,
-                "Sabine",
-                "Mustermann",
-                employeeWorkingHoursPerDay,
-                null
-        );
-
-        EmployeeDto employeeDto3 = createEmployeeDto(
-                2L,
-                "Erich",
-                "Mustermann",
-                employeeWorkingHoursPerDay,
-                null
-        );
-
-        List<CalculatedCalendarEntryDto> employee1TaskEntries = List.of(employee1entry1, employee1entry2, employee1entry3);
-        List<CalculatedCalendarEntryDto> employee2TaskEntries = List.of(employee2entry1, employee2entry2);
-        List<CalculatedCalendarEntryDto> employee3TaskEntries = List.of(employee3entry1, employee3entry2);
-
-        Map<EmployeeDto, List<CalculatedCalendarEntryDto>> employeeTaskEntries = Map.of(
-                employeeDto1, employee1TaskEntries,
-                employeeDto2, employee2TaskEntries,
-                employeeDto3, employee3TaskEntries);
-
-        //WHEN
-        List<EmployeeDto> result = capacityCalculatorEngine.calculateEmployeesAbleToCompleteTaskEarliest(employeeTaskEntries);
-
-        //THEN
-        //Second employee should be chosen because he can finish the task earliest
-        assertEquals(List.of(employeeDto2, employeeDto3), result);
-
-    }
 }
