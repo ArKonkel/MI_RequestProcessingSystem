@@ -479,8 +479,7 @@ class CapacityCalculatorEngineImplTest {
                 "",
                 dueDate,
                 null,
-                null,
-                Set.of()
+                null
         );
 
         return new TaskDto(
@@ -493,7 +492,6 @@ class CapacityCalculatorEngineImplTest {
                 null,
                 null,
                 null,
-                Set.of(),
                 null,
                 null
         );

@@ -32,7 +32,7 @@ public class TaskMatcherImpl implements TaskMatcher {
         Map<EmployeeDto, Integer> matchesByEmployee = new HashMap<>();
 
         for (EmployeeExpertiseDto employeeExpertise : allEmployeeExpertises) {
-            if(!task.competence().contains(employeeExpertise.expertise())){
+            if(!task.competences().contains(employeeExpertise.expertise())){
                 continue;
             }
 

@@ -86,8 +86,7 @@ class TaskMatcherImplTest {
                 "",
                 LocalDate.parse("2025-09-05"),
                 null,
-                null,
-                Set.of()
+                null
         );
 
         return new TaskDto(
@@ -100,7 +99,6 @@ class TaskMatcherImplTest {
                 null,
                 null,
                 null,
-                Set.of(),
                 null,
                 null
         );

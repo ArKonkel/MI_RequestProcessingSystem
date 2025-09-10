@@ -9,6 +9,9 @@ import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.en
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+/**
+ * Mapper for {@link Competence} and {@link CompetenceDto}}
+ */
 @Mapper(componentModel = "spring")
 public interface CompetenceMapper {
 
@@ -23,6 +26,6 @@ public interface CompetenceMapper {
         } else if (competence instanceof Responsibility) {
             return CompetenceType.RESPONSIBILITY;
         }
-        throw new IllegalArgumentException("Unknown competence type: " + competence.getClass());
+        throw new IllegalArgumentException("Unknown competences type: " + competence.getClass());
     }
 }

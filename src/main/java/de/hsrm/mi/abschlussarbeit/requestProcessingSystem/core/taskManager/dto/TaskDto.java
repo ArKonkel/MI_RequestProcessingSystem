@@ -13,11 +13,11 @@ public record TaskDto(
         LocalDate dueDate,
         Priority priority,
         Long calendarEntryId,
-        Set<CompetenceDto> competence,
+        Set<CompetenceDto> competences,
         Long blockerId,
         Long blockedId,
         Long referenceTaskId,
-        Set<Long> referencedByIds,
+        //Set<Long> referencedByIds,
         Long requestId,
         Long projectId
 ) {}
