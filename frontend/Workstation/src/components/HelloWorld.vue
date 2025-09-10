@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import {Button} from "@/components/ui/button";
+
 defineProps<{
   msg: string
 }>()
@@ -7,6 +9,7 @@ defineProps<{
 <template>
   <div class="greetings">
     <h1 class="text-3xl font-bold underline">Hello world!</h1>
+    <Button class="text-1xl">Click me</Button>
     <h3>
       You’ve successfully created a project with
       <a href="https://vite.dev/" target="_blank" rel="noopener">Vite</a> +
