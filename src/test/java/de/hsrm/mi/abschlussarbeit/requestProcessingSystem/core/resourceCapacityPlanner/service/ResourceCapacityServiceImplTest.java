@@ -7,6 +7,7 @@ import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityP
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.dto.MatchingEmployeeForTaskDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.exception.TaskNotReadyForResourcePlanningException;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.dto.TaskDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.service.TaskManager;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.enums.CompetenceType;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.CompetenceDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.EmployeeDto;
@@ -33,6 +34,9 @@ class ResourceCapacityServiceImplTest {
     @Mock
     TaskMatcher taskMatcher;
 
+    @Mock
+    TaskManager taskManager;
+
     @InjectMocks
     ResourceCapacityServiceImpl resourceCapacityService;
 
@@ -43,7 +47,8 @@ class ResourceCapacityServiceImplTest {
         String taskTitle = "Customizing the Software";
         Long estimatedTime = 120L;
         LocalDate dueDate = LocalDate.parse("2025-09-12");
-        TaskDto taskDto = createTaskDto(1L, taskTitle, estimatedTime, dueDate);
+        Long taskId = 1L;
+        TaskDto taskDto = createTaskDto(taskId, taskTitle, estimatedTime, dueDate);
 
         // Employees
         EmployeeDto employee1 = createEmployeeDto(1L, "Max", "Mustermann", BigDecimal.valueOf(8), 10L);
@@ -68,6 +73,7 @@ class ResourceCapacityServiceImplTest {
         List<EmployeeDto> earliestEmployees = List.of(employee1);
 
         // Mocking dependencies
+        Mockito.when(taskManager.getTaskById(taskId)).thenReturn(taskDto);
         Mockito.when(taskMatcher.findBestMatchingEmployees(taskDto)).thenReturn(competenceMatches);
         Mockito.when(capacityCalculatorEngine.calculateFreeCapacity(taskDto, employee1.id(), LocalDate.now(), dueDate))
                 .thenReturn(capacitiesEmployee1);
@@ -77,7 +83,7 @@ class ResourceCapacityServiceImplTest {
                 .thenReturn(earliestEmployees);
 
         // WHEN
-        MatchingEmployeeForTaskDto result = resourceCapacityService.findBestMatches(taskDto);
+        MatchingEmployeeForTaskDto result = resourceCapacityService.findBestMatches(taskId);
 
         // THEN
         assertEquals(taskDto, result.task());
@@ -108,12 +114,15 @@ class ResourceCapacityServiceImplTest {
         String taskTitle = "Customizing the Software";
         Long estimatedTime = 120L;
         LocalDate dueDate = LocalDate.parse("1999-09-12"); // due date in the past
-        TaskDto taskDto = createTaskDto(1L, taskTitle, estimatedTime, dueDate);
+        Long taskId = 1L;
+        TaskDto taskDto = createTaskDto(taskId, taskTitle, estimatedTime, dueDate);
 
         // WHEN + THEN
+        Mockito.when(taskManager.getTaskById(taskId)).thenReturn(taskDto);
+
         assertThrows(
                 TaskNotReadyForResourcePlanningException.class,
-                () -> resourceCapacityService.findBestMatches(taskDto)
+                () -> resourceCapacityService.findBestMatches(taskId)
         );
     }
 
@@ -123,12 +132,15 @@ class ResourceCapacityServiceImplTest {
         String taskTitle = "Customizing the Software";
         Long estimatedTime = 0L;
         LocalDate dueDate = LocalDate.parse("3000-09-12");
-        TaskDto taskDto = createTaskDto(1L, taskTitle, estimatedTime, dueDate);
+        Long taskId = 1L;
+        TaskDto taskDto = createTaskDto(taskId, taskTitle, estimatedTime, dueDate);
 
         // WHEN + THEN
+        Mockito.when(taskManager.getTaskById(taskId)).thenReturn(taskDto);
+
         assertThrows(
                 TaskNotReadyForResourcePlanningException.class,
-                () -> resourceCapacityService.findBestMatches(taskDto)
+                () -> resourceCapacityService.findBestMatches(taskId)
         );
     }
 
@@ -138,12 +150,15 @@ class ResourceCapacityServiceImplTest {
         String taskTitle = "Customizing the Software";
         Long estimatedTime = 120L;
         LocalDate dueDate = LocalDate.parse("3000-09-12");
-        TaskDto taskDto = createTaskDtoWithoutCompetence(1L, taskTitle, estimatedTime, dueDate);
+        Long taskId = 1L;
+        TaskDto taskDto = createTaskDtoWithoutCompetence(taskId, taskTitle, estimatedTime, dueDate);
 
         // WHEN + THEN
+        Mockito.when(taskManager.getTaskById(taskId)).thenReturn(taskDto);
+
         assertThrows(
                 TaskNotReadyForResourcePlanningException.class,
-                () -> resourceCapacityService.findBestMatches(taskDto)
+                () -> resourceCapacityService.findBestMatches(taskId)
         );
     }
 
@@ -184,8 +199,7 @@ class ResourceCapacityServiceImplTest {
                 "",
                 dueDate,
                 null,
-                null,
-                Set.of()
+                null
         );
 
         return new TaskDto(
@@ -198,7 +212,6 @@ class ResourceCapacityServiceImplTest {
                 null,
                 null,
                 null,
-                Set.of(),
                 null,
                 null
         );
@@ -212,8 +225,7 @@ class ResourceCapacityServiceImplTest {
                 "",
                 dueDate,
                 null,
-                null,
-                Set.of()
+                null
         );
 
         return new TaskDto(
@@ -226,7 +238,6 @@ class ResourceCapacityServiceImplTest {
                 null,
                 null,
                 null,
-                Set.of(),
                 null,
                 null
         );

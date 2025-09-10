@@ -5,6 +5,7 @@ import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityP
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.dto.MatchingEmployeeForTaskDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.exception.TaskNotReadyForResourcePlanningException;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.dto.TaskDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.service.TaskManager;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.EmployeeDto;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,22 +26,25 @@ public class ResourceCapacityServiceImpl implements ResourceCapacityService {
 
     private final TaskMatcher taskMatcher;
 
+    private final TaskManager taskManager;
+
     /**
      * Finds the best matches for a given task.
      *
-     * @param task to find the best matches for
+     * @param taskId of Task to find the best matches for
      * @return a MatchingEmployeeForTaskDto with the task and the best matching employees. Higher number is better match.
      * With the information which one can complete the task earliest.
      */
     @Override
-    public MatchingEmployeeForTaskDto findBestMatches(TaskDto task) {
-        log.info("Finding best matches for task {}", task.processItem().id());
+    public MatchingEmployeeForTaskDto findBestMatches(Long taskId) {
+        log.info("Finding best matches for task {}", taskId);
+        TaskDto task = taskManager.getTaskById(taskId);
 
         checkIfTaskReadyForResourcePlanning(task);
 
         List<MatchCalculationResultDto> results = new ArrayList<>();
 
-        // find best matching employees by competence
+        // find best matching employees by competences
         Map<EmployeeDto, Integer> competenceMatches = taskMatcher.findBestMatchingEmployees(task);
 
         // calculate free capacity for each employee
@@ -81,8 +85,8 @@ public class ResourceCapacityServiceImpl implements ResourceCapacityService {
         if (task.dueDate().isBefore(LocalDate.now())) {
             errors.add("Due date is in the past");
         }
-        if (task.competence().isEmpty()) {
-            errors.add("No competence set");
+        if (task.competences().isEmpty()) {
+            errors.add("No competences set");
         }
 
         if (!errors.isEmpty()) {

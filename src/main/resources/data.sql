@@ -70,11 +70,18 @@ INSERT INTO role_permission(role_id, permission_id) VALUES
 (5, 3),
 (5, 4);
 
+--------------------------------- CALENDAR ------------------------------------------------
+INSERT INTO calendar(id) VALUES
+(1),
+(2);
+
+--------------------------------- CALENDAR_ENTRY ------------------------------------------------
+
 --------------------------------- EMPLOYEE ------------------------------------------------
 
-INSERT INTO employee(id, email, first_name, last_name, phone_number, department_id) VALUES
-(1, 'Max@test.de', 'Max', 'Mustermann', '', null),
-(2,'Sabine@test.de', 'Sabine', 'Musterfrau', '', 1);
+INSERT INTO employee(id, email, first_name, last_name, phone_number, department_id, working_hours_per_day, calendar_id) VALUES
+(1, 'Max@test.de', 'Max', 'Mustermann', '', null, 8, 1),
+(2,'Sabine@test.de', 'Sabine', 'Musterfrau', '', 1, 8, 2);
 
 --------------------------------- USER ------------------------------------------------
 
@@ -109,7 +116,7 @@ INSERT INTO status(id, name, description, type) VALUES
 --------------------------------- Baseobject - PROCESS_ITEM ------------------------------------------------
 
 INSERT INTO process_item (id, title, description, creation_date) VALUES
-(1, 'Customizing der Software beim Kunden für Produktdruck', '', '2025-09-05');
+(1, 'Customizing der Software beim Kunden für Produktdruck', '', '2025-09-10');
 
 -------------- Subobject - TASK
 
@@ -121,6 +128,7 @@ INSERT INTO task (id, estimated_time, due_date, priority) VALUES
 INSERT INTO task_competence (task_id, competence_id) VALUES
 (1, 7),
 (1, 9);
+
 
 
 
