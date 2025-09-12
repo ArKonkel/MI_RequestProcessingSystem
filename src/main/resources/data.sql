@@ -115,19 +115,35 @@ INSERT INTO status(id, name, description, type) VALUES
 
 --------------------------------- Baseobject - PROCESS_ITEM ------------------------------------------------
 
+-- Process Items
 INSERT INTO process_item (id, title, description, creation_date) VALUES
-(1, 'Customizing der Software beim Kunden für Produktdruck', '', '2025-09-10');
+(1, 'Customizing der Software beim Kunden für Produktdruck', 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat', '2025-09-10'),
+(2, 'Implementierung einer neuen Druckpipeline', 'Neues Druckmodul in bestehendes System integrieren', '2025-09-11'),
+(3, 'Fehleranalyse in Produktionsumgebung', 'Kritischen Bug in Logikschicht finden und beheben', '2025-09-12'),
+(4, 'Onboarding neuer Mitarbeiter', 'Schulung und Dokumentation bereitstellen', '2025-09-13'),
+(5, 'Review Sicherheitskonzept', 'Überprüfung der aktuellen Sicherheitsmaßnahmen', '2025-09-14');
 
--------------- Subobject - TASK
-
+-- Tasks (gehören zu den Process Items, gleiche ID wie process_item.id)
 INSERT INTO task (id, estimated_time, due_date, priority) VALUES
-(1, 120, '2025-11-05', 'HIGH');
+(1, 120, '2025-11-05', 'HIGH'),
+(2, 240, '2025-10-20', 'MEDIUM'),
+(3, 60,  '2025-09-30', 'HIGH'),
+(4, 180, '2025-10-15', 'LOW'),
+(5, 300, '2025-12-01', 'MEDIUM');
 
 --------------------------------- TASK_COMPETENCE ------------------------------------------------
 
 INSERT INTO task_competence (task_id, competence_id) VALUES
 (1, 7),
-(1, 9);
+(1, 9),
+(2, 7),
+(2, 9),
+(3, 7),
+(3, 9),
+(4, 7),
+(4, 9),
+(5, 7),
+(5, 9);
 
 
 
