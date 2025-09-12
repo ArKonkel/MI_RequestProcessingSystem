@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useTaskStore } from "@/stores/taskStore.ts";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 const taskStore = useTaskStore();
+const selectedTaskId = ref<number | null>(null); // für Highlight
 
 onMounted(async () => {
   await taskStore.fetchTasks();
@@ -34,6 +35,11 @@ function getPriorityColor(priority: string) {
       return "outline";
   }
 }
+
+function selectTask(id: number) {
+  selectedTaskId.value = id;
+  console.log("Selected Task ID:", id);
+}
 </script>
 
 <template>
@@ -42,7 +48,11 @@ function getPriorityColor(priority: string) {
       <Card
         v-for="task in tasks"
         :key="task.processItem.id"
-        class="hover:bg-accent/30 transition-colors"
+        @click="selectTask(task.processItem.id)"
+        :class="[
+          'hover:bg-accent/30 transition-colors cursor-pointer',
+          selectedTaskId === task.processItem.id ? 'bg-accent border-accent-foreground' : ''
+        ]"
       >
         <CardHeader>
           <div class="flex items-center justify-between">
