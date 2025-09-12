@@ -12,9 +12,4 @@ onMounted(async () => {
 </script>
 
 <template>
-  <main>
-    <Button class="text-1xl">Click me</Button>
-    <Button variant="destructive" class="text-1xl">Click me</Button>
-    <Button variant="ghost" class="text-1xl">Click me</Button>
-  </main>
 </template>
