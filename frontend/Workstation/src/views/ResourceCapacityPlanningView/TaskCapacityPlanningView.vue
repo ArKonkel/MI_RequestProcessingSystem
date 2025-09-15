@@ -217,7 +217,7 @@ function calculateBestMatchPoints() {
         <div
           v-for="(day, index) in days"
           :key="day.date + '-' + matchResult.calculatedCalendarCapacities"
-          class="relative"
+          class="flex flex-col p-1"
           :class="{
             'border-l': index !== 0,
             'border-l-2 border-accent-foreground': isFridayToMonday(index)
@@ -227,9 +227,9 @@ function calculateBestMatchPoints() {
           <div
             v-for="entry in matchResult.calculatedCalendarCapacities.filter(e => e.date === day.date)"
             :key="entry.title"
-            class="absolute top-1 left-1 right-1 bg-blue-400/50 text-xs rounded px-2 py-1 border shadow-sm"
+            class="bg-blue-400/50 text-xs rounded px-2 py-1 border shadow-sm mb-1"
           >
-            <strong class="truncate block max-w-xs" title="{{ entry.title }}">
+            <strong class="truncate block max-w-xs" :title="entry.title">
               {{ entry.title }}
             </strong>
             <div class="text-[10px]">{{ entry.duration / 60 }}h</div>
@@ -239,9 +239,9 @@ function calculateBestMatchPoints() {
           <div
             v-for="entry in matchResult.calendar?.entries.filter(e => e.date === day.date) || []"
             :key="entry.title"
-            class="absolute top-1 left-1 right-1 bg-accent text-xs rounded px-2 py-1 border shadow-sm"
+            class="bg-accent text-xs rounded px-2 py-1 border shadow-sm mb-1"
           >
-            <strong class="truncate block max-w-xs" title="{{ entry.title }}">
+            <strong class="truncate block max-w-xs" :title="entry.title">
               {{ entry.title }}
             </strong>
             <div class="text-[10px]">{{ entry.duration / 60 }}h</div>
