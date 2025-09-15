@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import {addDays, format} from "date-fns";
 import {de} from "date-fns/locale";
 import {Badge} from "@/components/ui/badge";
@@ -10,28 +10,64 @@ import type {MatchCalculationResultDtd} from "@/documentTypes/dtds/MatchCalculat
 import type {MatchingEmployeeForTaskDtd} from "@/documentTypes/dtds/MatchingEmployeeForTaskDtd.ts";
 import {getMatchingEmployees} from "@/services/capacityPlanningsService.ts";
 import {useRoute} from "vue-router";
+import type {CalendarDtd} from "@/documentTypes/dtds/CalendarDtd.ts";
+import {getEmployeeCalendar} from "@/services/calendarService.ts";
 
 const route = useRoute()
 const taskId = Number(route.params.id)
 const matchResults = ref<MatchingEmployeeForTaskDtd | null>(null)
 
-onMounted(async () => {
-  if (!taskId) {
-    console.error('Kein Task ausgewählt')
-    return
-  }
-
-  try {
-    matchResults.value = await getMatchingEmployees(taskId)
-    console.log('Match Results:', matchResults.value)
-  } catch (err: any) {
-    console.error(err)
-  }
-})
 
 // sichtbare Werktage
 const visibleDays = 8;
 const startDate = ref(new Date());
+
+onMounted(async () => {
+  if (!taskId) {
+    console.error("Kein Task ausgewählt");
+    return;
+  }
+
+  try {
+    const matches = await getMatchingEmployees(taskId);
+    matchResults.value = matches;
+
+    await loadCalendars(); // initial laden
+  } catch (err: any) {
+    console.error(err);
+  }
+});
+
+
+//Add calendars to found matches
+async function loadCalendars() {
+  if (!matchResults.value) return;
+
+  const matchesWithCalendar = await Promise.all(
+    matchResults.value.matchCalculationResult.map(async (match) => {
+      const calendar: CalendarDtd = await getEmployeeCalendar(
+        match.employee.id,
+        format(startDate.value, "yyyy-MM-dd"),
+        format(addDays(startDate.value, visibleDays), "yyyy-MM-dd")
+      );
+
+      return {
+        ...match,
+        calendar
+      };
+    })
+  );
+
+  matchResults.value = {
+    ...matchResults.value,
+    matchCalculationResult: matchesWithCalendar,
+  };
+}
+
+
+watch(startDate, async () => {
+  await loadCalendars();
+});
 
 // Berechne die Tage dynamisch (MO-FR)
 const days = computed(() => {
@@ -166,6 +202,7 @@ function isFridayToMonday(index: number) {
             'border-l-2 border-accent-foreground': isFridayToMonday(index)
           }"
         >
+          <!-- calculated entries -->
           <div
             v-for="entry in matchResult.calculatedCalendarCapacities.filter(e => e.date === day.date)"
             :key="entry.title"
@@ -176,6 +213,19 @@ function isFridayToMonday(index: number) {
             </strong>
             <div class="text-[10px]">{{ entry.duration / 60 }}h</div>
           </div>
+
+          <!-- calendar entries -->
+          <div
+            v-for="entry in matchResult.calendar?.entries.filter(e => e.date === day.date) || []"
+            :key="entry.title"
+            class="absolute top-1 left-1 right-1 bg-green-400/50 text-xs rounded px-2 py-1 border shadow-sm"
+          >
+            <strong class="truncate block max-w-xs" title="{{ entry.title }}">
+              {{ entry.title }}
+            </strong>
+            <div class="text-[10px]">{{ entry.duration / 60 }}h</div>
+          </div>
+
         </div>
       </div>
     </div>

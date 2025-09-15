@@ -77,12 +77,8 @@ INSERT INTO calendar(id) VALUES
 
 --------------------------------- CALENDAR_ENTRY ------------------------------------------------
 INSERT INTO calendar_entry(id,calendar_id, date,  duration, title) VALUES (
-1,
-1,
-CURRENT_TIMESTAMP,
-480,
-'Test Event');
-
+1,1,CURRENT_TIMESTAMP,480,'Test Event'),
+(2, 1, CURRENT_TIMESTAMP - INTERVAL '3 days', 480, 'Test Event');
 
 --------------------------------- EMPLOYEE ------------------------------------------------
 

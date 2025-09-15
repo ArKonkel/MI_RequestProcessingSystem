@@ -29,7 +29,7 @@ public class CalendarServiceImpl implements CalendarService {
 
         Calendar calendar = calendarRepository.findByEmployeeId(employeeId).stream().findFirst().orElseThrow();
         calendar.getEntries().forEach(calendarEntry -> {
-            if (calendarEntry.getDate().isAfter(from) && calendarEntry.getDate().isBefore(to)) {
+            if (!calendarEntry.getDate().isBefore(from) && !calendarEntry.getDate().isAfter(to)) {
                 filteredCalendarEntries.add(calendarEntry);
             }
         });
