@@ -1,0 +1,210 @@
+<script setup lang="ts">
+import {ref} from "vue"
+
+import {Badge} from "@/components/ui/badge"
+import {Button} from "@/components/ui/button"
+import {Input} from "@/components/ui/input"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+import {Textarea} from "@/components/ui/textarea";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select"
+
+import type {TaskDtd} from "@/documentTypes/dtds/TaskDtd.ts"
+import {StatusType} from "@/documentTypes/enums/StatusType.ts";
+import {PriorityType} from "@/documentTypes/enums/PriorityType.ts";
+import type {CompetenceDtd} from "@/documentTypes/dtds/CompetenceDtd.ts";
+import {CompetenceType} from "@/documentTypes/enums/CompetenceType.ts";
+import {ScrollArea} from "@/components/ui/scroll-area";
+
+// Mocking
+const mockCompetences: CompetenceDtd[] = [
+  {id: 1, name: "Linux", description: "", type: CompetenceType.EXPERTISE},
+  {id: 2, name: "Finanzbuchhaltung", description: "", type: CompetenceType.QUALIFICATION},
+  {id: 3, name: "API-Design", description: "", type: CompetenceType.RESPONSIBILITY},
+]
+
+const task = ref<TaskDtd>({
+  processItem: {
+    id: 1,
+    title: "Lorem Ipsum elit ed diam",
+    description: "consetetur sadipscing elitr, sed diam nonumy eirmod tempor...",
+    creationDate: "2025-01-01",
+    assigneeId: 101,
+    status: {id: 1, name: "Offen", description: "", type: StatusType.TASK},
+  },
+  estimatedTime: 60,
+  dueDate: "2026-01-01",
+  priority: PriorityType.HIGH,
+  calendarEntryId: null,
+  competences: mockCompetences,
+  blockerId: null,
+  blockedId: null,
+  referenceTaskId: null,
+  requestId: 1,
+  projectId: 1,
+})
+
+const commentText = ref("")
+const comments = ref([
+  {
+    id: 1,
+    author: "Lorem Ipsum",
+    date: "2025-01-01T16:20:00",
+    text: "consetetur sadipscing elitr..."
+  }
+])
+
+function addComment() {
+  if (!commentText.value) return
+  //TODO add her comment API call
+  console.log(comments.value + "added as comment.")
+}
+</script>
+
+<template>
+  <div class="flex h-screen gap-6 p-6">
+    <!-- Linker Hauptbereich -->
+    <ScrollArea class="flex-1 overflow-auto">
+      <div class="p-6 space-y-4">
+        <div>
+          <h2 class="text-xl font-bold">Titel: {{ task.processItem.title }}</h2>
+          <div class="flex gap-2 mt-2">
+            <Badge v-for="competence in task.competences" :key="competence.id">{{
+                competence.name
+              }}
+            </Badge>
+          </div>
+          <div class="flex gap-6 mt-4 text-sm">
+            <div><span class="font-semibold">Anfrage</span><br/>A-01</div>
+            <div><span class="font-semibold">Projekt</span><br/>P-01</div>
+            <div><span class="font-semibold">Geplant bis</span><br/>{{
+                new Date(task.dueDate!).toLocaleDateString("de-DE")
+              }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Shadcn-Accordion -->
+        <Accordion type="multiple" class="w-full" collapsible
+                   :defaultValue="['desc', 'acceptance', 'comments']">
+          <AccordionItem value="desc">
+            <AccordionTrigger>Beschreibung</AccordionTrigger>
+            <AccordionContent>
+              <Textarea
+                v-model="task.processItem.description"
+                class="mt-2 min-h-[200px] resize-none"
+              />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="acceptance">
+            <AccordionTrigger>Akzeptanzkriterien</AccordionTrigger>
+            <AccordionContent>
+              <Textarea
+                v-model="task.processItem.description"
+                class="mt-2 min-h-[200px] resize-none"
+              />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="attachments">
+            <AccordionTrigger>Anhänge</AccordionTrigger>
+            <AccordionContent>
+              <Button variant="outline">Datei hochladen</Button>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="linked">
+            <AccordionTrigger>Verknüpfte Aufgaben</AccordionTrigger>
+            <AccordionContent>
+              <div class="flex items-center justify-between border p-2 rounded">
+                <div class="flex items-center gap-2">
+                  <input type="checkbox" checked/>
+                  <span class="font-semibold">A-01</span>
+                  <span>Lorem Ipsum dolor set amet</span>
+                </div>
+                <Badge>Status</Badge>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="comments">
+            <AccordionTrigger>Kommentare</AccordionTrigger>
+            <AccordionContent>
+              <div class="space-y-4">
+                <Textarea v-model="commentText" placeholder="Verfasse dein Kommentar"/>
+                <Button @click="addComment">Senden</Button>
+
+                <div v-for="comment in comments" :key="comment.id" class="border-t pt-2 text-sm">
+                  <div class="font-semibold">{{ comment.author }}</div>
+                  <div class="text-xs text-muted-foreground">
+                    {{ new Date(comment.date).toLocaleString("de-DE") }}
+                  </div>
+                  <p>{{ comment.text }}</p>
+                </div>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+
+        <Button class="mt-6">Zur Planung</Button>
+      </div>
+    </ScrollArea>
+
+    <!-- Rechte Sidebar -->
+    <div class="w-[200px] space-y-4 p-4 border-l-2 border-accent-200 h-screen">
+      <div>
+        <label class="text-sm font-semibold">Priorität</label>
+        <Select>
+          <SelectTrigger>
+            <SelectValue placeholder="Select..."/>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="HIGH">Wichtig</SelectItem>
+            <SelectItem value="MEDIUM">Mittel</SelectItem>
+            <SelectItem value="LOW">Niedrig</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
+        <label class="text-sm font-semibold">Status</label>
+        <Select>
+          <SelectTrigger>
+            <SelectValue placeholder="Offen"/>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="open">Offen</SelectItem>
+            <SelectItem value="in_progress">In Arbeit</SelectItem>
+            <SelectItem value="done">Erledigt</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
+        <label class="text-sm font-semibold">Zugewiesene Person</label>
+        <Input placeholder="Lorem Ipsum"/>
+      </div>
+
+      <div>
+        <label class="text-sm font-semibold">Geschätzte Zeit</label>
+        <Input placeholder="Schätzung in Minuten"/>
+      </div>
+
+      <div>
+        <label class="text-sm font-semibold">Aufgewandte Zeit</label>
+        <Input placeholder="Zeit eintragen"/>
+      </div>
+    </div>
+  </div>
+</template>

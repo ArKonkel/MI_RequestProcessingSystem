@@ -6,7 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Badge } from "@/components/ui/badge";
 
 const taskStore = useTaskStore();
-const selectedTaskId = ref<number | null>(null); // für Highlight
+const selectedTaskId = ref<number>(); // für Highlight
 
 onMounted(async () => {
   await taskStore.fetchTasks();
@@ -43,7 +43,7 @@ function selectTask(id: number) {
 </script>
 
 <template>
-  <ScrollArea class="h-screen w-[400px] rounded-md border overflow-y-auto p-4">
+  <ScrollArea class="h-screen rounded-md border overflow-y-auto p-4">
     <div class="flex flex-col gap-3">
       <Card
         v-for="task in tasks"
@@ -56,7 +56,7 @@ function selectTask(id: number) {
       >
         <CardHeader>
           <div class="flex items-center justify-between">
-            <CardTitle>{{ task.processItem.title }}</CardTitle>
+            <CardTitle>{{task.processItem.id}} - {{ task.processItem.title }}</CardTitle>
             <Badge :variant="getPriorityColor(task.priority)">
               {{ task.priority }}
             </Badge>
