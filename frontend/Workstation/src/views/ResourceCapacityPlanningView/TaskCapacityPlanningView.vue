@@ -19,6 +19,9 @@ import {getEmployeeCalendar} from "@/services/calendarService.ts";
 import type {EmployeeDtd} from "@/documentTypes/dtds/EmployeeDtd.ts";
 import type {CompetenceDtd} from "@/documentTypes/dtds/CompetenceDtd.ts";
 import type {EmployeeExpertiseDtd} from "@/documentTypes/dtds/EmployeeExpertiseDtd.ts";
+import type {
+  CalculatedCapacityCalendarEntryDtd
+} from "@/documentTypes/dtds/CalculatedCapacityCalendarEntryDtd .ts";
 
 const route = useRoute();
 const taskId = Number(route.params.id);
@@ -29,6 +32,10 @@ const startDate = ref(new Date());
 const selectedMatchResultId = ref<number | null>(null);
 const bestMatchPoints = ref<number | null>(null);
 
+// Drag & Drop State
+const draggedEntry = ref<CalculatedCapacityCalendarEntryDtd | null>(null);
+
+// --- Lifecycle
 onMounted(async () => {
   if (!taskId) {
     console.error("Kein Task ausgewählt");
@@ -142,6 +149,29 @@ function getMatchingExpertise(
     taskCompetenceIds.has(expertise.expertise.id)
   );
 }
+
+// --- Drag and Drop
+function onDragStart(entry: CalculatedCapacityCalendarEntryDtd) {
+  draggedEntry.value = entry;
+}
+
+function onDrop(dayDate: string, matchResult: MatchCalculationResultDtd) {
+  if (!draggedEntry.value) return;
+
+  const entry = draggedEntry.value;
+  const oldDate = entry.date;
+  entry.date = dayDate;  // new date
+
+  // triggers rerendering
+  matchResult.calculatedCalendarCapacities = [
+    ...matchResult.calculatedCalendarCapacities
+  ];
+
+  console.log(`Eintrag "${entry.title}" von ${oldDate} nach ${dayDate} verschoben`);
+  console.log('Das vollständige Objekt:', entry);
+
+  draggedEntry.value = null;
+}
 </script>
 
 <template>
@@ -233,21 +263,23 @@ function getMatchingExpertise(
         <div
           v-for="(day, index) in days"
           :key="day.date + '-' + matchResult.calculatedCalendarCapacities"
-          class="flex flex-col p-1"
+          class="flex flex-col p-1 w-full min-w-0"
           :class="{
-            'border-l': index !== 0,
-            'border-l-2 border-accent-foreground': isFridayToMonday(index)
-          }"
+      'border-l': index !== 0,
+      'border-l-2 border-accent-foreground': isFridayToMonday(index)
+    }"
+          @dragover.prevent
+          @drop="onDrop(day.date, matchResult)"
         >
           <!-- calculated entries -->
           <div
             v-for="entry in matchResult.calculatedCalendarCapacities.filter(e => e.date === day.date)"
             :key="entry.title"
-            class="bg-blue-400/50 text-xs rounded px-2 py-1 border shadow-sm mb-1"
+            class="bg-blue-400/50 text-xs rounded px-2 py-1 border shadow-sm mb-1 cursor-grab w-full truncate"
+            draggable="true"
+            @dragstart="onDragStart(entry)"
           >
-            <strong class="truncate block max-w-xs" :title="entry.title">
-              {{ entry.title }}
-            </strong>
+            <strong :title="entry.title">{{ entry.title }}</strong>
             <div class="text-[10px]">{{ entry.duration / 60 }}h</div>
           </div>
 
@@ -255,11 +287,9 @@ function getMatchingExpertise(
           <div
             v-for="entry in matchResult.calendar?.entries.filter(e => e.date === day.date) || []"
             :key="entry.title"
-            class="bg-accent text-xs rounded px-2 py-1 border shadow-sm mb-1"
+            class="bg-accent text-xs rounded px-2 py-1 border shadow-sm mb-1 w-full truncate"
           >
-            <strong class="truncate block max-w-xs" :title="entry.title">
-              {{ entry.title }}
-            </strong>
+            <strong :title="entry.title">{{ entry.title }}</strong>
             <div class="text-[10px]">{{ entry.duration / 60 }}h</div>
           </div>
         </div>
