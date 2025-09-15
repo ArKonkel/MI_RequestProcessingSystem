@@ -13,7 +13,7 @@ const router = createRouter({
       component: TaskManagerView,
     },
     {
-      path: '/capacityPlanning',
+      path: '/capacityPlanning/:id',
       name: 'capacityPlanningView',
       component: TaskCapacityPlanningView,
     },

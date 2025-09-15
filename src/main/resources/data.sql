@@ -76,6 +76,13 @@ INSERT INTO calendar(id) VALUES
 (2);
 
 --------------------------------- CALENDAR_ENTRY ------------------------------------------------
+INSERT INTO calendar_entry(id,calendar_id, date,  duration, title) VALUES (
+1,
+1,
+CURRENT_TIMESTAMP,
+480,
+'Test Event');
+
 
 --------------------------------- EMPLOYEE ------------------------------------------------
 

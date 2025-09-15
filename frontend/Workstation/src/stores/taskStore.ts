@@ -7,7 +7,7 @@ export const useTaskStore = defineStore('taskStore', () => {
 
   const taskData = reactive({
     tasks: [] as TaskDtd[],
-    selctedTask: null as TaskDtd | null,
+    selectedTask: null as TaskDtd | null,
   })
 
   async function fetchTasks() {
@@ -16,7 +16,7 @@ export const useTaskStore = defineStore('taskStore', () => {
       taskData.tasks = response.data;
 
       if (taskData.tasks.length > 0){
-        taskData.selctedTask = taskData.tasks[0];
+        taskData.selectedTask = taskData.tasks[0];
       }
     } catch (error) {
       console.error("Fehler beim Laden der Tasks:", error);
@@ -24,7 +24,7 @@ export const useTaskStore = defineStore('taskStore', () => {
   }
 
   async function setSelectedTask(task: TaskDtd) {
-    taskData.selctedTask = task;
+    taskData.selectedTask = task;
   }
 
   return {

@@ -24,7 +24,7 @@ import {ScrollArea} from "@/components/ui/scroll-area";
 import {useTaskStore} from "@/stores/taskStore.ts";
 
 const taskStore = useTaskStore()
-const task = computed(() => taskStore.taskData.selctedTask)
+const task = computed(() => taskStore.taskData.selectedTask)
 
 
 const commentText = ref("")
@@ -130,9 +130,9 @@ function addComment() {
           </AccordionItem>
           -->
         </Accordion>
-
-
-        <Button class="mt-6">Zur Planung</Button>
+        <RouterLink :to="{ name: 'capacityPlanningView', params: { id: task.processItem.id } }">
+          <Button class="mt-6">Zur Planung</Button>
+        </RouterLink>
       </div>
     </ScrollArea>
 

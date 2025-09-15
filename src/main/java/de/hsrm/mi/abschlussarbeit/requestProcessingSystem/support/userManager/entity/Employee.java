@@ -2,6 +2,10 @@ package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.e
 
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.entity.Calendar;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,16 +26,21 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @NotBlank
     private String firstName;
 
+    @NotBlank
     private String lastName;
 
+    @Email
     private String email;
 
     private String phoneNumber;
 
     private LocalDate hireDate;
 
+    @NotNull
+    @Positive
     private BigDecimal workingHoursPerDay;
 
     @OneToMany(mappedBy = "employee")

@@ -7,5 +7,4 @@ import java.time.LocalDate;
 public interface CalendarService {
 
     CalendarDto getCalendarOfEmployee(Long employeeId, LocalDate from, LocalDate to);
-
 }

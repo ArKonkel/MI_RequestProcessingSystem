@@ -14,7 +14,7 @@ public record TaskDto(
         LocalDate dueDate,
         Priority priority,
         String acceptanceCriteria,
-        Long calendarEntryId,
+        Long calendarEntryId, //TODO das brauche ich hier nicht
         Set<CompetenceDto> competences,
         Long blockerId,
         Long blockedId,
