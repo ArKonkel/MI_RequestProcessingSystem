@@ -4,6 +4,7 @@ import { useTaskStore } from "@/stores/taskStore.ts";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import type {TaskDtd} from "@/documentTypes/dtds/TaskDtd.ts";
 
 const taskStore = useTaskStore();
 const selectedTaskId = ref<number>(); // für Highlight
@@ -36,9 +37,8 @@ function getPriorityColor(priority: string) {
   }
 }
 
-function selectTask(id: number) {
-  selectedTaskId.value = id;
-  console.log("Selected Task ID:", id);
+function selectTask(task: TaskDtd) {
+  taskStore.setSelectedTask(task)
 }
 </script>
 
@@ -48,7 +48,7 @@ function selectTask(id: number) {
       <Card
         v-for="task in tasks"
         :key="task.processItem.id"
-        @click="selectTask(task.processItem.id)"
+        @click="selectTask(task)"
         :class="[
           'hover:bg-accent/30 transition-colors cursor-pointer',
           selectedTaskId === task.processItem.id ? 'bg-accent border-accent-foreground' : ''

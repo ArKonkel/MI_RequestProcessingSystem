@@ -7,6 +7,9 @@ import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.en
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.entity.CalendarEntry;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.entity.Competence;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,10 +25,18 @@ import java.util.Set;
 @NoArgsConstructor
 public class Task extends ProcessItem {
 
+    @PositiveOrZero
     private Long estimatedTime;
 
+    @PositiveOrZero
+    private Long workingTime;
+
+    @Future
     private LocalDate dueDate;
 
+    private String acceptanceCriteria;
+
+    @NotNull
     @Enumerated(EnumType.STRING)
     private Priority priority;
 

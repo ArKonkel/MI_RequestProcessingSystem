@@ -485,8 +485,10 @@ class CapacityCalculatorEngineImplTest {
         return new TaskDto(
                 processItem,
                 estimatedTime,
+                0L,
                 dueDate,
                 Priority.MEDIUM,
+                "",
                 null,
                 Set.of(),
                 null,

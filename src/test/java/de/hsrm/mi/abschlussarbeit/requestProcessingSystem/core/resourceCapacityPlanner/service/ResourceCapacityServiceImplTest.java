@@ -46,7 +46,7 @@ class ResourceCapacityServiceImplTest {
         // GIVEN
         String taskTitle = "Customizing the Software";
         Long estimatedTime = 120L;
-        LocalDate dueDate = LocalDate.parse("2025-09-12");
+        LocalDate dueDate = LocalDate.now().plusDays(14);
         Long taskId = 1L;
         TaskDto taskDto = createTaskDto(taskId, taskTitle, estimatedTime, dueDate);
 
@@ -205,8 +205,10 @@ class ResourceCapacityServiceImplTest {
         return new TaskDto(
                 processItem,
                 estimatedTime,
+                0L,
                 dueDate,
                 Priority.MEDIUM,
+                "",
                 null,
                 Set.of(competenceDto),
                 null,
@@ -231,8 +233,10 @@ class ResourceCapacityServiceImplTest {
         return new TaskDto(
                 processItem,
                 estimatedTime,
+                0L,
                 dueDate,
                 Priority.MEDIUM,
+                "",
                 null,
                 Set.of(),
                 null,

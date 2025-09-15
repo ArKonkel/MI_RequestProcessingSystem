@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref} from "vue"
+import {computed, ref} from "vue"
 
 import {Badge} from "@/components/ui/badge"
 import {Button} from "@/components/ui/button"
@@ -19,40 +19,13 @@ import {
   SelectItem,
 } from "@/components/ui/select"
 
-import type {TaskDtd} from "@/documentTypes/dtds/TaskDtd.ts"
-import {StatusType} from "@/documentTypes/enums/StatusType.ts";
-import {PriorityType} from "@/documentTypes/enums/PriorityType.ts";
-import type {CompetenceDtd} from "@/documentTypes/dtds/CompetenceDtd.ts";
-import {CompetenceType} from "@/documentTypes/enums/CompetenceType.ts";
+
 import {ScrollArea} from "@/components/ui/scroll-area";
+import {useTaskStore} from "@/stores/taskStore.ts";
 
-// Mocking
-const mockCompetences: CompetenceDtd[] = [
-  {id: 1, name: "Linux", description: "", type: CompetenceType.EXPERTISE},
-  {id: 2, name: "Finanzbuchhaltung", description: "", type: CompetenceType.QUALIFICATION},
-  {id: 3, name: "API-Design", description: "", type: CompetenceType.RESPONSIBILITY},
-]
+const taskStore = useTaskStore()
+const task = computed(() => taskStore.taskData.selctedTask)
 
-const task = ref<TaskDtd>({
-  processItem: {
-    id: 1,
-    title: "Lorem Ipsum elit ed diam",
-    description: "consetetur sadipscing elitr, sed diam nonumy eirmod tempor...",
-    creationDate: "2025-01-01",
-    assigneeId: 101,
-    status: {id: 1, name: "Offen", description: "", type: StatusType.TASK},
-  },
-  estimatedTime: 60,
-  dueDate: "2026-01-01",
-  priority: PriorityType.HIGH,
-  calendarEntryId: null,
-  competences: mockCompetences,
-  blockerId: null,
-  blockedId: null,
-  referenceTaskId: null,
-  requestId: 1,
-  projectId: 1,
-})
 
 const commentText = ref("")
 const comments = ref([
@@ -72,12 +45,12 @@ function addComment() {
 </script>
 
 <template>
-  <div class="flex h-screen gap-6 p-6">
+  <div v-if="task" class="flex h-screen gap-6 p-6">
     <!-- Linker Hauptbereich -->
     <ScrollArea class="flex-1 overflow-auto">
       <div class="p-6 space-y-4">
         <div>
-          <h2 class="text-xl font-bold">Titel: {{ task.processItem.title }}</h2>
+          <h2 class="text-xl font-bold"> {{task.processItem.id}} - {{ task.processItem.title }}</h2>
           <div class="flex gap-2 mt-2">
             <Badge v-for="competence in task.competences" :key="competence.id">{{
                 competence.name
@@ -85,8 +58,8 @@ function addComment() {
             </Badge>
           </div>
           <div class="flex gap-6 mt-4 text-sm">
-            <div><span class="font-semibold">Anfrage</span><br/>A-01</div>
-            <div><span class="font-semibold">Projekt</span><br/>P-01</div>
+            <div><span class="font-semibold">Anfrage</span><br/>{{task.requestId}}</div>
+            <div><span class="font-semibold">Projekt</span><br/>{{task.projectId}}</div>
             <div><span class="font-semibold">Geplant bis</span><br/>{{
                 new Date(task.dueDate!).toLocaleDateString("de-DE")
               }}
@@ -111,7 +84,7 @@ function addComment() {
             <AccordionTrigger>Akzeptanzkriterien</AccordionTrigger>
             <AccordionContent>
               <Textarea
-                v-model="task.processItem.description"
+                v-model="task.acceptanceCriteria"
                 class="mt-2 min-h-[200px] resize-none"
               />
             </AccordionContent>
@@ -137,7 +110,7 @@ function addComment() {
               </div>
             </AccordionContent>
           </AccordionItem>
-
+<!--
           <AccordionItem value="comments">
             <AccordionTrigger>Kommentare</AccordionTrigger>
             <AccordionContent>
@@ -155,7 +128,9 @@ function addComment() {
               </div>
             </AccordionContent>
           </AccordionItem>
+          -->
         </Accordion>
+
 
         <Button class="mt-6">Zur Planung</Button>
       </div>
@@ -165,7 +140,7 @@ function addComment() {
     <div class="w-[200px] space-y-4 p-4 border-l-2 border-accent-200 h-screen">
       <div>
         <label class="text-sm font-semibold">Priorität</label>
-        <Select>
+        <Select v-model="task.priority">
           <SelectTrigger>
             <SelectValue placeholder="Select..."/>
           </SelectTrigger>
@@ -179,7 +154,7 @@ function addComment() {
 
       <div>
         <label class="text-sm font-semibold">Status</label>
-        <Select>
+        <Select v-model="task.processItem.status">
           <SelectTrigger>
             <SelectValue placeholder="Offen"/>
           </SelectTrigger>
@@ -198,13 +173,22 @@ function addComment() {
 
       <div>
         <label class="text-sm font-semibold">Geschätzte Zeit</label>
-        <Input placeholder="Schätzung in Minuten"/>
+        <Input
+          type="number"
+          v-model="task.estimatedTime"
+          placeholder="Schätzung in Minuten"
+        />
       </div>
 
       <div>
         <label class="text-sm font-semibold">Aufgewandte Zeit</label>
-        <Input placeholder="Zeit eintragen"/>
+        <Input
+          type="number"
+          v-model="task.workingTime"
+          placeholder="Zeit eintragen"
+        />
       </div>
+
     </div>
   </div>
 </template>

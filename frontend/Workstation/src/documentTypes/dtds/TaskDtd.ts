@@ -4,9 +4,11 @@ import type {PriorityType} from "@/documentTypes/enums/PriorityType.ts";
 
 export interface TaskDtd {
   processItem: ProcessItemDtd;
-  estimatedTime: number | null;
+  estimatedTime: number;
+  workingTime: number;
   dueDate: string | null;
   priority: PriorityType;
+  acceptanceCriteria: string;
   calendarEntryId: number | null;
   competences: CompetenceDtd[];
   blockerId: number | null;

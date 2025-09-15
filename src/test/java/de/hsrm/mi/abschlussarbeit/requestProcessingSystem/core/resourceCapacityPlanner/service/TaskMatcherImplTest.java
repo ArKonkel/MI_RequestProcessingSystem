@@ -92,8 +92,10 @@ class TaskMatcherImplTest {
         return new TaskDto(
                 processItem,
                 estimatedTime,
+                0L,
                 dueDate,
                 priority,
+                "",
                 null,
                 competenceIds,
                 null,

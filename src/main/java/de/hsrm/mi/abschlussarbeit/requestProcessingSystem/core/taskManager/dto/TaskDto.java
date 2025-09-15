@@ -10,8 +10,10 @@ import java.util.Set;
 public record TaskDto(
         ProcessItemDto processItem,
         Long estimatedTime,
+        Long workingTime,
         LocalDate dueDate,
         Priority priority,
+        String acceptanceCriteria,
         Long calendarEntryId,
         Set<CompetenceDto> competences,
         Long blockerId,
