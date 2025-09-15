@@ -1,15 +1,19 @@
 --------------------------------- COMPETENCES ------------------------------------------------
 
-INSERT INTO competence (id, name, description, dtype) VALUES
+INSERT INTO competence (id, name, description, dtype)
+VALUES
 -- ERP-Module
 (1, 'Finanzen', 'Fachwissen in Finanzbuchhaltung, Controlling und Bilanzierung mit ERP-Systemen.', 'Expertise'),
-(2, 'Personalwesen', 'Kenntnisse in Personalverwaltung, Lohn- und Gehaltsabrechnung sowie HR-Prozessen im ERP-Kontext.', 'Expertise'),
+(2, 'Personalwesen', 'Kenntnisse in Personalverwaltung, Lohn- und Gehaltsabrechnung sowie HR-Prozessen im ERP-Kontext.',
+ 'Expertise'),
 
 -- Technisches Wissen
 (3, 'Datenbanken', 'Fachwissen in relationalen und Cloud-basierten Datenbanken für ERP-Systeme.', 'Expertise'),
 (4, 'Schnittstellen', 'Kenntnisse in API-Design, Middleware und Systemintegration im ERP-Kontext.', 'Expertise'),
-(5, 'Cloud-Infrastruktur', 'Erfahrung mit Cloud-Betrieb von ERP-Systemen, inkl. Skalierung und Sicherheit.', 'Expertise'),
-(6, 'Integrationen', 'Fachwissen in der Anbindung externer Systeme, z. B. E-Commerce, BI oder Finanzsysteme.', 'Expertise'),
+(5, 'Cloud-Infrastruktur', 'Erfahrung mit Cloud-Betrieb von ERP-Systemen, inkl. Skalierung und Sicherheit.',
+ 'Expertise'),
+(6, 'Integrationen', 'Fachwissen in der Anbindung externer Systeme, z. B. E-Commerce, BI oder Finanzsysteme.',
+ 'Expertise'),
 
 -- Implementierungserfahrung
 (7, 'Customizing', 'Kenntnisse in der Anpassung von ERP-Systemen an kundenspezifische Anforderungen.', 'Expertise'),
@@ -17,136 +21,149 @@ INSERT INTO competence (id, name, description, dtype) VALUES
 
 -- Support & Troubleshooting
 (9, 'Fehleranalyse', 'Know-how in der Analyse und Behebung von Störungen im ERP-Betrieb.', 'Expertise'),
-(10, 'Performanceoptimierung', 'Erfahrung in der Optimierung von ERP-Systemen hinsichtlich Geschwindigkeit und Skalierbarkeit.', 'Expertise'),
+(10, 'Performanceoptimierung',
+ 'Erfahrung in der Optimierung von ERP-Systemen hinsichtlich Geschwindigkeit und Skalierbarkeit.', 'Expertise'),
 (11, 'Updates', 'Fachwissen in Release-Management, Patching und Versionswechseln bei ERP-Systemen.', 'Expertise');
 
-INSERT INTO competence (id, name, description, dtype, obtained_date) VALUES
+INSERT INTO competence (id, name, description, dtype, obtained_date)
+VALUES
 -- Entwicklungs-/Technologie-Zertifikate
-(12, 'Java SE 11 Developer', 'Zertifizierung für Java-Programmierung, relevant für ERP-Entwicklung und Schnittstellen.', 'Qualification', DATE '2022-02-15'),
-(13, 'Oracle Database SQL Certified Associate', 'Zertifizierung für Datenbankkenntnisse und SQL-Abfragen in ERP-Systemen.', 'Qualification', DATE '2021-08-30'),
-(14, 'AWS Developer – Associate', 'Zertifizierung für Cloud-Entwicklung und Deployment von ERP-Lösungen auf AWS.', 'Qualification', DATE '2023-01-12'),
-(15, 'Microsoft Azure Developer Associate', 'Zertifizierung für Entwicklung und Integration von ERP-Anwendungen in Microsoft Azure.', 'Qualification', DATE '2022-11-05'),
+(12, 'Java SE 11 Developer', 'Zertifizierung für Java-Programmierung, relevant für ERP-Entwicklung und Schnittstellen.',
+ 'Qualification', DATE '2022-02-15'),
+(13, 'Oracle Database SQL Certified Associate',
+ 'Zertifizierung für Datenbankkenntnisse und SQL-Abfragen in ERP-Systemen.', 'Qualification', DATE '2021-08-30'),
+(14, 'AWS Developer – Associate', 'Zertifizierung für Cloud-Entwicklung und Deployment von ERP-Lösungen auf AWS.',
+ 'Qualification', DATE '2023-01-12'),
+(15, 'Microsoft Azure Developer Associate',
+ 'Zertifizierung für Entwicklung und Integration von ERP-Anwendungen in Microsoft Azure.', 'Qualification',
+ DATE '2022-11-05'),
 
 -- Scrum- / Agile-Zertifikate
-(16, 'Certified Scrum Master (CSM)', 'Agile Projektmanagement-Zertifizierung für ERP-Implementierungen.', 'Qualification', DATE '2021-04-20'),
-(17, 'Professional Scrum Product Owner (PSPO I)', 'Zertifizierung für Produktverantwortliche in agilen ERP-Projekten.', 'Qualification', DATE '2022-07-14'),
-(18, 'SAFe Agilist', 'Zertifizierung für Skalierung agiler Methoden in großen ERP-Projekten.', 'Qualification', DATE '2020-09-28');
+(16, 'Certified Scrum Master (CSM)', 'Agile Projektmanagement-Zertifizierung für ERP-Implementierungen.',
+ 'Qualification', DATE '2021-04-20'),
+(17, 'Professional Scrum Product Owner (PSPO I)', 'Zertifizierung für Produktverantwortliche in agilen ERP-Projekten.',
+ 'Qualification', DATE '2022-07-14'),
+(18, 'SAFe Agilist', 'Zertifizierung für Skalierung agiler Methoden in großen ERP-Projekten.', 'Qualification',
+ DATE '2020-09-28');
 
 
 --------------------------------- DEPARTMENT ------------------------------------------------
 
-INSERT INTO department (id, name, description) VALUES
-(1, 'Entwicklung', 'Abteilung für Software- und Produktentwicklung'),
-(2, 'SystemService', 'Abteilung für IT-Systembetreuung und Infrastruktur'),
-(3, 'Projekte', 'Abteilung für Projektmanagement und -koordination'),
-(4, 'ProjectSpecialists', 'Backoffice-Abteilung für Projektunterstützung'),
-(5, 'Support', 'Abteilung für Kunden- und Anwendersupport');
+INSERT INTO department (id, name, description)
+VALUES (1, 'Entwicklung', 'Abteilung für Software- und Produktentwicklung'),
+       (2, 'SystemService', 'Abteilung für IT-Systembetreuung und Infrastruktur'),
+       (3, 'Projekte', 'Abteilung für Projektmanagement und -koordination'),
+       (4, 'ProjectSpecialists', 'Backoffice-Abteilung für Projektunterstützung'),
+       (5, 'Support', 'Abteilung für Kunden- und Anwendersupport');
 --------------------------------- PERMISSION ------------------------------------------------
 
-INSERT INTO permission (id, name, description) VALUES
-(1, 'Projektplanung', 'Befugnis Projekte zu planen'),
-(2, 'Kapazitätsplanung', 'Befugnis Kapazitäten einzusehen und Aufgaben zuzuweisen'),
-(3, 'Aufgabenbearbeitung', 'Befugnis Aufgaben zu bearbeiten'),
-(4, 'Anfrageeingangsprüfung', 'Befugnis Anfragen zu korrigieren und weiterzuleiten');
+INSERT INTO permission (id, name, description)
+VALUES (1, 'Projektplanung', 'Befugnis Projekte zu planen'),
+       (2, 'Kapazitätsplanung', 'Befugnis Kapazitäten einzusehen und Aufgaben zuzuweisen'),
+       (3, 'Aufgabenbearbeitung', 'Befugnis Aufgaben zu bearbeiten'),
+       (4, 'Anfrageeingangsprüfung', 'Befugnis Anfragen zu korrigieren und weiterzuleiten');
 
 --------------------------------- ROLE ------------------------------------------------
 
-INSERT INTO role (id, name, description) VALUES
-(1, 'Projektplaner', 'Plant Projekte'),
-(2, 'Anfragenbearbeiter', 'Nimmt Anfragen entgegen und leitet diese weiter.'),
-(3, 'Kapazitätsplaner', 'Plant Kapazitäten bei Aufgabenzuweisungen'),
-(4, 'Aufgabenbearbeiter', 'Bearbeitet aufgaben'),
-(5,'Admin', 'Hat Zugriff auf alles');
+INSERT INTO role (id, name, description)
+VALUES (1, 'Projektplaner', 'Plant Projekte'),
+       (2, 'Anfragenbearbeiter', 'Nimmt Anfragen entgegen und leitet diese weiter.'),
+       (3, 'Kapazitätsplaner', 'Plant Kapazitäten bei Aufgabenzuweisungen'),
+       (4, 'Aufgabenbearbeiter', 'Bearbeitet aufgaben'),
+       (5, 'Admin', 'Hat Zugriff auf alles');
 
 --------------------------------- ROLE_PERMISSION ------------------------------------------------
 
-INSERT INTO role_permission(role_id, permission_id) VALUES
-(1, 1),
-(2, 4),
-(3, 2),
-(4, 3),
-(5, 1),
-(5, 2),
-(5, 3),
-(5, 4);
+INSERT INTO role_permission(role_id, permission_id)
+VALUES (1, 1),
+       (2, 4),
+       (3, 2),
+       (4, 3),
+       (5, 1),
+       (5, 2),
+       (5, 3),
+       (5, 4);
 
 --------------------------------- CALENDAR ------------------------------------------------
-INSERT INTO calendar(id) VALUES
-(1),
-(2);
+INSERT INTO calendar(id)
+VALUES (1),
+       (2);
 
 --------------------------------- CALENDAR_ENTRY ------------------------------------------------
-INSERT INTO calendar_entry(id,calendar_id, date,  duration, title) VALUES (
-1,1,CURRENT_TIMESTAMP,480,'Test Event'),
-(2, 1, CURRENT_TIMESTAMP - INTERVAL '3 days', 480, 'Test Event');
+INSERT INTO calendar_entry(id, calendar_id, date, duration, title)
+VALUES (1, 1, CURRENT_TIMESTAMP, 480, 'Test Event'),
+       (2, 1, CURRENT_TIMESTAMP - INTERVAL '3 days', 480, 'Test Event');
 
 --------------------------------- EMPLOYEE ------------------------------------------------
 
-INSERT INTO employee(id, email, first_name, last_name, phone_number, department_id, working_hours_per_day, calendar_id) VALUES
-(1, 'Max@test.de', 'Max', 'Mustermann', '', null, 8, 1),
-(2,'Sabine@test.de', 'Sabine', 'Musterfrau', '', 1, 8, 2);
+INSERT INTO employee(id, email, first_name, last_name, phone_number, department_id, working_hours_per_day, calendar_id)
+VALUES (1, 'Max@test.de', 'Max', 'Mustermann', '', null, 8, 1),
+       (2, 'Sabine@test.de', 'Sabine', 'Musterfrau', '', 1, 8, 2);
 
 --------------------------------- USER ------------------------------------------------
 
-INSERT INTO users (id, name, description, employee_id) VALUES
-(1, 'Max Mustermann', 'Kann alles.', 1),
-(2, 'Sabine Musterfrau', '', 2);
+INSERT INTO users (id, name, description, employee_id)
+VALUES (1, 'Max Mustermann', 'Kann alles.', 1),
+       (2, 'Sabine Musterfrau', '', 2);
 
 --------------------------------- USER_ROLES ------------------------------------------------
 
-INSERT INTO user_roles (user_id, role_id) VALUES
-(1, 5),
-(2, 3),
-(2, 4);
+INSERT INTO user_roles (user_id, role_id)
+VALUES (1, 5),
+       (2, 3),
+       (2, 4);
 
 --------------------------------- EMPLOYEE_EXPERTISE ------------------------------------------------
-INSERT INTO employee_expertise(id, employee_id, expertise_id, level) VALUES
-(1, 1, 7, 'EXPERT'),
-(2, 1, 9, 'ADVANCED'),
-(3, 1, 6, 'INTERMEDIATE'),
-(4, 2, 3, 'EXPERT'),
-(5,2,4, 'EXPERT'),
-(6,2,7, 'INTERMEDIATE');
+INSERT INTO employee_expertise(id, employee_id, expertise_id, level)
+VALUES (1, 1, 7, 'EXPERT'),
+       (2, 1, 9, 'ADVANCED'),
+       (3, 1, 6, 'INTERMEDIATE'),
+       (4, 2, 3, 'EXPERT'),
+       (5, 2, 4, 'EXPERT'),
+       (6, 2, 7, 'INTERMEDIATE');
 
 --------------------------------- STATUS ------------------------------------------------
 
-INSERT INTO status(id, name, description, type) VALUES
-(1, 'Zu Bearbeiten', '', 'TASK'),
-(2, 'In Bearbeitung', '', 'TASK'),
-(3, 'Im Testprozess', '', 'TASK'),
-(4, 'Fertig', '', 'TASK');
+INSERT INTO status(id, name, description, type)
+VALUES (1, 'Zu Bearbeiten', '', 'TASK'),
+       (2, 'In Bearbeitung', '', 'TASK'),
+       (3, 'Im Testprozess', '', 'TASK'),
+       (4, 'Fertig', '', 'TASK');
 
 --------------------------------- Baseobject - PROCESS_ITEM ------------------------------------------------
 
 -- Process Items
-INSERT INTO process_item (id, title, description, creation_date) VALUES
-(1, 'Customizing der Software beim Kunden für Produktdruck', 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat', '2025-09-10'),
-(2, 'Implementierung einer neuen Druckpipeline', 'Neues Druckmodul in bestehendes System integrieren', '2025-09-11'),
-(3, 'Fehleranalyse in Produktionsumgebung', 'Kritischen Bug in Logikschicht finden und beheben', '2025-09-12'),
-(4, 'Onboarding neuer Mitarbeiter', 'Schulung und Dokumentation bereitstellen', '2025-09-13'),
-(5, 'Review Sicherheitskonzept', 'Überprüfung der aktuellen Sicherheitsmaßnahmen', '2025-09-14');
+INSERT INTO process_item (id, title, description, creation_date)
+VALUES (1, 'Customizing der Software beim Kunden für Produktdruck',
+        'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat',
+        '2025-09-10'),
+       (2, 'Implementierung einer neuen Druckpipeline', 'Neues Druckmodul in bestehendes System integrieren',
+        '2025-09-11'),
+       (3, 'Fehleranalyse in Produktionsumgebung', 'Kritischen Bug in Logikschicht finden und beheben', '2025-09-12'),
+       (4, 'Onboarding neuer Mitarbeiter', 'Schulung und Dokumentation bereitstellen', '2025-09-13'),
+       (5, 'Review Sicherheitskonzept', 'Überprüfung der aktuellen Sicherheitsmaßnahmen', '2025-09-14');
 
 -- Tasks (gehören zu den Process Items, gleiche ID wie process_item.id)
-INSERT INTO task (id, estimated_time, due_date, priority) VALUES
-(1, 120, '2025-11-05', 'HIGH'),
-(2, 240, '2025-10-20', 'MEDIUM'),
-(3, 60,  '2025-09-30', 'HIGH'),
-(4, 180, '2025-10-15', 'LOW'),
-(5, 300, '2025-12-01', 'MEDIUM');
+INSERT INTO task (id, estimated_time, due_date, priority)
+VALUES (1, 120, '2025-11-05', 'HIGH'),
+       (2, 240, '2025-10-20', 'MEDIUM'),
+       (3, 60, '2025-09-30', 'HIGH'),
+       (4, 180, '2025-10-15', 'LOW'),
+       (5, 300, '2025-12-01', 'MEDIUM');
 
 --------------------------------- TASK_COMPETENCE ------------------------------------------------
 
-INSERT INTO task_competence (task_id, competence_id) VALUES
-(1, 7),
-(1, 9),
-(2, 7),
-(2, 9),
-(3, 7),
-(3, 9),
-(4, 7),
-(4, 9),
-(5, 7),
-(5, 9);
+INSERT INTO task_competence (task_id, competence_id)
+VALUES (1, 7),
+       (1, 9),
+       (2, 7),
+       (2, 9),
+       (3, 7),
+       (3, 9),
+       (4, 7),
+       (4, 9),
+       (5, 7),
+       (5, 9);
 
 
 
