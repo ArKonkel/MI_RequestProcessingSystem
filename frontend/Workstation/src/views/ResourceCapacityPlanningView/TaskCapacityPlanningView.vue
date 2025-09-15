@@ -16,6 +16,9 @@ import type {CalendarDtd} from "@/documentTypes/dtds/CalendarDtd.ts";
 
 import {getMatchingEmployees} from "@/services/capacityPlanningsService.ts";
 import {getEmployeeCalendar} from "@/services/calendarService.ts";
+import type {EmployeeDtd} from "@/documentTypes/dtds/EmployeeDtd.ts";
+import type {CompetenceDtd} from "@/documentTypes/dtds/CompetenceDtd.ts";
+import type {EmployeeExpertiseDtd} from "@/documentTypes/dtds/EmployeeExpertiseDtd.ts";
 
 const route = useRoute();
 const taskId = Number(route.params.id);
@@ -128,6 +131,17 @@ function calculateBestMatchPoints() {
     ...matchResults.value.matchCalculationResult.map(m => m.competencePoints)
   );
 }
+
+function getMatchingExpertise(
+  employee: EmployeeDtd,
+  taskCompetences: CompetenceDtd[]
+): EmployeeExpertiseDtd[] {
+  const taskCompetenceIds = new Set(taskCompetences.map(competence => competence.id));
+
+  return employee.employeeExpertise.filter(expertise =>
+    taskCompetenceIds.has(expertise.expertise.id)
+  );
+}
 </script>
 
 <template>
@@ -205,15 +219,17 @@ function calculateBestMatchPoints() {
             {{ matchResult.employee.lastName }}
           </div>
           <div class="flex flex-wrap gap-1 justify-center">
-            <Badge v-for="expertise in matchResult.employee.employeeExpertise" :key="expertise.id"
-                   variant="outline"
-                   class="text-[10px]">
+            <Badge
+              v-for="expertise in getMatchingExpertise(matchResult.employee, matchResults!.task.competences)"
+              :key="expertise.id"
+              variant="outline"
+              class="text-[10px]"
+            >
               {{ expertise.expertise.name }}
             </Badge>
           </div>
         </div>
 
-        <!-- Kalender-Entries -->
         <div
           v-for="(day, index) in days"
           :key="day.date + '-' + matchResult.calculatedCalendarCapacities"
