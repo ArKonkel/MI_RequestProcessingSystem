@@ -2,25 +2,27 @@
 import {computed, onMounted, ref, watch} from "vue";
 import {addDays, format} from "date-fns";
 import {de} from "date-fns/locale";
+import {useRoute} from "vue-router";
+
 import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
 import {Card, CardHeader, CardTitle} from "@/components/ui/card";
 import {Avatar, AvatarFallback} from "@/components/ui/avatar";
+
 import type {MatchCalculationResultDtd} from "@/documentTypes/dtds/MatchCalculationResultDtd.ts";
 import type {MatchingEmployeeForTaskDtd} from "@/documentTypes/dtds/MatchingEmployeeForTaskDtd.ts";
-import {getMatchingEmployees} from "@/services/capacityPlanningsService.ts";
-import {useRoute} from "vue-router";
 import type {CalendarDtd} from "@/documentTypes/dtds/CalendarDtd.ts";
+
+import {getMatchingEmployees} from "@/services/capacityPlanningsService.ts";
 import {getEmployeeCalendar} from "@/services/calendarService.ts";
 
-const route = useRoute()
-const taskId = Number(route.params.id)
-const matchResults = ref<MatchingEmployeeForTaskDtd | null>(null)
+const route = useRoute();
+const taskId = Number(route.params.id);
+const matchResults = ref<MatchingEmployeeForTaskDtd | null>(null);
 
-
-// sichtbare Werktage
 const visibleDays = 8;
 const startDate = ref(new Date());
+const selectedMatchResultId = ref<number | null>(null);
 
 onMounted(async () => {
   if (!taskId) {
@@ -32,14 +34,37 @@ onMounted(async () => {
     const matches = await getMatchingEmployees(taskId);
     matchResults.value = matches;
 
-    await loadCalendars(); // initial laden
+    await loadCalendars(); // initial Kalender laden
   } catch (err: any) {
     console.error(err);
   }
 });
 
+watch(startDate, async () => {
+  await loadCalendars();
+});
 
-//Add calendars to found matches
+
+const days = computed(() => {
+  const result = [];
+  let currentDay = new Date(startDate.value);
+
+  while (result.length < visibleDays) {
+    const dayOfWeek = currentDay.getDay(); // 0=So,6=Sa
+    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+      result.push({
+        date: format(currentDay, "yyyy-MM-dd"),
+        label: format(currentDay, "EE", {locale: de}).toUpperCase().substring(0, 2),
+      });
+    }
+    currentDay = addDays(currentDay, 1);
+  }
+
+  return result;
+});
+
+// --- functions
+
 async function loadCalendars() {
   if (!matchResults.value) return;
 
@@ -53,7 +78,7 @@ async function loadCalendars() {
 
       return {
         ...match,
-        calendar
+        calendar,
       };
     })
   );
@@ -64,29 +89,6 @@ async function loadCalendars() {
   };
 }
 
-
-watch(startDate, async () => {
-  await loadCalendars();
-});
-
-// Berechne die Tage dynamisch (MO-FR)
-const days = computed(() => {
-  const result = [];
-  let currentDay = new Date(startDate.value);
-  while (result.length < visibleDays) {
-    const dayOfWeek = currentDay.getDay(); // 0=So,6= Sa
-    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-      result.push({
-        date: format(currentDay, "yyyy-MM-dd"),
-        label: format(currentDay, "EE", {locale: de}).toUpperCase().substring(0, 2),
-      });
-    }
-    currentDay = addDays(currentDay, 1);
-  }
-  return result;
-});
-
-// Navigation
 function prevDay() {
   let newDate = addDays(startDate.value, -1);
   while (newDate.getDay() === 0 || newDate.getDay() === 6) {
@@ -103,20 +105,15 @@ function nextDay() {
   startDate.value = newDate;
 }
 
-// Selected Match
-const selectedMatchResultId = ref<number | null>(null); //null, because at start no one is selected
-
 function selectMatchResult(matchResult: MatchCalculationResultDtd) {
   selectedMatchResultId.value = matchResult.employee.id;
-  console.log(matchResult.employee.id);
 }
 
-// Check if it is Friday to Monday - Skip weekend
 function isFridayToMonday(index: number) {
   if (index === 0) return false;
   const prevDate = new Date(days.value[index - 1].date);
   const currDate = new Date(days.value[index].date);
-  return prevDate.getDay() === 5 && currDate.getDay() === 1; // 5=Fr,1=Mo
+  return prevDate.getDay() === 5 && currDate.getDay() === 1;
 }
 </script>
 
