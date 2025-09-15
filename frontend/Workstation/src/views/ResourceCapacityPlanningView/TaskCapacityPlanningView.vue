@@ -2,6 +2,7 @@
 import {computed, onMounted, ref, watch} from "vue";
 import {addDays, format} from "date-fns";
 import {de} from "date-fns/locale";
+import {Star, CircleGauge} from "lucide-vue-next";
 import {useRoute} from "vue-router";
 
 import {Badge} from "@/components/ui/badge";
@@ -23,6 +24,7 @@ const matchResults = ref<MatchingEmployeeForTaskDtd | null>(null);
 const visibleDays = 8;
 const startDate = ref(new Date());
 const selectedMatchResultId = ref<number | null>(null);
+const bestMatchPoints = ref<number | null>(null);
 
 onMounted(async () => {
   if (!taskId) {
@@ -31,10 +33,10 @@ onMounted(async () => {
   }
 
   try {
-    const matches = await getMatchingEmployees(taskId);
-    matchResults.value = matches;
+    matchResults.value = await getMatchingEmployees(taskId);
 
     await loadCalendars(); // initial Kalender laden
+    calculateBestMatchPoints()
   } catch (err: any) {
     console.error(err);
   }
@@ -115,6 +117,17 @@ function isFridayToMonday(index: number) {
   const currDate = new Date(days.value[index].date);
   return prevDate.getDay() === 5 && currDate.getDay() === 1;
 }
+
+function calculateBestMatchPoints() {
+  if (!matchResults.value || matchResults.value.matchCalculationResult.length === 0) {
+    bestMatchPoints.value = null;
+    return;
+  }
+
+  bestMatchPoints.value = Math.max(
+    ...matchResults.value.matchCalculationResult.map(m => m.competencePoints)
+  );
+}
 </script>
 
 <template>
@@ -173,7 +186,18 @@ function isFridayToMonday(index: number) {
         @click="selectMatchResult(matchResult)"
       >
         <!-- Person -->
-        <div class="flex flex-col items-center justify-center gap-2 p-2 border-r">
+        <div class="relative flex flex-col items-center justify-center gap-2 p-2 border-r">
+          <Star
+            v-if="matchResult.competencePoints === bestMatchPoints"
+            class="absolute top-1 left-1 w-5 h-5"
+          />
+
+          <CircleGauge
+            v-if="matchResult.canCompleteTaskEarliest"
+            :class="['absolute top-1 w-5 h-5',
+             matchResult.competencePoints === bestMatchPoints ? 'left-7' : 'left-1']"
+          />
+
           <Avatar>
             <AvatarFallback>MM</AvatarFallback>
           </Avatar>
@@ -215,14 +239,13 @@ function isFridayToMonday(index: number) {
           <div
             v-for="entry in matchResult.calendar?.entries.filter(e => e.date === day.date) || []"
             :key="entry.title"
-            class="absolute top-1 left-1 right-1 bg-green-400/50 text-xs rounded px-2 py-1 border shadow-sm"
+            class="absolute top-1 left-1 right-1 bg-accent text-xs rounded px-2 py-1 border shadow-sm"
           >
             <strong class="truncate block max-w-xs" title="{{ entry.title }}">
               {{ entry.title }}
             </strong>
             <div class="text-[10px]">{{ entry.duration / 60 }}h</div>
           </div>
-
         </div>
       </div>
     </div>
