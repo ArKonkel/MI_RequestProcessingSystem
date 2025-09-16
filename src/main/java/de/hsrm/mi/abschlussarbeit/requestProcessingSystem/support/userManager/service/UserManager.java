@@ -2,6 +2,7 @@ package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.s
 
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.EmployeeDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.EmployeeExpertiseDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.UserDto;
 
 import java.util.List;
 
@@ -13,4 +14,5 @@ public interface UserManager {
 
     EmployeeDto getEmployeeById(Long employeeId);
 
+    UserDto getUserOfEmployee(Long employeeId);
 }

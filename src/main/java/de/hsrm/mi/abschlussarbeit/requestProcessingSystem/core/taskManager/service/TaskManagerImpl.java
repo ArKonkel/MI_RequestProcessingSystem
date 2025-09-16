@@ -1,6 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.service;
 
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.dto.TaskDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.dto.UpdateTaskDto;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,5 +17,11 @@ public class TaskManagerImpl implements TaskManager {
     public TaskDto getTaskById(Long id) {
 
         return taskService.getTaskById(id);
+    }
+
+    @Override
+    public TaskDto updateTask(Long taskId, UpdateTaskDto updateTask) {
+
+       return taskService.updateTask(taskId, updateTask);
     }
 }

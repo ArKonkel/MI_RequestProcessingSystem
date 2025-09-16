@@ -2,6 +2,7 @@ package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.s
 
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.EmployeeDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.EmployeeExpertiseDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,8 @@ import java.util.List;
 public class UserManagerImpl implements UserManager {
 
     private final EmployeeService employeeService;
+
+    private final UserService userService;
 
     @Override
     public List<EmployeeExpertiseDto> getAllEmployeeExpertises() {
@@ -30,5 +33,8 @@ public class UserManagerImpl implements UserManager {
         return employeeService.getEmployeeById(employeeId);
     }
 
-
+    @Override
+    public UserDto getUserOfEmployee(Long employeeId) {
+        return userService.getUserOfEmployee(employeeId);
+    }
 }

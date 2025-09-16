@@ -18,7 +18,8 @@ import java.time.LocalDate;
 public class CalendarEntry {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "calendar_entry_seq")
+    @SequenceGenerator(name = "calendar_entry_seq", sequenceName = "calendar_entry_seq", allocationSize = 1)
     private Long id;
 
     private String title;

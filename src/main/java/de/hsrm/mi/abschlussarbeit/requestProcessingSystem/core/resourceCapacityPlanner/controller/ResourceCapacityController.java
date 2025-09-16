@@ -1,14 +1,12 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.controller;
 
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.dto.MatchCalculationResultDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.dto.MatchingEmployeeForTaskDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.service.ResourceCapacityService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
@@ -25,6 +23,15 @@ public class ResourceCapacityController {
         MatchingEmployeeForTaskDto matches = resourceCapacityService.findBestMatches(taskId);
 
         return ResponseEntity.ok(matches);
+    }
+
+    @PostMapping("/assign/{taskId}")
+    public ResponseEntity<Void> assignTaskToEmployee(@RequestBody MatchCalculationResultDto selectedMatch, @PathVariable Long taskId) {
+        log.info("REST request to assign assign employee {} to task {}", selectedMatch.employee().id(), taskId);
+
+        resourceCapacityService.assignTaskToEmployee(taskId, selectedMatch);
+
+        return ResponseEntity.ok().build();
     }
 
 }

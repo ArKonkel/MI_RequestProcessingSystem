@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, onMounted, ref, watch} from "vue";
-import {addDays, format} from "date-fns";
+import {addDays, format, subDays} from "date-fns";
 import {de} from "date-fns/locale";
 import {Star, CircleGauge} from "lucide-vue-next";
 import {useRoute} from "vue-router";
@@ -14,7 +14,7 @@ import type {MatchCalculationResultDtd} from "@/documentTypes/dtds/MatchCalculat
 import type {MatchingEmployeeForTaskDtd} from "@/documentTypes/dtds/MatchingEmployeeForTaskDtd.ts";
 import type {CalendarDtd} from "@/documentTypes/dtds/CalendarDtd.ts";
 
-import {getMatchingEmployees} from "@/services/capacityPlanningsService.ts";
+import {assignTaskToEmployee, getMatchingEmployees} from "@/services/capacityPlanningsService.ts";
 import {getEmployeeCalendar} from "@/services/calendarService.ts";
 import type {EmployeeDtd} from "@/documentTypes/dtds/EmployeeDtd.ts";
 import type {CompetenceDtd} from "@/documentTypes/dtds/CompetenceDtd.ts";
@@ -29,7 +29,7 @@ const matchResults = ref<MatchingEmployeeForTaskDtd | null>(null);
 
 const visibleDays = 8;
 const startDate = ref(new Date());
-const selectedMatchResultId = ref<number | null>(null);
+const selectedMatchResult= ref<MatchCalculationResultDtd | null>(null);
 const bestMatchPoints = ref<number | null>(null);
 
 // Drag & Drop State
@@ -118,7 +118,7 @@ function nextDay() {
 }
 
 function selectMatchResult(matchResult: MatchCalculationResultDtd) {
-  selectedMatchResultId.value = matchResult.employee.id;
+  selectedMatchResult.value = matchResult;
 }
 
 function isFridayToMonday(index: number) {
@@ -168,10 +168,20 @@ function onDrop(dayDate: string, matchResult: MatchCalculationResultDtd) {
   ];
 
   console.log(`Eintrag "${entry.title}" von ${oldDate} nach ${dayDate} verschoben`);
-  console.log('Das vollständige Objekt:', entry);
-
   draggedEntry.value = null;
 }
+
+async function assignEmployee() {
+  if (!selectedMatchResult.value) return;
+
+  try {
+    await assignTaskToEmployee(taskId, selectedMatchResult.value);
+    console.log('Employee assigned');
+  } catch (error) {
+    console.error('Failed to assign employee:', error);
+  }
+}
+
 </script>
 
 <template>
@@ -226,7 +236,7 @@ function onDrop(dayDate: string, matchResult: MatchCalculationResultDtd) {
         v-for="matchResult in matchResults?.matchCalculationResult"
         :key="matchResult.employee.id"
         class="grid grid-cols-[200px_repeat(8,1fr)] cursor-pointer border-b"
-        :class="selectedMatchResultId === matchResult.employee.id ? 'border-2 border-accent-foreground' : ''"
+        :class="selectedMatchResult === matchResult ? 'border-2 border-accent-foreground' : ''"
         @click="selectMatchResult(matchResult)"
       >
         <!-- Person -->
@@ -298,7 +308,9 @@ function onDrop(dayDate: string, matchResult: MatchCalculationResultDtd) {
 
     <!-- Buttons -->
     <div class="flex justify-end">
-      <Button>Zuweisen</Button>
+      <Button
+      @click="assignEmployee"
+      >Zuweisen</Button>
     </div>
   </div>
 </template>

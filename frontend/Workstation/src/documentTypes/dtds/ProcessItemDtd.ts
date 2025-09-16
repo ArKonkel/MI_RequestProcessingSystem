@@ -5,6 +5,6 @@ export interface ProcessItemDtd {
   title: string;
   description: string;
   creationDate: string;
-  assigneeId: number | null;
+  assigneeId: number;
   status: StatusDtd;
 }

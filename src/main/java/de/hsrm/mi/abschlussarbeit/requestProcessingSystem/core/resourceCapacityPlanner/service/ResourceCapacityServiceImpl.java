@@ -6,7 +6,10 @@ import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityP
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.exception.TaskNotReadyForResourcePlanningException;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.dto.TaskDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.service.TaskManager;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.service.CalendarModule;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.interactionManager.service.InteractionManager;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.EmployeeDto;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,6 +30,10 @@ public class ResourceCapacityServiceImpl implements ResourceCapacityService {
     private final TaskMatcher taskMatcher;
 
     private final TaskManager taskManager;
+
+    private final CalendarModule calendarModule;
+
+    private final InteractionManager interactionManager;
 
     /**
      * Finds the best matches for a given task.
@@ -74,6 +81,21 @@ public class ResourceCapacityServiceImpl implements ResourceCapacityService {
         }
 
         return new MatchingEmployeeForTaskDto(task, results);
+    }
+
+    /**
+     * Assigns a task to an employee. Creates calendar entries for the employee and the task.
+     *
+     * @param taskId of task to assign to employee
+     * @param selectedMatch to create entries from
+     */
+    @Override
+    @Transactional
+    public void assignTaskToEmployee(Long taskId, MatchCalculationResultDto selectedMatch) {
+        log.info("Assigning task {} to employee {}", taskId, selectedMatch.employee().id());
+
+        interactionManager.assignTaskToUserOfEmployee(taskId, selectedMatch.employee().id());
+        calendarModule.createCalendarEntriesForTask(taskId, selectedMatch.employee().calendarId(), selectedMatch.calculatedCalendarCapacities());
     }
 
     private void checkIfTaskReadyForResourcePlanning(TaskDto task) {

@@ -168,8 +168,11 @@ function addComment() {
 
       <div>
         <label class="text-sm font-semibold">Zugewiesene Person</label>
-        <Input placeholder="Lorem Ipsum"/>
-      </div>
+
+        <Input
+          v-model="task.processItem.assigneeId"
+          placeholder="Keine Person zugewiesen"
+        />      </div>
 
       <div>
         <label class="text-sm font-semibold">Geschätzte Zeit</label>

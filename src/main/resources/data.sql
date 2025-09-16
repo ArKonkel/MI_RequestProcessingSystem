@@ -91,9 +91,12 @@ VALUES (1),
 
 --------------------------------- CALENDAR_ENTRY ------------------------------------------------
 INSERT INTO calendar_entry(id, calendar_id, date, duration, title)
-VALUES (1, 1, CURRENT_TIMESTAMP, 120, 'Test Event'),
-       (2, 1, CURRENT_TIMESTAMP - INTERVAL '3 days', 240, 'Test Event'),
-       (3, 1, CURRENT_TIMESTAMP - INTERVAL '3 days', 240, 'Test Event');
+VALUES (1, 1, CURRENT_TIMESTAMP, 300, 'Test Event'),
+       (2, 1, CURRENT_TIMESTAMP - INTERVAL '1 day', 240, 'Test Event'),
+       (3, 1, CURRENT_TIMESTAMP - INTERVAL '1 day', 240, 'Test Event');
+
+--- Has to be done, so no double key error appears
+SELECT setval('calendar_entry_seq', (SELECT MAX(id) FROM calendar_entry));
 
 --------------------------------- EMPLOYEE ------------------------------------------------
 
