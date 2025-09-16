@@ -11,6 +11,4 @@ public interface UserMapper {
     @Mapping(target = "employeeId", source = "employee.id")
     UserDto toDto(User user);
 
-    @Mapping(target = "employee.id", source = "employeeId")
-    User toEntity(UserDto userDto);
 }

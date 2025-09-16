@@ -2,6 +2,7 @@ package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.enti
 
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.entity.ProcessItem;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.Priority;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.TaskStatus;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.projectPlanner.entity.Project;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.entity.Request;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.entity.CalendarEntry;
@@ -39,6 +40,10 @@ public class Task extends ProcessItem {
     @NotNull
     @Enumerated(EnumType.STRING)
     private Priority priority;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private TaskStatus status;
 
     @OneToOne(mappedBy = "task")
     private CalendarEntry calendarEntry;

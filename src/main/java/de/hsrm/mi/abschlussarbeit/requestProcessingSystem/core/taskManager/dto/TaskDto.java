@@ -2,6 +2,7 @@ package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.dto;
 
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.dto.ProcessItemDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.Priority;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.TaskStatus;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.CompetenceDto;
 
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ public record TaskDto(
         LocalDate dueDate,
         Priority priority,
         String acceptanceCriteria,
+        TaskStatus status,
         Long calendarEntryId, //TODO das brauche ich hier nicht
         Set<CompetenceDto> competences,
         Long blockerId,

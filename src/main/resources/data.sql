@@ -126,14 +126,6 @@ VALUES (1, 1, 7, 'EXPERT'),
        (5, 2, 4, 'EXPERT'),
        (6, 2, 7, 'INTERMEDIATE');
 
---------------------------------- STATUS ------------------------------------------------
-
-INSERT INTO status(id, name, description, type)
-VALUES (1, 'Zu Bearbeiten', '', 'TASK'),
-       (2, 'In Bearbeitung', '', 'TASK'),
-       (3, 'Im Testprozess', '', 'TASK'),
-       (4, 'Fertig', '', 'TASK');
-
 --------------------------------- Baseobject - PROCESS_ITEM ------------------------------------------------
 
 -- Process Items
@@ -148,13 +140,14 @@ VALUES (1, 'Customizing der Software beim Kunden für Produktdruck',
        (5, 'Review Sicherheitskonzept', 'Überprüfung der aktuellen Sicherheitsmaßnahmen', '2025-09-14');
 
 -- Tasks (gehören zu den Process Items, gleiche ID wie process_item.id)
-INSERT INTO task (id, estimated_time, due_date, priority)
-VALUES (1, 120, '2025-11-05', 'HIGH'),
-       (2, 240, '2025-10-20', 'MEDIUM'),
-       (3, 60, '2025-09-30', 'HIGH'),
-       (4, 180, '2025-10-15', 'LOW'),
-       (5, 300, '2025-12-01', 'MEDIUM');
+INSERT INTO task (id, estimated_time, due_date, priority, status)
+VALUES (1, 120, '2025-11-05', 'HIGH', 'OPEN'),
+       (2, 240, '2025-10-20', 'MEDIUM', 'OPEN'),
+       (3, 60, '2025-09-30', 'HIGH', 'OPEN'),
+       (4, 180, '2025-10-15', 'LOW', 'OPEN'),
+       (5, 300, '2025-12-01', 'MEDIUM', 'OPEN');
 
+SELECT setval('process_item_seq', (SELECT MAX(id) FROM task));
 --------------------------------- TASK_COMPETENCE ------------------------------------------------
 
 INSERT INTO task_competence (task_id, competence_id)
@@ -170,5 +163,12 @@ VALUES (1, 7),
        (5, 9);
 
 
+--------------------------------- CATEGORY ------------------------------------------------
 
+INSERT INTO category (id, name, description)
+VALUES (1, 'Verbesserungsvorschlag', '');
 
+--------------------------------- CUSTOMER ------------------------------------------------
+
+INSERT INTO customer(id, first_name, last_name, address, email)
+VALUES (1, 'WeinfestAG', 'Biedemeyer', 'In den Dorfwiesen 18', 'biedemeyer@gmx.de')

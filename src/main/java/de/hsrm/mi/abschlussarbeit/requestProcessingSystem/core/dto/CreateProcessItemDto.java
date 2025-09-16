@@ -5,8 +5,7 @@ import lombok.Data;
 
 @Builder
 @Data
-public class UpdateProcessItemDto {
+public class CreateProcessItemDto {
     private String title;
     private String description;
-    private Long assigneeId;
 }

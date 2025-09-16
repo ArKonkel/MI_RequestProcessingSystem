@@ -1,6 +1,7 @@
 import type {ProcessItemDtd} from "@/documentTypes/dtds/ProcessItemDtd.ts";
 import type {CompetenceDtd} from "@/documentTypes/dtds/CompetenceDtd.ts";
 import type {PriorityType} from "@/documentTypes/enums/PriorityType.ts";
+import type {TaskStatus} from "@/documentTypes/enums/TaskStatus.ts";
 
 export interface TaskDtd {
   processItem: ProcessItemDtd;
@@ -8,6 +9,7 @@ export interface TaskDtd {
   workingTime: number;
   dueDate: string | null;
   priority: PriorityType;
+  status: TaskStatus,
   acceptanceCriteria: string;
   calendarEntryId: number | null;
   competences: CompetenceDtd[];

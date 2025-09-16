@@ -198,7 +198,6 @@ class ResourceCapacityServiceImplTest {
                 title,
                 "",
                 dueDate,
-                null,
                 null
         );
 
@@ -209,6 +208,7 @@ class ResourceCapacityServiceImplTest {
                 dueDate,
                 Priority.MEDIUM,
                 "",
+                null,
                 null,
                 Set.of(competenceDto),
                 null,
@@ -226,7 +226,6 @@ class ResourceCapacityServiceImplTest {
                 title,
                 "",
                 dueDate,
-                null,
                 null
         );
 
@@ -237,6 +236,7 @@ class ResourceCapacityServiceImplTest {
                 dueDate,
                 Priority.MEDIUM,
                 "",
+                null,
                 null,
                 Set.of(),
                 null,

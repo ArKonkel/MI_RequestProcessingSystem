@@ -478,7 +478,6 @@ class CapacityCalculatorEngineImplTest {
                 title,
                 "",
                 dueDate,
-                null,
                 null
         );
 
@@ -489,6 +488,7 @@ class CapacityCalculatorEngineImplTest {
                 dueDate,
                 Priority.MEDIUM,
                 "",
+                null,
                 null,
                 Set.of(),
                 null,

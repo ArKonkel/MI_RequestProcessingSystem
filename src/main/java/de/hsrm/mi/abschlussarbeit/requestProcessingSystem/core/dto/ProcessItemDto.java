@@ -1,7 +1,5 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.dto;
 
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.statusManager.dto.StatusDto;
-
 import java.time.LocalDate;
 
 public record ProcessItemDto (
@@ -9,7 +7,6 @@ public record ProcessItemDto (
         String title,
         String description,
         LocalDate creationDate,
-        Long assigneeId,
-        StatusDto status
+        Long assigneeId
         //Set<Long> commentIds
 ) {}

@@ -3,7 +3,6 @@ package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.serv
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.dto.UpdateProcessItemDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.projectPlanner.entity.Project;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.entity.Request;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.statusManager.entity.Status;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.dto.TaskDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.dto.UpdateTaskDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.entity.Task;
@@ -46,6 +45,7 @@ public class TaskServiceImpl implements TaskService {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
 
+        //Could be done by mapper. However, it's not working.
         //ProcessItem
         if (dto.getProcessItem() != null) {
             UpdateProcessItemDto processItem = dto.getProcessItem();
@@ -56,14 +56,10 @@ public class TaskServiceImpl implements TaskService {
                 assignee.setId(processItem.getAssigneeId());
                 task.setAssignee(assignee);
             }
-            if (processItem.getStatus() != null) {
-                Status status = new Status();
-                status.setId(processItem.getStatus().id());
-                task.setStatus(status);
-            }
         }
 
         //Task
+        if(dto.getStatus() != null) task.setStatus(dto.getStatus());
         if (dto.getEstimatedTime() != null) task.setEstimatedTime(dto.getEstimatedTime());
         if (dto.getWorkingTime() != null) task.setWorkingTime(dto.getWorkingTime());
         if (dto.getDueDate() != null) task.setDueDate(dto.getDueDate());

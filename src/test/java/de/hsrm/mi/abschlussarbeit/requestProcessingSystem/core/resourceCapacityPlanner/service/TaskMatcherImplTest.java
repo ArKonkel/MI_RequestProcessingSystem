@@ -85,7 +85,6 @@ class TaskMatcherImplTest {
                 title,
                 "",
                 LocalDate.parse("2025-09-05"),
-                null,
                 null
         );
 
@@ -96,6 +95,7 @@ class TaskMatcherImplTest {
                 dueDate,
                 priority,
                 "",
+                null,
                 null,
                 competenceIds,
                 null,

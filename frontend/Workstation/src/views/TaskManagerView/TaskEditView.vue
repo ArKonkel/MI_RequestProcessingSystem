@@ -154,11 +154,12 @@ function addComment() {
 
       <div>
         <label class="text-sm font-semibold">Status</label>
-        <Select v-model="task.processItem.status">
+        <Select v-model="task.status">
           <SelectTrigger>
             <SelectValue placeholder="Offen"/>
           </SelectTrigger>
           <SelectContent>
+            <!-- TODO bind taskStatus -->
             <SelectItem value="open">Offen</SelectItem>
             <SelectItem value="in_progress">In Arbeit</SelectItem>
             <SelectItem value="done">Erledigt</SelectItem>
