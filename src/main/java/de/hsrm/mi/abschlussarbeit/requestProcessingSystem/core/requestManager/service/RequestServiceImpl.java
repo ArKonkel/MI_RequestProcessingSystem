@@ -20,9 +20,13 @@ public class RequestServiceImpl implements RequestService {
 
     private final RequestMapper requestMapper;
 
+    private final ValidationService validationService;
+
     @Override
     public RequestDto createRequest(RequestCreateDto request) {
         log.info("Creating request {}", request);
+
+        validationService.validateRequestCreation(request);
 
         Request requestEntity = requestMapper.toEntity(request);
         requestEntity.setCreationDate(LocalDateTime.now()); //set creation date to current date
