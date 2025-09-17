@@ -1,4 +1,3 @@
-import type {StatusDtd} from "@/documentTypes/dtds/StatusDtd.ts";
 
 export interface ProcessItemDtd {
   id: number;
@@ -6,5 +5,4 @@ export interface ProcessItemDtd {
   description: string;
   creationDate: string;
   assigneeId: number;
-  status: StatusDtd;
 }

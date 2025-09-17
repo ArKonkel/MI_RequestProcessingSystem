@@ -1,8 +1,172 @@
 <script setup lang="ts">
+import {reactive, ref} from "vue"
+
+import {Input} from "@/components/ui/input"
+import {Textarea} from "@/components/ui/textarea"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {Button} from "@/components/ui/button"
+import type {RequestCreateDtd} from "@/documentTypes/dtds/RequestCreateDtd.ts"
+import {submitRequest} from "@/services/requestService.ts"
+import {useAlertStore} from "@/stores/useAlertStore.ts"
+
+const alertStore = useAlertStore()
+
+const requestForm = reactive<RequestCreateDtd>({
+  processItem: {
+    title: "",
+    description: "",
+  },
+  priority: null,
+  category: null,
+  customerId: null,
+})
+
+const customerIdString = ref<string>("")
+
+//Option labels
+const priorityOptions = [
+  {value: "LOW", label: "Niedrig"},
+  {value: "MEDIUM", label: "Mittel"},
+  {value: "HIGH", label: "Wichtig"},
+]
+
+const categoryOptions = [
+  {value: "SUGGESTION_FOR_IMPROVEMENT", label: "Verbesserungsvorschlag"},
+  {value: "BUG_REPORT", label: "Bugreport"},
+  {value: "FEATURE_REQUEST", label: "Featureanfrage"},
+  {value: "TRAINING_REQUEST", label: "Schulungsanfrage"},
+  {value: "OTHER", label: "Sonstiges"},
+]
+
+// Validation and errors
+const errors = reactive({
+  title: "" as string | null, //definition and initialization at once
+  description: "" as string | null,
+  priority: "" as string | null,
+  category: "" as string | null,
+  customerId: "" as string | null,
+})
+
+function validate(): boolean {
+  errors.title = requestForm.processItem.title.trim() ? "" : "Titel ist erforderlich"
+  errors.description = requestForm.processItem.description.trim() ? "" : ""
+  errors.priority = requestForm.priority ? "" : "Priorität wählen"
+  errors.category = requestForm.category ? "" : "Kategorie wählen"
+  errors.customerId =
+    //trim removes leading and trailing whitespace
+    //checks if the string is not empty and if it is a number --> In JavaScript is everything a string at first
+    customerIdString.value.trim() && !Number.isNaN(Number(customerIdString.value))
+      ? ""
+      : "Gültige KundenId nötig"
+
+  return !errors.title && !errors.priority && !errors.category && !errors.customerId
+}
 
 
+//Buttons
+async function submit() {
+  requestForm.customerId = customerIdString.value ? Number(customerIdString.value) : null
+
+  //dont submit if validation fails
+  if (!validate()) {
+    return
+  }
+
+  try {
+    await submitRequest(requestForm)
+    console.log("Request created")
+
+    alertStore.show("Anfrage erfolgreich erstellt", "success")
+    resetFrom()
+  } catch (error: any) {
+    console.error(error)
+    alertStore.show(error.response?.data || "Unbekannter Fehler", "error")
+  }
+}
+
+function resetFrom() {
+  requestForm.processItem.title = ""
+  requestForm.processItem.description = ""
+  customerIdString.value = ""
+  requestForm.priority = null
+  requestForm.category = null
+  Object.keys(errors).forEach(k => (errors[k as keyof typeof errors] = ""))
+}
 </script>
 
 <template>
-  <div>Hello</div>
+  <form @submit.prevent="submit" class="flex flex-col max-w-3xl mx-auto p-6  gap-6">
+    <div class="flex flex-col md:flex-row gap-4">
+      <div class="flex-1">
+        <label class="text-sm font-medium mb-1">Kunde</label>
+        <Input v-model="customerIdString" placeholder="Kunden-ID"/>
+        <p v-if="errors.customerId" class="text-red-600 text-xs mt-1">{{ errors.customerId }}</p>
+      </div>
+      <div class="flex-1"></div>
+    </div>
+
+    <div class="flex-1">
+      <label class="block text-sm font-medium mb-1">Titel</label>
+      <Input v-model="requestForm.processItem.title" placeholder="Kurzer Titel"/>
+      <p v-if="errors.title" class="text-red-600 text-xs mt-1">{{ errors.title }}</p>
+    </div>
+
+    <div class="flex flex-col md:flex-row gap-4">
+      <div class="flex-1">
+        <label class="block text-sm font-medium mb-1">Priorität</label>
+        <Select v-model="requestForm.priority" :value="requestForm.priority">
+          <SelectTrigger class="w-full">
+            <SelectValue placeholder="Priorität wählen"/>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="option in priorityOptions" :key="option.value" :value="option.value">
+              {{ option.label }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+        <p v-if="errors.priority" class="text-red-600 text-xs mt-1">{{ errors.priority }}</p>
+      </div>
+
+      <div class="flex-1">
+        <label class="block text-sm font-medium mb-1">Kategorie</label>
+        <Select v-model="requestForm.category" :value="requestForm.category">
+          <SelectTrigger class="w-full">
+            <SelectValue placeholder="Kategorie wählen"/>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="opt in categoryOptions" :key="opt.value" :value="opt.value">
+              {{ opt.label }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+        <p v-if="errors.category" class="text-red-600 text-xs mt-1">{{ errors.category }}</p>
+      </div>
+    </div>
+
+    <!-- Beschreibung -->
+    <div>
+      <label class="block text-sm font-medium mb-1">Beschreibung</label>
+      <Textarea
+        v-model="requestForm.processItem.description"
+        placeholder="Detaillierte Beschreibung"
+        class="min-h-[200px] resize-none"
+      />
+      <p v-if="errors.description" class="text-red-600 text-xs mt-1">{{ errors.description }}</p>
+    </div>
+
+    <!-- Buttons-->
+    <div class="flex items-end justify-between gap-4">
+      <div></div>
+      <div class="flex gap-2">
+        <Button variant="ghost" type="button" @click="resetFrom">Reset</Button>
+        <Button type="submit">Anfrage erstellen</Button>
+      </div>
+    </div>
+  </form>
 </template>
