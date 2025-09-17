@@ -2,6 +2,7 @@
 import { RouterLink, RouterView } from 'vue-router'
 import {SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar.vue";
+import ErrorAlert from "@/components/ErrorAlert.vue";
 
 </script>
 
@@ -13,4 +14,5 @@ import AppSidebar from "@/components/AppSidebar.vue";
       <RouterView />
     </main>
   </SidebarProvider>
+  <ErrorAlert />
 </template>
