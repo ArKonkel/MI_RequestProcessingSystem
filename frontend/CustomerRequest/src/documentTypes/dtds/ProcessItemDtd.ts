@@ -1,8 +1,7 @@
-
 export interface ProcessItemDtd {
-  id: number;
-  title: string;
-  description: string;
-  creationDate: string;
-  assigneeId: number;
+  id: number
+  title: string
+  description: string
+  creationDate: string
+  assigneeId: number
 }

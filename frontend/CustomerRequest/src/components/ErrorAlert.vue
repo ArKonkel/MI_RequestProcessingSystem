@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import {useAlertStore} from '@/stores/useAlertStore'
-import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert"
+import { useAlertStore } from '@/stores/useAlertStore'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 const alertStore = useAlertStore()
 
 const variantClasses: Record<string, string> = {
-  error: "bg-red-100 text-red-800 border border-red-300",
-  success: "bg-green-100 text-green-800 border border-green-300",
-  info: "bg-blue-100 text-blue-800 border border-blue-300",
-  warning: "bg-yellow-100 text-yellow-800 border border-yellow-300",
+  error: 'bg-red-100 text-red-800 border border-red-300',
+  success: 'bg-green-100 text-green-800 border border-green-300',
+  info: 'bg-blue-100 text-blue-800 border border-blue-300',
+  warning: 'bg-yellow-100 text-yellow-800 border border-yellow-300',
 }
 </script>
 
@@ -27,9 +27,13 @@ const variantClasses: Record<string, string> = {
     </button>
     <AlertTitle>
       {{
-        alertStore.variant === 'error' ? 'Fehler' :
-          alertStore.variant === 'success' ? 'Erfolg' :
-            alertStore.variant === 'warning' ? 'Warnung' : 'Info'
+        alertStore.variant === 'error'
+          ? 'Fehler'
+          : alertStore.variant === 'success'
+            ? 'Erfolg'
+            : alertStore.variant === 'warning'
+              ? 'Warnung'
+              : 'Info'
       }}
     </AlertTitle>
     <AlertDescription class="block w-full">

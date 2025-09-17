@@ -1,5 +1,5 @@
-import {defineStore} from 'pinia'
-import {ref} from 'vue'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 type AlertVariant = 'error' | 'success' | 'info' | 'warning'
 
@@ -22,5 +22,5 @@ export const useAlertStore = defineStore('alertStore', () => {
     }, duration.value)
   }
 
-  return {message, visible, duration, variant, show}
+  return { message, visible, duration, variant, show }
 })
