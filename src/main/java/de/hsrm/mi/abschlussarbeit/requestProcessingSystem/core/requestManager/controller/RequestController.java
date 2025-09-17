@@ -1,6 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.controller;
 
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.dto.CreateRequestDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.dto.RequestCreateDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.dto.RequestDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.service.RequestService;
 import lombok.AllArgsConstructor;
@@ -20,7 +20,7 @@ public class RequestController {
     private final RequestService requestService;
 
     @PostMapping
-    ResponseEntity<RequestDto> createRequest (@RequestBody CreateRequestDto requestDto){
+    ResponseEntity<RequestDto> createRequest (@RequestBody RequestCreateDto requestDto){
         log.info("REST request to create request {}", requestDto);
 
         RequestDto createdRequest = requestService.createRequest(requestDto);

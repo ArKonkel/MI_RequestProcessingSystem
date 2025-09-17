@@ -1,6 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.service;
 
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.dto.CreateRequestDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.dto.RequestCreateDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.dto.RequestDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.entity.Request;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.mapper.RequestMapper;
@@ -21,7 +21,7 @@ public class RequestServiceImpl implements RequestService {
     private final RequestMapper requestMapper;
 
     @Override
-    public RequestDto createRequest(CreateRequestDto request) {
+    public RequestDto createRequest(RequestCreateDto request) {
         log.info("Creating request {}", request);
 
         Request requestEntity = requestMapper.toEntity(request);

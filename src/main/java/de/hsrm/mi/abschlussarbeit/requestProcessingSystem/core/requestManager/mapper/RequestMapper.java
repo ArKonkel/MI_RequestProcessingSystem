@@ -1,7 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.mapper;
 
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.mapper.ProcessItemMapper;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.dto.CreateRequestDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.dto.RequestCreateDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.dto.RequestDto;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.entity.Request;
 import org.mapstruct.Mapper;
@@ -31,6 +31,6 @@ public interface RequestMapper {
     @Mapping(target = "category", source = "category")
     @Mapping(target = "title", source = "processItem.title")
     @Mapping(target = "description", source = "processItem.description")
-    Request toEntity(CreateRequestDto requestDto);
+    Request toEntity(RequestCreateDto requestDto);
 }
 

@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Builder
 @Data
-public class CreateRequestDto {
+public class RequestCreateDto {
     private CreateProcessItemDto processItem;
     private Priority priority;
     private Category category;

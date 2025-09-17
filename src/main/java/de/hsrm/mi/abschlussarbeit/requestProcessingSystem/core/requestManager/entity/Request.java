@@ -23,6 +23,8 @@ import java.util.Set;
 @NoArgsConstructor
 public class Request extends ProcessItem {
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
     private Priority priority;
 
     private Long estimatedScope;
@@ -38,6 +40,7 @@ public class Request extends ProcessItem {
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
+    @NotNull
     private Customer customer;
 
     @OneToMany(mappedBy = "request")
