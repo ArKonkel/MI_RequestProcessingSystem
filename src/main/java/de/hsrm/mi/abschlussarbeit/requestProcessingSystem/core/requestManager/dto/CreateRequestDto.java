@@ -1,6 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.dto;
 
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.dto.CreateProcessItemDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.Category;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.Priority;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +11,6 @@ import lombok.Data;
 public class CreateRequestDto {
     private CreateProcessItemDto processItem;
     private Priority priority;
-    private Long categoryId;
+    private Category category;
     private Long customerId;
 }

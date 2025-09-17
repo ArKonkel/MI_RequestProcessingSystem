@@ -162,12 +162,6 @@ VALUES (1, 7),
        (5, 7),
        (5, 9);
 
-
---------------------------------- CATEGORY ------------------------------------------------
-
-INSERT INTO category (id, name, description)
-VALUES (1, 'Verbesserungsvorschlag', '');
-
 --------------------------------- CUSTOMER ------------------------------------------------
 
 INSERT INTO customer(id, first_name, last_name, address, email)

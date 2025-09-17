@@ -1,6 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.dto;
 
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.dto.ProcessItemDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.Category;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.Priority;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.RequestStatus;
 
@@ -10,7 +11,7 @@ public record RequestDto(
         Long estimatedScope,
         RequestStatus status,
         boolean chargeable,
-        Long categoryId,
+        Category category,
         Long customerId
 ) {
 }

@@ -1,12 +1,14 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.entity;
 
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.entity.ProcessItem;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.Category;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.Priority;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.RequestStatus;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.projectPlanner.entity.Project;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.entity.Task;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.customerManager.entity.Customer;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,8 +32,8 @@ public class Request extends ProcessItem {
 
     private boolean chargeable;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
+    @NotNull
+    @Enumerated(EnumType.STRING)
     private Category category;
 
     @ManyToOne

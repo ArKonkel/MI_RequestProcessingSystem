@@ -14,7 +14,7 @@ import org.mapstruct.Mapping;
 public interface RequestMapper {
 
     @Mapping(target = "processItem", source = ".")
-    @Mapping(target = "categoryId", source = "category.id")
+    @Mapping(target = "category", source = "category")
     @Mapping(target = "customerId", source = "customer.id")
     RequestDto toDto(Request request);
 
@@ -23,8 +23,12 @@ public interface RequestMapper {
     @Mapping(target = "chargeable", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "creationDate", ignore = true) //must be set manually
+    @Mapping(target = "comments", ignore = true)
+    @Mapping(target = "assignee", ignore = true)
+    @Mapping(target = "tasks", ignore = true)
+    @Mapping(target = "projects", ignore = true)
     @Mapping(target = "customer.id", source = "customerId")
-    @Mapping(target = "category.id", source = "categoryId")
+    @Mapping(target = "category", source = "category")
     @Mapping(target = "title", source = "processItem.title")
     @Mapping(target = "description", source = "processItem.description")
     Request toEntity(CreateRequestDto requestDto);
