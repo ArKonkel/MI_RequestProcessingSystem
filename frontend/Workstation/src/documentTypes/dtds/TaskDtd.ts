@@ -1,7 +1,7 @@
 import type {ProcessItemDtd} from "@/documentTypes/dtds/ProcessItemDtd.ts";
 import type {CompetenceDtd} from "@/documentTypes/dtds/CompetenceDtd.ts";
-import type {PriorityType} from "@/documentTypes/enums/PriorityType.ts";
-import type {TaskStatus} from "@/documentTypes/enums/TaskStatus.ts";
+import type {PriorityType} from "@/documentTypes/types/PriorityType.ts";
+import type {TaskStatus} from "@/documentTypes/types/TaskStatus.ts";
 
 export interface TaskDtd {
   processItem: ProcessItemDtd;

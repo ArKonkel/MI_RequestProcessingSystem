@@ -1,4 +1,4 @@
-import type {CompetenceType} from "@/documentTypes/enums/CompetenceType.ts";
+import type {CompetenceType} from "@/documentTypes/types/CompetenceType.ts";
 
 export interface CompetenceDtd {
   id: number;

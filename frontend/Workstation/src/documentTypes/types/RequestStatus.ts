@@ -1,0 +1,31 @@
+export enum RequestStatus {
+  RECEIVED = 'RECEIVED',
+  CLASSIFICATION = 'CLASSIFICATION',
+  SCOPE_CHECK = 'SCOPE_CHECK',
+  EFFORT_ESTIMATION = 'EFFORT_ESTIMATION',
+  PAYMENT_CLEARANCE = 'PAYMENT_CLEARANCE',
+  REQUEST_FOR_OFFER = 'REQUEST_FOR_OFFER',
+  OFFER_CREATION = 'OFFER_CREATION',
+  WAITING_FOR_CUSTOMER = 'WAITING_FOR_CUSTOMER',
+  OFFER_REJECTED = 'OFFER_REJECTED',
+  OFFER_ACCEPTED = 'OFFER_ACCEPTED',
+  WAITING_FOR_PROCESSING = 'WAITING_FOR_PROCESSING',
+  PROCESSING = 'PROCESSING',
+  DONE = 'DONE',
+}
+
+export const RequestStatusLabel: Record<RequestStatus, string> = {
+  [RequestStatus.RECEIVED]: 'Eingegangen',
+  [RequestStatus.CLASSIFICATION]: 'In Klassifizierung',
+  [RequestStatus.SCOPE_CHECK]: 'In Umfangsprüfung',
+  [RequestStatus.EFFORT_ESTIMATION]: 'In Aufwandsschätzung',
+  [RequestStatus.PAYMENT_CLEARANCE]: 'In Zahlungspflichtabklärung',
+  [RequestStatus.REQUEST_FOR_OFFER]: 'Bitte um Angebotserstellung',
+  [RequestStatus.OFFER_CREATION]: 'In Angebotserstellung',
+  [RequestStatus.WAITING_FOR_CUSTOMER]: 'Warten auf Kundenrückmeldung',
+  [RequestStatus.OFFER_REJECTED]: 'Angebot abgelehnt',
+  [RequestStatus.OFFER_ACCEPTED]: 'Angebot angenommen',
+  [RequestStatus.WAITING_FOR_PROCESSING]: 'Warten auf Bearbeitung',
+  [RequestStatus.PROCESSING]: 'In Bearbeitung',
+  [RequestStatus.DONE]: 'Erledigt',
+}

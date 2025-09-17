@@ -1,5 +1,5 @@
-import type { Category } from '@/documentTypes/enums/Category.ts'
-import type { Priority } from '@/documentTypes/enums/Priority.ts'
+import type { Category } from '@/documentTypes/types/Category.ts'
+import type { Priority } from '@/documentTypes/types/Priority.ts'
 import type { ProcessItemCreateDtd } from '@/documentTypes/dtds/ProcessItemCreateDtd.ts'
 
 export interface RequestCreateDtd {

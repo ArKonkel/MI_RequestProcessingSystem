@@ -1,5 +1,5 @@
 import type { CompetenceDtd } from './CompetenceDtd'
-import type {ExpertiseLevel} from "@/documentTypes/enums/ExpertiseLevel.ts";
+import type {ExpertiseLevel} from "@/documentTypes/types/ExpertiseLevel.ts";
 
 export interface EmployeeExpertiseDtd {
   id: number
