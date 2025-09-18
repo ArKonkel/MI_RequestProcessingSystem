@@ -9,3 +9,16 @@ export const PriorityLabel: Record<Priority, string> = {
   [Priority.MEDIUM]: 'Mittel',
   [Priority.HIGH]: 'Wichtig',
 }
+
+export function getPriorityColor(priority: Priority) {
+  switch (priority) {
+    case Priority.HIGH:
+      return "destructive";
+    case Priority.MEDIUM:
+      return "default";
+    case Priority.LOW:
+      return "secondary";
+    default:
+      return "outline";
+  }
+}

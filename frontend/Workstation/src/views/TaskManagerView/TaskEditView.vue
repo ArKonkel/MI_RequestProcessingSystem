@@ -22,6 +22,8 @@ import {
 
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {useTaskStore} from "@/stores/taskStore.ts";
+import {PriorityLabel} from "@/documentTypes/types/Priority.ts";
+import {TaskStatusLabel} from "@/documentTypes/types/TaskStatus.ts";
 
 const taskStore = useTaskStore()
 const task = computed(() => taskStore.taskData.selectedTask)
@@ -145,9 +147,13 @@ function addComment() {
             <SelectValue placeholder="Select..."/>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="HIGH">Wichtig</SelectItem>
-            <SelectItem value="MEDIUM">Mittel</SelectItem>
-            <SelectItem value="LOW">Niedrig</SelectItem>
+            <SelectItem
+              v-for="[value, prioLabel] in Object.entries(PriorityLabel)"
+              :key="value"
+              :value="value"
+            >
+              {{ prioLabel }}
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -160,9 +166,13 @@ function addComment() {
           </SelectTrigger>
           <SelectContent>
             <!-- TODO bind taskStatus -->
-            <SelectItem value="open">Offen</SelectItem>
-            <SelectItem value="in_progress">In Arbeit</SelectItem>
-            <SelectItem value="done">Erledigt</SelectItem>
+            <SelectItem
+              v-for="[value, taskStatusLabel] in Object.entries(TaskStatusLabel)"
+              :key="value"
+              :value="value"
+            >
+              {{ taskStatusLabel }}
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -173,7 +183,8 @@ function addComment() {
         <Input
           v-model="task.processItem.assigneeId"
           placeholder="Keine Person zugewiesen"
-        />      </div>
+        />
+      </div>
 
       <div>
         <label class="text-sm font-semibold">Geschätzte Zeit</label>

@@ -6,6 +6,7 @@ import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components
 import {Badge} from "@/components/ui/badge";
 import type {RequestDtd} from "@/documentTypes/dtds/RequestDtd.ts";
 import {CategoryLabel} from "@/documentTypes/types/Category.ts";
+import {getPriorityColor, type Priority, PriorityLabel} from "@/documentTypes/types/Priority.ts";
 
 const requestStore = useRequestStore();
 const selectedRequestId = ref<number>(); // für Highlight
@@ -25,18 +26,7 @@ function formatDate(date: string | null) {
   });
 }
 
-function getPriorityColor(priority: string) {
-  switch (priority) {
-    case "HIGH":
-      return "destructive";
-    case "MEDIUM":
-      return "default";
-    case "LOW":
-      return "secondary";
-    default:
-      return "outline";
-  }
-}
+
 
 function selectRequest(request: RequestDtd) {
   requestStore.setSelectedRequest(request)
@@ -64,7 +54,7 @@ function selectRequest(request: RequestDtd) {
               {{ CategoryLabel[request.category] }}
             </Badge>
             <Badge :variant="getPriorityColor(request.priority)">
-              {{ request.priority }}
+              {{ PriorityLabel[request.priority] }}
             </Badge>
           </div>
 

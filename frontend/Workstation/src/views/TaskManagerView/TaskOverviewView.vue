@@ -5,6 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type {TaskDtd} from "@/documentTypes/dtds/TaskDtd.ts";
+import {getPriorityColor, PriorityLabel} from "@/documentTypes/types/Priority.ts";
 
 const taskStore = useTaskStore();
 const selectedTaskId = ref<number>(); // für Highlight
@@ -22,19 +23,6 @@ function formatDate(date: string | null) {
     month: "short",
     day: "numeric",
   });
-}
-
-function getPriorityColor(priority: string) {
-  switch (priority) {
-    case "HIGH":
-      return "destructive";
-    case "MEDIUM":
-      return "default";
-    case "LOW":
-      return "secondary";
-    default:
-      return "outline";
-  }
 }
 
 function selectTask(task: TaskDtd) {
@@ -58,7 +46,7 @@ function selectTask(task: TaskDtd) {
           <div class="flex items-center justify-between">
             <CardTitle>{{task.processItem.id}} - {{ task.processItem.title }}</CardTitle>
             <Badge :variant="getPriorityColor(task.priority)">
-              {{ task.priority }}
+              {{ PriorityLabel[task.priority] }}
             </Badge>
           </div>
         </CardHeader>

@@ -14,6 +14,8 @@ import { Button } from '@/components/ui/button'
 import type { RequestCreateDtd } from '@/documentTypes/dtds/RequestCreateDtd.ts'
 import { submitRequest } from '@/services/requestService.ts'
 import { useAlertStore } from '@/stores/useAlertStore.ts'
+import {PriorityLabel} from "@/documentTypes/types/Priority.ts";
+import {CategoryLabel} from "@/documentTypes/types/Category.ts";
 
 const alertStore = useAlertStore()
 
@@ -28,21 +30,6 @@ const requestForm = reactive<RequestCreateDtd>({
 })
 
 const customerIdString = ref<string>('')
-
-//Option labels
-const priorityOptions = [
-  { value: 'LOW', label: 'Niedrig' },
-  { value: 'MEDIUM', label: 'Mittel' },
-  { value: 'HIGH', label: 'Wichtig' },
-]
-
-const categoryOptions = [
-  { value: 'SUGGESTION_FOR_IMPROVEMENT', label: 'Verbesserungsvorschlag' },
-  { value: 'BUG_REPORT', label: 'Bugreport' },
-  { value: 'FEATURE_REQUEST', label: 'Featureanfrage' },
-  { value: 'TRAINING_REQUEST', label: 'Schulungsanfrage' },
-  { value: 'OTHER', label: 'Sonstiges' },
-]
 
 // Validation and errors
 const errors = reactive({
@@ -124,8 +111,12 @@ function resetFrom() {
             <SelectValue placeholder="Priorität wählen" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem v-for="option in priorityOptions" :key="option.value" :value="option.value">
-              {{ option.label }}
+            <SelectItem
+              v-for="[value, prioLabel] in Object.entries(PriorityLabel)"
+              :key="value"
+              :value="value"
+            >
+              {{ prioLabel }}
             </SelectItem>
           </SelectContent>
         </Select>
@@ -139,8 +130,12 @@ function resetFrom() {
             <SelectValue placeholder="Kategorie wählen" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem v-for="opt in categoryOptions" :key="opt.value" :value="opt.value">
-              {{ opt.label }}
+            <SelectItem
+              v-for="[value, categoryLabel] in Object.entries(CategoryLabel)"
+              :key="value"
+              :value="value"
+            >
+              {{ categoryLabel }}
             </SelectItem>
           </SelectContent>
         </Select>
