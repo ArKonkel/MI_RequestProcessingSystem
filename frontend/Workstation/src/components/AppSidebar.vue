@@ -12,12 +12,12 @@ import {
 const items = [
   {
     title: "Requests",
-    url: "#",
+    url: "/requests",
     icon: Inbox,
   },
   {
     title: "Tasks",
-    url: "#",
+    url: "/tasks",
     icon: ClipboardList,
   },
   {

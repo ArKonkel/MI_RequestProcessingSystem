@@ -2,6 +2,7 @@ package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.requestManager.e
 
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.entity.ProcessItem;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.Category;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.Chargeable;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.Priority;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.RequestStatus;
 import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.projectPlanner.entity.Project;
@@ -29,10 +30,13 @@ public class Request extends ProcessItem {
 
     private Long estimatedScope;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private RequestStatus status;
 
-    private boolean chargeable;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Chargeable chargeable;
 
     @NotNull
     @Enumerated(EnumType.STRING)

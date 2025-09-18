@@ -21,11 +21,14 @@ import {
 
 
 import {ScrollArea} from "@/components/ui/scroll-area";
-import {useTaskStore} from "@/stores/taskStore.ts";
+import {useRequestStore} from "@/stores/requestStore.ts";
+import {CategoryLabel} from "@/documentTypes/types/Category.ts";
+import type {RequestDtd} from "@/documentTypes/dtds/RequestDtd.ts";
+import {PriorityLabel} from "@/documentTypes/types/Priority.ts";
+import {RequestStatusLabel} from "@/documentTypes/types/RequestStatus.ts";
 
-const taskStore = useTaskStore()
-const task = computed(() => taskStore.taskData.selectedTask)
-
+const requestStore = useRequestStore()
+const request = computed<RequestDtd>(() => requestStore.requestData.selectedRequest!);
 
 const commentText = ref("")
 const comments = ref([
@@ -45,23 +48,25 @@ function addComment() {
 </script>
 
 <template>
-  <div v-if="task" class="flex h-screen gap-6 p-6">
+  <div v-if="request" class="flex h-screen gap-6 p-6">
     <!-- Linker Hauptbereich -->
     <ScrollArea class="flex-1 overflow-auto">
       <div class="p-6 space-y-4">
         <div>
-          <h2 class="text-xl font-bold"> {{task.processItem.id}} - {{ task.processItem.title }}</h2>
-          <div class="flex gap-2 mt-2">
-            <Badge v-for="competence in task.competences" :key="competence.id">{{
-                competence.name
-              }}
-            </Badge>
-          </div>
+          <Badge>{{
+              CategoryLabel[request.category]
+            }}
+          </Badge>
+          <h2 class="text-xl font-bold"> {{ request.processItem.id }} - {{
+              request.processItem.title
+            }}</h2>
+
           <div class="flex gap-6 mt-4 text-sm">
-            <div><span class="font-semibold">Anfrage</span><br/>{{task.requestId}}</div>
-            <div><span class="font-semibold">Projekt</span><br/>{{task.projectId}}</div>
-            <div><span class="font-semibold">Geplant bis</span><br/>{{
-                new Date(task.dueDate!).toLocaleDateString("de-DE")
+            <div><span class="font-semibold">Kunde: </span><br/>{{ request.customer.id }} -
+              {{ request.customer.firstName }}
+            </div>
+            <div><span class="font-semibold">Eingegangen am: </span><br/>{{
+                new Date(request.processItem.creationDate!).toLocaleDateString("de-DE")
               }}
             </div>
           </div>
@@ -74,17 +79,7 @@ function addComment() {
             <AccordionTrigger>Beschreibung</AccordionTrigger>
             <AccordionContent>
               <Textarea
-                v-model="task.processItem.description"
-                class="mt-2 min-h-[200px] resize-none"
-              />
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="acceptance">
-            <AccordionTrigger>Akzeptanzkriterien</AccordionTrigger>
-            <AccordionContent>
-              <Textarea
-                v-model="task.acceptanceCriteria"
+                v-model="request.processItem.description"
                 class="mt-2 min-h-[200px] resize-none"
               />
             </AccordionContent>
@@ -97,7 +92,7 @@ function addComment() {
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="linked">
+          <AccordionItem value="linked_tasks">
             <AccordionTrigger>Verknüpfte Aufgaben</AccordionTrigger>
             <AccordionContent>
               <div class="flex items-center justify-between border p-2 rounded">
@@ -110,6 +105,21 @@ function addComment() {
               </div>
             </AccordionContent>
           </AccordionItem>
+
+          <AccordionItem value="linked_projects">
+            <AccordionTrigger>Verknüpfte Projekte</AccordionTrigger>
+            <AccordionContent>
+              <div class="flex items-center justify-between border p-2 rounded">
+                <div class="flex items-center gap-2">
+                  <input type="checkbox" checked/>
+                  <span class="font-semibold">A-01</span>
+                  <span>Lorem Ipsum dolor set amet</span>
+                </div>
+                <Badge>Status</Badge>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+
           <!--
                     <AccordionItem value="comments">
                       <AccordionTrigger>Kommentare</AccordionTrigger>
@@ -130,7 +140,7 @@ function addComment() {
                     </AccordionItem>
                     -->
         </Accordion>
-        <RouterLink :to="{ name: 'capacityPlanningView', params: { id: task.processItem.id } }">
+        <RouterLink :to="{ name: 'capacityPlanningView', params: { id: request.processItem.id } }">
           <Button class="mt-6">Zur Planung</Button>
         </RouterLink>
       </div>
@@ -140,29 +150,36 @@ function addComment() {
     <div class="w-[200px] space-y-4 p-4 border-l-2 border-accent-200 h-screen">
       <div>
         <label class="text-sm font-semibold">Priorität</label>
-        <Select v-model="task.priority">
+        <Select v-model="request.priority">
           <SelectTrigger>
             <SelectValue placeholder="Select..."/>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="HIGH">Wichtig</SelectItem>
-            <SelectItem value="MEDIUM">Mittel</SelectItem>
-            <SelectItem value="LOW">Niedrig</SelectItem>
+            <SelectItem
+              v-for="[value, prioLabel] in Object.entries(PriorityLabel)"
+              :key="value"
+              :value="value"
+            >
+              {{ prioLabel }}
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       <div>
         <label class="text-sm font-semibold">Status</label>
-        <Select v-model="task.status">
+        <Select v-model="request.status">
           <SelectTrigger>
             <SelectValue placeholder="Offen"/>
           </SelectTrigger>
           <SelectContent>
-            <!-- TODO bind taskStatus -->
-            <SelectItem value="open">Offen</SelectItem>
-            <SelectItem value="in_progress">In Arbeit</SelectItem>
-            <SelectItem value="done">Erledigt</SelectItem>
+            <SelectItem
+              v-for="[value, requestStatusLabel] in Object.entries(RequestStatusLabel)"
+              :key="value"
+              :value="value"
+            >
+              {{ requestStatusLabel }}
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -171,28 +188,18 @@ function addComment() {
         <label class="text-sm font-semibold">Zugewiesene Person</label>
 
         <Input
-          v-model="task.processItem.assigneeId"
+          v-model="request.processItem.assigneeId"
           placeholder="Keine Person zugewiesen"
-        />      </div>
+        /></div>
 
       <div>
         <label class="text-sm font-semibold">Geschätzte Zeit</label>
         <Input
           type="number"
-          v-model="task.estimatedTime"
+          v-model="request.estimatedScope"
           placeholder="Schätzung in Minuten"
         />
       </div>
-
-      <div>
-        <label class="text-sm font-semibold">Aufgewandte Zeit</label>
-        <Input
-          type="number"
-          v-model="task.workingTime"
-          placeholder="Zeit eintragen"
-        />
-      </div>
-
     </div>
   </div>
 </template>

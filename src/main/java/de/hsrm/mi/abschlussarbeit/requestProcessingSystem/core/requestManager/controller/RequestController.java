@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -25,6 +26,14 @@ public class RequestController {
         RequestDto request = requestService.getRequestById(id);
 
         return ResponseEntity.ok(request);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<RequestDto>> getAllRequests() {
+        log.info("REST request to get all requests");
+        List<RequestDto> requests = requestService.getAllRequests();
+
+        return ResponseEntity.ok(requests);
     }
 
     @PostMapping

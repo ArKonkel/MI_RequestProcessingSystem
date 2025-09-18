@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import TaskOverviewView from "@/views/TaskManagerView/TaskOverviewView.vue";
-import TaskEditView from "@/views/TaskManagerView/TaskEditView.vue";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
+import RequestOverviewView from "@/views/RequestManagerView/RequestOverviewView.vue";
+import RequestDetailView from "@/views/RequestManagerView/RequestDetailView.vue";
 
 </script>
 

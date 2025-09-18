@@ -42,6 +42,9 @@ public class RequestServiceImpl implements RequestService {
         requestEntity.setCreationDate(LocalDateTime.now()); //set creation date to current date
         requestEntity.setStatus(RequestStatus.RECEIVED);
 
+        //set customer
+        requestEntity.setCustomer(customerRepository.getReferenceById(request.getCustomerId()));
+
         Request savedRequest = requestRepository.save(requestEntity);
 
         return requestMapper.toDto(savedRequest);

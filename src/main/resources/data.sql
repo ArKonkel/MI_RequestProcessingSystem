@@ -126,10 +126,17 @@ VALUES (1, 1, 7, 'EXPERT'),
        (5, 2, 4, 'EXPERT'),
        (6, 2, 7, 'INTERMEDIATE');
 
+
+--------------------------------- CUSTOMER ------------------------------------------------
+
+INSERT INTO customer(id, first_name, last_name, address, email)
+VALUES (1, 'WeinfestAG', 'Biedemeyer', 'In den Dorfwiesen 18', 'biedemeyer@gmx.de');
+
 --------------------------------- Baseobject - PROCESS_ITEM ------------------------------------------------
 
 -- Process Items
 INSERT INTO process_item (id, title, description, creation_date)
+       --TASKS
 VALUES (1, 'Customizing der Software beim Kunden für Produktdruck',
         'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat',
         '2025-09-10'),
@@ -137,7 +144,11 @@ VALUES (1, 'Customizing der Software beim Kunden für Produktdruck',
         '2025-09-11'),
        (3, 'Fehleranalyse in Produktionsumgebung', 'Kritischen Bug in Logikschicht finden und beheben', '2025-09-12'),
        (4, 'Onboarding neuer Mitarbeiter', 'Schulung und Dokumentation bereitstellen', '2025-09-13'),
-       (5, 'Review Sicherheitskonzept', 'Überprüfung der aktuellen Sicherheitsmaßnahmen', '2025-09-14');
+       (5, 'Review Sicherheitskonzept', 'Überprüfung der aktuellen Sicherheitsmaßnahmen', '2025-09-14'),
+-- REQUESTS
+       (6, 'Anfrage Lagerschulung', 'Hallo. Wir möchten eine Lagerschulung haben.', '2025-09-14'),
+       (7, 'Idee zur Verbesserung von XX', 'Wir haben hier einen Verbesserungsvorschlag.', '2025-09-14'),
+       (8, 'Scannen funktioniert nicht mehr seit Update', 'Seit dem letzten Update funktioniert das scannen nicht.', '2025-09-14');
 
 -- Tasks (gehören zu den Process Items, gleiche ID wie process_item.id)
 INSERT INTO task (id, estimated_time, due_date, priority, status)
@@ -146,6 +157,13 @@ VALUES (1, 120, '2025-11-05', 'HIGH', 'OPEN'),
        (3, 60, '2025-09-30', 'HIGH', 'OPEN'),
        (4, 180, '2025-10-15', 'LOW', 'OPEN'),
        (5, 300, '2025-12-01', 'MEDIUM', 'OPEN');
+
+-- Requests (gehören zu den Process Items, gleiche ID wie process_item.id)
+INSERT INTO Request (id, priority, chargeable, estimated_scope, category, customer_id, status)
+VALUES (6, 'LOW', 'NOT_DEFINED', 0, 'TRAINING_REQUEST', 1, 'RECEIVED'),
+       (7, 'MEDIUM', 'NOT_DEFINED', 0, 'SUGGESTION_FOR_IMPROVEMENT', 1, 'RECEIVED'),
+       (8, 'HIGH', 'NOT_DEFINED', 0, 'BUG_REPORT',1, 'RECEIVED');
+
 
 SELECT setval('process_item_seq', (SELECT MAX(id) FROM task));
 --------------------------------- TASK_COMPETENCE ------------------------------------------------
@@ -161,8 +179,3 @@ VALUES (1, 7),
        (4, 9),
        (5, 7),
        (5, 9);
-
---------------------------------- CUSTOMER ------------------------------------------------
-
-INSERT INTO customer(id, first_name, last_name, address, email)
-VALUES (1, 'WeinfestAG', 'Biedemeyer', 'In den Dorfwiesen 18', 'biedemeyer@gmx.de')
