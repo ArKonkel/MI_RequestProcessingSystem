@@ -1,16 +1,13 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.service;
 
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.dto.ProcessItemDto;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.Priority;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.dto.CalculatedCapacityCalendarEntryDto;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.dto.MatchCalculationResultDto;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.dto.MatchingEmployeeForTaskDto;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.exception.TaskNotReadyForResourcePlanningException;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.dto.TaskDto;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.service.TaskManager;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.enums.CompetenceType;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.CompetenceDto;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.EmployeeDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.capacity.*;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.processItem.ProcessItemDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.processItem.Priority;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.task.TaskDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.task.TaskManager;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.competence.CompetenceType;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.competence.CompetenceDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.employee.EmployeeDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -1,15 +1,16 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.service;
 
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.dto.ProcessItemDto;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.enums.Priority;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.dto.CalculatedCapacityCalendarEntryDto;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.resourceCapacityPlanner.exception.NoCapacityUntilDueDateException;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.core.taskManager.dto.TaskDto;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.dto.CalendarDto;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.dto.CalendarEntryDto;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.service.CalendarModule;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.EmployeeDto;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.service.UserManager;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.capacity.CapacityCalculatorEngineImpl;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.processItem.ProcessItemDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.processItem.Priority;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.capacity.CalculatedCapacityCalendarEntryDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.capacity.NoCapacityUntilDueDateException;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.task.TaskDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.calendar.CalendarDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.calendar.CalendarEntryDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.calendar.CalendarModule;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.employee.EmployeeDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.user.UserManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

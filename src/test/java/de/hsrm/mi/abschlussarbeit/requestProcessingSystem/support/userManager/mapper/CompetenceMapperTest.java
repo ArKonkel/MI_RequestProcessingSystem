@@ -1,10 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.mapper;
 
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.enums.CompetenceType;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.CompetenceDto;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.entity.Expertise;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.entity.Qualification;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.entity.Responsibility;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.competence.*;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.competence.CompetenceType;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 

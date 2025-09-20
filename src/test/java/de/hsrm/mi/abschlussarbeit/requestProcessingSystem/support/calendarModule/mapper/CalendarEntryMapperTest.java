@@ -1,7 +1,8 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.mapper;
 
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.dto.CalendarEntryDto;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.entity.CalendarEntry;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.calendar.CalendarEntryDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.calendar.CalendarEntry;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.calendar.CalendarEntryMapper;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 

@@ -1,10 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.mapper;
 
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.dto.CalendarDto;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.dto.CalendarEntryDto;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.entity.Calendar;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.entity.CalendarEntry;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.entity.Employee;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.calendar.*;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.employee.Employee;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

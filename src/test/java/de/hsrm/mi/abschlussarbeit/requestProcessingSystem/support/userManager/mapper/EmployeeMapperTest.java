@@ -1,10 +1,11 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.mapper;
 
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.calendarModule.entity.Calendar;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.enums.ExpertiseLevel;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.EmployeeDto;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.EmployeeExpertiseDto;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.entity.*;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.calendar.Calendar;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.competence.Expertise;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.department.Department;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.employee.*;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.employee.ExpertiseLevel;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.user.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

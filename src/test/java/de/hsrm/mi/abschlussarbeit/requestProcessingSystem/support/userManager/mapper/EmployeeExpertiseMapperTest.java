@@ -1,12 +1,13 @@
 package de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.mapper;
 
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.enums.CompetenceType;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.enums.ExpertiseLevel;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.CompetenceDto;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.dto.EmployeeExpertiseDto;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.entity.Employee;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.entity.EmployeeExpertise;
-import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.support.userManager.entity.Expertise;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.employee.EmployeeExpertiseMapper;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.competence.CompetenceType;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.employee.ExpertiseLevel;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.competence.CompetenceDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.employee.EmployeeExpertiseDto;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.employee.Employee;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.employee.EmployeeExpertise;
+import de.hsrm.mi.abschlussarbeit.requestProcessingSystem.competence.Expertise;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
