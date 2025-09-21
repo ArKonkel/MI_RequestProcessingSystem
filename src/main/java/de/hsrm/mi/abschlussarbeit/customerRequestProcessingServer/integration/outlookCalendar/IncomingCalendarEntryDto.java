@@ -1,4 +1,4 @@
-package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar;
+package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlookCalendar;
 
 
 public record IncomingCalendarEntryDto(String id) {

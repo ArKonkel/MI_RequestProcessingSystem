@@ -1,10 +1,10 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.UpdateProcessItemDto;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.UpdateTaskDto;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskManager;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserDto;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserManager;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,15 +14,15 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class ForwardingServiceImpl implements ForwardingService {
 
-    private final TaskManager taskManager;
+    private final TaskService taskService;
 
-    private final UserManager userManager;
+    private final UserService userService;
 
     @Override
     public void assignTaskToUserOfEmployee(Long taskId, Long employeeId) {
         log.info("Assigning task {} to user of employee {}", taskId, employeeId);
 
-        UserDto userDto = userManager.getUserOfEmployee(employeeId);
+        UserDto userDto = userService.getUserOfEmployee(employeeId);
 
         UpdateProcessItemDto processItemDto = UpdateProcessItemDto.builder()
                 .assigneeId(userDto.id())
@@ -32,6 +32,6 @@ public class ForwardingServiceImpl implements ForwardingService {
                 processItem(processItemDto).
                 build();
 
-        taskManager.updateTask(taskId, updateTaskDto);
+        taskService.updateTask(taskId, updateTaskDto);
     }
 }

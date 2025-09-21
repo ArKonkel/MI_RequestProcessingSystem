@@ -2,7 +2,6 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.o
 
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarEntryDto;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.IncomingCalendarEntryDto;
 
 public interface OutlookCalendarParser {
 

@@ -2,17 +2,17 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarEntryDto;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarModule;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.CompetenceDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.CompetenceType;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeExpertiseDto;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.ExpertiseLevel;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.Priority;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItemDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskDto;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskManager;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserManager;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,13 +34,13 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class CapacityServiceImplTest {
     @Mock
-    TaskManager taskManager;
+    TaskService taskService;
 
     @Mock
-    UserManager userManager;
+    EmployeeService employeeService;
 
     @Mock
-    CalendarModule calendarModule;
+    CalendarService calendarService;
 
     @Spy
     @InjectMocks
@@ -79,7 +79,7 @@ class CapacityServiceImplTest {
         List<EmployeeDto> earliestEmployees = List.of(employee1);
 
         // Mocking dependencies
-        Mockito.when(taskManager.getTaskById(taskId)).thenReturn(taskDto);
+        Mockito.when(taskService.getTaskById(taskId)).thenReturn(taskDto);
 
         //stubbing own functions (Spy)
         doReturn(competenceMatches)
@@ -134,7 +134,7 @@ class CapacityServiceImplTest {
         TaskDto taskDto = createTaskDto(taskId, taskTitle, estimatedTime, dueDate);
 
         // WHEN + THEN
-        Mockito.when(taskManager.getTaskById(taskId)).thenReturn(taskDto);
+        Mockito.when(taskService.getTaskById(taskId)).thenReturn(taskDto);
 
         assertThrows(
                 TaskNotReadyForResourcePlanningException.class,
@@ -152,7 +152,7 @@ class CapacityServiceImplTest {
         TaskDto taskDto = createTaskDto(taskId, taskTitle, estimatedTime, dueDate);
 
         // WHEN + THEN
-        Mockito.when(taskManager.getTaskById(taskId)).thenReturn(taskDto);
+        Mockito.when(taskService.getTaskById(taskId)).thenReturn(taskDto);
 
         assertThrows(
                 TaskNotReadyForResourcePlanningException.class,
@@ -170,7 +170,7 @@ class CapacityServiceImplTest {
         TaskDto taskDto = createTaskDtoWithoutCompetence(taskId, taskTitle, estimatedTime, dueDate);
 
         // WHEN + THEN
-        Mockito.when(taskManager.getTaskById(taskId)).thenReturn(taskDto);
+        Mockito.when(taskService.getTaskById(taskId)).thenReturn(taskDto);
 
         assertThrows(
                 TaskNotReadyForResourcePlanningException.class,
@@ -210,8 +210,8 @@ class CapacityServiceImplTest {
         );
 
         // WHEN
-        when(userManager.getAllEmployeeExpertises()).thenReturn(List.of(employee1Expertise1, employee1Expertise3, employee2Expertise1, employee2Expertise2));
-        when(userManager.getEmployeesByIds(List.of(employee1.id(), employee2.id()))).thenReturn(List.of(employee1, employee2));
+        when(employeeService.getAllEmployeeExpertises()).thenReturn(List.of(employee1Expertise1, employee1Expertise3, employee2Expertise1, employee2Expertise2));
+        when(employeeService.getEmployeesByIds(List.of(employee1.id(), employee2.id()))).thenReturn(List.of(employee1, employee2));
 
         Map<EmployeeDto, Integer> result = resourceCapacityService.findBestMatchingEmployees(taskDto);
 
@@ -268,8 +268,8 @@ class CapacityServiceImplTest {
         );
 
         // WHEN
-        Mockito.when(userManager.getEmployeeById(employeeId)).thenReturn(employeeDto);
-        Mockito.when(calendarModule.getCalendarOfEmployee(employeeId, firstDay, lastDayToCheck))
+        Mockito.when(employeeService.getEmployeeById(employeeId)).thenReturn(employeeDto);
+        Mockito.when(calendarService.getCalendarOfEmployee(employeeId, firstDay, lastDayToCheck))
                 .thenReturn(calendarDto);
 
         List<CalculatedCapacityCalendarEntryDto> result =
@@ -334,8 +334,8 @@ class CapacityServiceImplTest {
         );
 
         // WHEN
-        Mockito.when(userManager.getEmployeeById(employeeId)).thenReturn(employeeDto);
-        Mockito.when(calendarModule.getCalendarOfEmployee(employeeId, firstDay, lastDayToCheck))
+        Mockito.when(employeeService.getEmployeeById(employeeId)).thenReturn(employeeDto);
+        Mockito.when(calendarService.getCalendarOfEmployee(employeeId, firstDay, lastDayToCheck))
                 .thenReturn(calendarDto);
 
         List<CalculatedCapacityCalendarEntryDto> result =
@@ -413,8 +413,8 @@ class CapacityServiceImplTest {
         );
 
         // WHEN
-        Mockito.when(userManager.getEmployeeById(employeeId)).thenReturn(employeeDto);
-        Mockito.when(calendarModule.getCalendarOfEmployee(employeeId, firstDay, lastDayToCheck))
+        Mockito.when(employeeService.getEmployeeById(employeeId)).thenReturn(employeeDto);
+        Mockito.when(calendarService.getCalendarOfEmployee(employeeId, firstDay, lastDayToCheck))
                 .thenReturn(calendarDto);
 
         //Excepted: Throws Exception, because in the given range is no capacity for the task
@@ -470,8 +470,8 @@ class CapacityServiceImplTest {
         );
 
         // WHEN
-        Mockito.when(userManager.getEmployeeById(employeeId)).thenReturn(employeeDto);
-        Mockito.when(calendarModule.getCalendarOfEmployee(employeeId, friday, monday))
+        Mockito.when(employeeService.getEmployeeById(employeeId)).thenReturn(employeeDto);
+        Mockito.when(calendarService.getCalendarOfEmployee(employeeId, friday, monday))
                 .thenReturn(calendarDto);
 
         List<CalculatedCapacityCalendarEntryDto> result =

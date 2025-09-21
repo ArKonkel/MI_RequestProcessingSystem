@@ -2,14 +2,14 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarEntryDto;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarModule;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeExpertiseDto;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.ExpertiseLevel;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.InteractionManager;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskDto;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskManager;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserManager;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,13 +24,13 @@ import java.util.*;
 @Slf4j
 public class CapacityServiceImpl implements CapacityService, TaskMatcher, CapacityCalculatorEngine {
 
-    private final TaskManager taskManager;
+    private final TaskService taskService;
 
-    private final CalendarModule calendarModule;
+    private final CalendarService calendarService;
 
     private final InteractionManager interactionManager;
 
-    private final UserManager userManager;
+    private final EmployeeService employeeService;
 
     /**
      * Finds the best matches for a given task.
@@ -42,7 +42,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
     @Override
     public MatchingEmployeeForTaskDto findBestMatches(Long taskId) {
         log.info("Finding best matches for task {}", taskId);
-        TaskDto task = taskManager.getTaskById(taskId);
+        TaskDto task = taskService.getTaskById(taskId);
 
         checkIfTaskReadyForResourcePlanning(task);
 
@@ -92,7 +92,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
         log.info("Assigning task {} to employee {}", taskId, selectedMatch.employee().id());
 
         interactionManager.assignTaskToUserOfEmployee(taskId, selectedMatch.employee().id());
-        calendarModule.createCalendarEntriesForTask(taskId, selectedMatch.employee().calendarId(), selectedMatch.calculatedCalendarCapacities());
+        calendarService.createCalendarEntriesForTask(taskId, selectedMatch.employee().calendarId(), selectedMatch.calculatedCalendarCapacities());
     }
 
     private void checkIfTaskReadyForResourcePlanning(TaskDto task) {
@@ -127,10 +127,10 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
     public List<CalculatedCapacityCalendarEntryDto> calculateFreeCapacity(TaskDto taskDto, Long employeeId, LocalDate from, LocalDate to) {
         log.info("Calculating free capacity for task {} for employee {}", taskDto.processItem().id(), employeeId);
 
-        EmployeeDto employeeDto = userManager.getEmployeeById(employeeId);
+        EmployeeDto employeeDto = employeeService.getEmployeeById(employeeId);
         long dailyWorkingMinutes = employeeDto.workingHoursPerDay().longValue() * 60;
 
-        CalendarDto calendarDto = calendarModule.getCalendarOfEmployee(employeeId, from, to);
+        CalendarDto calendarDto = calendarService.getCalendarOfEmployee(employeeId, from, to);
         List<CalendarEntryDto> calendarEntryDtos = calendarDto.entries();
 
         Long remainingTaskTime = taskDto.estimatedTime();
@@ -235,7 +235,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
      * @return a Map with the employees and the best match defined by the number. Higher number is better match
      */
     public Map<EmployeeDto, Integer> findBestMatchingEmployees(TaskDto task) {
-        List<EmployeeExpertiseDto> allEmployeeExpertises = userManager.getAllEmployeeExpertises();
+        List<EmployeeExpertiseDto> allEmployeeExpertises = employeeService.getAllEmployeeExpertises();
         Map<Long, Integer> matchesById = new HashMap<>();
         Map<EmployeeDto, Integer> matchesByEmployee = new HashMap<>();
 
@@ -256,7 +256,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
         }
 
         List<Long> employeeIds = matchesById.keySet().stream().toList();
-        List<EmployeeDto> employees = userManager.getEmployeesByIds(employeeIds);
+        List<EmployeeDto> employees = employeeService.getEmployeesByIds(employeeIds);
 
         for (EmployeeDto employee : employees) {
             if (!matchesByEmployee.containsKey(employee)) {
