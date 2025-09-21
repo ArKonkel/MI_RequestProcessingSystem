@@ -15,6 +15,8 @@ public interface EmployeeExpertiseMapper {
     EmployeeExpertiseDto toDto(EmployeeExpertise employeeExpertise);
 
     @Mapping(target = "employee", ignore = true)
+    @Mapping(target = "expertise.employees", ignore = true)
+    @Mapping(target = "expertise.tasks", ignore = true)
     EmployeeExpertise toEntity(EmployeeExpertiseDto dto);
 
 }

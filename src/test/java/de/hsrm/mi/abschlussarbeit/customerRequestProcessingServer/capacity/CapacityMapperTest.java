@@ -1,17 +1,21 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.Employee;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeDto;
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@SpringBootTest
 class CapacityMapperTest {
 
-    private final CapacityMapper capacityMapper = Mappers.getMapper(CapacityMapper.class);
+    @Autowired
+    private CapacityMapper capacityMapper;
 
     @Test
     void testMappingMatchingEmployeeCapacitiesVOtoDto() {
@@ -41,7 +45,23 @@ class CapacityMapperTest {
         assertEquals(1, dto.getMatchCalculationResult().size());
 
         CalculatedCapacitiesOfMatchDto matchDto = dto.getMatchCalculationResult().get(0);
-        assertEquals(employee, matchDto.getEmployee());
+
+        EmployeeDto employeeDto = new EmployeeDto(
+                employee.getId(),
+                employee.getFirstName(),
+                employee.getLastName(),
+                employee.getEmail(),
+                employee.getPhoneNumber(),
+                employee.getHireDate(),
+                employee.getWorkingHoursPerDay(),
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        assertEquals(employeeDto, matchDto.getEmployee());
         assertEquals(7L, matchDto.getCompetencePoints());
         assertEquals(true, matchDto.getCanCompleteTaskEarliest());
         assertEquals(1, matchDto.getCalculatedCalendarCapacities().size());
