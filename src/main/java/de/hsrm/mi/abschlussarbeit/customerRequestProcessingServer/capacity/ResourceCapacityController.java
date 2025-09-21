@@ -26,7 +26,7 @@ public class ResourceCapacityController {
     public ResponseEntity<Void> assignTaskToEmployee(@RequestBody MatchCalculationResultDto selectedMatch, @PathVariable Long taskId) {
         log.info("REST request to assign assign employee {} to task {}", selectedMatch.employee().id(), taskId);
 
-        resourceCapacityService.assignTaskToEmployee(taskId, selectedMatch);
+        resourceCapacityService.assignMatchToEmployee(taskId, selectedMatch);
 
         return ResponseEntity.ok().build();
     }
