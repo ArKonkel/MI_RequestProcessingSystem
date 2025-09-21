@@ -18,7 +18,7 @@ import java.util.*;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class CapacityServiceImpl implements CapacityService, TaskMatcher, CapacityCalculatorEngine {
+public class CapacityServiceImpl implements CapacityService, TaskMatcher, CapacityCalculator {
 
     private final TaskService taskService;
 
