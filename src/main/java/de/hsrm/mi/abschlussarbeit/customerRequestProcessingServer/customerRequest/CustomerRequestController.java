@@ -13,31 +13,31 @@ import java.util.List;
 @Slf4j
 @AllArgsConstructor
 @RequestMapping("/requests")
-public class RequestController {
+public class CustomerRequestController {
 
-    private final RequestService requestService;
+    private final CustomerRequestService customerRequestService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<RequestDto> getRequestById(@PathVariable Long id) {
+    public ResponseEntity<CustomerRequestDto> getRequestById(@PathVariable Long id) {
         log.info("REST request to get request with id {}", id);
-        RequestDto request = requestService.getRequestById(id);
+        CustomerRequestDto request = customerRequestService.getRequestById(id);
 
         return ResponseEntity.ok(request);
     }
 
     @GetMapping
-    public ResponseEntity<List<RequestDto>> getAllRequests() {
+    public ResponseEntity<List<CustomerRequestDto>> getAllRequests() {
         log.info("REST request to get all requests");
-        List<RequestDto> requests = requestService.getAllRequests();
+        List<CustomerRequestDto> requests = customerRequestService.getAllRequests();
 
         return ResponseEntity.ok(requests);
     }
 
     @PostMapping
-    ResponseEntity<RequestDto> createRequest(@Valid @RequestBody RequestCreateDto requestDto) {
+    ResponseEntity<CustomerRequestDto> createRequest(@Valid @RequestBody CustomerRequestCreateDto requestDto) {
         log.info("REST request to create request {}", requestDto);
 
-        RequestDto createdRequest = requestService.createRequest(requestDto);
+        CustomerRequestDto createdRequest = customerRequestService.createRequest(requestDto);
         URI location = URI.create("/api/requests/" + createdRequest.processItem().id());
 
         return ResponseEntity.created(location).body(createdRequest);

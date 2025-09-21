@@ -2,5 +2,5 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerReque
 
 public interface ValidationService {
 
-    void validateRequestCreation(RequestCreateDto requestCreateDto);
+    void validateRequestCreation(CustomerRequestCreateDto requestCreateDto);
 }

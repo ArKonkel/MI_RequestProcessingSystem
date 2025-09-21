@@ -19,7 +19,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Request extends ProcessItem {
+public class CustomerRequest extends ProcessItem {
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -29,7 +29,7 @@ public class Request extends ProcessItem {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private RequestStatus status;
+    private CustomerRequestStatus status;
 
     @NotNull
     @Enumerated(EnumType.STRING)

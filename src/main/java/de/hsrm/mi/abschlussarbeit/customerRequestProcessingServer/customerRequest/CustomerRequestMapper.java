@@ -6,14 +6,14 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 /**
- * Mapper class for {@link Request} and {@link RequestDto}.
+ * Mapper class for {@link CustomerRequest} and {@link CustomerRequestDto}.
  */
 @Mapper(componentModel = "spring", uses = {ProcessItemMapper.class, CustomerMapper.class})
-public interface RequestMapper {
+public interface CustomerRequestMapper {
 
     @Mapping(target = "processItem", source = ".")
     @Mapping(target = "category", source = "category")
-    RequestDto toDto(Request request);
+    CustomerRequestDto toDto(CustomerRequest request);
 
     @Mapping(target = "estimatedScope", ignore = true)
     @Mapping(target = "status", ignore = true)
@@ -28,7 +28,7 @@ public interface RequestMapper {
     @Mapping(target = "customer", ignore = true) //is handled in RequestService
     @Mapping(target = "title", source = "processItem.title")
     @Mapping(target = "description", source = "processItem.description")
-    Request toEntity(RequestCreateDto requestDto);
+    CustomerRequest toEntity(CustomerRequestCreateDto requestDto);
 }
 
 

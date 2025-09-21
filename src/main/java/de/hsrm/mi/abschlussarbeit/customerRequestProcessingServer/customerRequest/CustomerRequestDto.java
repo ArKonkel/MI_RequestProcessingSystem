@@ -4,11 +4,11 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.Pr
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.Priority;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customer.CustomerDto;
 
-public record RequestDto(
+public record CustomerRequestDto(
         ProcessItemDto processItem,
         Priority priority,
         Long estimatedScope,
-        RequestStatus status,
+        CustomerRequestStatus status,
         Chargeable chargeable,
         Category category,
         CustomerDto customer

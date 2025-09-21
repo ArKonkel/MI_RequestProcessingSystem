@@ -1,6 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest;
 
-public enum RequestStatus {
+public enum CustomerRequestStatus {
     RECEIVED,
     CLASSIFICATION,
     SCOPE_CHECK,

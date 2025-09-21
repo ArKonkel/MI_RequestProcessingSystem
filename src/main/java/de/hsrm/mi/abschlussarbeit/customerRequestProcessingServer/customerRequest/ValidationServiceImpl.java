@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class ValidationServiceImpl implements ValidationService {
 
     @Override
-    public void validateRequestCreation(RequestCreateDto requestCreateDto) {
+    public void validateRequestCreation(CustomerRequestCreateDto requestCreateDto) {
 
         switch (requestCreateDto.getCategory()){
             case Category.SUGGESTION_FOR_IMPROVEMENT -> {

@@ -2,5 +2,5 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerReque
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RequestRepository extends JpaRepository<Request, Long> {
+public interface RequestRepository extends JpaRepository<CustomerRequest, Long> {
 }

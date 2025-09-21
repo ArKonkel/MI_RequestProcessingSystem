@@ -12,18 +12,18 @@ import java.util.List;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class RequestServiceImpl implements RequestService {
+public class CustomerCustomerRequestServiceImpl implements CustomerRequestService {
 
     private final RequestRepository requestRepository;
 
     private final CustomerRepository customerRepository;
 
-    private final RequestMapper requestMapper;
+    private final CustomerRequestMapper requestMapper;
 
     private final ValidationService validationService;
 
     @Override
-    public RequestDto createRequest(RequestCreateDto request) {
+    public CustomerRequestDto createRequest(CustomerRequestCreateDto request) {
         log.info("Creating request {}", request);
 
         if (!customerRepository.existsById(request.getCustomerId())) {
@@ -32,26 +32,26 @@ public class RequestServiceImpl implements RequestService {
 
         validationService.validateRequestCreation(request);
 
-        Request requestEntity = requestMapper.toEntity(request);
+        CustomerRequest requestEntity = requestMapper.toEntity(request);
         requestEntity.setCreationDate(LocalDateTime.now()); //set creation date to current date
-        requestEntity.setStatus(RequestStatus.RECEIVED);
+        requestEntity.setStatus(CustomerRequestStatus.RECEIVED);
 
         //set customer
         requestEntity.setCustomer(customerRepository.getReferenceById(request.getCustomerId()));
 
-        Request savedRequest = requestRepository.save(requestEntity);
+        CustomerRequest savedRequest = requestRepository.save(requestEntity);
 
         return requestMapper.toDto(savedRequest);
     }
 
     @Override
-    public List<RequestDto> getAllRequests() {
+    public List<CustomerRequestDto> getAllRequests() {
         log.info("Getting all requests");
         return requestRepository.findAll().stream().map(requestMapper::toDto).toList();
     }
 
     @Override
-    public RequestDto getRequestById(Long id) {
+    public CustomerRequestDto getRequestById(Long id) {
         log.info("Getting request with id {}", id);
         return requestMapper.toDto(requestRepository.getReferenceById(id));
     }

@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Builder
 @Data
-public class RequestCreateDto {
+public class CustomerRequestCreateDto {
     private ProcessItemCreateDto processItem;
     private Priority priority;
     private Category category;

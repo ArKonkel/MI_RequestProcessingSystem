@@ -1,9 +1,9 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task;
 
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequest;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItem;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.Priority;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.Project;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.Request;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarEntry;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.Competence;
 import jakarta.persistence.*;
@@ -72,7 +72,7 @@ public class Task extends ProcessItem {
 
     @ManyToOne
     @JoinColumn(name = "request_id")
-    private Request request;
+    private CustomerRequest request;
 
     @ManyToOne
     @JoinColumn(name = "project_id")

@@ -1,6 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task;
 
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.Request;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequest;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.UpdateProcessItemDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.Project;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
@@ -91,7 +91,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         if (dto.getRequestId() != null) {
-            Request request = new Request();
+            CustomerRequest request = new CustomerRequest();
             request.setId(dto.getRequestId());
             task.setRequest(request);
         }

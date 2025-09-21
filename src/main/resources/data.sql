@@ -159,7 +159,7 @@ VALUES (1, 120, '2025-11-05', 'HIGH', 'OPEN'),
        (5, 300, '2025-12-01', 'MEDIUM', 'OPEN');
 
 -- Requests (gehören zu den Process Items, gleiche ID wie process_item.id)
-INSERT INTO Request (id, priority, chargeable, estimated_scope, category, customer_id, status)
+INSERT INTO customer_request (id, priority, chargeable, estimated_scope, category, customer_id, status)
 VALUES (6, 'LOW', 'NOT_DEFINED', 0, 'TRAINING_REQUEST', 1, 'RECEIVED'),
        (7, 'MEDIUM', 'NOT_DEFINED', 0, 'SUGGESTION_FOR_IMPROVEMENT', 1, 'RECEIVED'),
        (8, 'HIGH', 'NOT_DEFINED', 0, 'BUG_REPORT',1, 'RECEIVED');

@@ -1,7 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project;
 
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequest;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItem;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.Request;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.Task;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,7 +28,7 @@ public class Project extends ProcessItem {
 
     @ManyToOne
     @JoinColumn(name = "request_id")
-    private Request request;
+    private CustomerRequest request;
 
     @OneToMany(mappedBy = "project")
     private Set<Task> tasks;

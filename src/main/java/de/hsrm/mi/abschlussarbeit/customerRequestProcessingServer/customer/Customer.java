@@ -1,6 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customer;
 
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.Request;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,5 +29,5 @@ public class Customer {
     private String address;
 
     @OneToMany(mappedBy = "customer")
-    private Set<Request> requests;
+    private Set<CustomerRequest> requests;
 }
