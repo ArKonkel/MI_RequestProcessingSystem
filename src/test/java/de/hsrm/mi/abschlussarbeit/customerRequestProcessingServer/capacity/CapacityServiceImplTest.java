@@ -1,9 +1,8 @@
-package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.core.resourceCapacityPlanner.service;
+package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarEntryDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarModule;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity.*;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.CompetenceDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.CompetenceType;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeDto;
