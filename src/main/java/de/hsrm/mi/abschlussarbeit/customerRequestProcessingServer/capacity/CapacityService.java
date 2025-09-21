@@ -4,6 +4,6 @@ public interface CapacityService {
 
     MatchingEmployeeForTaskDto findBestMatches(Long taskId);
 
-    void assignMatchToEmployee(Long taskId, MatchCalculationResultDto selectedMatch);
+    void assignMatchToEmployee(Long taskId, MatchCalculationResultVO selectedMatch);
 
 }

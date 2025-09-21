@@ -1,17 +1,16 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity;
 
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarDto;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarEntryDto;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.Calendar;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarEntry;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarService;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.CompetenceDto;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.CompetenceType;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeDto;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeExpertiseDto;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.Competence;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.Expertise;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.Employee;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeExpertise;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.ExpertiseLevel;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.Priority;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItemDto;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskDto;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.Task;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,45 +53,54 @@ class CapacityServiceImplTest {
         Long estimatedTime = 120L;
         LocalDate dueDate = LocalDate.now().plusDays(14);
         Long taskId = 1L;
-        TaskDto taskDto = createTaskDto(taskId, taskTitle, estimatedTime, dueDate);
+        Task task = createTask(taskId, taskTitle, estimatedTime, dueDate);
 
         // Employees
-        EmployeeDto employee1 = createEmployeeDto(1L, "Max", "Mustermann", BigDecimal.valueOf(8), 10L);
-        EmployeeDto employee2 = createEmployeeDto(2L, "Sabine", "Mustermann", BigDecimal.valueOf(8), 20L);
+        Employee employee1 = new Employee();
+        employee1.setId(1L);
+        employee1.setFirstName("Max");
+        employee1.setLastName("Mustermann");
+        employee1.setWorkingHoursPerDay(BigDecimal.valueOf(8));
+
+        Employee employee2 = new Employee();
+        employee2.setId(2L);
+        employee2.setFirstName("Sabine");
+        employee2.setLastName("Mustermann");
+        employee2.setWorkingHoursPerDay(BigDecimal.valueOf(8));
 
         // Competence points
-        Map<EmployeeDto, Integer> competenceMatches = Map.of(
+        Map<Employee, Integer> competenceMatches = Map.of(
                 employee1, 80,
                 employee2, 70
         );
 
         // Calculated capacities
-        List<CalculatedCapacityCalendarEntryDto> capacitiesEmployee1 = List.of(
+        List<CalculatedCapacityCalendarEntryVO> capacitiesEmployee1 = List.of(
                 createCalculatedCapacityEntryDto("Task Slot 1", LocalDate.parse("2025-09-08"), 60L),
                 createCalculatedCapacityEntryDto("Task Slot 2", LocalDate.parse("2025-09-09"), 60L)
         );
-        List<CalculatedCapacityCalendarEntryDto> capacitiesEmployee2 = List.of(
+        List<CalculatedCapacityCalendarEntryVO> capacitiesEmployee2 = List.of(
                 createCalculatedCapacityEntryDto("Task Slot 1", LocalDate.parse("2025-09-09"), 120L)
         );
 
         // Employees who can complete earliest
-        List<EmployeeDto> earliestEmployees = List.of(employee1);
+        List<Employee> earliestEmployees = List.of(employee1);
 
         // Mocking dependencies
-        Mockito.when(taskService.getTaskById(taskId)).thenReturn(taskDto);
+        when(taskService.getTaskById(taskId)).thenReturn(task);
 
         //stubbing own functions (Spy)
         doReturn(competenceMatches)
                 .when(resourceCapacityService)
-                .findBestMatchingEmployees(taskDto);
+                .findBestMatchingEmployees(task);
 
         doReturn(capacitiesEmployee1)
                 .when(resourceCapacityService)
-                .calculateFreeCapacity(taskDto, employee1.id(), LocalDate.now(), dueDate);
+                .calculateFreeCapacity(task, employee1.getId(), LocalDate.now(), dueDate);
 
         doReturn(capacitiesEmployee2)
                 .when(resourceCapacityService)
-                .calculateFreeCapacity(taskDto, employee2.id(), LocalDate.now(), dueDate);
+                .calculateFreeCapacity(task, employee2.getId(), LocalDate.now(), dueDate);
 
         doReturn(earliestEmployees)
                 .when(resourceCapacityService)
@@ -102,10 +110,10 @@ class CapacityServiceImplTest {
         MatchingEmployeeForTaskDto result = resourceCapacityService.findBestMatches(taskId);
 
         // THEN
-        assertEquals(taskDto, result.task());
+        assertEquals(task.getId(), result.taskId());
         assertEquals(2, result.matchCalculationResult().size());
 
-        MatchCalculationResultDto resultEmployee1 = result.matchCalculationResult().stream()
+        MatchCalculationResultVO resultEmployee1 = result.matchCalculationResult().stream()
                 .filter(res -> res.employee().equals(employee1))
                 .findFirst()
                 .orElseThrow();
@@ -114,7 +122,7 @@ class CapacityServiceImplTest {
         assertTrue(resultEmployee1.canCompleteTaskEarliest());
         assertEquals(capacitiesEmployee1, resultEmployee1.calculatedCalendarCapacities());
 
-        MatchCalculationResultDto resultEmployee2 = result.matchCalculationResult().stream()
+        MatchCalculationResultVO resultEmployee2 = result.matchCalculationResult().stream()
                 .filter(res -> res.employee().equals(employee2))
                 .findFirst()
                 .orElseThrow();
@@ -131,17 +139,16 @@ class CapacityServiceImplTest {
         Long estimatedTime = 120L;
         LocalDate dueDate = LocalDate.parse("1999-09-12"); // due date in the past
         Long taskId = 1L;
-        TaskDto taskDto = createTaskDto(taskId, taskTitle, estimatedTime, dueDate);
+        Task task = createTask(taskId, taskTitle, estimatedTime, dueDate);
 
         // WHEN + THEN
-        Mockito.when(taskService.getTaskById(taskId)).thenReturn(taskDto);
+        when(taskService.getTaskById(taskId)).thenReturn(task);
 
         assertThrows(
                 TaskNotReadyForResourcePlanningException.class,
                 () -> resourceCapacityService.findBestMatches(taskId)
         );
     }
-
     @Test
     void findBestMatches_ShouldThrowTaskNotReadyForResourcePlanningException_NoEstimation() {
         // GIVEN
@@ -149,10 +156,10 @@ class CapacityServiceImplTest {
         Long estimatedTime = 0L;
         LocalDate dueDate = LocalDate.parse("3000-09-12");
         Long taskId = 1L;
-        TaskDto taskDto = createTaskDto(taskId, taskTitle, estimatedTime, dueDate);
+        Task task = createTask(taskId, taskTitle, estimatedTime, dueDate);
 
         // WHEN + THEN
-        Mockito.when(taskService.getTaskById(taskId)).thenReturn(taskDto);
+        when(taskService.getTaskById(taskId)).thenReturn(task);
 
         assertThrows(
                 TaskNotReadyForResourcePlanningException.class,
@@ -167,10 +174,15 @@ class CapacityServiceImplTest {
         Long estimatedTime = 120L;
         LocalDate dueDate = LocalDate.parse("3000-09-12");
         Long taskId = 1L;
-        TaskDto taskDto = createTaskDtoWithoutCompetence(taskId, taskTitle, estimatedTime, dueDate);
+
+        Task task = new Task();
+        task.setId(taskId);
+        task.setEstimatedTime(estimatedTime);
+        task.setDueDate(dueDate);
+        task.setTitle(taskTitle);
 
         // WHEN + THEN
-        Mockito.when(taskService.getTaskById(taskId)).thenReturn(taskDto);
+        when(taskService.getTaskById(taskId)).thenReturn(task);
 
         assertThrows(
                 TaskNotReadyForResourcePlanningException.class,
@@ -181,39 +193,70 @@ class CapacityServiceImplTest {
     @Test
     void findBestMatchingEmployees() {
         // GIVEN
-        CompetenceDto expertise1 = new CompetenceDto(1L, "Customizing", "", CompetenceType.EXPERTISE);
-        CompetenceDto expertise2 = new CompetenceDto(2L, "Coding", "", CompetenceType.EXPERTISE);
-        CompetenceDto expertise3 = new CompetenceDto(3L, "Printing", "", CompetenceType.EXPERTISE);
+        Expertise expertise1 = new Expertise();
+        expertise1.setId(1L);
+        expertise1.setName("Customizing");
 
-        TaskDto taskDto = createTaskDto(1L, "Customizing der Software", 120L, LocalDate.parse("2025-11-05"),
+        Expertise expertise2 = new Expertise();
+        expertise2.setId(2L);
+        expertise2.setName("Coding");
+
+        Expertise expertise3 = new Expertise();
+        expertise3.setId(3L);
+        expertise3.setName("Printing");
+
+        Task task = createTask(1L, "Customizing der Software", 120L, LocalDate.parse("2025-11-05"),
                 Priority.HIGH, Set.of(expertise1, expertise3));
 
-        EmployeeExpertiseDto employee1Expertise1 = new EmployeeExpertiseDto(1L, 1L, expertise1, ExpertiseLevel.ADVANCED);
-        EmployeeExpertiseDto employee1Expertise3 = new EmployeeExpertiseDto(2L, 1L, expertise3, ExpertiseLevel.EXPERT);
-        EmployeeExpertiseDto employee2Expertise1 = new EmployeeExpertiseDto(3L, 2L, expertise1, ExpertiseLevel.BEGINNER);
-        EmployeeExpertiseDto employee2Expertise2 = new EmployeeExpertiseDto(4L, 2L, expertise2, ExpertiseLevel.EXPERT);
+        // Employees
+        Employee employee1 = new Employee();
+        employee1.setId(1L);
+        employee1.setFirstName("Max");
 
-        EmployeeDto employee1 = createEmployee(1L, "Max", Set.of(
-                employee2Expertise1, employee2Expertise2
-        ));
+        Employee employee2 = new Employee();
+        employee2.setId(2L);
+        employee2.setFirstName("Sabine");
 
-        EmployeeDto employee2 = createEmployee(2L, "Sabine", Set.of(
-                employee1Expertise1, employee1Expertise3
-        ));
+        Employee employee3 = new Employee();
+        employee3.setId(3L);
+        employee3.setFirstName("Peter");
 
-        EmployeeDto employee3 = createEmployee(3L, "Freddy", Set.of());
+        // EmployeeExpertise
+        EmployeeExpertise ee1 = new EmployeeExpertise();
+        ee1.setId(1L);
+        ee1.setEmployee(employee1);
+        ee1.setExpertise(expertise1);
+        ee1.setLevel(ExpertiseLevel.ADVANCED);
 
+        EmployeeExpertise ee2 = new EmployeeExpertise();
+        ee2.setId(2L);
+        ee2.setEmployee(employee1);
+        ee2.setExpertise(expertise3);
+        ee2.setLevel(ExpertiseLevel.EXPERT);
 
-        Map<EmployeeDto, Integer> expected = Map.of(
-                employee1, 7, //Employee1 has a sum of 7 points because he has expertise1 and expertise3
+        EmployeeExpertise ee3 = new EmployeeExpertise();
+        ee3.setId(3L);
+        ee3.setEmployee(employee2);
+        ee3.setExpertise(expertise1);
+        ee3.setLevel(ExpertiseLevel.BEGINNER);
+
+        EmployeeExpertise ee4 = new EmployeeExpertise();
+        ee4.setId(4L);
+        ee4.setEmployee(employee2);
+        ee4.setExpertise(expertise2);
+        ee4.setLevel(ExpertiseLevel.EXPERT);
+
+        // Expected Result
+        Map<Employee, Integer> expected = Map.of(
+                employee1, 7, // Expertise1 + Expertise3
                 employee2, 1
         );
 
         // WHEN
-        when(employeeService.getAllEmployeeExpertises()).thenReturn(List.of(employee1Expertise1, employee1Expertise3, employee2Expertise1, employee2Expertise2));
-        when(employeeService.getEmployeesByIds(List.of(employee1.id(), employee2.id()))).thenReturn(List.of(employee1, employee2));
+        when(employeeService.getAllEmployeeExpertises())
+                .thenReturn(List.of(ee1, ee2, ee3, ee4));
 
-        Map<EmployeeDto, Integer> result = resourceCapacityService.findBestMatchingEmployees(taskDto);
+        Map<Employee, Integer> result = resourceCapacityService.findBestMatchingEmployees(task);
 
         // THEN
         assertEquals(expected, result);
@@ -238,7 +281,7 @@ class CapacityServiceImplTest {
         LocalDate lastDayToCheck = firstDay.plusDays(2); // range: 3 days
 
         // task, that need to be planned
-        TaskDto taskDto = createTaskDto(
+        Task task = createTask(
                 10L,
                 "Customizing the Software",
                 estimatedTaskDuration,
@@ -247,44 +290,42 @@ class CapacityServiceImplTest {
 
         // Already given entries:
         // Day 1: two meetings 2h = 4h
-        CalendarEntryDto entry1 = createEntryDto(10L, firstDay, 120L);
-        CalendarEntryDto entry2 = createEntryDto(20L, firstDay, 120L);
+        CalendarEntry entry1 = createEntry(10L, firstDay, 120L);
+        CalendarEntry entry2 = createEntry(20L, firstDay, 120L);
 
         // Day 2: 8h-Meeting = Full day
-        CalendarEntryDto entry3 = createEntryDto(30L, firstDay.plusDays(1), 480L);
+        CalendarEntry entry3 = createEntry(30L, firstDay.plusDays(1), 480L);
 
-        CalendarDto calendarDto = new CalendarDto(
-                99L,
-                List.of(entry1, entry2, entry3),
-                employeeId
-        );
+        Calendar calendar = new Calendar();
+        calendar.setId(99L);
+        calendar.setEntries(Set.of(entry1, entry2, entry3));
 
-        EmployeeDto employeeDto = createEmployeeDto(
-                employeeId,
-                "Max",
-                "Mustermann",
-                employeeWorkingHoursPerDay,
-                99L
-        );
+        Employee employee = new Employee();
+        employee.setId(employeeId);
+        employee.setFirstName("Max");
+        employee.setLastName("Mustermann");
+        employee.setWorkingHoursPerDay(employeeWorkingHoursPerDay);
+        employee.setCalendar(calendar);
 
         // WHEN
-        Mockito.when(employeeService.getEmployeeById(employeeId)).thenReturn(employeeDto);
+        Mockito.when(employeeService.getEmployeeById(employeeId)).thenReturn(employee);
         Mockito.when(calendarService.getCalendarOfEmployee(employeeId, firstDay, lastDayToCheck))
-                .thenReturn(calendarDto);
+                .thenReturn(calendar);
 
-        List<CalculatedCapacityCalendarEntryDto> result =
-                resourceCapacityService.calculateFreeCapacity(taskDto, employeeId, firstDay, lastDayToCheck);
+        List<CalculatedCapacityCalendarEntryVO> result =
+                resourceCapacityService.calculateFreeCapacity(task, employeeId, firstDay, lastDayToCheck);
 
         // THEN
         // Expected: Task should fit in first day (4h are free)
-        CalculatedCapacityCalendarEntryDto expectedEntry = new CalculatedCapacityCalendarEntryDto(
-                taskDto.processItem().title(),
+        CalculatedCapacityCalendarEntryVO expectedEntry = new CalculatedCapacityCalendarEntryVO(
+                task.getTitle(),
                 firstDay,
-                taskDto.estimatedTime()
+                task.getEstimatedTime()
         );
 
         assertEquals(List.of(expectedEntry), result);
     }
+
 
 
     @Test
@@ -298,7 +339,7 @@ class CapacityServiceImplTest {
         LocalDate lastDayToCheck = firstDay.plusDays(2); // range: 3 days
 
         // task, that need to be planned
-        TaskDto taskDto = createTaskDto(
+        Task task = createTask(
                 10L,
                 "Customizing the Software",
                 estimatedTaskDuration,
@@ -307,62 +348,60 @@ class CapacityServiceImplTest {
 
         // Already given entries:
         // Day 1: one meeting 6h: 2h free
-        CalendarEntryDto entry1 = createEntryDto(10L, firstDay, 6 * 60L);
+        CalendarEntry entry1 = createEntry(10L, firstDay, 6 * 60L);
 
         // Day 2: one meeting 6h: 2h free
-        CalendarEntryDto entry2 = createEntryDto(20L, firstDay.plusDays(1), 6 * 60L);
+        CalendarEntry entry2 = createEntry(20L, firstDay.plusDays(1), 6 * 60L);
 
         // Day 3:one meeting 4h: 4h free
-        CalendarEntryDto entry3 = createEntryDto(30L, firstDay.plusDays(2), 4 * 60L);
-
-        CalendarDto calendarDto = new CalendarDto(
-                99L,
-                List.of(entry1, entry2, entry3),
-                employeeId
-        );
+        CalendarEntry entry3 = createEntry(30L, firstDay.plusDays(2), 4 * 60L);
 
         Long taskOccupiedTimeFirstDay = 120L; //2h
         Long taskOccupiedTimeSecondDay = 120L; //2h
         Long taskOccupiedTimeThirdDay = 60L; //1h
 
-        EmployeeDto employeeDto = createEmployeeDto(
-                employeeId,
-                "Max",
-                "Mustermann",
-                employeeWorkingHoursPerDay,
-                99L
-        );
+        Calendar calendar = new Calendar();
+        calendar.setId(99L);
+        calendar.setEntries(Set.of(entry1, entry2, entry3));
+
+        Employee employee = new Employee();
+        employee.setId(employeeId);
+        employee.setFirstName("Max");
+        employee.setLastName("Mustermann");
+        employee.setWorkingHoursPerDay(employeeWorkingHoursPerDay);
+        employee.setCalendar(calendar);
 
         // WHEN
-        Mockito.when(employeeService.getEmployeeById(employeeId)).thenReturn(employeeDto);
+        Mockito.when(employeeService.getEmployeeById(employeeId)).thenReturn(employee);
         Mockito.when(calendarService.getCalendarOfEmployee(employeeId, firstDay, lastDayToCheck))
-                .thenReturn(calendarDto);
+                .thenReturn(calendar);
 
-        List<CalculatedCapacityCalendarEntryDto> result =
-                resourceCapacityService.calculateFreeCapacity(taskDto, employeeId, firstDay, lastDayToCheck);
+        List<CalculatedCapacityCalendarEntryVO> result =
+                resourceCapacityService.calculateFreeCapacity(task, employeeId, firstDay, lastDayToCheck);
 
         // THEN
         // Expected: Task should fit first day 2h and second day 2h
-        CalculatedCapacityCalendarEntryDto expectedEntryFirstDay = new CalculatedCapacityCalendarEntryDto(
-                taskDto.processItem().title(),
+        CalculatedCapacityCalendarEntryVO expectedEntryFirstDay = new CalculatedCapacityCalendarEntryVO(
+                task.getTitle(),
                 firstDay,
                 taskOccupiedTimeFirstDay
         );
 
-        CalculatedCapacityCalendarEntryDto expectedEntrySecondDay = new CalculatedCapacityCalendarEntryDto(
-                taskDto.processItem().title(),
+        CalculatedCapacityCalendarEntryVO expectedEntrySecondDay = new CalculatedCapacityCalendarEntryVO(
+                task.getTitle(),
                 firstDay.plusDays(1),
                 taskOccupiedTimeSecondDay
         );
 
-        CalculatedCapacityCalendarEntryDto expectedEntryThirdDay = new CalculatedCapacityCalendarEntryDto(
-                taskDto.processItem().title(),
+        CalculatedCapacityCalendarEntryVO expectedEntryThirdDay = new CalculatedCapacityCalendarEntryVO(
+                task.getTitle(),
                 firstDay.plusDays(2),
                 taskOccupiedTimeThirdDay
         );
 
         assertEquals(List.of(expectedEntryFirstDay, expectedEntrySecondDay, expectedEntryThirdDay), result);
     }
+
 
     @Test
     void testCalculateFreeCapacity_throwNoCapacityUntilDueDateException() {
@@ -377,7 +416,7 @@ class CapacityServiceImplTest {
         LocalDate dueDate = lastDayToCheck;
 
         // task, that need to be planned
-        TaskDto taskDto = createTaskDto(
+        Task task = createTask(
                 10L,
                 "Customizing the Software",
                 estimatedTaskDuration,
@@ -386,45 +425,37 @@ class CapacityServiceImplTest {
 
         // Already given entries:
         // Day 1: One Meeting = 6h: 2h free
-        CalendarEntryDto entry1 = createEntryDto(10L, firstDay, 6 * 60L);
+        CalendarEntry entry1 = createEntry(10L, firstDay, 6 * 60L);
 
         // Day 2: 8h-Meeting: 0h free
-        CalendarEntryDto entry2 = createEntryDto(30L, firstDay.plusDays(1), 8 * 60L);
+        CalendarEntry entry2 = createEntry(30L, firstDay.plusDays(1), 8 * 60L);
 
         //Day 3: 7h-Meeting: 1h free
-        CalendarEntryDto entry3 = createEntryDto(30L, firstDay.plusDays(2), 7 * 60L);
+        CalendarEntry entry3 = createEntry(30L, firstDay.plusDays(2), 7 * 60L);
 
-        CalendarDto calendarDto = new CalendarDto(
-                99L,
-                List.of(entry1, entry2, entry3),
-                employeeId
-        );
+        Calendar calendar = new Calendar();
+        calendar.setId(99L);
+        calendar.setEntries(Set.of(entry1, entry2, entry3));
 
-        Long taskOccupiedTimeFirstDay = 120L; //2h
-        Long taskOccupiedTimeSecondDay = 0L; //0h
-        Long taskOccupiedTimeThirdDay = 60L; //1h
-
-        EmployeeDto employeeDto = createEmployeeDto(
-                employeeId,
-                "Max",
-                "Mustermann",
-                employeeWorkingHoursPerDay,
-                99L
-        );
+        Employee employee = new Employee();
+        employee.setId(employeeId);
+        employee.setFirstName("Max");
+        employee.setLastName("Mustermann");
+        employee.setWorkingHoursPerDay(employeeWorkingHoursPerDay);
+        employee.setCalendar(calendar);
 
         // WHEN
-        Mockito.when(employeeService.getEmployeeById(employeeId)).thenReturn(employeeDto);
+        Mockito.when(employeeService.getEmployeeById(employeeId)).thenReturn(employee);
         Mockito.when(calendarService.getCalendarOfEmployee(employeeId, firstDay, lastDayToCheck))
-                .thenReturn(calendarDto);
+                .thenReturn(calendar);
 
         //Excepted: Throws Exception, because in the given range is no capacity for the task
         assertThrows(
                 NoCapacityUntilDueDateException.class,
-                () -> resourceCapacityService.calculateFreeCapacity(taskDto, employeeId, firstDay, dueDate)
+                () -> resourceCapacityService.calculateFreeCapacity(task, employeeId, firstDay, dueDate)
         );
 
     }
-
 
     @Test
     void testCalculateFreeCapacity_shouldSplitBetweenFridayAndMonday() {
@@ -437,7 +468,7 @@ class CapacityServiceImplTest {
         LocalDate monday = LocalDate.parse("2025-09-15"); //Monday after Weekend
 
         // task, that need to be planned
-        TaskDto taskDto = createTaskDto(
+        Task task = createTask(
                 10L,
                 "Customizing the Software",
                 estimatedTaskDuration,
@@ -446,53 +477,53 @@ class CapacityServiceImplTest {
 
         // Already given entries:
         // Friday: two meetings 3h = 6h: 2h free
-        CalendarEntryDto entry1 = createEntryDto(10L, friday, 180L);
-        CalendarEntryDto entry2 = createEntryDto(20L, friday, 180L);
+        CalendarEntry entry1 = createEntry(10L, friday, 180L);
+        CalendarEntry entry2 = createEntry(20L, friday, 180L);
 
         // Monday: 4h-Meeting: 4h free
-        CalendarEntryDto entry3 = createEntryDto(30L, monday, 240L);
-
-        CalendarDto calendarDto = new CalendarDto(
-                99L,
-                List.of(entry1, entry2, entry3),
-                employeeId
-        );
+        CalendarEntry entry3 = createEntry(30L, monday, 240L);
 
         Long taskOccupiedTimeFriday = 120L; //2h
         Long taskOccupiedTimeMonday = 180L; //3h
 
-        EmployeeDto employeeDto = createEmployeeDto(
-                employeeId,
-                "Max",
-                "Mustermann",
-                employeeWorkingHoursPerDay,
-                99L
-        );
+        Calendar calendar = new Calendar();
+        calendar.setId(99L);
+        calendar.setEntries(Set.of(entry1, entry2, entry3));
+
+        Employee employee = new Employee();
+        employee.setId(employeeId);
+        employee.setFirstName("Max");
+        employee.setLastName("Mustermann");
+        employee.setWorkingHoursPerDay(employeeWorkingHoursPerDay);
+        employee.setCalendar(calendar);
+
 
         // WHEN
-        Mockito.when(employeeService.getEmployeeById(employeeId)).thenReturn(employeeDto);
+        Mockito.when(employeeService.getEmployeeById(employeeId)).thenReturn(employee);
         Mockito.when(calendarService.getCalendarOfEmployee(employeeId, friday, monday))
-                .thenReturn(calendarDto);
+                .thenReturn(calendar);
 
-        List<CalculatedCapacityCalendarEntryDto> result =
-                resourceCapacityService.calculateFreeCapacity(taskDto, employeeId, friday, monday);
+        List<CalculatedCapacityCalendarEntryVO> result =
+                resourceCapacityService.calculateFreeCapacity(task, employeeId, friday, monday);
 
         // THEN
         // Expected: Task should fit Friday 2h and Monday 2h
-        CalculatedCapacityCalendarEntryDto expectedFriday = new CalculatedCapacityCalendarEntryDto(
-                taskDto.processItem().title(),
+        CalculatedCapacityCalendarEntryVO expectedFriday = new CalculatedCapacityCalendarEntryVO(
+                task.getTitle(),
                 friday,
                 taskOccupiedTimeFriday
         );
 
-        CalculatedCapacityCalendarEntryDto expectedMonday = new CalculatedCapacityCalendarEntryDto(
-                taskDto.processItem().title(),
+        CalculatedCapacityCalendarEntryVO expectedMonday = new CalculatedCapacityCalendarEntryVO(
+                task.getTitle(),
                 monday,
                 taskOccupiedTimeMonday
         );
 
         assertEquals(List.of(expectedFriday, expectedMonday), result);
     }
+
+
 
     @Test
     void calculateEmployeesAbleToCompleteEarliest_OneFit() {
@@ -504,58 +535,51 @@ class CapacityServiceImplTest {
         LocalDate thirdDay = firstDay.plusDays(2);
         String taskTitle = "Customizing the Software";
 
-        CalculatedCapacityCalendarEntryDto employee1entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
-        CalculatedCapacityCalendarEntryDto employee1entry2 = createCalculatedEntryDto(taskTitle, secondDay, 180L);
-        CalculatedCapacityCalendarEntryDto employee1entry3 = createCalculatedEntryDto(taskTitle, thirdDay, 240L);
+        CalculatedCapacityCalendarEntryVO employee1entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
+        CalculatedCapacityCalendarEntryVO employee1entry2 = createCalculatedEntryDto(taskTitle, secondDay, 180L);
+        CalculatedCapacityCalendarEntryVO employee1entry3 = createCalculatedEntryDto(taskTitle, thirdDay, 240L);
 
-        CalculatedCapacityCalendarEntryDto employee2entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
-        CalculatedCapacityCalendarEntryDto employee2entry2 = createCalculatedEntryDto(taskTitle, secondDay, 120L);
+        CalculatedCapacityCalendarEntryVO employee2entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
+        CalculatedCapacityCalendarEntryVO employee2entry2 = createCalculatedEntryDto(taskTitle, secondDay, 120L);
 
-        CalculatedCapacityCalendarEntryDto employee3entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
-        CalculatedCapacityCalendarEntryDto employee3entry2 = createCalculatedEntryDto(taskTitle, secondDay, 180L); //needs longer than employee 2
+        CalculatedCapacityCalendarEntryVO employee3entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
+        CalculatedCapacityCalendarEntryVO employee3entry2 = createCalculatedEntryDto(taskTitle, secondDay, 180L); //needs longer than employee 2
 
-        EmployeeDto employeeDto1 = createEmployeeDto(
-                1L,
-                "Max",
-                "Mustermann",
-                employeeWorkingHoursPerDay,
-                null
-        );
+        Employee employee1 = new Employee();
+        employee1.setId(1L);
+        employee1.setFirstName("Max");
+        employee1.setLastName("Mustermann");
+        employee1.setWorkingHoursPerDay(employeeWorkingHoursPerDay);
 
-        EmployeeDto employeeDto2 = createEmployeeDto(
-                2L,
-                "Sabine",
-                "Mustermann",
-                employeeWorkingHoursPerDay,
-                null
-        );
+        Employee employee2 = new Employee();
+        employee2.setId(2L);
+        employee2.setFirstName("Sabine");
+        employee2.setLastName("Mustermann");
+        employee2.setWorkingHoursPerDay(employeeWorkingHoursPerDay);
 
-        EmployeeDto employeeDto3 = createEmployeeDto(
-                2L,
-                "Erich",
-                "Mustermann",
-                employeeWorkingHoursPerDay,
-                null
-        );
+        Employee employee3 = new Employee();
+        employee3.setId(3L);
+        employee3.setFirstName("Erich");
+        employee3.setLastName("Mustermann");
+        employee3.setWorkingHoursPerDay(employeeWorkingHoursPerDay);
 
-        List<CalculatedCapacityCalendarEntryDto> employee1TaskEntries = List.of(employee1entry1, employee1entry2, employee1entry3);
-        List<CalculatedCapacityCalendarEntryDto> employee2TaskEntries = List.of(employee2entry1, employee2entry2);
-        List<CalculatedCapacityCalendarEntryDto> employee3TaskEntries = List.of(employee3entry1, employee3entry2);
+        List<CalculatedCapacityCalendarEntryVO> employee1TaskEntries = List.of(employee1entry1, employee1entry2, employee1entry3);
+        List<CalculatedCapacityCalendarEntryVO> employee2TaskEntries = List.of(employee2entry1, employee2entry2);
+        List<CalculatedCapacityCalendarEntryVO> employee3TaskEntries = List.of(employee3entry1, employee3entry2);
 
-        Map<EmployeeDto, List<CalculatedCapacityCalendarEntryDto>> employeeTaskEntries = Map.of(
-                employeeDto1, employee1TaskEntries,
-                employeeDto2, employee2TaskEntries,
-                employeeDto3, employee3TaskEntries);
+        Map<Employee, List<CalculatedCapacityCalendarEntryVO>> employeeTaskEntries = Map.of(
+                employee1, employee1TaskEntries,
+                employee2, employee2TaskEntries,
+                employee3, employee3TaskEntries);
 
         //WHEN
-        List<EmployeeDto> result = resourceCapacityService.calculateEmployeesAbleToCompleteTaskEarliest(employeeTaskEntries);
+        List<Employee> result = resourceCapacityService.calculateEmployeesAbleToCompleteTaskEarliest(employeeTaskEntries);
 
         //THEN
         //Second employee should be chosen because he can finish the task earliest
-        assertEquals(List.of(employeeDto2), result);
+        assertEquals(List.of(employee2), result);
 
     }
-
     @Test
     void calculateEmployeesAbleToCompleteEarliest_SeveralFits() {
         //GIVEN
@@ -566,190 +590,113 @@ class CapacityServiceImplTest {
         LocalDate secondDay = firstDay.plusDays(1);
         LocalDate thirdDay = firstDay.plusDays(2);
 
-        CalculatedCapacityCalendarEntryDto employee1entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
-        CalculatedCapacityCalendarEntryDto employee1entry2 = createCalculatedEntryDto(taskTitle, secondDay, 180L);
-        CalculatedCapacityCalendarEntryDto employee1entry3 = createCalculatedEntryDto(taskTitle, thirdDay, 240L);
+        CalculatedCapacityCalendarEntryVO employee1entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
+        CalculatedCapacityCalendarEntryVO employee1entry2 = createCalculatedEntryDto(taskTitle, secondDay, 180L);
+        CalculatedCapacityCalendarEntryVO employee1entry3 = createCalculatedEntryDto(taskTitle, thirdDay, 240L);
 
-        CalculatedCapacityCalendarEntryDto employee2entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
-        CalculatedCapacityCalendarEntryDto employee2entry2 = createCalculatedEntryDto(taskTitle, secondDay, 180L);
+        CalculatedCapacityCalendarEntryVO employee2entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
+        CalculatedCapacityCalendarEntryVO employee2entry2 = createCalculatedEntryDto(taskTitle, secondDay, 180L);
 
-        CalculatedCapacityCalendarEntryDto employee3entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
-        CalculatedCapacityCalendarEntryDto employee3entry2 = createCalculatedEntryDto(taskTitle, secondDay, 180L); //needs same time as employee 1
+        CalculatedCapacityCalendarEntryVO employee3entry1 = createCalculatedEntryDto(taskTitle, firstDay, 180L);
+        CalculatedCapacityCalendarEntryVO employee3entry2 = createCalculatedEntryDto(taskTitle, secondDay, 180L); //needs same time as employee 1
 
-        EmployeeDto employeeDto1 = createEmployeeDto(
-                1L,
-                "Max",
-                "Mustermann",
-                employeeWorkingHoursPerDay,
-                null
-        );
+        Employee employee1 = new Employee();
+        employee1.setId(1L);
+        employee1.setFirstName("Max");
+        employee1.setLastName("Mustermann");
+        employee1.setWorkingHoursPerDay(employeeWorkingHoursPerDay);
 
-        EmployeeDto employeeDto2 = createEmployeeDto(
-                2L,
-                "Sabine",
-                "Mustermann",
-                employeeWorkingHoursPerDay,
-                null
-        );
+        Employee employee2 = new Employee();
+        employee2.setId(2L);
+        employee2.setFirstName("Sabine");
+        employee2.setLastName("Mustermann");
+        employee2.setWorkingHoursPerDay(employeeWorkingHoursPerDay);
 
-        EmployeeDto employeeDto3 = createEmployeeDto(
-                2L,
-                "Erich",
-                "Mustermann",
-                employeeWorkingHoursPerDay,
-                null
-        );
+        Employee employee3 = new Employee();
+        employee3.setId(3L);
+        employee3.setFirstName("Erich");
+        employee3.setLastName("Mustermann");
+        employee3.setWorkingHoursPerDay(employeeWorkingHoursPerDay);
 
-        List<CalculatedCapacityCalendarEntryDto> employee1TaskEntries = List.of(employee1entry1, employee1entry2, employee1entry3);
-        List<CalculatedCapacityCalendarEntryDto> employee2TaskEntries = List.of(employee2entry1, employee2entry2);
-        List<CalculatedCapacityCalendarEntryDto> employee3TaskEntries = List.of(employee3entry1, employee3entry2);
+        List<CalculatedCapacityCalendarEntryVO> employee1TaskEntries = List.of(employee1entry1, employee1entry2, employee1entry3);
+        List<CalculatedCapacityCalendarEntryVO> employee2TaskEntries = List.of(employee2entry1, employee2entry2);
+        List<CalculatedCapacityCalendarEntryVO> employee3TaskEntries = List.of(employee3entry1, employee3entry2);
 
-        Map<EmployeeDto, List<CalculatedCapacityCalendarEntryDto>> employeeTaskEntries = Map.of(
-                employeeDto1, employee1TaskEntries,
-                employeeDto2, employee2TaskEntries,
-                employeeDto3, employee3TaskEntries);
+        Map<Employee, List<CalculatedCapacityCalendarEntryVO>> employeeTaskEntries = Map.of(
+                employee1, employee1TaskEntries,
+                employee2, employee2TaskEntries,
+                employee3, employee3TaskEntries);
 
         //WHEN
-        List<EmployeeDto> result = resourceCapacityService.calculateEmployeesAbleToCompleteTaskEarliest(employeeTaskEntries);
+        List<Employee> result = resourceCapacityService.calculateEmployeesAbleToCompleteTaskEarliest(employeeTaskEntries);
 
         //THEN
-        //Second employee should be chosen because he can finish the task earliest
-        assertEquals(List.of(employeeDto2, employeeDto3), result);
-
+        //Second and third employee should be chosen because he can finish the task earliest
+        assertTrue(result.contains(employee2));
+        assertTrue(result.contains(employee3));
+        assertEquals(2, result.size());
     }
 
-    private CalendarEntryDto createEntryDto(Long id, LocalDate date, Long duration) {
-        return new CalendarEntryDto(
-                id,
-                "Meeting",
-                "Meeting with the team",
-                date,
-                duration
-        );
+    private CalendarEntry createEntry(Long id, LocalDate date, Long duration) {
+        CalendarEntry entry = new CalendarEntry();
+        entry.setId(id);
+        entry.setTitle("Meeting");
+        entry.setDescription("Meeting with the team");
+        entry.setDate(date);
+        entry.setDuration(duration);
+
+        return entry;
     }
 
-    private CalculatedCapacityCalendarEntryDto createCalculatedEntryDto(String title, LocalDate date, Long duration) {
-        return new CalculatedCapacityCalendarEntryDto(
+    private CalculatedCapacityCalendarEntryVO createCalculatedEntryDto(String title, LocalDate date, Long duration) {
+        return new CalculatedCapacityCalendarEntryVO(
                 title,
                 date,
                 duration
         );
     }
 
-    private EmployeeDto createEmployeeDto(Long id, String firstname, String lastname, BigDecimal workingTime, Long calendarId) {
-        return new EmployeeDto(
-                id,
-                firstname,
-                lastname,
-                "",
-                "",
-                null,
-                workingTime,
-                null,
-                null,
-                null,
-                null,
-                calendarId
-        );
-    }
-
-    private CalculatedCapacityCalendarEntryDto createCalculatedCapacityEntryDto(String title, LocalDate date, Long duration) {
-        return new CalculatedCapacityCalendarEntryDto(
+    private CalculatedCapacityCalendarEntryVO createCalculatedCapacityEntryDto(String title, LocalDate date, Long duration) {
+        return new CalculatedCapacityCalendarEntryVO(
                 title,
                 date,
                 duration
         );
     }
 
-    private TaskDto createTaskDto(Long id, String title, Long estimatedTime, LocalDate dueDate) {
-        CompetenceDto competenceDto = new CompetenceDto(1L, "Customizing", "", CompetenceType.EXPERTISE);
+    private Task createTask(Long id, String title, Long estimatedTime, LocalDate dueDate) {
 
-        ProcessItemDto processItem = new ProcessItemDto(
-                id,
-                title,
-                "",
-                dueDate,
-                null
-        );
+        Expertise expertise = new Expertise();
+        expertise.setId(1L);
+        expertise.setName("Customizing");
+        expertise.setDescription("");
 
-        return new TaskDto(
-                processItem,
-                estimatedTime,
-                0L,
-                dueDate,
-                Priority.MEDIUM,
-                "",
-                null,
-                null,
-                Set.of(competenceDto),
-                null,
-                null,
-                null,
-                null,
-                null
-        );
+        Task task = new Task();
+        task.setId(id);
+        task.setTitle(title);
+        task.setCreationDate(dueDate.atStartOfDay());
+        task.setEstimatedTime(estimatedTime);
+        task.setWorkingTime(0L);
+        task.setDueDate(dueDate);
+        task.setPriority(Priority.MEDIUM);
+        task.setCompetences(Set.of(expertise));
+
+        return task;
     }
 
+    private Task createTask(long id, String title, Long estimatedTime, LocalDate dueDate, Priority priority, Set<Competence> expertises) {
 
-    private TaskDto createTaskDtoWithoutCompetence(Long id, String title, Long estimatedTime, LocalDate dueDate) {
+        Task task = new Task();
+        task.setId(id);
+        task.setTitle(title);
+        task.setCreationDate(dueDate.atStartOfDay());
+        task.setEstimatedTime(estimatedTime);
+        task.setWorkingTime(0L);
+        task.setDueDate(dueDate);
+        task.setPriority(priority);
+        task.setCompetences(expertises);
 
-        ProcessItemDto processItem = new ProcessItemDto(
-                id,
-                title,
-                "",
-                dueDate,
-                null
-        );
-
-        return new TaskDto(
-                processItem,
-                estimatedTime,
-                0L,
-                dueDate,
-                Priority.MEDIUM,
-                "",
-                null,
-                null,
-                Set.of(),
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-    }
-
-    private EmployeeDto createEmployee(long id, String vorname, Set<EmployeeExpertiseDto> expertise) {
-        return new EmployeeDto(id, vorname, "Nachname", "email@test.de",
-                null, null, null, expertise, Set.of(), null, null, null);
-    }
-
-    private TaskDto createTaskDto(long id, String title, Long estimatedTime, LocalDate dueDate, Priority priority, Set<CompetenceDto> competenceIds) {
-        ProcessItemDto processItem = new ProcessItemDto(
-                id,
-                title,
-                "",
-                LocalDate.parse("2025-09-05"),
-                null
-        );
-
-        return new TaskDto(
-                processItem,
-                estimatedTime,
-                0L,
-                dueDate,
-                priority,
-                "",
-                null,
-                null,
-                competenceIds,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-
+        return task;
     }
 
 }

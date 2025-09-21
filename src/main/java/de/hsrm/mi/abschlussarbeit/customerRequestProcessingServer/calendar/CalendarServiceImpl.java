@@ -1,6 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar;
 
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity.CalculatedCapacityCalendarEntryDto;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity.CalculatedCapacityCalendarEntryVO;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.Task;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskRepository;
 import jakarta.transaction.Transactional;
@@ -28,8 +28,7 @@ public class CalendarServiceImpl implements CalendarService {
     private final CalendarMapper calendarMapper;
 
     @Override
-    public CalendarDto getCalendarOfEmployee(Long employeeId, LocalDate from, LocalDate to) {
-
+    public CalendarDto getCalendarDtoOfEmployee(Long employeeId, LocalDate from, LocalDate to) {
         Set<CalendarEntry> filteredCalendarEntries = new HashSet<>();
 
         Calendar calendar = calendarRepository.findByEmployeeId(employeeId).stream().findFirst().orElseThrow();
@@ -45,11 +44,27 @@ public class CalendarServiceImpl implements CalendarService {
     }
 
     @Override
+    public Calendar getCalendarOfEmployee(Long employeeId, LocalDate from, LocalDate to) {
+        Set<CalendarEntry> filteredCalendarEntries = new HashSet<>();
+
+        Calendar calendar = calendarRepository.findByEmployeeId(employeeId).stream().findFirst().orElseThrow();
+        calendar.getEntries().forEach(calendarEntry -> {
+            if (!calendarEntry.getDate().isBefore(from) && !calendarEntry.getDate().isAfter(to)) {
+                filteredCalendarEntries.add(calendarEntry);
+            }
+        });
+
+        calendar.setEntries(filteredCalendarEntries) ;
+
+        return calendar;
+    }
+
+    @Override
     @Transactional
     public CalendarDto createCalendarEntriesForTask(
             Long taskId,
             Long calendarId,
-            List<CalculatedCapacityCalendarEntryDto> calendarEntries
+            List<CalculatedCapacityCalendarEntryVO> calendarEntries
     ) {
         log.info("Creating calendar entries for task {} into calendar {}", taskId, calendarId);
 
@@ -58,7 +73,7 @@ public class CalendarServiceImpl implements CalendarService {
 
         List<CalendarEntry> savedEntries = new ArrayList<>();
 
-        for (CalculatedCapacityCalendarEntryDto dto : calendarEntries) {
+        for (CalculatedCapacityCalendarEntryVO dto : calendarEntries) {
             CalendarEntry entry = new CalendarEntry();
             entry.setTitle(dto.title());
             entry.setDate(dto.date());

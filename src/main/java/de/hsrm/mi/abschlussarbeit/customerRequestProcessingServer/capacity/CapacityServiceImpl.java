@@ -1,14 +1,11 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity;
 
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarDto;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarEntryDto;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.Calendar;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarEntry;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarService;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeDto;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeExpertiseDto;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeService;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.ExpertiseLevel;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.*;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.InteractionManager;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskDto;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.Task;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -42,33 +39,33 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
     @Override
     public MatchingEmployeeForTaskDto findBestMatches(Long taskId) {
         log.info("Finding best matches for task {}", taskId);
-        TaskDto task = taskService.getTaskById(taskId);
+        Task task = taskService.getTaskById(taskId);
 
-        checkIfTaskReadyForResourcePlanning(task);
+        checkIfTaskReadyForCapacityPlanning(task);
 
-        List<MatchCalculationResultDto> results = new ArrayList<>();
+        List<MatchCalculationResultVO> results = new ArrayList<>();
 
         // find best matching employees by competences
-        Map<EmployeeDto, Integer> competenceMatches = findBestMatchingEmployees(task);
+        Map<Employee, Integer> competenceMatches = findBestMatchingEmployees(task);
 
         // calculate free capacity for each employee
-        Map<EmployeeDto, List<CalculatedCapacityCalendarEntryDto>> capacitiesByEmployee = new HashMap<>();
-        for (EmployeeDto employee : competenceMatches.keySet()) {
-            List<CalculatedCapacityCalendarEntryDto> capacities = calculateFreeCapacity(
+        Map<Employee, List<CalculatedCapacityCalendarEntryVO>> capacitiesByEmployee = new HashMap<>();
+        for (Employee employee : competenceMatches.keySet()) {
+            List<CalculatedCapacityCalendarEntryVO> capacities = calculateFreeCapacity(
                     task,
-                    employee.id(),
+                    employee.getId(),
                     LocalDate.now(),
-                    task.dueDate()
+                    task.getDueDate()
             );
             capacitiesByEmployee.put(employee, capacities);
         }
 
         // determine employees who can complete the task earliest
-        List<EmployeeDto> earliestEmployees = calculateEmployeesAbleToCompleteTaskEarliest(capacitiesByEmployee);
+        List<Employee> earliestEmployees = calculateEmployeesAbleToCompleteTaskEarliest(capacitiesByEmployee);
 
         // build result list
-        for (EmployeeDto employee : capacitiesByEmployee.keySet()) {
-            MatchCalculationResultDto result = new MatchCalculationResultDto(
+        for (Employee employee : capacitiesByEmployee.keySet()) {
+            MatchCalculationResultVO result = new MatchCalculationResultVO(
                     employee,
                     competenceMatches.get(employee).longValue(),
                     earliestEmployees.contains(employee),
@@ -77,7 +74,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
             results.add(result);
         }
 
-        return new MatchingEmployeeForTaskDto(task, results);
+        return new MatchingEmployeeForTaskDto(task.getId(), results);
     }
 
     /**
@@ -88,23 +85,23 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
      */
     @Override
     @Transactional
-    public void assignMatchToEmployee(Long taskId, MatchCalculationResultDto selectedMatch) {
-        log.info("Assigning task {} to employee {}", taskId, selectedMatch.employee().id());
+    public void assignMatchToEmployee(Long taskId, MatchCalculationResultVO selectedMatch) {
+        log.info("Assigning task {} to employee {}", taskId, selectedMatch.employee().getId());
 
-        interactionManager.assignTaskToUserOfEmployee(taskId, selectedMatch.employee().id());
-        calendarService.createCalendarEntriesForTask(taskId, selectedMatch.employee().calendarId(), selectedMatch.calculatedCalendarCapacities());
+        interactionManager.assignTaskToUserOfEmployee(taskId, selectedMatch.employee().getId());
+        calendarService.createCalendarEntriesForTask(taskId, selectedMatch.employee().getCalendar().getId(), selectedMatch.calculatedCalendarCapacities());
     }
 
-    private void checkIfTaskReadyForResourcePlanning(TaskDto task) {
+    private void checkIfTaskReadyForCapacityPlanning(Task task) {
         List<String> errors = new ArrayList<>();
 
-        if (task.estimatedTime() == 0) {
+        if (task.getEstimatedTime() == 0) {
             errors.add("No estimated time set");
         }
-        if (task.dueDate().isBefore(LocalDate.now())) {
+        if (task.getDueDate().isBefore(LocalDate.now())) {
             errors.add("Due date is in the past");
         }
-        if (task.competences().isEmpty()) {
+        if (task.getCompetences().isEmpty()) {
             errors.add("No competences set");
         }
 
@@ -118,23 +115,23 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
     /**
      * Methode to calculate the next free slot for a given task and employee. Skips Weekends.
      *
-     * @param taskDto    the task to calculate the free capacity for
+     * @param task       the task to calculate the free capacity for
      * @param employeeId the employee to calculate the free capacity for
      * @param from       the start date of the calculation
      * @param to         the end date of the calculation
      * @return a list of free calendar entries for the given task and employee
      */
-    public List<CalculatedCapacityCalendarEntryDto> calculateFreeCapacity(TaskDto taskDto, Long employeeId, LocalDate from, LocalDate to) {
-        log.info("Calculating free capacity for task {} for employee {}", taskDto.processItem().id(), employeeId);
+    public List<CalculatedCapacityCalendarEntryVO> calculateFreeCapacity(Task task, Long employeeId, LocalDate from, LocalDate to) {
+        log.info("Calculating free capacity for task {} for employee {}", task.getId(), employeeId);
 
-        EmployeeDto employeeDto = employeeService.getEmployeeById(employeeId);
-        long dailyWorkingMinutes = employeeDto.workingHoursPerDay().longValue() * 60;
+        Employee employee = employeeService.getEmployeeById(employeeId);
+        long dailyWorkingMinutes = employee.getWorkingHoursPerDay().longValue() * 60;
 
-        CalendarDto calendarDto = calendarService.getCalendarOfEmployee(employeeId, from, to);
-        List<CalendarEntryDto> calendarEntryDtos = calendarDto.entries();
+        Calendar calendar = calendarService.getCalendarOfEmployee(employeeId, from, to);
+        Set<CalendarEntry> calendarEntries = calendar.getEntries();
 
-        Long remainingTaskTime = taskDto.estimatedTime();
-        List<CalculatedCapacityCalendarEntryDto> calculatedSlots = new ArrayList<>();
+        Long remainingTaskTime = task.getEstimatedTime();
+        List<CalculatedCapacityCalendarEntryVO> calculatedSlots = new ArrayList<>();
 
         // Iterate over each day in the range
         for (LocalDate date = from; !date.isAfter(to); date = date.plusDays(1)) {
@@ -148,9 +145,9 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
             // Only proceed if there is still task time left to schedule
             if (remainingTaskTime > 0) {
                 // Calculate occupied time for this day
-                for (CalendarEntryDto entry : calendarEntryDtos) {
-                    if (entry.date().equals(date)) {
-                        occupiedMinutes += entry.duration();
+                for (CalendarEntry entry : calendarEntries) {
+                    if (entry.getDate().equals(date)) {
+                        occupiedMinutes += entry.getDuration();
                     }
                 }
 
@@ -162,8 +159,8 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
 
                 // Create new slot if there is free time
                 if (freeMinutes > 0) {
-                    CalculatedCapacityCalendarEntryDto newSlot = new CalculatedCapacityCalendarEntryDto(
-                            taskDto.processItem().title(),
+                    CalculatedCapacityCalendarEntryVO newSlot = new CalculatedCapacityCalendarEntryVO(
+                            task.getTitle(),
                             date,
                             freeMinutes
                     );
@@ -177,25 +174,26 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
         }
 
         if (remainingTaskTime > 0) {
-            throw new NoCapacityUntilDueDateException("No capacity for task " + taskDto.processItem().id() + " until due date");
+            throw new NoCapacityUntilDueDateException("No capacity for task " + task.getId() + " until due date");
         }
 
         return calculatedSlots;
     }
 
-    public List<EmployeeDto> calculateEmployeesAbleToCompleteTaskEarliest(Map<EmployeeDto, List<CalculatedCapacityCalendarEntryDto>> employeeWithCalendarEntriesOfTask) {
+
+    public List<Employee> calculateEmployeesAbleToCompleteTaskEarliest(Map<Employee, List<CalculatedCapacityCalendarEntryVO>> employeeWithCalendarEntriesOfTask) {
         log.info("Calculating employees able to complete task earliest");
 
-        Map<EmployeeDto, CalculatedCapacityCalendarEntryDto> latestEntriesOfEmployees = new HashMap<>();
-        Map<EmployeeDto, CalculatedCapacityCalendarEntryDto> earliestEntries = new HashMap<>();
-        List<EmployeeDto> earliestEmployees = new ArrayList<>();
+        Map<Employee, CalculatedCapacityCalendarEntryVO> latestEntriesOfEmployees = new HashMap<>();
+        Map<Employee, CalculatedCapacityCalendarEntryVO> earliestEntries = new HashMap<>();
+        List<Employee> earliestEmployees = new ArrayList<>();
 
         //Find first the latest entries for each List of entries of the task
-        for (EmployeeDto employee : employeeWithCalendarEntriesOfTask.keySet()) {
-            List<CalculatedCapacityCalendarEntryDto> entries = employeeWithCalendarEntriesOfTask.get(employee);
+        for (Employee employee : employeeWithCalendarEntriesOfTask.keySet()) {
+            List<CalculatedCapacityCalendarEntryVO> entries = employeeWithCalendarEntriesOfTask.get(employee);
 
-            CalculatedCapacityCalendarEntryDto latestEntry =
-                    entries.stream().max(Comparator.comparing(CalculatedCapacityCalendarEntryDto::date)).orElseThrow();
+            CalculatedCapacityCalendarEntryVO latestEntry =
+                    entries.stream().max(Comparator.comparing(CalculatedCapacityCalendarEntryVO::date)).orElseThrow();
 
             latestEntriesOfEmployees.put(employee, latestEntry);
         }
@@ -206,7 +204,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
                 .min((date1, date2) -> date1.compareTo(date2))
                 .orElseThrow();
 
-        for (EmployeeDto employee : latestEntriesOfEmployees.keySet()) {
+        for (Employee employee : latestEntriesOfEmployees.keySet()) {
             if (latestEntriesOfEmployees.get(employee).date().equals(earliestDate)) {
 
                 earliestEntries.put(employee, latestEntriesOfEmployees.get(employee));
@@ -219,7 +217,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
                 .min((duration1, duration2) -> duration1.compareTo(duration2))
                 .orElseThrow();
 
-        for (EmployeeDto employee : earliestEntries.keySet()) {
+        for (Employee employee : earliestEntries.keySet()) {
             if (earliestEntries.get(employee).duration() == minDuration) {
                 earliestEmployees.add(employee);
             }
@@ -234,33 +232,23 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
      * @param task to find the best matching employees for
      * @return a Map with the employees and the best match defined by the number. Higher number is better match
      */
-    public Map<EmployeeDto, Integer> findBestMatchingEmployees(TaskDto task) {
-        List<EmployeeExpertiseDto> allEmployeeExpertises = employeeService.getAllEmployeeExpertises();
-        Map<Long, Integer> matchesById = new HashMap<>();
-        Map<EmployeeDto, Integer> matchesByEmployee = new HashMap<>();
+    public Map<Employee, Integer> findBestMatchingEmployees(Task task) {
+        List<EmployeeExpertise> allEmployeeExpertises = employeeService.getAllEmployeeExpertises();
+        Map<Employee, Integer> matchesByEmployee = new HashMap<>();
 
-        for (EmployeeExpertiseDto employeeExpertise : allEmployeeExpertises) {
-            if (!task.competences().contains(employeeExpertise.expertise())) {
+        // Sum points for each competence of the task
+        for (EmployeeExpertise ee : allEmployeeExpertises) {
+            if (!task.getCompetences().contains(ee.getExpertise())) {
                 continue;
             }
 
-            long employeeId = employeeExpertise.employeeId();
-            ExpertiseLevel expertLevel = employeeExpertise.level();
+            Employee employee = ee.getEmployee();
+            int points = ee.getLevel().getPoints();
 
-            if (!matchesById.containsKey(employeeId)) {
-                matchesById.put(employeeId, expertLevel.getPoints());
+            if (matchesByEmployee.containsKey(employee)) {
+                matchesByEmployee.put(employee, matchesByEmployee.get(employee) + points);
             } else {
-                //replace key with new value
-                matchesById.put(employeeId, matchesById.get(employeeId) + expertLevel.getPoints());
-            }
-        }
-
-        List<Long> employeeIds = matchesById.keySet().stream().toList();
-        List<EmployeeDto> employees = employeeService.getEmployeesByIds(employeeIds);
-
-        for (EmployeeDto employee : employees) {
-            if (!matchesByEmployee.containsKey(employee)) {
-                matchesByEmployee.put(employee, matchesById.get(employee.id()));
+                matchesByEmployee.put(employee, points);
             }
         }
 

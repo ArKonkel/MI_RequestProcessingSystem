@@ -53,7 +53,7 @@ public class Task extends ProcessItem {
             joinColumns = @JoinColumn(name = "task_id"),
             inverseJoinColumns = @JoinColumn(name = "competence_id")
     )
-    private Set<Competence> competences;
+    private Set<Competence> competences = Set.of();
 
     @ManyToOne(fetch = FetchType.LAZY) //Needed because of circular dependency
     @JoinColumn(name = "blocker_id")

@@ -4,7 +4,9 @@ import java.util.List;
 
 public interface TaskService {
 
-    TaskDto getTaskById(Long id);
+    TaskDto getTaskDtoById(Long id);
+
+    Task getTaskById(Long id);
 
     List<TaskDto> getAllTasks();
 

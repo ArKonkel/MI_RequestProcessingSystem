@@ -1,7 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity;
 
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskDto;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeDto;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.Employee;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.Task;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,8 +9,8 @@ import java.util.Map;
 
 public interface CapacityCalculatorEngine {
 
-    List<CalculatedCapacityCalendarEntryDto> calculateFreeCapacity(TaskDto taskDto, Long employeeId, LocalDate from, LocalDate to);
+    List<CalculatedCapacityCalendarEntryVO> calculateFreeCapacity(Task task, Long employeeId, LocalDate from, LocalDate to);
 
-    List<EmployeeDto> calculateEmployeesAbleToCompleteTaskEarliest(Map<EmployeeDto, List<CalculatedCapacityCalendarEntryDto>> employeeWithCalendarEntriesOfTask);
+    List<Employee> calculateEmployeesAbleToCompleteTaskEarliest(Map<Employee, List<CalculatedCapacityCalendarEntryVO>> employeeWithCalendarEntriesOfTask);
 
 }

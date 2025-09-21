@@ -21,17 +21,23 @@ public class EmployeeServiceImpl implements EmployeeService{
 
 
     @Override
-    public List<EmployeeExpertiseDto> getAllEmployeeExpertises() {
-        return employeeExpertiseRepository.findAll().stream().map(employeeExpertiseMapper::toDto).toList();
+    public List<EmployeeExpertise> getAllEmployeeExpertises() {
+        log.info("Getting all employee expertises");
+
+        return employeeExpertiseRepository.findAll();
     }
 
     @Override
-    public List<EmployeeDto> getEmployeesByIds(List<Long> ids) {
-        return employeeRepository.findByIdIn(ids).stream().map(employeeMapper::toDto).toList();
+    public List<Employee> getEmployeesByIds(List<Long> ids) {
+        log.info("Getting employees with ids {}", ids);
+
+        return employeeRepository.findByIdIn(ids);
     }
 
     @Override
-    public EmployeeDto getEmployeeById(Long employeeId) {
-        return employeeRepository.findById(employeeId).map(employeeMapper::toDto).orElseThrow();
+    public Employee getEmployeeById(Long employeeId) {
+        log.info("Getting employee with id {}", employeeId);
+
+        return employeeRepository.findById(employeeId).orElseThrow();
     }
 }

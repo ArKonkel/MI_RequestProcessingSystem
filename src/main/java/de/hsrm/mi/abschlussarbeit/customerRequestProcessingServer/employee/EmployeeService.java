@@ -4,9 +4,9 @@ import java.util.List;
 
 public interface EmployeeService {
 
-    List<EmployeeExpertiseDto> getAllEmployeeExpertises();
+    List<EmployeeExpertise> getAllEmployeeExpertises();
 
-    List<EmployeeDto> getEmployeesByIds(List<Long> ids);
+    List<Employee> getEmployeesByIds(List<Long> ids);
 
-    EmployeeDto getEmployeeById(Long employeeId);
+    Employee getEmployeeById(Long employeeId);
 }

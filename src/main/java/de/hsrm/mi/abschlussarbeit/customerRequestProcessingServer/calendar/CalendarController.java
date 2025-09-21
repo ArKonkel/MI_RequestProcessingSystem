@@ -22,7 +22,7 @@ public class CalendarController {
     public ResponseEntity<CalendarDto> getCalendarOfEmployee(@PathVariable Long employeeId, @PathVariable LocalDate from, @PathVariable LocalDate to) {
         log.info("REST request to get calendar of employee {} from {} to {}", employeeId, from, to);
 
-        CalendarDto calendar = calendarService.getCalendarOfEmployee(employeeId, from, to);
+        CalendarDto calendar = calendarService.getCalendarDtoOfEmployee(employeeId, from, to);
 
         return ResponseEntity.ok().body(calendar);
     }

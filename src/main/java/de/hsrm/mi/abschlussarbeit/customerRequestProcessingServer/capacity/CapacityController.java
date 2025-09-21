@@ -23,8 +23,8 @@ public class CapacityController {
     }
 
     @PostMapping("/assign/{taskId}")
-    public ResponseEntity<Void> assignTaskToEmployee(@RequestBody MatchCalculationResultDto selectedMatch, @PathVariable Long taskId) {
-        log.info("REST request to assign assign employee {} to task {}", selectedMatch.employee().id(), taskId);
+    public ResponseEntity<Void> assignTaskToEmployee(@RequestBody MatchCalculationResultVO selectedMatch, @PathVariable Long taskId) {
+        log.info("REST request to assign assign employee {} to task {}", selectedMatch.employee().getId(), taskId);
 
         capacityService.assignMatchToEmployee(taskId, selectedMatch);
 
