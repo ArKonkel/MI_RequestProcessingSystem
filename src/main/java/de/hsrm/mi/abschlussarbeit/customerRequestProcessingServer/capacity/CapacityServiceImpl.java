@@ -22,7 +22,7 @@ import java.util.*;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class ResourceCapacityServiceImpl implements ResourceCapacityService, TaskMatcher, CapacityCalculatorEngine {
+public class CapacityServiceImpl implements CapacityService, TaskMatcher, CapacityCalculatorEngine {
 
     private final TaskManager taskManager;
 

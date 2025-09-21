@@ -33,7 +33,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ResourceCapacityServiceImplTest {
+class CapacityServiceImplTest {
     @Mock
     TaskManager taskManager;
 
@@ -45,7 +45,7 @@ class ResourceCapacityServiceImplTest {
 
     @Spy
     @InjectMocks
-    ResourceCapacityServiceImpl resourceCapacityService;
+    CapacityServiceImpl resourceCapacityService;
 
 
     @Test

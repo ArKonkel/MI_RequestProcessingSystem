@@ -9,15 +9,15 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 @Slf4j
 @RequestMapping("/capacity")
-public class ResourceCapacityController {
+public class CapacityController {
 
-    private final ResourceCapacityService resourceCapacityService;
+    private final CapacityService capacityService;
 
 
     @GetMapping("/{taskId}")
     public ResponseEntity<MatchingEmployeeForTaskDto> getMatchingEmployees(@PathVariable Long taskId) {
         log.info("REST request to get best matches for task {}", taskId);
-        MatchingEmployeeForTaskDto matches = resourceCapacityService.findBestMatches(taskId);
+        MatchingEmployeeForTaskDto matches = capacityService.findBestMatches(taskId);
 
         return ResponseEntity.ok(matches);
     }
@@ -26,7 +26,7 @@ public class ResourceCapacityController {
     public ResponseEntity<Void> assignTaskToEmployee(@RequestBody MatchCalculationResultDto selectedMatch, @PathVariable Long taskId) {
         log.info("REST request to assign assign employee {} to task {}", selectedMatch.employee().id(), taskId);
 
-        resourceCapacityService.assignMatchToEmployee(taskId, selectedMatch);
+        capacityService.assignMatchToEmployee(taskId, selectedMatch);
 
         return ResponseEntity.ok().build();
     }

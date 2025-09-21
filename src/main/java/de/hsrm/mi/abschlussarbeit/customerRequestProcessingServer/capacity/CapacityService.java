@@ -1,6 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity;
 
-public interface ResourceCapacityService {
+public interface CapacityService {
 
     MatchingEmployeeForTaskDto findBestMatches(Long taskId);
 
