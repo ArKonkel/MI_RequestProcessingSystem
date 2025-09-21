@@ -107,7 +107,7 @@ class CapacityServiceImplTest {
                 .calculateEmployeesAbleToCompleteTaskEarliest(Mockito.anyMap());
 
         // WHEN
-        MatchingEmployeeForTaskDto result = resourceCapacityService.findBestMatches(taskId);
+        MatchingEmployeeForTaskVO result = resourceCapacityService.findBestMatches(taskId);
 
         // THEN
         assertEquals(task.getId(), result.taskId());

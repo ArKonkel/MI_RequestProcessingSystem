@@ -11,4 +11,6 @@ public interface TaskService {
     List<TaskDto> getAllTasks();
 
     TaskDto updateTask(Long taskId, UpdateTaskDto dto);
+
+    void assignTaskToUserOfEmployee(Long taskId, Long employeeId);
 }

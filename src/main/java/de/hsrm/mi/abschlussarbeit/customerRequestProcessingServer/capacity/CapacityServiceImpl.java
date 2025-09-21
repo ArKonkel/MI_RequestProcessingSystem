@@ -4,7 +4,6 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.Calen
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarEntry;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.*;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.InteractionManager;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.Task;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskService;
 import jakarta.transaction.Transactional;
@@ -25,8 +24,6 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
 
     private final CalendarService calendarService;
 
-    private final InteractionManager interactionManager;
-
     private final EmployeeService employeeService;
 
     /**
@@ -37,7 +34,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
      * With the information which one can complete the task earliest.
      */
     @Override
-    public MatchingEmployeeForTaskDto findBestMatches(Long taskId) {
+    public MatchingEmployeeForTaskVO findBestMatches(Long taskId) {
         log.info("Finding best matches for task {}", taskId);
         Task task = taskService.getTaskById(taskId);
 
@@ -74,7 +71,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
             results.add(result);
         }
 
-        return new MatchingEmployeeForTaskDto(task.getId(), results);
+        return new MatchingEmployeeForTaskVO(task.getId(), results);
     }
 
     /**
@@ -88,7 +85,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
     public void assignMatchToEmployee(Long taskId, MatchCalculationResultVO selectedMatch) {
         log.info("Assigning task {} to employee {}", taskId, selectedMatch.employee().getId());
 
-        interactionManager.assignTaskToUserOfEmployee(taskId, selectedMatch.employee().getId());
+        taskService.assignTaskToUserOfEmployee(taskId, selectedMatch.employee().getId());
         calendarService.createCalendarEntriesForTask(taskId, selectedMatch.employee().getCalendar().getId(), selectedMatch.calculatedCalendarCapacities());
     }
 

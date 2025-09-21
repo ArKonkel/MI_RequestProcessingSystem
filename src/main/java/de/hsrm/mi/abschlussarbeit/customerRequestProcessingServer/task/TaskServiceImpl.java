@@ -1,9 +1,11 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task;
 
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.Request;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.UpdateProcessItemDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.Project;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.Request;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserDto;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,8 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
 
     private final TaskMapper taskMapper;
+
+    private final UserService userService;
 
     @Override
     public TaskDto getTaskDtoById(Long id) {
@@ -100,5 +104,23 @@ public class TaskServiceImpl implements TaskService {
 
         taskRepository.save(task);
         return taskMapper.toDto(task);
+    }
+
+    @Override
+    @Transactional
+    public void assignTaskToUserOfEmployee(Long taskId, Long employeeId) {
+        log.info("Assigning task {} to user of employee {}", taskId, employeeId);
+
+        UserDto userDto = userService.getUserOfEmployee(employeeId);
+
+        UpdateProcessItemDto processItemDto = UpdateProcessItemDto.builder()
+                .assigneeId(userDto.id())
+                .build();
+
+        UpdateTaskDto updateTaskDto = UpdateTaskDto.builder().
+                processItem(processItemDto).
+                build();
+
+        updateTask(taskId, updateTaskDto);
     }
 }
