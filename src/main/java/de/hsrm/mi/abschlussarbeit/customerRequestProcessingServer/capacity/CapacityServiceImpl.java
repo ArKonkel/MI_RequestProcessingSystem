@@ -93,7 +93,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
     @Override
     @Transactional
     public void assignMatchToEmployee(Long taskId, CalculatedCapacitiesOfMatchDto selectedMatch) {
-        log.info("Assigning task {} to employee {}", taskId, selectedMatch.getEmployee().getId());
+        log.info("Assigning task {} to employee {}", taskId, selectedMatch.getEmployee().id());
 
         CalculatedCapacitiesOfMatchVO vo = capacityMapper.toVo(selectedMatch);
 

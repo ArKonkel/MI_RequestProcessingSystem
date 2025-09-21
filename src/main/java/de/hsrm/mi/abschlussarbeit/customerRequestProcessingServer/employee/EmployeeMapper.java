@@ -14,4 +14,9 @@ public interface EmployeeMapper {
     @Mapping(source = "calendar.id", target = "calendarId")
     @Mapping(source = "department.id", target = "departmentId")
     EmployeeDto toDto(Employee employee);
+
+    @Mapping(target = "department", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "calendar", ignore = true)
+    Employee toEntity(EmployeeDto dto);
 }
