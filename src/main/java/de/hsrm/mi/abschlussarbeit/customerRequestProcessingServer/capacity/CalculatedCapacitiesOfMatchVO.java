@@ -4,7 +4,7 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.Emplo
 
 import java.util.List;
 
-public record MatchCalculationResultVO(
+public record CalculatedCapacitiesOfMatchVO(
         Employee employee,
         Long competencePoints,
         Boolean canCompleteTaskEarliest,

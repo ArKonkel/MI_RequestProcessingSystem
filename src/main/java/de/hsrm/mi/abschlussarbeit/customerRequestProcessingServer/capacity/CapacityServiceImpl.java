@@ -26,6 +26,15 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
 
     private final EmployeeService employeeService;
 
+    private final CapacityMapper capacityMapper;
+
+    @Override
+    public MatchingEmployeeCapacitiesDto findBestMatchesForTask(Long taskId) {
+        MatchingEmployeeCapacitiesVO matches = findBestMatches(taskId);
+
+        return capacityMapper.toDto(matches);
+    }
+
     /**
      * Finds the best matches for a given task.
      *
@@ -34,13 +43,13 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
      * With the information which one can complete the task earliest.
      */
     @Override
-    public MatchingEmployeeForTaskVO findBestMatches(Long taskId) {
+    public MatchingEmployeeCapacitiesVO findBestMatches(Long taskId) {
         log.info("Finding best matches for task {}", taskId);
         Task task = taskService.getTaskById(taskId);
 
         checkIfTaskReadyForCapacityPlanning(task);
 
-        List<MatchCalculationResultVO> results = new ArrayList<>();
+        List<CalculatedCapacitiesOfMatchVO> results = new ArrayList<>();
 
         // find best matching employees by competences
         Map<Employee, Integer> competenceMatches = findBestMatchingEmployees(task);
@@ -62,7 +71,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
 
         // build result list
         for (Employee employee : capacitiesByEmployee.keySet()) {
-            MatchCalculationResultVO result = new MatchCalculationResultVO(
+            CalculatedCapacitiesOfMatchVO result = new CalculatedCapacitiesOfMatchVO(
                     employee,
                     competenceMatches.get(employee).longValue(),
                     earliestEmployees.contains(employee),
@@ -71,8 +80,9 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
             results.add(result);
         }
 
-        return new MatchingEmployeeForTaskVO(task.getId(), results);
+        return new MatchingEmployeeCapacitiesVO(task.getId(), results);
     }
+
 
     /**
      * Assigns a task to an employee. Creates calendar entries for the employee and the task.
@@ -82,11 +92,13 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
      */
     @Override
     @Transactional
-    public void assignMatchToEmployee(Long taskId, MatchCalculationResultVO selectedMatch) {
-        log.info("Assigning task {} to employee {}", taskId, selectedMatch.employee().getId());
+    public void assignMatchToEmployee(Long taskId, CalculatedCapacitiesOfMatchDto selectedMatch) {
+        log.info("Assigning task {} to employee {}", taskId, selectedMatch.getEmployee().getId());
 
-        taskService.assignTaskToUserOfEmployee(taskId, selectedMatch.employee().getId());
-        calendarService.createCalendarEntriesForTask(taskId, selectedMatch.employee().getCalendar().getId(), selectedMatch.calculatedCalendarCapacities());
+        CalculatedCapacitiesOfMatchVO vo = capacityMapper.toVo(selectedMatch);
+
+        taskService.assignTaskToUserOfEmployee(taskId, vo.employee().getId());
+        calendarService.createCalendarEntriesForTask(taskId, vo.employee().getCalendar().getId(), vo.calculatedCalendarCapacities());
     }
 
     private void checkIfTaskReadyForCapacityPlanning(Task task) {

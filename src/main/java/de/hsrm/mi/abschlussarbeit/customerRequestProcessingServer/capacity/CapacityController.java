@@ -15,17 +15,16 @@ public class CapacityController {
 
 
     @GetMapping("/{taskId}")
-    public ResponseEntity<MatchingEmployeeForTaskVO> getMatchingEmployees(@PathVariable Long taskId) {
+    public ResponseEntity<MatchingEmployeeCapacitiesDto> getMatchingEmployees(@PathVariable Long taskId) {
         log.info("REST request to get best matches for task {}", taskId);
-        MatchingEmployeeForTaskVO matches = capacityService.findBestMatches(taskId);
-        //TODO should be no VO, should be a DTO.
+        MatchingEmployeeCapacitiesDto matches = capacityService.findBestMatchesForTask(taskId);
 
         return ResponseEntity.ok(matches);
     }
 
     @PostMapping("/assign/{taskId}")
-    public ResponseEntity<Void> assignTaskToEmployee(@RequestBody MatchCalculationResultVO selectedMatch, @PathVariable Long taskId) {
-        log.info("REST request to assign assign employee {} to task {}", selectedMatch.employee().getId(), taskId);
+    public ResponseEntity<Void> assignTaskToEmployee(@RequestBody CalculatedCapacitiesOfMatchDto selectedMatch, @PathVariable Long taskId) {
+        log.info("REST request to assign assign employee {} to task {}", selectedMatch.getEmployee().getId(), taskId);
 
         capacityService.assignMatchToEmployee(taskId, selectedMatch);
 

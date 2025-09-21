@@ -107,13 +107,13 @@ class CapacityServiceImplTest {
                 .calculateEmployeesAbleToCompleteTaskEarliest(Mockito.anyMap());
 
         // WHEN
-        MatchingEmployeeForTaskVO result = resourceCapacityService.findBestMatches(taskId);
+        MatchingEmployeeCapacitiesVO result = resourceCapacityService.findBestMatches(taskId);
 
         // THEN
         assertEquals(task.getId(), result.taskId());
         assertEquals(2, result.matchCalculationResult().size());
 
-        MatchCalculationResultVO resultEmployee1 = result.matchCalculationResult().stream()
+        CalculatedCapacitiesOfMatchVO resultEmployee1 = result.matchCalculationResult().stream()
                 .filter(res -> res.employee().equals(employee1))
                 .findFirst()
                 .orElseThrow();
@@ -122,7 +122,7 @@ class CapacityServiceImplTest {
         assertTrue(resultEmployee1.canCompleteTaskEarliest());
         assertEquals(capacitiesEmployee1, resultEmployee1.calculatedCalendarCapacities());
 
-        MatchCalculationResultVO resultEmployee2 = result.matchCalculationResult().stream()
+        CalculatedCapacitiesOfMatchVO resultEmployee2 = result.matchCalculationResult().stream()
                 .filter(res -> res.employee().equals(employee2))
                 .findFirst()
                 .orElseThrow();
