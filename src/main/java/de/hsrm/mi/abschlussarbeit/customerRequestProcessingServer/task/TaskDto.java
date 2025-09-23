@@ -12,7 +12,7 @@ import java.util.Set;
 public record TaskDto(
         ProcessItemDto processItem,
         BigDecimal estimatedTime,
-        TimeUnit timeUnit,
+        TimeUnit estimationUnit,
         Long workingTimeInMinutes,
         LocalDate dueDate,
         Priority priority,
