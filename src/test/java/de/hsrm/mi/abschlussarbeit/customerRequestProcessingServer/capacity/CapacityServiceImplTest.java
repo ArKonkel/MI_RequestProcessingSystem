@@ -322,7 +322,7 @@ class CapacityServiceImplTest {
         CalculatedCapacityCalendarEntryVO expectedEntry = new CalculatedCapacityCalendarEntryVO(
                 task.getTitle(),
                 firstDay,
-                ToMinutesCalculator.timeUnitToMinutes(task.getEstimatedTime(), task.getTimeUnit())
+                ToMinutesCalculator.timeUnitToMinutes(task.getEstimatedTime(), task.getEstimationUnit())
         );
 
         assertEquals(List.of(expectedEntry), result);
@@ -516,13 +516,13 @@ class CapacityServiceImplTest {
         CalculatedCapacityCalendarEntryVO expectedFriday = new CalculatedCapacityCalendarEntryVO(
                 task.getTitle(),
                 friday,
-                ToMinutesCalculator.timeUnitToMinutes(taskOccupiedTimeFriday, task.getTimeUnit())
+                ToMinutesCalculator.timeUnitToMinutes(taskOccupiedTimeFriday, task.getEstimationUnit())
         );
 
         CalculatedCapacityCalendarEntryVO expectedMonday = new CalculatedCapacityCalendarEntryVO(
                 task.getTitle(),
                 monday,
-                ToMinutesCalculator.timeUnitToMinutes(taskOccupiedTimeMonday, task.getTimeUnit())
+                ToMinutesCalculator.timeUnitToMinutes(taskOccupiedTimeMonday, task.getEstimationUnit())
         );
 
         assertEquals(List.of(expectedFriday, expectedMonday), result);
@@ -681,7 +681,7 @@ class CapacityServiceImplTest {
         task.setTitle(title);
         task.setCreationDate(dueDate.atStartOfDay());
         task.setEstimatedTime(estimatedTime);
-        task.setTimeUnit(timeUnit);
+        task.setEstimationUnit(timeUnit);
         task.setWorkingTimeInMinutes(0L);
         task.setDueDate(dueDate);
         task.setPriority(Priority.MEDIUM);
@@ -697,7 +697,7 @@ class CapacityServiceImplTest {
         task.setTitle(title);
         task.setCreationDate(dueDate.atStartOfDay());
         task.setEstimatedTime(estimatedTime);
-        task.setTimeUnit(timeUnit);
+        task.setEstimationUnit(timeUnit);
         task.setWorkingTimeInMinutes(0L);
         task.setDueDate(dueDate);
         task.setPriority(priority);

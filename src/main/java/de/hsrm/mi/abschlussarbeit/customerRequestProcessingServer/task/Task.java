@@ -31,7 +31,7 @@ public class Task extends ProcessItem {
     private BigDecimal estimatedTime;
 
     @Enumerated(EnumType.STRING)
-    private TimeUnit timeUnit;
+    private TimeUnit estimationUnit;
 
     @PositiveOrZero
     private Long workingTimeInMinutes;
@@ -80,7 +80,7 @@ public class Task extends ProcessItem {
         }
 
         //Estimation time can only be saved with estimationUnit
-        if (estimatedTime != null && timeUnit == null) {
+        if (estimatedTime != null && estimationUnit == null) {
             throw new IllegalStateException("Estimated time can only be saved with estimationUnit");
         }
     }

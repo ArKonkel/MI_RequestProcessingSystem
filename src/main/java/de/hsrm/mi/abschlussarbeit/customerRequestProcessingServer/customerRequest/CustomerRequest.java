@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 @Entity
@@ -26,7 +27,7 @@ public class CustomerRequest extends ProcessItem {
     @Enumerated(EnumType.STRING)
     private Priority priority;
 
-    private Long estimatedScope;//TODO to BigDecimal
+    private BigDecimal estimatedScope;
 
     @Enumerated(EnumType.STRING)
     private TimeUnit scopeUnit;
@@ -54,4 +55,16 @@ public class CustomerRequest extends ProcessItem {
     @OneToMany(mappedBy = "request")
     private Set<Project> projects;
 
+
+    /**
+     * Validation of CustomerRequest
+     */
+    @PrePersist
+    @PreUpdate
+    private void validate() {
+        //Estimation scope can only be saved with estimationUnit
+        if (estimatedScope != null && scopeUnit == null) {
+            throw new IllegalStateException("estimatedScope can only be saved with scopeUnit");
+        }
+    }
 }
