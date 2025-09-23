@@ -9,7 +9,7 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.Emplo
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeExpertise;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.ExpertiseLevel;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.Priority;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.Priority;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.Task;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskService;
 import org.junit.jupiter.api.Test;
@@ -177,7 +177,7 @@ class CapacityServiceImplTest {
 
         Task task = new Task();
         task.setId(taskId);
-        task.setEstimatedTime(estimatedTime);
+        task.setEstimatedTimeInMinutes(estimatedTime);
         task.setDueDate(dueDate);
         task.setTitle(taskTitle);
 
@@ -320,7 +320,7 @@ class CapacityServiceImplTest {
         CalculatedCapacityCalendarEntryVO expectedEntry = new CalculatedCapacityCalendarEntryVO(
                 task.getTitle(),
                 firstDay,
-                task.getEstimatedTime()
+                task.getEstimatedTimeInMinutes()
         );
 
         assertEquals(List.of(expectedEntry), result);
@@ -675,8 +675,8 @@ class CapacityServiceImplTest {
         task.setId(id);
         task.setTitle(title);
         task.setCreationDate(dueDate.atStartOfDay());
-        task.setEstimatedTime(estimatedTime);
-        task.setWorkingTime(0L);
+        task.setEstimatedTimeInMinutes(estimatedTime);
+        task.setWorkingTimeInMinutes(0L);
         task.setDueDate(dueDate);
         task.setPriority(Priority.MEDIUM);
         task.setCompetences(Set.of(expertise));
@@ -690,8 +690,8 @@ class CapacityServiceImplTest {
         task.setId(id);
         task.setTitle(title);
         task.setCreationDate(dueDate.atStartOfDay());
-        task.setEstimatedTime(estimatedTime);
-        task.setWorkingTime(0L);
+        task.setEstimatedTimeInMinutes(estimatedTime);
+        task.setWorkingTimeInMinutes(0L);
         task.setDueDate(dueDate);
         task.setPriority(priority);
         task.setCompetences(expertises);

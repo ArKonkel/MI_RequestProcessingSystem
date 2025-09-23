@@ -104,7 +104,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
     private void checkIfTaskReadyForCapacityPlanning(Task task) {
         List<String> errors = new ArrayList<>();
 
-        if (task.getEstimatedTime() == 0) {
+        if (task.getEstimatedTimeInMinutes() == 0) {
             errors.add("No estimated time set");
         }
         if (task.getDueDate().isBefore(LocalDate.now())) {
@@ -139,7 +139,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
         Calendar calendar = calendarService.getCalendarOfEmployee(employeeId, from, to);
         Set<CalendarEntry> calendarEntries = calendar.getEntries();
 
-        Long remainingTaskTime = task.getEstimatedTime();
+        Long remainingTaskTime = task.getEstimatedTimeInMinutes();
         List<CalculatedCapacityCalendarEntryVO> calculatedSlots = new ArrayList<>();
 
         // Iterate over each day in the range

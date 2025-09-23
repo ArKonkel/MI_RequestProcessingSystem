@@ -11,5 +11,5 @@ public interface CalendarService {
 
     Calendar getCalendarOfEmployee(Long employeeId, LocalDate from, LocalDate to);
 
-    CalendarDto createCalendarEntriesForTask(Long taskId,Long calendarId, List<CalculatedCapacityCalendarEntryVO> calendarEntries);
+    void createCalendarEntriesForTask(Long taskId,Long calendarId, List<CalculatedCapacityCalendarEntryVO> calendarEntries);
 }

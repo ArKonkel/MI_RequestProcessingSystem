@@ -5,17 +5,13 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.Com
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.department.Department;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
@@ -36,14 +32,12 @@ public class Employee {
     private String lastName;
 
     @Email
+    @NotBlank
     private String email;
-
-    private String phoneNumber;
-
-    private LocalDate hireDate;
 
     @NotNull
     @Positive
+    @Max(8)
     private BigDecimal workingHoursPerDay;
 
     @OneToMany(mappedBy = "employee")

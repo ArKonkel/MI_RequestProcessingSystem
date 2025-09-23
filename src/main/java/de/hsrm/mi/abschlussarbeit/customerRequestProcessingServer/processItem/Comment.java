@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @Getter
@@ -22,7 +22,7 @@ public class Comment {
 
     private String text;
 
-    private LocalDateTime writtenOn;
+    private Instant timeStamp;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

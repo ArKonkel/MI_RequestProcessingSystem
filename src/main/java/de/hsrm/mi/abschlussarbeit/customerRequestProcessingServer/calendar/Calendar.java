@@ -2,6 +2,7 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.Employee;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,5 +25,6 @@ public class Calendar {
     private Set<CalendarEntry> entries;
 
     @OneToOne(mappedBy = "calendar")
+    @NotNull
     private Employee employee;
 }

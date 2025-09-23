@@ -1,7 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.UpdateProcessItemDto;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.Priority;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.Priority;
 import lombok.Builder;
 import lombok.Data;
 

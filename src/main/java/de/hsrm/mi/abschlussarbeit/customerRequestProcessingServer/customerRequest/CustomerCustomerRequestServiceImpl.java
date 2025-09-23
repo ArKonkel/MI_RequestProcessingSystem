@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CustomerCustomerRequestServiceImpl implements CustomerRequestService {
 
-    private final RequestRepository requestRepository;
+    private final CustomerRequestRepository requestRepository;
 
     private final CustomerRepository customerRepository;
 

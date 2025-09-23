@@ -2,7 +2,7 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerReque
 
 public enum CustomerRequestStatus {
     RECEIVED,
-    CLASSIFICATION,
+    IN_CLASSIFICATION,
     SCOPE_CHECK,
     EFFORT_ESTIMATION,
     PAYMENT_CLEARANCE,
@@ -12,6 +12,6 @@ public enum CustomerRequestStatus {
     OFFER_REJECTED,
     OFFER_ACCEPTED,
     WAITING_FOR_PROCESSING,
-    PROCESSING,
+    IN_PROCESS,
     DONE
 }

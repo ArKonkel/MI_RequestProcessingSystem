@@ -2,7 +2,7 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity.CalculatedCapacityCalendarEntryVO;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.Task;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskRepository;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ public class CalendarServiceImpl implements CalendarService {
 
     private final CalendarEntryRepository calendarEntryRepository;
 
-    private final TaskRepository taskRepository;
+    private final TaskService taskService;
 
     private final CalendarMapper calendarMapper;
 
@@ -61,7 +61,7 @@ public class CalendarServiceImpl implements CalendarService {
 
     @Override
     @Transactional
-    public CalendarDto createCalendarEntriesForTask(
+    public void createCalendarEntriesForTask(
             Long taskId,
             Long calendarId,
             List<CalculatedCapacityCalendarEntryVO> calendarEntries
@@ -69,7 +69,7 @@ public class CalendarServiceImpl implements CalendarService {
         log.info("Creating calendar entries for task {} into calendar {}", taskId, calendarId);
 
         Calendar calendar = calendarRepository.getReferenceById(calendarId);
-        Task task = taskRepository.getReferenceById(taskId);
+        Task task = taskService.getTaskById(taskId);
 
         List<CalendarEntry> savedEntries = new ArrayList<>();
 
@@ -85,7 +85,5 @@ public class CalendarServiceImpl implements CalendarService {
         }
 
         calendarEntryRepository.saveAll(savedEntries);
-
-        return calendarMapper.toDto(calendar);
     }
 }
