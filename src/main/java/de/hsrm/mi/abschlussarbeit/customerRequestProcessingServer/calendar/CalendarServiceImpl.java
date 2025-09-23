@@ -77,7 +77,7 @@ public class CalendarServiceImpl implements CalendarService {
             CalendarEntry entry = new CalendarEntry();
             entry.setTitle(dto.title());
             entry.setDate(dto.date());
-            entry.setDuration(dto.duration());
+            entry.setDurationInMinutes(dto.durationInMinutes());
             entry.setCalendar(calendar);
             entry.setTask(task);
 

@@ -8,5 +8,5 @@ public record CalendarEntryDto (
         String title,
         String description,
         LocalDate date,
-        Long duration
+        Long durationInMinutes
 ) {}

@@ -18,7 +18,7 @@ class CalendarEntryMapperTest {
         entry.setTitle("Team Meeting");
         entry.setDescription("Besprechung aller Tasks");
         entry.setDate(LocalDate.parse("2025-09-05"));
-        entry.setDuration(120L);
+        entry.setDurationInMinutes(120L);
 
         // WHEN
         CalendarEntryDto dto = calendarEntryMapper.toDto(entry);
@@ -29,6 +29,6 @@ class CalendarEntryMapperTest {
         assertEquals("Team Meeting", dto.title());
         assertEquals("Besprechung aller Tasks", dto.description());
         assertEquals(LocalDate.parse("2025-09-05"), dto.date());
-        assertEquals(120L, dto.duration());
+        assertEquals(120L, dto.durationInMinutes());
     }
 }

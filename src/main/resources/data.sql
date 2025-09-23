@@ -65,7 +65,7 @@ VALUES (1),
        (2);
 
 --------------------------------- CALENDAR_ENTRY ------------------------------------------------
-INSERT INTO calendar_entry(id, calendar_id, date, duration, title)
+INSERT INTO calendar_entry(id, calendar_id, date, duration_in_minutes, title)
 VALUES (1, 1, CURRENT_TIMESTAMP, 300, 'Test Event'),
        (2, 1, CURRENT_TIMESTAMP - INTERVAL '1 day', 240, 'Test Event'),
        (3, 1, CURRENT_TIMESTAMP - INTERVAL '1 day', 240, 'Test Event');

@@ -8,6 +8,6 @@ import java.time.LocalDate;
 public class CalculatedCapacityCalendarEntryDto {
     private String title;
     private LocalDate date;
-    private Long duration;
+    private Long durationInMinutes;
 }
 

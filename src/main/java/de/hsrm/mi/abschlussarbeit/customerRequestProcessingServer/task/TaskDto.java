@@ -5,12 +5,13 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.Pr
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.EstimationUnit;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.Priority;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
 
 public record TaskDto(
         ProcessItemDto processItem,
-        Long estimatedTime,
+        BigDecimal estimatedTime,
         EstimationUnit estimationUnit,
         Long workingTimeInMinutes,
         LocalDate dueDate,

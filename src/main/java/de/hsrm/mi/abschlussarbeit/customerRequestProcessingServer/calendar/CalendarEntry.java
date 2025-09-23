@@ -30,7 +30,7 @@ public class CalendarEntry {
     private LocalDate date;
 
     @NotNull
-    private Long duration;
+    private Long durationInMinutes;
 
     @ManyToOne
     @JoinColumn(name = "calendar_id")

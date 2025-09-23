@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
@@ -104,7 +105,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
     private void checkIfTaskReadyForCapacityPlanning(Task task) {
         List<String> errors = new ArrayList<>();
 
-        if (task.getEstimatedTime() == 0) {
+        if (task.getEstimatedTime().equals(BigDecimal.ZERO)) {
             errors.add("No estimated time set");
         }
         if (task.getDueDate().isBefore(LocalDate.now())) {
@@ -134,47 +135,59 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
         log.info("Calculating free capacity for task {} for employee {}", task.getId(), employeeId);
 
         Employee employee = employeeService.getEmployeeById(employeeId);
-        long dailyWorkingMinutes = employee.getWorkingHoursPerDay().longValue() * 60;
+        BigDecimal dailyWorkingMinutes = employee.getWorkingHoursPerDay().multiply(BigDecimal.valueOf(60));
 
         Calendar calendar = calendarService.getCalendarOfEmployee(employeeId, from, to);
         Set<CalendarEntry> calendarEntries = calendar.getEntries();
 
-        Long remainingTaskTime = task.getEstimatedTime();
+        BigDecimal remainingTaskTime = task.getEstimatedTime();
         List<CalculatedCapacityCalendarEntryVO> calculatedSlots = new ArrayList<>();
 
         // Iterate over each day in the range
         for (LocalDate date = from; !date.isAfter(to); date = date.plusDays(1)) {
-            Long occupiedMinutes = 0L;
+            BigDecimal occupiedMinutes = BigDecimal.ZERO;
 
             // Skip weekend days
             if (date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY) {
                 continue;
             }
 
+            /*
+            BigDecimal calculation:
+            res = bg1.compareTo(bg2);
+                    if( res == 0 )
+                 "Both values are equal"
+              else if( res == 1 )
+                 "First Value is greater "
+              else if( res == -1 )
+                 "Second value is greater"
+             */
+
             // Only proceed if there is still task time left to schedule
-            if (remainingTaskTime > 0) {
+            if (remainingTaskTime.compareTo(BigDecimal.ZERO) > 0) {
                 // Calculate occupied time for this day
                 for (CalendarEntry entry : calendarEntries) {
                     if (entry.getDate().equals(date)) {
-                        occupiedMinutes += entry.getDuration();
+                        occupiedMinutes = occupiedMinutes.add(BigDecimal.valueOf(entry.getDurationInMinutes()));
                     }
                 }
 
-                long freeMinutes = dailyWorkingMinutes - occupiedMinutes;
+                BigDecimal freeMinutes = dailyWorkingMinutes.subtract(occupiedMinutes);
 
-                if (freeMinutes > remainingTaskTime) {
+                if (freeMinutes.compareTo(remainingTaskTime) > 0) {
                     freeMinutes = remainingTaskTime;
                 }
 
+
                 // Create new slot if there is free time
-                if (freeMinutes > 0) {
+                if (freeMinutes.compareTo(BigDecimal.ZERO) > 0) {
                     CalculatedCapacityCalendarEntryVO newSlot = new CalculatedCapacityCalendarEntryVO(
                             task.getTitle(),
                             date,
-                            freeMinutes
+                            freeMinutes.longValue()
                     );
                     calculatedSlots.add(newSlot);
-                    remainingTaskTime -= freeMinutes;
+                    remainingTaskTime = remainingTaskTime.subtract(freeMinutes);
                 }
             } else {
                 //don't check next days, when no task time left to schedule
@@ -182,7 +195,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
             }
         }
 
-        if (remainingTaskTime > 0) {
+        if (remainingTaskTime.compareTo(BigDecimal.ZERO) > 0) {
             throw new NoCapacityUntilDueDateException("No capacity for task " + task.getId() + " until due date");
         }
 
@@ -220,14 +233,14 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
             }
         }
 
-        // Third: Find the shortest entry (smallest duration)
+        // Third: Find the shortest entry (smallest durationInMinutes)
         long minDuration = earliestEntries.values().stream()
-                .map(entry -> entry.duration())
+                .map(entry -> entry.durationInMinutes())
                 .min((duration1, duration2) -> duration1.compareTo(duration2))
                 .orElseThrow();
 
         for (Employee employee : earliestEntries.keySet()) {
-            if (earliestEntries.get(employee).duration() == minDuration) {
+            if (earliestEntries.get(employee).durationInMinutes() == minDuration) {
                 earliestEmployees.add(employee);
             }
         }

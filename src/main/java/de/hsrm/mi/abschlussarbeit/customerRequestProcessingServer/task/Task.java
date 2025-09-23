@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -27,7 +28,7 @@ import java.util.Set;
 public class Task extends ProcessItem {
 
     @PositiveOrZero
-    private Long estimatedTime; //TODO BigDecimal
+    private BigDecimal estimatedTime;
 
     private EstimationUnit estimationUnit;
 

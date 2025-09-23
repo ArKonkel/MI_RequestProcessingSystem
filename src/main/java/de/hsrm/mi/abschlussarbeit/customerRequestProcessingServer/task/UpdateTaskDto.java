@@ -5,13 +5,14 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.Priorit
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Builder
 @Data
 public class UpdateTaskDto {
     private UpdateProcessItemDto processItem;
-    private Long estimatedTime;
+    private BigDecimal estimatedTime;
     private Long workingTime;
     private LocalDate dueDate;
     private TaskStatus status;
