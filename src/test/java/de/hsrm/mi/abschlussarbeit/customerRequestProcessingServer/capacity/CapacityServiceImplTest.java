@@ -678,12 +678,12 @@ class CapacityServiceImplTest {
         task.setWorkingTimeInMinutes(0L);
         task.setDueDate(dueDate);
         task.setPriority(Priority.MEDIUM);
-        task.setCompetences(Set.of(expertise));
+        task.setExpertise(Set.of(expertise));
 
         return task;
     }
 
-    private Task createTask(long id, String title, Long estimatedTime, LocalDate dueDate, Priority priority, Set<Competence> expertises) {
+    private Task createTask(long id, String title, Long estimatedTime, LocalDate dueDate, Priority priority, Set<Expertise> expertises) {
 
         Task task = new Task();
         task.setId(id);
@@ -693,7 +693,7 @@ class CapacityServiceImplTest {
         task.setWorkingTimeInMinutes(0L);
         task.setDueDate(dueDate);
         task.setPriority(priority);
-        task.setCompetences(expertises);
+        task.setExpertise(expertises);
 
         return task;
     }

@@ -39,8 +39,6 @@ class EmployeeMapperTest {
         employee.setFirstName("Max");
         employee.setLastName("Mustermann");
         employee.setEmail("max@test.de");
-        employee.setPhoneNumber("123456");
-        employee.setHireDate(LocalDate.of(2025, 9, 4));
 
         employee.setDepartment(department);
         employee.setUser(user);
@@ -69,8 +67,6 @@ class EmployeeMapperTest {
         assertEquals("Max", dto.firstName());
         assertEquals("Mustermann", dto.lastName());
         assertEquals("max@test.de", dto.email());
-        assertEquals("123456", dto.phoneNumber());
-        assertEquals(LocalDate.of(2025, 9, 4), dto.hireDate());
 
         assertEquals(10L, dto.departmentId());
         assertEquals(20L, dto.userId());

@@ -51,10 +51,7 @@ class CapacityMapperTest {
                 employee.getFirstName(),
                 employee.getLastName(),
                 employee.getEmail(),
-                employee.getPhoneNumber(),
-                employee.getHireDate(),
                 employee.getWorkingHoursPerDay(),
-                null,
                 null,
                 null,
                 null,
@@ -62,7 +59,7 @@ class CapacityMapperTest {
         );
 
         assertEquals(employeeDto, matchDto.getEmployee());
-        assertEquals(7L, matchDto.getCompetencePoints());
+        assertEquals(7L, matchDto.getExpertisePoints());
         assertEquals(true, matchDto.getCanCompleteTaskEarliest());
         assertEquals(1, matchDto.getCalculatedCalendarCapacities().size());
 

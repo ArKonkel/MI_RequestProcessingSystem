@@ -6,6 +6,7 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.Emplo
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.Employee;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeExpertise;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.expertise.Expertise;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.expertise.ExpertiseDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -47,11 +48,10 @@ class EmployeeExpertiseMapperTest {
         assertEquals(42L, dto.employeeId());
         assertEquals(ExpertiseLevel.ADVANCED, dto.level());
 
-        CompetenceDto competenceDto = dto.expertise();
-        assertNotNull(competenceDto);
-        assertEquals(99L, competenceDto.id());
-        assertEquals("Customizing", competenceDto.name());
-        assertEquals("Software anpassen", competenceDto.description());
-        assertEquals(CompetenceType.EXPERTISE, competenceDto.type());
+        ExpertiseDto expertiseDto = dto.expertise();
+        assertNotNull(expertiseDto);
+        assertEquals(99L, expertiseDto.id());
+        assertEquals("Customizing", expertiseDto.name());
+        assertEquals("Software anpassen", expertiseDto.description());
     }
 }
