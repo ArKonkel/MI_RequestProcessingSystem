@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class CustomerCustomerRequestServiceImpl implements CustomerRequestService {
+public class CustomerRequestServiceImpl implements CustomerRequestService {
 
     private final CustomerRequestRepository requestRepository;
 
