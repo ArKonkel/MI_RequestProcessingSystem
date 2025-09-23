@@ -1,20 +1,16 @@
-package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.support.userManager.mapper;
+package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.Calendar;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.expertise.Expertise;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.department.Department;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.*;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.ExpertiseLevel;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.expertise.Expertise;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalDate;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class EmployeeMapperTest {

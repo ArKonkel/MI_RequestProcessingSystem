@@ -1,19 +1,13 @@
-package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.support.calendarModule.mapper;
+package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar;
 
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarEntryDto;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarEntry;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarEntryMapper;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
+import static org.junit.jupiter.api.Assertions.*;
 
 class CalendarEntryMapperTest {
-
     private final CalendarEntryMapper calendarEntryMapper = Mappers.getMapper(CalendarEntryMapper.class);
 
     @Test

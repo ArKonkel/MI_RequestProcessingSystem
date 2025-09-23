@@ -1,10 +1,9 @@
-package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.support.userManager.mapper;
+package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.expertise;
 
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.expertise.*;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ExpertiseMapperTest {
 

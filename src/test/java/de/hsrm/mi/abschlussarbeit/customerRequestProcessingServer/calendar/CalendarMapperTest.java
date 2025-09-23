@@ -1,6 +1,5 @@
-package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.support.calendarModule.mapper;
+package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar;
 
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.*;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.Employee;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class CalendarMapperTest {
@@ -65,3 +63,5 @@ class CalendarMapperTest {
         assertEquals("Java Workshop", mappedEntry2.description());
     }
 }
+
+
