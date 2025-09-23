@@ -19,10 +19,6 @@ public record TaskDto(
         TaskStatus status,
         Long calendarEntryId, //TODO das brauche ich hier nicht
         Set<Expertise> expertise,
-        Long blockerId,
-        Long blockedId,
-        Long referenceTaskId,
-        //Set<Long> referencedByIds,
         Long requestId,
         Long projectId
 ) {}

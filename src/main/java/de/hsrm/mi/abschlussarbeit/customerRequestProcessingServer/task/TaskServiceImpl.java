@@ -72,24 +72,6 @@ public class TaskServiceImpl implements TaskService {
         if (dto.getAcceptanceCriteria() != null) task.setAcceptanceCriteria(dto.getAcceptanceCriteria());
         if (dto.getPriority() != null) task.setPriority(dto.getPriority());
 
-        if (dto.getBlockerId() != null) {
-            Task blocker = new Task();
-            blocker.setId(dto.getBlockerId());
-            task.setBlocker(blocker);
-        }
-
-        if (dto.getBlockedId() != null) {
-            Task blocked = new Task();
-            blocked.setId(dto.getBlockedId());
-            task.setBlocked(blocked);
-        }
-
-        if (dto.getReferenceTaskId() != null) {
-            Task reference = new Task();
-            reference.setId(dto.getReferenceTaskId());
-            task.setReferenceTask(reference);
-        }
-
         if (dto.getRequestId() != null) {
             CustomerRequest request = new CustomerRequest();
             request.setId(dto.getRequestId());

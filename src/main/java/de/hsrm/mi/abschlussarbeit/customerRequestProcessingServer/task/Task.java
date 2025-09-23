@@ -58,21 +58,6 @@ public class Task extends ProcessItem {
     )
     private Set<Expertise> expertise = Set.of();
 
-    @ManyToOne(fetch = FetchType.LAZY) //Needed because of circular dependency
-    @JoinColumn(name = "blocker_id")
-    private Task blocker;
-
-    @ManyToOne(fetch = FetchType.LAZY) //Needed because of circular dependency
-    @JoinColumn(name = "blocked_id")
-    private Task blocked;
-
-    @ManyToOne(fetch = FetchType.LAZY) //Needed because of circular dependency
-    @JoinColumn(name = "reference_id")
-    private Task referenceTask;
-
-    @OneToMany(mappedBy = "referenceTask", fetch = FetchType.LAZY) //Needed because of circular dependency
-    private Set<Task> referencedBy;
-
     @ManyToOne
     @JoinColumn(name = "request_id")
     private CustomerRequest request;
