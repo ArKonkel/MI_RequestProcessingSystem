@@ -66,6 +66,6 @@ class CapacityMapperTest {
         CalculatedCapacityCalendarEntryDto entryDto = matchDto.getCalculatedCalendarCapacities().get(0);
         assertEquals("Task A", entryDto.getTitle());
         assertEquals(LocalDate.of(2025, 9, 21), entryDto.getDate());
-        assertEquals(120L, entryDto.getDuration());
+        assertEquals(120L, entryDto.getDurationInMinutes());
     }
 }

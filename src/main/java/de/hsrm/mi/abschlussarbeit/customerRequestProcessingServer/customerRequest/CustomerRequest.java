@@ -3,7 +3,7 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerReque
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItem;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.Priority;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.Project;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.EstimationUnit;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.TimeUnit;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.Task;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customer.Customer;
 import jakarta.persistence.*;
@@ -29,7 +29,7 @@ public class CustomerRequest extends ProcessItem {
     private Long estimatedScope;//TODO to BigDecimal
 
     @Enumerated(EnumType.STRING)
-    private EstimationUnit scopeUnit;
+    private TimeUnit scopeUnit;
 
     @NotNull
     @Enumerated(EnumType.STRING)

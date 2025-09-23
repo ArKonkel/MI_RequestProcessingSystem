@@ -8,7 +8,9 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.Emplo
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeExpertise;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.ExpertiseLevel;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.TimeUnit;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.Priority;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.ToMinutesCalculator;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.Task;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskService;
 import org.junit.jupiter.api.Test;
@@ -49,10 +51,10 @@ class CapacityServiceImplTest {
     void findBestMatches_shouldFindMatches() {
         // GIVEN
         String taskTitle = "Customizing the Software";
-        Long estimatedTime = 120L;
+        BigDecimal estimatedTime = BigDecimal.TWO;
         LocalDate dueDate = LocalDate.now().plusDays(14);
         Long taskId = 1L;
-        Task task = createTask(taskId, taskTitle, estimatedTime, dueDate);
+        Task task = createTask(taskId, taskTitle, estimatedTime, TimeUnit.HOUR, dueDate);
 
         // Employees
         Employee employee1 = new Employee();
@@ -135,10 +137,10 @@ class CapacityServiceImplTest {
     void findBestMatches_ShouldThrowTaskNotReadyForResourcePlanningException_DueDateInPast() {
         // GIVEN
         String taskTitle = "Customizing the Software";
-        Long estimatedTime = 120L;
+        BigDecimal estimatedTime = BigDecimal.TWO;
         LocalDate dueDate = LocalDate.parse("1999-09-12"); // due date in the past
         Long taskId = 1L;
-        Task task = createTask(taskId, taskTitle, estimatedTime, dueDate);
+        Task task = createTask(taskId, taskTitle, estimatedTime, TimeUnit.HOUR, dueDate);
 
         // WHEN + THEN
         when(taskService.getTaskById(taskId)).thenReturn(task);
@@ -152,10 +154,10 @@ class CapacityServiceImplTest {
     void findBestMatches_ShouldThrowTaskNotReadyForResourcePlanningException_NoEstimation() {
         // GIVEN
         String taskTitle = "Customizing the Software";
-        Long estimatedTime = 0L;
+        BigDecimal estimatedTime = BigDecimal.ZERO;
         LocalDate dueDate = LocalDate.parse("3000-09-12");
         Long taskId = 1L;
-        Task task = createTask(taskId, taskTitle, estimatedTime, dueDate);
+        Task task = createTask(taskId, taskTitle, estimatedTime, TimeUnit.HOUR, dueDate);
 
         // WHEN + THEN
         when(taskService.getTaskById(taskId)).thenReturn(task);
@@ -170,7 +172,7 @@ class CapacityServiceImplTest {
     void findBestMatches_ShouldThrowTaskNotReadyForResourcePlanningException_NoCompetence() {
         // GIVEN
         String taskTitle = "Customizing the Software";
-        Long estimatedTime = 120L;
+        BigDecimal estimatedTime = BigDecimal.TWO; //two hours
         LocalDate dueDate = LocalDate.parse("3000-09-12");
         Long taskId = 1L;
 
@@ -204,7 +206,7 @@ class CapacityServiceImplTest {
         expertise3.setId(3L);
         expertise3.setName("Printing");
 
-        Task task = createTask(1L, "Customizing der Software", 120L, LocalDate.parse("2025-11-05"),
+        Task task = createTask(1L, "Customizing der Software", BigDecimal.TWO, TimeUnit.HOUR,  LocalDate.parse("2025-11-05"),
                 Priority.HIGH, Set.of(expertise1, expertise3));
 
         // Employees
@@ -274,7 +276,7 @@ class CapacityServiceImplTest {
         // GIVEN
         Long employeeId = 1L;
         BigDecimal employeeWorkingHoursPerDay = BigDecimal.valueOf(8); // 8h working day
-        Long estimatedTaskDuration = 240L; // 4h new task
+        BigDecimal estimatedTaskDuration = BigDecimal.valueOf(4); // 4h new task
 
         LocalDate firstDay = LocalDate.parse("2025-09-08");
         LocalDate lastDayToCheck = firstDay.plusDays(2); // range: 3 days
@@ -284,6 +286,7 @@ class CapacityServiceImplTest {
                 10L,
                 "Customizing the Software",
                 estimatedTaskDuration,
+                TimeUnit.HOUR,
                 LocalDate.parse("2025-11-05")
         );
 
@@ -319,7 +322,7 @@ class CapacityServiceImplTest {
         CalculatedCapacityCalendarEntryVO expectedEntry = new CalculatedCapacityCalendarEntryVO(
                 task.getTitle(),
                 firstDay,
-                task.getEstimatedTime()
+                ToMinutesCalculator.timeUnitToMinutes(task.getEstimatedTime(), task.getTimeUnit())
         );
 
         assertEquals(List.of(expectedEntry), result);
@@ -332,7 +335,7 @@ class CapacityServiceImplTest {
         // GIVEN
         Long employeeId = 1L;
         BigDecimal employeeWorkingHoursPerDay = BigDecimal.valueOf(8); // 8h working day
-        Long estimatedTaskDuration = 300L; // 5h new task
+        BigDecimal estimatedTaskDuration = BigDecimal.valueOf(5); // 5h new task
 
         LocalDate firstDay = LocalDate.parse("2025-09-08");
         LocalDate lastDayToCheck = firstDay.plusDays(2); // range: 3 days
@@ -342,6 +345,7 @@ class CapacityServiceImplTest {
                 10L,
                 "Customizing the Software",
                 estimatedTaskDuration,
+                TimeUnit.HOUR,
                 LocalDate.parse("2025-11-05")
         );
 
@@ -407,7 +411,7 @@ class CapacityServiceImplTest {
         // GIVEN
         Long employeeId = 1L;
         BigDecimal employeeWorkingHoursPerDay = BigDecimal.valueOf(8); // 8h working day
-        Long estimatedTaskDuration = 300L; // 4h new task
+        BigDecimal estimatedTaskDuration = BigDecimal.valueOf(4); // 4h new task
 
 
         LocalDate firstDay = LocalDate.parse("2025-09-08");
@@ -419,6 +423,7 @@ class CapacityServiceImplTest {
                 10L,
                 "Customizing the Software",
                 estimatedTaskDuration,
+                TimeUnit.HOUR,
                 dueDate
         );
 
@@ -461,7 +466,7 @@ class CapacityServiceImplTest {
         // GIVEN
         Long employeeId = 1L;
         BigDecimal employeeWorkingHoursPerDay = BigDecimal.valueOf(8); // 8h working day
-        Long estimatedTaskDuration = 300L; // 5h new task
+        BigDecimal estimatedTaskDuration = BigDecimal.valueOf(5); // 5h new task
 
         LocalDate friday = LocalDate.parse("2025-09-12"); //Friday
         LocalDate monday = LocalDate.parse("2025-09-15"); //Monday after Weekend
@@ -471,6 +476,7 @@ class CapacityServiceImplTest {
                 10L,
                 "Customizing the Software",
                 estimatedTaskDuration,
+                TimeUnit.HOUR,
                 LocalDate.parse("2025-11-05")
         );
 
@@ -482,8 +488,8 @@ class CapacityServiceImplTest {
         // Monday: 4h-Meeting: 4h free
         CalendarEntry entry3 = createEntry(30L, monday, 240L);
 
-        Long taskOccupiedTimeFriday = 120L; //2h
-        Long taskOccupiedTimeMonday = 180L; //3h
+        BigDecimal taskOccupiedTimeFriday = BigDecimal.TWO; //2h
+        BigDecimal taskOccupiedTimeMonday = BigDecimal.valueOf(3); //3h
 
         Calendar calendar = new Calendar();
         calendar.setId(99L);
@@ -510,13 +516,13 @@ class CapacityServiceImplTest {
         CalculatedCapacityCalendarEntryVO expectedFriday = new CalculatedCapacityCalendarEntryVO(
                 task.getTitle(),
                 friday,
-                taskOccupiedTimeFriday
+                ToMinutesCalculator.timeUnitToMinutes(taskOccupiedTimeFriday, task.getTimeUnit())
         );
 
         CalculatedCapacityCalendarEntryVO expectedMonday = new CalculatedCapacityCalendarEntryVO(
                 task.getTitle(),
                 monday,
-                taskOccupiedTimeMonday
+                ToMinutesCalculator.timeUnitToMinutes(taskOccupiedTimeMonday, task.getTimeUnit())
         );
 
         assertEquals(List.of(expectedFriday, expectedMonday), result);
@@ -642,7 +648,7 @@ class CapacityServiceImplTest {
         entry.setTitle("Meeting");
         entry.setDescription("Meeting with the team");
         entry.setDate(date);
-        entry.setDuration(duration);
+        entry.setDurationInMinutes(duration);
 
         return entry;
     }
@@ -663,7 +669,7 @@ class CapacityServiceImplTest {
         );
     }
 
-    private Task createTask(Long id, String title, Long estimatedTime, LocalDate dueDate) {
+    private Task createTask(Long id, String title, BigDecimal estimatedTime, TimeUnit timeUnit, LocalDate dueDate) {
 
         Expertise expertise = new Expertise();
         expertise.setId(1L);
@@ -675,6 +681,7 @@ class CapacityServiceImplTest {
         task.setTitle(title);
         task.setCreationDate(dueDate.atStartOfDay());
         task.setEstimatedTime(estimatedTime);
+        task.setTimeUnit(timeUnit);
         task.setWorkingTimeInMinutes(0L);
         task.setDueDate(dueDate);
         task.setPriority(Priority.MEDIUM);
@@ -683,13 +690,14 @@ class CapacityServiceImplTest {
         return task;
     }
 
-    private Task createTask(long id, String title, Long estimatedTime, LocalDate dueDate, Priority priority, Set<Expertise> expertises) {
+    private Task createTask(long id, String title, BigDecimal estimatedTime, TimeUnit timeUnit, LocalDate dueDate, Priority priority, Set<Expertise> expertises) {
 
         Task task = new Task();
         task.setId(id);
         task.setTitle(title);
         task.setCreationDate(dueDate.atStartOfDay());
         task.setEstimatedTime(estimatedTime);
+        task.setTimeUnit(timeUnit);
         task.setWorkingTimeInMinutes(0L);
         task.setDueDate(dueDate);
         task.setPriority(priority);

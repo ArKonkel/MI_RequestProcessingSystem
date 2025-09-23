@@ -6,7 +6,7 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.Pr
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.Priority;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.Project;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarEntry;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.EstimationUnit;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.TimeUnit;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
@@ -30,7 +30,8 @@ public class Task extends ProcessItem {
     @PositiveOrZero
     private BigDecimal estimatedTime;
 
-    private EstimationUnit estimationUnit;
+    @Enumerated(EnumType.STRING)
+    private TimeUnit timeUnit;
 
     @PositiveOrZero
     private Long workingTimeInMinutes;
@@ -68,13 +69,19 @@ public class Task extends ProcessItem {
     private Project project;
 
     /**
-     * Validation is needed because a Task should only belong to Project or a Request
+     * Validation of Task
      */
     @PrePersist
     @PreUpdate
-    private void validateBelonging() {
-        if ((request != null && project != null)) {
+    private void validate() {
+        //Task should only belong to Project or a Request
+        if (request != null && project != null) {
             throw new IllegalStateException("Task is only allowed to belong either to a Request OR a Project");
+        }
+
+        //Estimation time can only be saved with estimationUnit
+        if (estimatedTime != null && timeUnit == null) {
+            throw new IllegalStateException("Estimated time can only be saved with estimationUnit");
         }
     }
 }

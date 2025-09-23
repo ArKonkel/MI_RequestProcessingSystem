@@ -126,12 +126,12 @@ VALUES (1, 'Customizing der Software beim Kunden für Produktdruck',
        (8, 'Scannen funktioniert nicht mehr seit Update', 'Seit dem letzten Update funktioniert das scannen nicht.', '2025-09-14');
 
 -- Tasks (gehören zu den Process Items, gleiche ID wie process_item.id)
-INSERT INTO task (id, estimated_time, due_date, priority, status)
-VALUES (1, 120, '2025-11-05', 'HIGH', 'OPEN'),
-       (2, 240, '2025-10-20', 'MEDIUM', 'OPEN'),
-       (3, 60, '2025-09-30', 'HIGH', 'OPEN'),
-       (4, 180, '2025-10-15', 'LOW', 'OPEN'),
-       (5, 300, '2025-12-01', 'MEDIUM', 'OPEN');
+INSERT INTO task (id, estimated_time, time_unit, due_date, priority, status)
+VALUES (1, 2, 'HOUR','2025-11-05', 'HIGH', 'OPEN'),
+       (2, 4, 'HOUR','2025-10-20', 'MEDIUM', 'OPEN'),
+       (3, 1, 'HOUR','2025-09-30', 'HIGH', 'OPEN'),
+       (4, 3, 'HOUR','2025-10-15', 'LOW', 'OPEN'),
+       (5, 5, 'HOUR','2025-12-01', 'MEDIUM', 'OPEN');
 
 -- Requests (gehören zu den Process Items, gleiche ID wie process_item.id)
 INSERT INTO customer_request (id, priority, chargeable, estimated_scope, category, customer_id, status)

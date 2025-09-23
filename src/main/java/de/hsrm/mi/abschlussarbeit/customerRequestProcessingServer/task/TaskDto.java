@@ -2,7 +2,7 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.expertise.Expertise;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItemDto;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.EstimationUnit;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.TimeUnit;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.Priority;
 
 import java.math.BigDecimal;
@@ -12,7 +12,7 @@ import java.util.Set;
 public record TaskDto(
         ProcessItemDto processItem,
         BigDecimal estimatedTime,
-        EstimationUnit estimationUnit,
+        TimeUnit timeUnit,
         Long workingTimeInMinutes,
         LocalDate dueDate,
         Priority priority,

@@ -3,7 +3,10 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.Calendar;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarEntry;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarService;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.*;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.Employee;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeExpertise;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeService;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.ToMinutesCalculator;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.Task;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskService;
 import jakarta.transaction.Transactional;
@@ -12,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
@@ -135,59 +139,50 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
         log.info("Calculating free capacity for task {} for employee {}", task.getId(), employeeId);
 
         Employee employee = employeeService.getEmployeeById(employeeId);
-        BigDecimal dailyWorkingMinutes = employee.getWorkingHoursPerDay().multiply(BigDecimal.valueOf(60));
+        long dailyWorkingMinutes = employee.getWorkingHoursPerDay()
+                .multiply(BigDecimal.valueOf(60))
+                .setScale(0, RoundingMode.HALF_UP)
+                .longValue();
 
         Calendar calendar = calendarService.getCalendarOfEmployee(employeeId, from, to);
         Set<CalendarEntry> calendarEntries = calendar.getEntries();
 
-        BigDecimal remainingTaskTime = task.getEstimatedTime();
+        long remainingTaskTimeInMinutes = ToMinutesCalculator.timeUnitToMinutes(task.getEstimatedTime(), task.getTimeUnit());
         List<CalculatedCapacityCalendarEntryVO> calculatedSlots = new ArrayList<>();
 
         // Iterate over each day in the range
         for (LocalDate date = from; !date.isAfter(to); date = date.plusDays(1)) {
-            BigDecimal occupiedMinutes = BigDecimal.ZERO;
+            Long occupiedMinutes = 0L;
 
             // Skip weekend days
             if (date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY) {
                 continue;
             }
 
-            /*
-            BigDecimal calculation:
-            res = bg1.compareTo(bg2);
-                    if( res == 0 )
-                 "Both values are equal"
-              else if( res == 1 )
-                 "First Value is greater "
-              else if( res == -1 )
-                 "Second value is greater"
-             */
-
             // Only proceed if there is still task time left to schedule
-            if (remainingTaskTime.compareTo(BigDecimal.ZERO) > 0) {
+            if (remainingTaskTimeInMinutes > 0) {
                 // Calculate occupied time for this day
                 for (CalendarEntry entry : calendarEntries) {
                     if (entry.getDate().equals(date)) {
-                        occupiedMinutes = occupiedMinutes.add(BigDecimal.valueOf(entry.getDurationInMinutes()));
+                        occupiedMinutes += entry.getDurationInMinutes();
                     }
                 }
 
-                BigDecimal freeMinutes = dailyWorkingMinutes.subtract(occupiedMinutes);
+                long freeMinutes = dailyWorkingMinutes - occupiedMinutes;
 
-                if (freeMinutes.compareTo(remainingTaskTime) > 0) {
-                    freeMinutes = remainingTaskTime;
+                if (freeMinutes > remainingTaskTimeInMinutes) {
+                    freeMinutes = remainingTaskTimeInMinutes;
                 }
 
-
                 // Create new slot if there is free time
-                if (freeMinutes.compareTo(BigDecimal.ZERO) > 0) {
+                if (freeMinutes > 0) {
                     CalculatedCapacityCalendarEntryVO newSlot = new CalculatedCapacityCalendarEntryVO(
                             task.getTitle(),
                             date,
-                            freeMinutes.longValue()
+                            freeMinutes
                     );
                     calculatedSlots.add(newSlot);
-                    remainingTaskTime = remainingTaskTime.subtract(freeMinutes);
+                    remainingTaskTimeInMinutes -= freeMinutes;
                 }
             } else {
                 //don't check next days, when no task time left to schedule
@@ -195,7 +190,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
             }
         }
 
-        if (remainingTaskTime.compareTo(BigDecimal.ZERO) > 0) {
+        if (remainingTaskTimeInMinutes > 0) {
             throw new NoCapacityUntilDueDateException("No capacity for task " + task.getId() + " until due date");
         }
 
