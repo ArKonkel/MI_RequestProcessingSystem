@@ -31,7 +31,7 @@ public class CalendarServiceImpl implements CalendarService {
     public CalendarDto getCalendarDtoOfEmployee(Long employeeId, LocalDate from, LocalDate to) {
         Set<CalendarEntry> filteredCalendarEntries = new HashSet<>();
 
-        Calendar calendar = calendarRepository.findByEmployeeId(employeeId).stream().findFirst().orElseThrow();
+        Calendar calendar = calendarRepository.findByOwnerId(employeeId).stream().findFirst().orElseThrow();
         calendar.getEntries().forEach(calendarEntry -> {
             if (!calendarEntry.getDate().isBefore(from) && !calendarEntry.getDate().isAfter(to)) {
                 filteredCalendarEntries.add(calendarEntry);
@@ -47,7 +47,7 @@ public class CalendarServiceImpl implements CalendarService {
     public Calendar getCalendarOfEmployee(Long employeeId, LocalDate from, LocalDate to) {
         Set<CalendarEntry> filteredCalendarEntries = new HashSet<>();
 
-        Calendar calendar = calendarRepository.findByEmployeeId(employeeId).stream().findFirst().orElseThrow();
+        Calendar calendar = calendarRepository.findByOwnerId(employeeId).stream().findFirst().orElseThrow();
         calendar.getEntries().forEach(calendarEntry -> {
             if (!calendarEntry.getDate().isBefore(from) && !calendarEntry.getDate().isAfter(to)) {
                 filteredCalendarEntries.add(calendarEntry);

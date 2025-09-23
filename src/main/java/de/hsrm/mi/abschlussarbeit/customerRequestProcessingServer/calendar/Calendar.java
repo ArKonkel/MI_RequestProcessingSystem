@@ -26,5 +26,5 @@ public class Calendar {
 
     @OneToOne(mappedBy = "calendar")
     @NotNull
-    private Employee employee;
+    private Employee owner;
 }

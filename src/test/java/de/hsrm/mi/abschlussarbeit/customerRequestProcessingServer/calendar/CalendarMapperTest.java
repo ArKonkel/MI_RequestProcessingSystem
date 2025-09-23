@@ -33,7 +33,7 @@ class CalendarMapperTest {
 
         Calendar calendar = new Calendar();
         calendar.setId(100L);
-        calendar.setEmployee(employee);
+        calendar.setOwner(employee);
         calendar.setEntries(Set.of(entry1, entry2));
 
         // WHEN
@@ -42,7 +42,7 @@ class CalendarMapperTest {
         // THEN
         assertNotNull(dto);
         assertEquals(100L, dto.id());
-        assertEquals(42L, dto.employeeId());
+        assertEquals(42L, dto.ownerId());
 
         assertNotNull(dto.entries());
         assertEquals(2, dto.entries().size());

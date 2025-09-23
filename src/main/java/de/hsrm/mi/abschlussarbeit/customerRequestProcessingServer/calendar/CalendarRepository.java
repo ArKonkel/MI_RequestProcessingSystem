@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface CalendarRepository extends JpaRepository<Calendar, Long> {
 
-    List<Calendar> findByEmployeeId(Long employeeId);
+    List<Calendar> findByOwnerId(Long employeeId);
 }
