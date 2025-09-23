@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -80,4 +81,38 @@ class EmployeeMapperTest {
         assertEquals(100L, expertiseDto.expertise().id());
         assertEquals("Customizing", expertiseDto.expertise().name());
     }
+
+    @Test
+    void toEntity() {
+        // GIVEN
+        EmployeeDto dto = new EmployeeDto(
+                1L,
+                "Max",
+                "Mustermann",
+                "max@test.de",
+                new BigDecimal(8),
+                null,
+                10L,   // departmentId: ignored
+                20L,   // userId: ignored
+                30L    // calendarId: ignored
+        );
+
+        // WHEN
+        Employee entity = employeeMapper.toEntity(dto);
+
+        // THEN
+        assertNotNull(entity);
+        assertEquals(1L, entity.getId());
+        assertEquals("Max", entity.getFirstName());
+        assertEquals("Mustermann", entity.getLastName());
+        assertEquals("max@test.de", entity.getEmail());
+        assertEquals(new BigDecimal(8), entity.getWorkingHoursPerDay());
+
+        assertNull(entity.getDepartment()); // ignored
+        assertNull(entity.getUser());       // ignored
+        assertNull(entity.getCalendar());   // ignored
+
+        assertNull(entity.getEmployeeExpertise()); // not mapped
+    }
+
 }

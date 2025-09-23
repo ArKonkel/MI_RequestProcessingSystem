@@ -11,6 +11,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+//Needs to be a SpringBootTest because it has dependencies to other mappers
 @SpringBootTest
 class CapacityMapperTest {
 

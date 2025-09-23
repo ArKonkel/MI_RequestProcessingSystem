@@ -1,12 +1,12 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem;
 
-import java.time.LocalDate;
+import java.time.Instant;
 
 public record ProcessItemDto (
         Long id,
         String title,
         String description,
-        LocalDate creationDate,
+        Instant creationDate,
         Long assigneeId
         //Set<Long> commentIds
 ) {}

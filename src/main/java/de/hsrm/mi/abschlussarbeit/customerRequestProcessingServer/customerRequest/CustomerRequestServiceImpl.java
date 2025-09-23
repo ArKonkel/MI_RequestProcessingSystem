@@ -1,13 +1,13 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest;
 
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotFoundException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customer.CustomerRepository;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotFoundException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.TimeUnit;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -34,7 +34,7 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
         validationService.validateRequestCreation(request);
 
         CustomerRequest requestEntity = requestMapper.toEntity(request);
-        requestEntity.setCreationDate(LocalDateTime.now()); //set creation date to current date
+        requestEntity.setCreationDate(Instant.now()); //set creation date to current date
         requestEntity.setStatus(CustomerRequestStatus.RECEIVED);
         requestEntity.setChargeable(Chargeable.NOT_DETERMINED);
         requestEntity.setScopeUnit(TimeUnit.HOUR);
