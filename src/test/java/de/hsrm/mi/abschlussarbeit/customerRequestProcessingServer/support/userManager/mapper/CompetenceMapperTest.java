@@ -1,7 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.support.userManager.mapper;
 
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.*;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.CompetenceType;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.expertise.*;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 

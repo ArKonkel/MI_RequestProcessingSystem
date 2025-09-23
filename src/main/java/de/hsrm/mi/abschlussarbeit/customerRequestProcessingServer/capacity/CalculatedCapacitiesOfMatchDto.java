@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 public class CalculatedCapacitiesOfMatchDto {
     private EmployeeDto employee;
-    private Long competencePoints;
+    private Long expertisePoints;
     private Boolean canCompleteTaskEarliest;
     private List<CalculatedCapacityCalendarEntryDto> calculatedCalendarCapacities;
 }

@@ -1,13 +1,13 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee;
 
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.CompetenceMapper;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.expertise.ExpertiseMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 /**
  * Mapper class for {@link Employee} and {@link EmployeeDto}
  */
-@Mapper(componentModel = "spring", uses = {EmployeeExpertiseMapper.class, CompetenceMapper.class})
+@Mapper(componentModel = "spring", uses = {EmployeeExpertiseMapper.class, ExpertiseMapper.class})
 public interface EmployeeMapper {
 
     @Mapping(source = "user.id", target = "userId")

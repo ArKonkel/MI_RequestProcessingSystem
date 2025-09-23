@@ -66,7 +66,7 @@ public class TaskServiceImpl implements TaskService {
 
         //Task
         if(dto.getStatus() != null) task.setStatus(dto.getStatus());
-        if (dto.getEstimatedTime() != null) task.setEstimatedTimeInMinutes(dto.getEstimatedTime());
+        if (dto.getEstimatedTime() != null) task.setEstimatedTime(dto.getEstimatedTime());
         if (dto.getWorkingTime() != null) task.setWorkingTimeInMinutes(dto.getWorkingTime());
         if (dto.getDueDate() != null) task.setDueDate(dto.getDueDate());
         if (dto.getAcceptanceCriteria() != null) task.setAcceptanceCriteria(dto.getAcceptanceCriteria());

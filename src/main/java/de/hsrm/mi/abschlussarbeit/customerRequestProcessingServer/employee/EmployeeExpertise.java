@@ -1,6 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee;
 
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.Expertise;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.expertise.Expertise;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

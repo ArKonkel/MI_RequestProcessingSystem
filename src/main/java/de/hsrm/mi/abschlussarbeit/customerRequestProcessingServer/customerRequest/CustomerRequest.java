@@ -26,7 +26,7 @@ public class CustomerRequest extends ProcessItem {
     @Enumerated(EnumType.STRING)
     private Priority priority;
 
-    private Long estimatedScope;
+    private Long estimatedScope;//TODO to BigDecimal
 
     @Enumerated(EnumType.STRING)
     private EstimationUnit scopeUnit;

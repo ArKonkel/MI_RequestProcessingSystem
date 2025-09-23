@@ -1,6 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee;
 
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.CompetenceDto;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.expertise.ExpertiseDto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -11,11 +11,8 @@ public record EmployeeDto(
         String firstName,
         String lastName,
         String email,
-        String phoneNumber,
-        LocalDate hireDate,
         BigDecimal workingHoursPerDay,
         Set<EmployeeExpertiseDto> employeeExpertise,
-        Set<CompetenceDto> competences,
         Long departmentId,
         Long userId,
         Long calendarId

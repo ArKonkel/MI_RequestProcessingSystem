@@ -3,8 +3,7 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.Calendar;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarEntry;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarService;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.Competence;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.Expertise;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.expertise.Expertise;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.Employee;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeExpertise;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeService;
@@ -118,7 +117,7 @@ class CapacityServiceImplTest {
                 .findFirst()
                 .orElseThrow();
 
-        assertEquals(80L, resultEmployee1.competencePoints());
+        assertEquals(80L, resultEmployee1.expertisePoints());
         assertTrue(resultEmployee1.canCompleteTaskEarliest());
         assertEquals(capacitiesEmployee1, resultEmployee1.calculatedCalendarCapacities());
 
@@ -127,7 +126,7 @@ class CapacityServiceImplTest {
                 .findFirst()
                 .orElseThrow();
 
-        assertEquals(70L, resultEmployee2.competencePoints());
+        assertEquals(70L, resultEmployee2.expertisePoints());
         assertFalse(resultEmployee2.canCompleteTaskEarliest());
         assertEquals(capacitiesEmployee2, resultEmployee2.calculatedCalendarCapacities());
     }
@@ -177,7 +176,7 @@ class CapacityServiceImplTest {
 
         Task task = new Task();
         task.setId(taskId);
-        task.setEstimatedTimeInMinutes(estimatedTime);
+        task.setEstimatedTime(estimatedTime);
         task.setDueDate(dueDate);
         task.setTitle(taskTitle);
 
@@ -320,7 +319,7 @@ class CapacityServiceImplTest {
         CalculatedCapacityCalendarEntryVO expectedEntry = new CalculatedCapacityCalendarEntryVO(
                 task.getTitle(),
                 firstDay,
-                task.getEstimatedTimeInMinutes()
+                task.getEstimatedTime()
         );
 
         assertEquals(List.of(expectedEntry), result);
@@ -675,7 +674,7 @@ class CapacityServiceImplTest {
         task.setId(id);
         task.setTitle(title);
         task.setCreationDate(dueDate.atStartOfDay());
-        task.setEstimatedTimeInMinutes(estimatedTime);
+        task.setEstimatedTime(estimatedTime);
         task.setWorkingTimeInMinutes(0L);
         task.setDueDate(dueDate);
         task.setPriority(Priority.MEDIUM);
@@ -690,7 +689,7 @@ class CapacityServiceImplTest {
         task.setId(id);
         task.setTitle(title);
         task.setCreationDate(dueDate.atStartOfDay());
-        task.setEstimatedTimeInMinutes(estimatedTime);
+        task.setEstimatedTime(estimatedTime);
         task.setWorkingTimeInMinutes(0L);
         task.setDueDate(dueDate);
         task.setPriority(priority);

@@ -1,13 +1,11 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.support.userManager.mapper;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeExpertiseMapper;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.CompetenceType;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.ExpertiseLevel;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.CompetenceDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeExpertiseDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.Employee;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeExpertise;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.Expertise;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.expertise.Expertise;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

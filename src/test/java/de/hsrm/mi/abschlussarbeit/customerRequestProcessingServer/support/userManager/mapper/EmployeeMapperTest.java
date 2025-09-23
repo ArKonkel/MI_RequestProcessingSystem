@@ -1,7 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.support.userManager.mapper;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.Calendar;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.Expertise;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.expertise.Expertise;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.department.Department;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.*;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.ExpertiseLevel;

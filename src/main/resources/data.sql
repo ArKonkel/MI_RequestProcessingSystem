@@ -1,51 +1,26 @@
---------------------------------- COMPETENCES ------------------------------------------------
+--------------------------------- EXPERTISE ------------------------------------------------
 
-INSERT INTO competence (id, name, description, dtype)
+INSERT INTO expertise (id, name, description)
 VALUES
 -- ERP-Module
-(1, 'Finanzen', 'Fachwissen in Finanzbuchhaltung, Controlling und Bilanzierung mit ERP-Systemen.', 'Expertise'),
-(2, 'Personalwesen', 'Kenntnisse in Personalverwaltung, Lohn- und Gehaltsabrechnung sowie HR-Prozessen im ERP-Kontext.',
- 'Expertise'),
+(1, 'Finanzen', 'Fachwissen in Finanzbuchhaltung, Controlling und Bilanzierung mit ERP-Systemen.'),
+(2, 'Personalwesen', 'Kenntnisse in Personalverwaltung, Lohn- und Gehaltsabrechnung sowie HR-Prozessen im ERP-Kontext.'),
 
 -- Technisches Wissen
-(3, 'Datenbanken', 'Fachwissen in relationalen und Cloud-basierten Datenbanken für ERP-Systeme.', 'Expertise'),
-(4, 'Schnittstellen', 'Kenntnisse in API-Design, Middleware und Systemintegration im ERP-Kontext.', 'Expertise'),
-(5, 'Cloud-Infrastruktur', 'Erfahrung mit Cloud-Betrieb von ERP-Systemen, inkl. Skalierung und Sicherheit.',
- 'Expertise'),
-(6, 'Integrationen', 'Fachwissen in der Anbindung externer Systeme, z. B. E-Commerce, BI oder Finanzsysteme.',
- 'Expertise'),
+(3, 'Datenbanken', 'Fachwissen in relationalen und Cloud-basierten Datenbanken für ERP-Systeme.'),
+(4, 'Schnittstellen', 'Kenntnisse in API-Design, Middleware und Systemintegration im ERP-Kontext.'),
+(5, 'Cloud-Infrastruktur', 'Erfahrung mit Cloud-Betrieb von ERP-Systemen, inkl. Skalierung und Sicherheit.'),
+(6, 'Integrationen', 'Fachwissen in der Anbindung externer Systeme, z. B. E-Commerce, BI oder Finanzsysteme.'),
 
 -- Implementierungserfahrung
-(7, 'Customizing', 'Kenntnisse in der Anpassung von ERP-Systemen an kundenspezifische Anforderungen.', 'Expertise'),
-(8, 'Rollouts', 'Praxis in der Planung und Durchführung von ERP-Systemeinführungen in Organisationen.', 'Expertise'),
+(7, 'Customizing', 'Kenntnisse in der Anpassung von ERP-Systemen an kundenspezifische Anforderungen.'),
+(8, 'Rollouts', 'Praxis in der Planung und Durchführung von ERP-Systemeinführungen in Organisationen.'),
 
 -- Support & Troubleshooting
-(9, 'Fehleranalyse', 'Know-how in der Analyse und Behebung von Störungen im ERP-Betrieb.', 'Expertise'),
+(9, 'Fehleranalyse', 'Know-how in der Analyse und Behebung von Störungen im ERP-Betrieb.'),
 (10, 'Performanceoptimierung',
- 'Erfahrung in der Optimierung von ERP-Systemen hinsichtlich Geschwindigkeit und Skalierbarkeit.', 'Expertise'),
-(11, 'Updates', 'Fachwissen in Release-Management, Patching und Versionswechseln bei ERP-Systemen.', 'Expertise');
-
-INSERT INTO competence (id, name, description, dtype, obtained_date)
-VALUES
--- Entwicklungs-/Technologie-Zertifikate
-(12, 'Java SE 11 Developer', 'Zertifizierung für Java-Programmierung, relevant für ERP-Entwicklung und Schnittstellen.',
- 'Qualification', DATE '2022-02-15'),
-(13, 'Oracle Database SQL Certified Associate',
- 'Zertifizierung für Datenbankkenntnisse und SQL-Abfragen in ERP-Systemen.', 'Qualification', DATE '2021-08-30'),
-(14, 'AWS Developer – Associate', 'Zertifizierung für Cloud-Entwicklung und Deployment von ERP-Lösungen auf AWS.',
- 'Qualification', DATE '2023-01-12'),
-(15, 'Microsoft Azure Developer Associate',
- 'Zertifizierung für Entwicklung und Integration von ERP-Anwendungen in Microsoft Azure.', 'Qualification',
- DATE '2022-11-05'),
-
--- Scrum- / Agile-Zertifikate
-(16, 'Certified Scrum Master (CSM)', 'Agile Projektmanagement-Zertifizierung für ERP-Implementierungen.',
- 'Qualification', DATE '2021-04-20'),
-(17, 'Professional Scrum Product Owner (PSPO I)', 'Zertifizierung für Produktverantwortliche in agilen ERP-Projekten.',
- 'Qualification', DATE '2022-07-14'),
-(18, 'SAFe Agilist', 'Zertifizierung für Skalierung agiler Methoden in großen ERP-Projekten.', 'Qualification',
- DATE '2020-09-28');
-
+ 'Erfahrung in der Optimierung von ERP-Systemen hinsichtlich Geschwindigkeit und Skalierbarkeit.'),
+(11, 'Updates', 'Fachwissen in Release-Management, Patching und Versionswechseln bei ERP-Systemen.');
 
 --------------------------------- DEPARTMENT ------------------------------------------------
 
@@ -100,9 +75,9 @@ SELECT setval('calendar_entry_seq', (SELECT MAX(id) FROM calendar_entry));
 
 --------------------------------- EMPLOYEE ------------------------------------------------
 
-INSERT INTO employee(id, email, first_name, last_name, phone_number, department_id, working_hours_per_day, calendar_id)
-VALUES (1, 'Max@test.de', 'Max', 'Mustermann', '', null, 8, 1),
-       (2, 'Sabine@test.de', 'Sabine', 'Musterfrau', '', 1, 8, 2);
+INSERT INTO employee(id, email, first_name, last_name, department_id, working_hours_per_day, calendar_id)
+VALUES (1, 'Max@test.de', 'Max', 'Mustermann', null, 8, 1),
+       (2, 'Sabine@test.de', 'Sabine', 'Musterfrau', 1, 8, 2);
 
 --------------------------------- USER ------------------------------------------------
 
@@ -160,15 +135,15 @@ VALUES (1, 120, '2025-11-05', 'HIGH', 'OPEN'),
 
 -- Requests (gehören zu den Process Items, gleiche ID wie process_item.id)
 INSERT INTO customer_request (id, priority, chargeable, estimated_scope, category, customer_id, status)
-VALUES (6, 'LOW', 'NOT_DEFINED', 0, 'TRAINING_REQUEST', 1, 'RECEIVED'),
-       (7, 'MEDIUM', 'NOT_DEFINED', 0, 'SUGGESTION_FOR_IMPROVEMENT', 1, 'RECEIVED'),
-       (8, 'HIGH', 'NOT_DEFINED', 0, 'BUG_REPORT',1, 'RECEIVED');
+VALUES (6, 'LOW', 'NOT_DETERMINED', 0, 'TRAINING_REQUEST', 1, 'RECEIVED'),
+       (7, 'MEDIUM', 'NOT_DETERMINED', 0, 'SUGGESTION_FOR_IMPROVEMENT', 1, 'RECEIVED'),
+       (8, 'HIGH', 'NOT_DETERMINED', 0, 'BUG_REPORT',1, 'RECEIVED');
 
 
 SELECT setval('process_item_seq', (SELECT MAX(id) FROM task));
---------------------------------- TASK_COMPETENCE ------------------------------------------------
+--------------------------------- TASK_EXPERTISE ------------------------------------------------
 
-INSERT INTO task_competence (task_id, competence_id)
+INSERT INTO task_expertise (task_id, expertise_id)
 VALUES (1, 7),
        (1, 9),
        (2, 7),

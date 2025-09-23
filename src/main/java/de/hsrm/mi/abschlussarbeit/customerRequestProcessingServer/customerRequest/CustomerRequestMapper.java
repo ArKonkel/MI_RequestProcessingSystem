@@ -25,6 +25,7 @@ public interface CustomerRequestMapper {
     @Mapping(target = "tasks", ignore = true)
     @Mapping(target = "projects", ignore = true)
     @Mapping(target = "category", source = "category")
+    @Mapping(target = "scopeUnit", ignore = true)
     @Mapping(target = "customer", ignore = true) //is handled in RequestService
     @Mapping(target = "title", source = "processItem.title")
     @Mapping(target = "description", source = "processItem.description")

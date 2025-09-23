@@ -1,11 +1,11 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee;
 
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.CompetenceDto;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.expertise.ExpertiseDto;
 
 public record EmployeeExpertiseDto (
         long id,
         long employeeId,
-        CompetenceDto expertise,
+        ExpertiseDto expertise,
         ExpertiseLevel level
 ) {
 }

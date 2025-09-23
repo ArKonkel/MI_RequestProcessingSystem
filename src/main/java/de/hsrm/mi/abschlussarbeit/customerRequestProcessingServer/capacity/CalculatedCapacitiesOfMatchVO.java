@@ -6,7 +6,7 @@ import java.util.List;
 
 public record CalculatedCapacitiesOfMatchVO(
         Employee employee,
-        Long competencePoints,
+        Long expertisePoints,
         Boolean canCompleteTaskEarliest,
         List<CalculatedCapacityCalendarEntryVO> calculatedCalendarCapacities
 ) {}

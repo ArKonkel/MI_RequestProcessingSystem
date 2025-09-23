@@ -51,7 +51,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
 
         List<CalculatedCapacitiesOfMatchVO> results = new ArrayList<>();
 
-        // find best matching employees by competences
+        // find best matching employees by expertise
         Map<Employee, Integer> competenceMatches = findBestMatchingEmployees(task);
 
         // calculate free capacity for each employee
@@ -104,14 +104,14 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
     private void checkIfTaskReadyForCapacityPlanning(Task task) {
         List<String> errors = new ArrayList<>();
 
-        if (task.getEstimatedTimeInMinutes() == 0) {
+        if (task.getEstimatedTime() == 0) {
             errors.add("No estimated time set");
         }
         if (task.getDueDate().isBefore(LocalDate.now())) {
             errors.add("Due date is in the past");
         }
-        if (task.getCompetences().isEmpty()) {
-            errors.add("No competences set");
+        if (task.getExpertise().isEmpty()) {
+            errors.add("No expertise set");
         }
 
         if (!errors.isEmpty()) {
@@ -139,7 +139,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
         Calendar calendar = calendarService.getCalendarOfEmployee(employeeId, from, to);
         Set<CalendarEntry> calendarEntries = calendar.getEntries();
 
-        Long remainingTaskTime = task.getEstimatedTimeInMinutes();
+        Long remainingTaskTime = task.getEstimatedTime();
         List<CalculatedCapacityCalendarEntryVO> calculatedSlots = new ArrayList<>();
 
         // Iterate over each day in the range
@@ -247,7 +247,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
 
         // Sum points for each competence of the task
         for (EmployeeExpertise ee : allEmployeeExpertises) {
-            if (!task.getCompetences().contains(ee.getExpertise())) {
+            if (!task.getExpertise().contains(ee.getExpertise())) {
                 continue;
             }
 

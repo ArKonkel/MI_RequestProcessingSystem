@@ -1,7 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.Calendar;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.Competence;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.department.Department;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
 import jakarta.persistence.*;
@@ -42,14 +41,6 @@ public class Employee {
 
     @OneToMany(mappedBy = "employee")
     private Set<EmployeeExpertise> employeeExpertise;
-
-    @ManyToMany
-    @JoinTable(
-            name = "employee_competence",
-            joinColumns = @JoinColumn(name = "employee_id"),
-            inverseJoinColumns = @JoinColumn(name = "competence_id")
-    )
-    private Set<Competence> competences;
 
     @ManyToOne
     @JoinColumn(name = "department_id")

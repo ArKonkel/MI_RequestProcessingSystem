@@ -1,11 +1,11 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequest;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.expertise.Expertise;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItem;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.Priority;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.Project;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarEntry;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.Competence;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.EstimationUnit;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
@@ -27,7 +27,7 @@ import java.util.Set;
 public class Task extends ProcessItem {
 
     @PositiveOrZero
-    private Long estimatedTimeInMinutes;
+    private Long estimatedTime; //TODO BigDecimal
 
     private EstimationUnit estimationUnit;
 
@@ -52,11 +52,11 @@ public class Task extends ProcessItem {
 
     @ManyToMany
     @JoinTable(
-            name = "task_competence",
+            name = "task_expertise",
             joinColumns = @JoinColumn(name = "task_id"),
-            inverseJoinColumns = @JoinColumn(name = "competence_id")
+            inverseJoinColumns = @JoinColumn(name = "expertise_id")
     )
-    private Set<Competence> competences = Set.of();
+    private Set<Expertise> expertise = Set.of();
 
     @ManyToOne(fetch = FetchType.LAZY) //Needed because of circular dependency
     @JoinColumn(name = "blocker_id")

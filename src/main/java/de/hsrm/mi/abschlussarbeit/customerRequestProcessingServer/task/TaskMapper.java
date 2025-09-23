@@ -1,7 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItemMapper;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.competence.CompetenceMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -9,7 +8,7 @@ import org.mapstruct.Mapping;
  * Mapper class for {@link Task} and {@link TaskDto}.
  */
 @Mapper(
-        componentModel = "spring", uses = {ProcessItemMapper.class, CompetenceMapper.class}
+        componentModel = "spring", uses = {ProcessItemMapper.class}
 )
 public interface TaskMapper {
 
