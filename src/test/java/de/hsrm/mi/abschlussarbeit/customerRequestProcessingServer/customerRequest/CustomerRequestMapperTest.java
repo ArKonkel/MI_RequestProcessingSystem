@@ -1,6 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customer.Customer;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.mail.EmailAddress;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItemCreateDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.Priority;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -80,7 +82,8 @@ class CustomerRequestMapperTest {
                         .build(),
                 Priority.MEDIUM,
                 Category.BUG_REPORT,
-                1L
+                1L,
+                List.of(new EmailAddress("test.mail"))
         );
 
         // WHEN
