@@ -42,6 +42,7 @@ public class OutlookServiceImpl implements MailService, OutlookCalendarService {
     public void sendMails(CustomerRequest customerRequest, List<EmailAddress> emailAddresses) {
         log.info("Sending mail from {} to {} with title {}", customerRequest.getCustomer().getEmail(), emailAddresses, customerRequest.getTitle());
         String senderMail = customerRequest.getCustomer().getEmail();
+        String path = outlookURL + "v1.0/users/" + senderMail + "/sendMail";
 
         if (senderMail == null || senderMail.isEmpty()) {
 
@@ -56,8 +57,9 @@ public class OutlookServiceImpl implements MailService, OutlookCalendarService {
 
         SendMailRequest mailRequest = customerRequestToMailRequest(customerRequest, emailAddresses);
 
+
         WebClient webClient = WebClient.builder()
-                .baseUrl(outlookURL + "v1.0/users/" + senderMail + "/sendMail")
+                .baseUrl(path)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
 
@@ -84,7 +86,41 @@ public class OutlookServiceImpl implements MailService, OutlookCalendarService {
 
     @Override
     public OutlookCalendarViewResponse fetchCalendarEvents(String employeeMail, OffsetDateTime start, OffsetDateTime end) {
-        return null;
+        log.info("Fetching calendar events for employee {} from {} to {}", employeeMail, start, end);
+
+        if (employeeMail == null || employeeMail.isEmpty()) {
+            log.error("Employee mail is null or empty");
+            return null;
+        }
+
+        WebClient webClient = WebClient.builder()
+                .baseUrl(outlookURL)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build();
+
+        try {
+            OutlookCalendarViewResponse response = webClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("v1.0/users/{employeeMail}/calendar/calendarView")
+                            .queryParam("start", start.toString())
+                            .queryParam("end", end.toString())
+                            .build(employeeMail))
+                    .retrieve()
+                    .bodyToMono(OutlookCalendarViewResponse.class)
+                    .block();
+
+            if (response == null || response.value() == null || response.value().isEmpty()) {
+                log.info("No calendar events found for {}", employeeMail);
+                return null;
+            }
+
+            log.info("Fetched {} calendar events for {}", response.value().size(), employeeMail);
+            return response;
+
+        } catch (Exception e) {
+            log.error("Error fetching calendar events: {}", e.getMessage(), e);
+            return null;
+        }
     }
 
 

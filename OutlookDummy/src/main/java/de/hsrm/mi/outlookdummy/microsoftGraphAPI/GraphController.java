@@ -9,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.OffsetDateTime;
-
 @Slf4j
 @RestController
 @RequestMapping("/v1.0")
@@ -23,10 +21,10 @@ public class GraphController {
 
     @GetMapping("/users/{userPrincipalName}/calendar/calendarView")
     public ResponseEntity<OutlookCalendarViewResponse> getCalendarViewOfPrincipal(@PathVariable String userPrincipalName,
-                                                                                  @RequestParam OffsetDateTime start, @RequestParam OffsetDateTime end) {
+                                                                                  @RequestParam String start, @RequestParam String end) {
         log.info("REST request to get calendar view of {}", userPrincipalName);
 
-        OutlookCalendarViewResponse response = calendarService.getCalendarView(userPrincipalName, start.toString(), end.toString());
+        OutlookCalendarViewResponse response = calendarService.getCalendarView(userPrincipalName, start, end);
 
         if (response == null || response.value().isEmpty())
             return ResponseEntity.notFound().build();
