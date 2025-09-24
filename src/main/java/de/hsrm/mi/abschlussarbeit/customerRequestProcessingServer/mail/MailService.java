@@ -5,5 +5,5 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerReques
 import java.util.List;
 
 public interface MailService {
-    void sendMails(CustomerRequest request, List<EmailAddress> recipients);
+    void sendMails(CustomerRequest request, List<EmailAddress> emailAddresses);
 }
