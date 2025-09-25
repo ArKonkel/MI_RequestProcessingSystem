@@ -1,12 +1,10 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook;
 
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequest;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.*;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.mail.EmailAddress;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.mail.MailService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -22,15 +20,8 @@ import java.util.List;
 @Slf4j
 public class OutlookServiceImpl implements MailService, OutlookCalendarService {
 
-    private final CalendarService calendarService;
-
     @Value("${outlook.api.url}")
     private String outlookURL;
-
-    @Autowired
-    public OutlookServiceImpl(CalendarService calendarService) {
-        this.calendarService = calendarService;
-    }
 
     /**
      * Converts a CustomerRequest to a SendMailRequest and sends it to the given email addresses.
@@ -80,17 +71,13 @@ public class OutlookServiceImpl implements MailService, OutlookCalendarService {
 
 
     @Override
-    public void initCalendarOfEmployee(Long employeeId) {
-
-    }
-
-    @Override
     public OutlookCalendarViewResponse fetchCalendarEvents(String employeeMail, OffsetDateTime start, OffsetDateTime end) {
         log.info("Fetching calendar events for employee {} from {} to {}", employeeMail, start, end);
 
         if (employeeMail == null || employeeMail.isEmpty()) {
             log.error("Employee mail is null or empty");
-            return null;
+
+            throw new IllegalArgumentException("Employee mail is null or empty");
         }
 
         WebClient webClient = WebClient.builder()
@@ -111,7 +98,9 @@ public class OutlookServiceImpl implements MailService, OutlookCalendarService {
 
             if (response == null || response.value() == null || response.value().isEmpty()) {
                 log.info("No calendar events found for {}", employeeMail);
-                return null;
+
+                //empty list
+                return new OutlookCalendarViewResponse(new ArrayList<>());
             }
 
             log.info("Fetched {} calendar events for {}", response.value().size(), employeeMail);
@@ -119,7 +108,8 @@ public class OutlookServiceImpl implements MailService, OutlookCalendarService {
 
         } catch (Exception e) {
             log.error("Error fetching calendar events: {}", e.getMessage(), e);
-            return null;
+
+            throw new RuntimeException("Error fetching calendar events: " + e.getMessage(), e);
         }
     }
 
