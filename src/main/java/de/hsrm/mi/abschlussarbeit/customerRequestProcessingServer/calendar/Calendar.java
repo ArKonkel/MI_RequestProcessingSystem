@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -21,8 +22,8 @@ public class Calendar {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @OneToMany(mappedBy = "calendar", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<CalendarEntry> entries;
+    @OneToMany(mappedBy = "calendar")
+    private Set<CalendarEntry> entries = new HashSet<>();
 
     @OneToOne(mappedBy = "calendar")
     @NotNull

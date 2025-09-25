@@ -39,72 +39,83 @@ public class OutlookServiceImpl implements MailService, OutlookCalendarService {
         ZoneId berlinZone = ZoneId.of("Europe/Berlin");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
-        // Dynamische Zeiten
-        String today9 = LocalDateTime.now(berlinZone).withHour(9).withMinute(0).withSecond(0).format(formatter);
-        String today10 = LocalDateTime.now(berlinZone).withHour(10).withMinute(0).withSecond(0).format(formatter);
-        String tomorrow14 = LocalDateTime.now(berlinZone).plusDays(1).withHour(14).withMinute(0).withSecond(0).format(formatter);
-        String tomorrow1530 = LocalDateTime.now(berlinZone).plusDays(1).withHour(15).withMinute(30).withSecond(0).format(formatter);
+        // Zeitberechnungen. Immer von heute, um nicht anpassen zu müssen.
+        String today09_00 = LocalDateTime.now(berlinZone).withHour(9).withMinute(0).withSecond(0).format(formatter);
+        String today10_00 = LocalDateTime.now(berlinZone).withHour(10).withMinute(0).withSecond(0).format(formatter);
+        String tomorrow14_00 = LocalDateTime.now(berlinZone).plusDays(1).withHour(14).withMinute(0).withSecond(0).format(formatter);
+        String tomorrow15_30 = LocalDateTime.now(berlinZone).plusDays(1).withHour(15).withMinute(30).withSecond(0).format(formatter);
 
-        String today11 = LocalDateTime.now(berlinZone).withHour(11).withMinute(0).withSecond(0).format(formatter);
-        String today1230 = LocalDateTime.now(berlinZone).withHour(12).withMinute(30).withSecond(0).format(formatter);
-        String today16 = LocalDateTime.now(berlinZone).withHour(16).withMinute(0).withSecond(0).format(formatter);
-        String today1630 = LocalDateTime.now(berlinZone).withHour(16).withMinute(30).withSecond(0).format(formatter);
+        String today11_00 = LocalDateTime.now(berlinZone).withHour(11).withMinute(0).withSecond(0).format(formatter);
+        String today12_30 = LocalDateTime.now(berlinZone).withHour(12).withMinute(30).withSecond(0).format(formatter);
+        String today16_00 = LocalDateTime.now(berlinZone).withHour(16).withMinute(0).withSecond(0).format(formatter);
+        String today16_30 = LocalDateTime.now(berlinZone).withHour(16).withMinute(30).withSecond(0).format(formatter);
 
-        String today13 = LocalDateTime.now(berlinZone).withHour(13).withMinute(0).withSecond(0).format(formatter);
-        String today14 = LocalDateTime.now(berlinZone).withHour(14).withMinute(0).withSecond(0).format(formatter);
-        String today1730 = LocalDateTime.now(berlinZone).withHour(17).withMinute(30).withSecond(0).format(formatter);
-        String today1830 = LocalDateTime.now(berlinZone).withHour(18).withMinute(30).withSecond(0).format(formatter);
+        String today13_00 = LocalDateTime.now(berlinZone).withHour(13).withMinute(0).withSecond(0).format(formatter);
+        String today14_00 = LocalDateTime.now(berlinZone).withHour(14).withMinute(0).withSecond(0).format(formatter);
+        String today17_30 = LocalDateTime.now(berlinZone).withHour(17).withMinute(30).withSecond(0).format(formatter);
+        String today18_30 = LocalDateTime.now(berlinZone).withHour(18).withMinute(30).withSecond(0).format(formatter);
+
+        // Event über merhere Tage
+        String today22_00 = LocalDateTime.now(berlinZone).withHour(22).withMinute(0).withSecond(0).format(formatter);
+        String tomorrow02_00 = LocalDateTime.now(berlinZone).plusDays(1).withHour(2).withMinute(0).withSecond(0).format(formatter);
 
         List<OutlookCalendarEvent> events;
 
         if (userPrincipalName.equals(MAX_MAIL)) {
             events = List.of(
                     new OutlookCalendarEvent(
-                            1L,
+                            "AAMkAGIAAAoZDOFAAA=",
                             "Team Meeting",
-                            new DateTimeTimeZone(today9, "Europe/Berlin"),
-                            new DateTimeTimeZone(today10, "Europe/Berlin"),
+                            new DateTimeTimeZone(today09_00, "Europe/Berlin"),
+                            new DateTimeTimeZone(today10_00, "Europe/Berlin"),
                             new ItemBody("Text", "Wöchentliches Teammeeting im Büro.")
                     ),
                     new OutlookCalendarEvent(
-                            2L,
+                            "AAMkAGIAAAoZDOFBBB=",
                             "Kundenpräsentation",
-                            new DateTimeTimeZone(tomorrow14, "Europe/Berlin"),
-                            new DateTimeTimeZone(tomorrow1530, "Europe/Berlin"),
+                            new DateTimeTimeZone(tomorrow14_00, "Europe/Berlin"),
+                            new DateTimeTimeZone(tomorrow15_30, "Europe/Berlin"),
                             new ItemBody("HTML", "<b>Präsentation</b> beim Kunden X.")
                     )
             );
         } else if (userPrincipalName.equals(SABINE_MAIL)) {
             events = List.of(
                     new OutlookCalendarEvent(
-                            3L,
+                            "AAMkAGIAAAoZDOFCCC=",
                             "Projekt Kickoff",
-                            new DateTimeTimeZone(today11, "Europe/Berlin"),
-                            new DateTimeTimeZone(today1230, "Europe/Berlin"),
+                            new DateTimeTimeZone(today11_00, "Europe/Berlin"),
+                            new DateTimeTimeZone(today12_30, "Europe/Berlin"),
                             new ItemBody("Text", "Projektstart mit Team und Stakeholdern.")
                     ),
                     new OutlookCalendarEvent(
-                            4L,
+                            "AAMkAGIAAAoZDOFDDD=",
                             "1:1 Gespräch",
-                            new DateTimeTimeZone(today16, "Europe/Berlin"),
-                            new DateTimeTimeZone(today1630, "Europe/Berlin"),
+                            new DateTimeTimeZone(today16_00, "Europe/Berlin"),
+                            new DateTimeTimeZone(today16_30, "Europe/Berlin"),
                             new ItemBody("Text", "Individuelles Mitarbeitergespräch.")
+                    ),
+                    new OutlookCalendarEvent(
+                            "AAMkAGIAAAoZDOFEEE=",
+                            "Overnight Maintenance",
+                            new DateTimeTimeZone(today22_00, "Europe/Berlin"),
+                            new DateTimeTimeZone(tomorrow02_00, "Europe/Berlin"),
+                            new ItemBody("Text", "Serverwartung über Nacht.")
                     )
             );
         } else if (userPrincipalName.equals(FREDDY_MAIL)) {
             events = List.of(
                     new OutlookCalendarEvent(
-                            5L,
+                            "AAMkAGIAAAoZDOFFFF=",
                             "Code Review",
-                            new DateTimeTimeZone(today13, "Europe/Berlin"),
-                            new DateTimeTimeZone(today14, "Europe/Berlin"),
+                            new DateTimeTimeZone(today13_00, "Europe/Berlin"),
+                            new DateTimeTimeZone(today14_00, "Europe/Berlin"),
                             new ItemBody("Text", "Review der neuen API-Endpunkte.")
                     ),
                     new OutlookCalendarEvent(
-                            6L,
+                            "AAMkAGIAAAoZDOFGGG=",
                             "Feierabend-Termin",
-                            new DateTimeTimeZone(today1730, "Europe/Berlin"),
-                            new DateTimeTimeZone(today1830, "Europe/Berlin"),
+                            new DateTimeTimeZone(today17_30, "Europe/Berlin"),
+                            new DateTimeTimeZone(today18_30, "Europe/Berlin"),
                             new ItemBody("Text", "Afterwork mit Kollegen.")
                     )
             );

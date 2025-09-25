@@ -76,8 +76,8 @@ SELECT setval('calendar_entry_seq', (SELECT MAX(id) FROM calendar_entry));
 --------------------------------- EMPLOYEE ------------------------------------------------
 
 INSERT INTO employee(id, email, first_name, last_name, department_id, working_hours_per_day, calendar_id)
-VALUES (1, 'Max@test.de', 'Max', 'Mustermann', null, 8, 1),
-       (2, 'Sabine@test.de', 'Sabine', 'Musterfrau', 1, 8, 2);
+VALUES (1, 'Max.Mustermann@mail.de', 'Max', 'Mustermann', null, 8, 1),
+       (2, 'Sabine.Mustermann@mail.de', 'Sabine', 'Musterfrau', 1, 8, 2);
 
 --------------------------------- USER ------------------------------------------------
 

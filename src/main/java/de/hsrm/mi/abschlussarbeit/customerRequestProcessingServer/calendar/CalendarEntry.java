@@ -32,6 +32,8 @@ public class CalendarEntry {
     @NotNull
     private Long durationInMinutes;
 
+    private String outlookLinkId; //Represents the Outlook ID of the entry in the calendar
+
     @ManyToOne
     @JoinColumn(name = "calendar_id")
     private Calendar calendar;

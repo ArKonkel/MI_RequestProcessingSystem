@@ -3,12 +3,10 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.Year;
 
 @RestController
 @AllArgsConstructor
@@ -25,5 +23,14 @@ public class CalendarController {
         CalendarDto calendar = calendarService.getCalendarDtoOfEmployee(employeeId, from, to);
 
         return ResponseEntity.ok().body(calendar);
+    }
+
+    @PostMapping("/{employeeId}/{year}")
+    public ResponseEntity<Void> initCalendarOfEmployeeOfYear(@PathVariable Long employeeId, @PathVariable Integer year) {
+        log.info("REST request to init calendar of employee {} for year {}", employeeId, year);
+
+        calendarService.initCalendarOfEmployeeOfYear(employeeId, Year.of(year));
+
+        return ResponseEntity.ok().build();
     }
 }

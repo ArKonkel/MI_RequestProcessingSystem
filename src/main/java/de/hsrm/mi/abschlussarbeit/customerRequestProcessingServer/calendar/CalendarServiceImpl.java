@@ -128,17 +128,29 @@ public class CalendarServiceImpl implements CalendarService {
                 outlookCalendarService.fetchCalendarEvents(employeeMail, start, end);
 
         BigDecimal workingHours = calendar.getOwner().getWorkingHoursPerDay();
+
         List<CalendarEntry> calendarEntries = parseOutlookCalendarToEntries(outlookCalendarViewResponse, workingHours, calendar);
 
-        calendarEntryRepository.saveAll(calendarEntries);
+        try {
+            for (CalendarEntry entry : calendarEntries) {
+                entry.setCalendar(calendar);
+                calendarEntryRepository.save(entry);
+                calendar.getEntries().add(entry);
+            }
+
+            calendarRepository.save(calendar);
+        } catch (Exception e) {
+            log.error("Error while saving calendar entries for employee {} and year {}", employeeId, year, e);
+        }
+
     }
 
     /**
      * Parses the outlook calendar events into calendar entries.
      *
      * @param outlookCalendarViewResponse to parse from
-     * @param employeeWorkingHours to calculate the duration of the calendar entries.
-     * @param calendar to save the calendar entries to.
+     * @param employeeWorkingHours        to calculate the duration of the calendar entries.
+     * @param calendar                    to save the calendar entries to.
      * @return a list of calendar entries with the parsed events.
      */
     private List<CalendarEntry> parseOutlookCalendarToEntries(OutlookCalendarViewResponse outlookCalendarViewResponse, BigDecimal employeeWorkingHours, Calendar calendar) {
@@ -149,6 +161,11 @@ public class CalendarServiceImpl implements CalendarService {
         //"dateTime": "2025-09-25T11:00:00",
         //"timeZone": "Europe/Berlin"
         for (OutlookCalendarEvent event : outlookCalendarViewResponse.value()) {
+            //when its already imported, skip it.
+            if (calendarEntryRepository.existsByOutlookLinkId(event.id())) {
+                continue;
+            }
+
             // Parse event datetime and timezone into OffsetDateTimes.
             OffsetDateTime odtEventStart = LocalDateTime
                     .parse(event.start().dateTime(), formatter)
@@ -196,7 +213,8 @@ public class CalendarServiceImpl implements CalendarService {
 
                 // Create the new entries with the calculated duration for the day.
                 CalendarEntry entry = new CalendarEntry();
-                entry.setCalendar(calendar);
+                //entry.setCalendar(calendar);
+                entry.setOutlookLinkId(event.id());
                 entry.setTitle(event.subject());
                 entry.setDescription(event.body().content());
                 entry.setDate(curDay);
