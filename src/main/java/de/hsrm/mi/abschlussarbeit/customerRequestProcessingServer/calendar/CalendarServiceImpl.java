@@ -124,12 +124,12 @@ public class CalendarServiceImpl implements CalendarService {
         OffsetDateTime start = startOfYear.atStartOfDay().atOffset(startOffset);
         OffsetDateTime end = endOfYear.atStartOfDay().atOffset(endOffset);
 
+        //fetch events from outlook calendar
         OutlookCalendarViewResponse outlookCalendarViewResponse =
                 outlookCalendarService.fetchCalendarEvents(employeeMail, start, end);
 
         BigDecimal workingHours = calendar.getOwner().getWorkingHoursPerDay();
-
-        List<CalendarEntry> calendarEntries = parseOutlookCalendarToEntries(outlookCalendarViewResponse, workingHours, calendar);
+        List<CalendarEntry> calendarEntries = parseOutlookCalendarToEntries(outlookCalendarViewResponse, workingHours);
 
         try {
             for (CalendarEntry entry : calendarEntries) {
@@ -150,10 +150,9 @@ public class CalendarServiceImpl implements CalendarService {
      *
      * @param outlookCalendarViewResponse to parse from
      * @param employeeWorkingHours        to calculate the duration of the calendar entries.
-     * @param calendar                    to save the calendar entries to.
      * @return a list of calendar entries with the parsed events.
      */
-    private List<CalendarEntry> parseOutlookCalendarToEntries(OutlookCalendarViewResponse outlookCalendarViewResponse, BigDecimal employeeWorkingHours, Calendar calendar) {
+    private List<CalendarEntry> parseOutlookCalendarToEntries(OutlookCalendarViewResponse outlookCalendarViewResponse, BigDecimal employeeWorkingHours) {
         List<CalendarEntry> calendarEntries = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 

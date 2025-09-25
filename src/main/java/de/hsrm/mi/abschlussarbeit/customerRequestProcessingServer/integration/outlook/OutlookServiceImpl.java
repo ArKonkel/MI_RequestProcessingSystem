@@ -1,7 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook;
 
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequest;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.*;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.OutlookCalendarViewResponse;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.SendMailRequest;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.mail.EmailAddress;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.mail.MailService;
 import lombok.extern.slf4j.Slf4j;
@@ -26,28 +26,21 @@ public class OutlookServiceImpl implements MailService, OutlookCalendarService {
     /**
      * Converts a CustomerRequest to a SendMailRequest and sends it to the given email addresses.
      *
-     * @param customerRequest to send mail from
-     * @param emailAddresses to send the mail to
+     * @param senderMail     to send mail from
+     * @param recipients to send the mail to
      */
     @Override
-    public void sendMails(CustomerRequest customerRequest, List<EmailAddress> emailAddresses) {
-        log.info("Sending mail from {} to {} with title {}", customerRequest.getCustomer().getEmail(), emailAddresses, customerRequest.getTitle());
-        String senderMail = customerRequest.getCustomer().getEmail();
+    public void sendMails(SendMailRequest mail, String senderMail, List<EmailAddress> recipients) {
+        log.info("Sending mail from {} to {} with title {}", senderMail, recipients, mail.message().subject());
         String path = outlookURL + "v1.0/users/" + senderMail + "/sendMail";
 
         if (senderMail == null || senderMail.isEmpty()) {
-
-            //TODO throw error then?
-            log.error("Customer {} has no mail.", customerRequest.getCustomer().getId());
-            return;
+            throw new IllegalArgumentException("Sender mail is null or empty");
         }
 
-        if (emailAddresses.isEmpty()) {
+        if (recipients.isEmpty()) {
             return;
         }
-
-        SendMailRequest mailRequest = customerRequestToMailRequest(customerRequest, emailAddresses);
-
 
         WebClient webClient = WebClient.builder()
                 .baseUrl(path)
@@ -56,7 +49,7 @@ public class OutlookServiceImpl implements MailService, OutlookCalendarService {
 
         try {
             webClient.post()
-                    .bodyValue(mailRequest)
+                    .bodyValue(mail)
                     .retrieve()
                     .toBodilessEntity()
                     .block();
@@ -111,36 +104,6 @@ public class OutlookServiceImpl implements MailService, OutlookCalendarService {
 
             throw new RuntimeException("Error fetching calendar events: " + e.getMessage(), e);
         }
-    }
-
-
-    /**
-     * Converts a CustomerRequest to a SendMailRequest.
-     *
-     * @param customerRequest to convert
-     * @param emailAddresses  to send mail to
-     * @return converted SendMailRequest
-     */
-    private SendMailRequest customerRequestToMailRequest(CustomerRequest customerRequest, List<EmailAddress> emailAddresses) {
-        List<Recipient> toRecipients = new ArrayList<>();
-
-        for (EmailAddress emailAddress : emailAddresses) {
-            toRecipients.add(new Recipient(
-                    new de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.EmailAddress(
-                            emailAddress.address()
-                    )
-            ));
-        }
-
-        // build mailRequest
-        SendMailRequest mailRequest = new SendMailRequest(
-                new Message(
-                        customerRequest.getCategory().toString() + ":" + customerRequest.getTitle(),
-                        new ItemBody("Text", customerRequest.getDescription()),
-                        toRecipients
-                )
-        );
-        return mailRequest;
     }
 
 }
