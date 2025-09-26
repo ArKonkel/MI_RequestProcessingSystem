@@ -25,24 +25,24 @@ public class CustomerRequest extends ProcessItem {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private Priority priority;
+    private Priority priority = Priority.LOW;
 
-    private BigDecimal estimatedScope;
+    private BigDecimal estimatedScope = BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
-    private TimeUnit scopeUnit;
+    private TimeUnit scopeUnit = TimeUnit.HOUR;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private CustomerRequestStatus status;
+    private CustomerRequestStatus status = CustomerRequestStatus.RECEIVED;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private Chargeable chargeable;
+    private Chargeable chargeable = Chargeable.NOT_DETERMINED;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private Category category;
+    private Category category = Category.OTHER;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
