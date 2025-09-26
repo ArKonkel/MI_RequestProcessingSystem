@@ -56,6 +56,8 @@ public abstract class ProcessItem {
             if (task.getEstimatedTime() != null && task.getEstimationUnit() == null) {
                 throw new IllegalStateException("Estimated time can only be saved with estimationUnit");
             }
+
+
         }
     }
 }

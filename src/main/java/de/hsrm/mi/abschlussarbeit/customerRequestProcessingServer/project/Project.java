@@ -4,6 +4,7 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerReques
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItem;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.Task;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,31 +21,24 @@ import java.util.Set;
 public class Project extends ProcessItem {
 
     @Enumerated(EnumType.STRING)
-    private ProjectStatus status;
+    private ProjectStatus status = ProjectStatus.CREATED;
 
     private LocalDate startDate;
 
     private LocalDate endDate;
 
     @ManyToOne
+    @NotNull
     @JoinColumn(name = "request_id")
     private CustomerRequest request;
 
     @OneToMany(mappedBy = "project")
     private Set<Task> tasks;
 
-    @ManyToOne
-    @JoinColumn(name = "blocker_id")
-    private Project blocker;
+    @OneToMany(mappedBy = "sourceProject")
+    private Set<ProjectDependency> outgoingDependencies;
 
-    @ManyToOne
-    @JoinColumn(name = "blocked_id")
-    private Project blocked;
+    @OneToMany(mappedBy = "targetProject")
+    private Set<ProjectDependency> incomingDependencies;
 
-    @ManyToOne
-    @JoinColumn(name = "parent_id") //parent of subprojects
-    private Project parent;
-
-    @OneToMany(mappedBy = "parent")
-    private Set<Project> subProjects;
 }

@@ -157,3 +157,13 @@ VALUES (1, 7),
        (4, 9),
        (5, 7),
        (5, 9);
+
+--------------------------------- Project  ------------------------------------------------
+
+INSERT INTO project (id, end_date, start_date, request_id, status)
+VALUES (1, '2025-11-05', '2025-09-26', 6, 'CREATED'),
+       (2, '2025-11-05', '2025-09-26', 7, 'CREATED');
+
+--------------------------------- Project_Dependencies  ------------------------------------------------
+INSERT INTO project_dependency(id, type, source_project_id, target_project_id)
+VALUES (1, 'FINISH_TO_START', 1, 2);
