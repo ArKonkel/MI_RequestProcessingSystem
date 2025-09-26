@@ -1,13 +1,15 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task;
 
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequest;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequestService;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotAllowedException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotFoundException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.SaveException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.UpdateProcessItemDto;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.Project;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.ProjectService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,10 @@ public class TaskServiceImpl implements TaskService {
     private final TaskMapper taskMapper;
 
     private final UserService userService;
+
+    private final ProjectService projectService;
+
+    private final CustomerRequestService customerRequestService;
 
     @Override
     public TaskDto getTaskDtoById(Long id) {
@@ -48,49 +54,69 @@ public class TaskServiceImpl implements TaskService {
         return taskRepository.findAll().stream().map(taskMapper::toDto).toList();
     }
 
-    @Transactional
-    public TaskDto updateTask(Long taskId, UpdateTaskDto dto) {
-        log.info("Updating task with id {}", taskId);
-
+    public TaskDto updateTask(Long taskId, UpdateTaskDto updateDto) {
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Task not found"));
 
-        //Could be done by mapper. However, it's not working.
-        //ProcessItem
-        if (dto.getProcessItem() != null) {
-            UpdateProcessItemDto processItem = dto.getProcessItem();
-            if (processItem.getTitle() != null) task.setTitle(processItem.getTitle());
-            if (processItem.getDescription() != null) task.setDescription(processItem.getDescription());
-            if (processItem.getAssigneeId() != null) {
-                User assignee = new User();
-                assignee.setId(processItem.getAssigneeId());
+        if (updateDto.getEstimatedTime() != null) {
+            task.setEstimatedTime(updateDto.getEstimatedTime());
+        }
+
+        if (updateDto.getEstimationUnit() != null) {
+            task.setEstimationUnit(updateDto.getEstimationUnit());
+        }
+
+        if (updateDto.getWorkingTimeInMinutes() != null) {
+            task.setWorkingTimeInMinutes(updateDto.getWorkingTimeInMinutes());
+        }
+
+        if (updateDto.getDueDate() != null) {
+            task.setDueDate(updateDto.getDueDate());
+        }
+
+        if (updateDto.getAcceptanceCriteria() != null) {
+            task.setAcceptanceCriteria(updateDto.getAcceptanceCriteria());
+        }
+
+        if (updateDto.getPriority() != null) {
+            task.setPriority(updateDto.getPriority());
+        }
+
+        if (updateDto.getStatus() != null) {
+            //Status can only be updated when project xor request is ready for processing.
+            if (task.getProject() != null &&
+                    !projectService.isProjectReadyForProcessing(task.getProject().getId())) {
+                throw new NotAllowedException("Task status cannot be changed if project is not ready for processing");
+            }
+
+            if (task.getRequest() != null &&
+                    !customerRequestService.isRequestReadyForProcessing(task.getRequest().getId())) {
+                throw new NotAllowedException("Task status cannot be changed if customer request is not ready for processing");
+            }
+
+            task.setStatus(updateDto.getStatus());
+        }
+
+        //Update processItem
+        UpdateProcessItemDto processItemDto = updateDto.getProcessItem();
+        if (processItemDto != null) {
+            if (processItemDto.getTitle() != null) {
+                task.setTitle(processItemDto.getTitle());
+            }
+            if (processItemDto.getDescription() != null) {
+                task.setDescription(processItemDto.getDescription());
+            }
+            if (processItemDto.getAssigneeId() != null) {
+                User assignee = userService.getUserById(processItemDto.getAssigneeId());
                 task.setAssignee(assignee);
             }
         }
 
-        //Task
-        if (dto.getStatus() != null) task.setStatus(dto.getStatus());
-        if (dto.getEstimatedTime() != null) task.setEstimatedTime(dto.getEstimatedTime());
-        if (dto.getWorkingTime() != null) task.setWorkingTimeInMinutes(dto.getWorkingTime());
-        if (dto.getDueDate() != null) task.setDueDate(dto.getDueDate());
-        if (dto.getAcceptanceCriteria() != null) task.setAcceptanceCriteria(dto.getAcceptanceCriteria());
-        if (dto.getPriority() != null) task.setPriority(dto.getPriority());
-
-        if (dto.getRequestId() != null) {
-            CustomerRequest request = new CustomerRequest();
-            request.setId(dto.getRequestId());
-            task.setRequest(request);
-        }
-
-        if (dto.getProjectId() != null) {
-            Project project = new Project();
-            project.setId(dto.getProjectId());
-            task.setProject(project);
-        }
-
         taskRepository.save(task);
+
         return taskMapper.toDto(task);
     }
+
 
     @Override
     @Transactional

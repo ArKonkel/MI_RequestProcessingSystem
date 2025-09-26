@@ -9,4 +9,6 @@ public interface CustomerRequestService {
     List<CustomerRequestDto> getAllRequests();
 
     CustomerRequestDto getRequestById(Long id);
+
+    boolean isRequestReadyForProcessing(Long requestId);
 }

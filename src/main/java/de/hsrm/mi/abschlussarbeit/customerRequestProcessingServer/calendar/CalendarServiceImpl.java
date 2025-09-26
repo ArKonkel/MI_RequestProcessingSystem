@@ -1,6 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity.CalculatedCapacityCalendarEntryVO;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotFoundException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.OutlookCalendarService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.OutlookCalendarEvent;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.OutlookCalendarViewResponse;
@@ -82,7 +83,7 @@ public class CalendarServiceImpl implements CalendarService {
     ) {
         log.info("Creating calendar entries for task {} into calendar {}", taskId, calendarId);
 
-        Calendar calendar = calendarRepository.getReferenceById(calendarId);
+        Calendar calendar = calendarRepository.findById(calendarId).orElseThrow(() -> new NotFoundException("Calendar not found for id " + calendarId));
         Task task = taskService.getTaskById(taskId);
 
         List<CalendarEntry> savedEntries = new ArrayList<>();

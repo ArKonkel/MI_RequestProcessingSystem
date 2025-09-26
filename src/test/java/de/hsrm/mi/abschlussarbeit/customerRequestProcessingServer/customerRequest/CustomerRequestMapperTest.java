@@ -95,11 +95,11 @@ class CustomerRequestMapperTest {
         assertEquals("description", entity.getDescription());
         assertEquals(Priority.MEDIUM, entity.getPriority());
         assertEquals(Category.BUG_REPORT, entity.getCategory());
+        assertEquals(BigDecimal.ZERO, entity.getEstimatedScope());
+        assertEquals(CustomerRequestStatus.RECEIVED, entity.getStatus());
+        assertEquals(Chargeable.NOT_DETERMINED, entity.getChargeable());
 
         // ignored fields
-        assertNull(entity.getEstimatedScope());
-        assertNull(entity.getStatus());
-        assertNull(entity.getChargeable());
         assertNull(entity.getCustomer());
     }
 }

@@ -18,4 +18,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
 
+    @ExceptionHandler(NotAllowedException.class)
+    public ResponseEntity<String> handleProjectNotReady(NotAllowedException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
 }

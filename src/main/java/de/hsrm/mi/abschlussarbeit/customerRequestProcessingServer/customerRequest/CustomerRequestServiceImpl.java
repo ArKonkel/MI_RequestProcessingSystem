@@ -7,14 +7,13 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.ou
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.SendMailRequest;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.mail.EmailAddress;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.mail.MailService;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.TimeUnit;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @Slf4j
@@ -34,12 +33,6 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
         log.info("Creating request {}", request);
 
         CustomerRequest requestEntity = requestMapper.toEntity(request);
-        requestEntity.setCreationDate(Instant.now()); //set creation date to current date
-        requestEntity.setStatus(CustomerRequestStatus.RECEIVED);
-        requestEntity.setChargeable(Chargeable.NOT_DETERMINED);
-        requestEntity.setScopeUnit(TimeUnit.HOUR);
-
-        //set customer
         requestEntity.setCustomer(customerService.getCustomerById(request.getCustomerId()));
 
         CustomerRequest savedRequest = requestRepository.save(requestEntity);
@@ -61,6 +54,14 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
     public CustomerRequestDto getRequestById(Long id) {
         log.info("Getting request with id {}", id);
         return requestMapper.toDto(requestRepository.getReferenceById(id));
+    }
+
+    @Override
+    public boolean isRequestReadyForProcessing(Long requestId) {
+        CustomerRequest request = requestRepository.findById(requestId).orElseThrow(() ->
+                new NoSuchElementException("Request with id " + requestId + " not found"));
+
+       return request.getStatus().equals(CustomerRequestStatus.WAITING_FOR_PROCESSING) || request.getStatus().equals(CustomerRequestStatus.IN_PROCESS);
     }
 
     /**

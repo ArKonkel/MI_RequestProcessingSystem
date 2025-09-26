@@ -19,14 +19,14 @@ public interface CustomerRequestMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "chargeable", ignore = true)
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "creationDate", ignore = true) //must be set manually
+    @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "comments", ignore = true)
     @Mapping(target = "assignee", ignore = true)
     @Mapping(target = "tasks", ignore = true)
     @Mapping(target = "projects", ignore = true)
     @Mapping(target = "category", source = "category")
     @Mapping(target = "scopeUnit", ignore = true)
-    @Mapping(target = "customer", ignore = true) //is handled in RequestService
+    @Mapping(target = "customer", ignore = true)
     @Mapping(target = "title", source = "processItem.title")
     @Mapping(target = "description", source = "processItem.description")
     CustomerRequest toEntity(CustomerRequestCreateDto requestDto);

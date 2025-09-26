@@ -43,11 +43,11 @@ public class Task extends ProcessItem {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private Priority priority;
+    private Priority priority = Priority.MEDIUM;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private TaskStatus status;
+    private TaskStatus status = TaskStatus.OPEN;
 
     @OneToOne(mappedBy = "task")
     private CalendarEntry calendarEntry;
@@ -71,7 +71,6 @@ public class Task extends ProcessItem {
     /**
      * Validation of Task
      */
-    @PrePersist
     @PreUpdate
     private void validate() {
         //Task should only belong to Project or a Request
