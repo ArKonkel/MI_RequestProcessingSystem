@@ -1,6 +1,8 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequest;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotFoundException;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.SaveException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.UpdateProcessItemDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.Project;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
@@ -11,6 +13,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 @Service
@@ -65,7 +69,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         //Task
-        if(dto.getStatus() != null) task.setStatus(dto.getStatus());
+        if (dto.getStatus() != null) task.setStatus(dto.getStatus());
         if (dto.getEstimatedTime() != null) task.setEstimatedTime(dto.getEstimatedTime());
         if (dto.getWorkingTime() != null) task.setWorkingTimeInMinutes(dto.getWorkingTime());
         if (dto.getDueDate() != null) task.setDueDate(dto.getDueDate());
@@ -105,4 +109,53 @@ public class TaskServiceImpl implements TaskService {
 
         updateTask(taskId, updateTaskDto);
     }
+
+    /**
+     * Adds the given working time to the task with the given id.
+     *
+     * @param taskId      of task to add working time to. Must exist.
+     * @param workingTime to add.
+     * @param unit        of working time.
+     */
+    @Override
+    public void addWorkingTime(Long taskId, BigDecimal workingTime, WorkingTimeUnit unit) {
+        log.info("Adding {} {} to task {}", workingTime, unit, taskId);
+
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new NotFoundException("Task with id " + taskId + " not found"));
+
+        Long currentWorkingTime = task.getWorkingTimeInMinutes() != null ? task.getWorkingTimeInMinutes() : 0L;
+        Long workingTimeInMinutes = calculateWorkingTimeUnitIntoMinutes(workingTime, unit) + currentWorkingTime;
+
+        task.setWorkingTimeInMinutes(workingTimeInMinutes);
+
+        try {
+            taskRepository.save(task);
+        } catch (Exception e) {
+
+            throw new SaveException("Error while saving task " + taskId + " with message" + e);
+        }
+    }
+
+    /**
+     * Calculates the working time in minutes for a given working time and unit.
+     *
+     * @param workingTime to calculate
+     * @param unit        the working time is given
+     * @return calculated working time in minutes
+     */
+    private Long calculateWorkingTimeUnitIntoMinutes(BigDecimal workingTime, WorkingTimeUnit unit) {
+        if (workingTime == null || unit == null) {
+            throw new IllegalArgumentException("Working time and unit must not be null");
+        }
+
+        return switch (unit) {
+            case MINUTES -> workingTime.setScale(0, RoundingMode.HALF_UP).longValue();
+            case HOURS -> workingTime.multiply(BigDecimal.valueOf(60))
+                    .setScale(0, RoundingMode.HALF_UP)
+                    .longValue();
+            default -> throw new UnsupportedOperationException("Unsupported WorkingTimeUnit: " + unit);
+        };
+    }
+
 }

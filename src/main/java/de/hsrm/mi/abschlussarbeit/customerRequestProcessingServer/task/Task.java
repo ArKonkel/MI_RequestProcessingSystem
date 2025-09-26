@@ -34,7 +34,7 @@ public class Task extends ProcessItem {
     private TimeUnit estimationUnit;
 
     @PositiveOrZero
-    private Long workingTimeInMinutes;
+    private Long workingTimeInMinutes = 0L;
 
     @Future
     private LocalDate dueDate;

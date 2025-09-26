@@ -3,10 +3,9 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -23,6 +22,15 @@ public class TaskController {
         List<TaskDto> tasks = taskService.getAllTasks();
 
         return ResponseEntity.ok(tasks);
+    }
+
+    @PostMapping("/{taskId}/workingTime")
+    ResponseEntity<Void> addWorkingTime(@PathVariable Long taskId, @RequestParam BigDecimal workingTime, @RequestParam WorkingTimeUnit unit) {
+        log.info("REST request to add working time {} {} to task {}", workingTime, unit, taskId);
+
+        taskService.addWorkingTime(taskId, workingTime, unit);
+
+        return ResponseEntity.ok().build();
     }
 
 }
