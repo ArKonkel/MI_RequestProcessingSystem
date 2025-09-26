@@ -24,6 +24,14 @@ public class TaskController {
         return ResponseEntity.ok(tasks);
     }
 
+    @PatchMapping("/{taskId}")
+    ResponseEntity<TaskDto> updateTask(@PathVariable Long taskId, @RequestBody UpdateTaskDto dto) {
+        log.info("REST request to update task {}", taskId);
+        TaskDto task = taskService.updateTask(taskId, dto);
+
+        return ResponseEntity.ok(task);
+    }
+
     @PostMapping("/{taskId}/workingTime")
     ResponseEntity<Void> addWorkingTime(@PathVariable Long taskId, @RequestParam BigDecimal workingTime, @RequestParam WorkingTimeUnit unit) {
         log.info("REST request to add working time {} {} to task {}", workingTime, unit, taskId);

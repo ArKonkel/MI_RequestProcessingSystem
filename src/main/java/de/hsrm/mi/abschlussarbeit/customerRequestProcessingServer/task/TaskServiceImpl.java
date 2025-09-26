@@ -35,13 +35,6 @@ public class TaskServiceImpl implements TaskService {
     private final CustomerRequestService customerRequestService;
 
     @Override
-    public TaskDto getTaskDtoById(Long id) {
-        log.info("Getting task dto with id {}", id);
-
-        return taskMapper.toDto(taskRepository.getReferenceById(id));
-    }
-
-    @Override
     public Task getTaskById(Long id) {
         log.info("Getting task with id {}", id);
 

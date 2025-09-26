@@ -4,7 +4,8 @@ INSERT INTO expertise (id, name, description)
 VALUES
 -- ERP-Module
 (1, 'Finanzen', 'Fachwissen in Finanzbuchhaltung, Controlling und Bilanzierung mit ERP-Systemen.'),
-(2, 'Personalwesen', 'Kenntnisse in Personalverwaltung, Lohn- und Gehaltsabrechnung sowie HR-Prozessen im ERP-Kontext.'),
+(2, 'Personalwesen',
+ 'Kenntnisse in Personalverwaltung, Lohn- und Gehaltsabrechnung sowie HR-Prozessen im ERP-Kontext.'),
 
 -- Technisches Wissen
 (3, 'Datenbanken', 'Fachwissen in relationalen und Cloud-basierten Datenbanken für ERP-Systeme.'),
@@ -111,7 +112,7 @@ VALUES (1, 'WeinfestAG', 'Biedemeyer', 'In den Dorfwiesen 18', 'biedemeyer@gmx.d
 
 -- Process Items
 INSERT INTO process_item (id, title, description, creation_date)
-       --TASKS
+--TASKS
 VALUES (1, 'Customizing der Software beim Kunden für Produktdruck',
         'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat',
         '2025-09-10'),
@@ -123,21 +124,23 @@ VALUES (1, 'Customizing der Software beim Kunden für Produktdruck',
 -- REQUESTS
        (6, 'Anfrage Lagerschulung', 'Hallo. Wir möchten eine Lagerschulung haben.', '2025-09-14'),
        (7, 'Idee zur Verbesserung von XX', 'Wir haben hier einen Verbesserungsvorschlag.', '2025-09-14'),
-       (8, 'Scannen funktioniert nicht mehr seit Update', 'Seit dem letzten Update funktioniert das scannen nicht.', '2025-09-14');
+       (8, 'Scannen funktioniert nicht mehr seit Update', 'Seit dem letzten Update funktioniert das scannen nicht.',
+        '2025-09-14');
 
--- Tasks (gehören zu den Process Items, gleiche ID wie process_item.id)
-INSERT INTO task (id, estimated_time, estimation_unit, due_date, priority, status)
-VALUES (1, 2, 'HOUR','2025-11-05', 'HIGH', 'OPEN'),
-       (2, 4, 'HOUR','2025-10-20', 'MEDIUM', 'OPEN'),
-       (3, 1, 'HOUR','2025-09-30', 'HIGH', 'OPEN'),
-       (4, 3, 'HOUR','2025-10-15', 'LOW', 'OPEN'),
-       (5, 5, 'HOUR','2025-12-01', 'MEDIUM', 'OPEN');
 
 -- Requests (gehören zu den Process Items, gleiche ID wie process_item.id)
 INSERT INTO customer_request (id, priority, chargeable, estimated_scope, category, customer_id, status)
 VALUES (6, 'LOW', 'NOT_DETERMINED', 0, 'TRAINING_REQUEST', 1, 'RECEIVED'),
-       (7, 'MEDIUM', 'NOT_DETERMINED', 0, 'SUGGESTION_FOR_IMPROVEMENT', 1, 'RECEIVED'),
-       (8, 'HIGH', 'NOT_DETERMINED', 0, 'BUG_REPORT',1, 'RECEIVED');
+       (7, 'MEDIUM', 'NOT_DETERMINED', 0, 'SUGGESTION_FOR_IMPROVEMENT', 1, 'WAITING_FOR_PROCESSING'),
+       (8, 'HIGH', 'NOT_DETERMINED', 0, 'BUG_REPORT', 1, 'RECEIVED');
+
+-- Tasks (gehören zu den Process Items, gleiche ID wie process_item.id)
+INSERT INTO task (id, estimated_time, estimation_unit, due_date, priority, status, request_id)
+VALUES (1, 2, 'HOUR', '2025-11-05', 'HIGH', 'OPEN', 6),
+       (2, 4, 'HOUR', '2025-10-20', 'MEDIUM', 'OPEN', 6),
+       (3, 1, 'HOUR', '2025-09-30', 'HIGH', 'OPEN', 7),
+       (4, 3, 'HOUR', '2025-10-15', 'LOW', 'OPEN', 7),
+       (5, 5, 'HOUR', '2025-12-01', 'MEDIUM', 'OPEN', 8);
 
 
 SELECT setval('process_item_seq', (SELECT MAX(id) FROM task));
