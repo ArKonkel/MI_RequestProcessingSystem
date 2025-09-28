@@ -6,6 +6,7 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.Calen
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.Employee;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeExpertise;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeService;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItemService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.ToMinutesCalculator;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.Task;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskService;
@@ -32,6 +33,8 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
     private final EmployeeService employeeService;
 
     private final CapacityMapper capacityMapper;
+
+    private final ProcessItemService processItemService;
 
     @Override
     public MatchingEmployeeCapacitiesDto findBestMatchesForTask(Long taskId) {
@@ -102,7 +105,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
 
         CalculatedCapacitiesOfMatchVO vo = capacityMapper.toVo(selectedMatch);
 
-        taskService.assignTaskToUserOfEmployee(taskId, vo.employee().getId());
+        processItemService.assignProcessItemToUserOfEmployee(taskId, vo.employee().getId());
         calendarService.createCalendarEntriesForTask(taskId, vo.employee().getCalendar().getId(), vo.calculatedCalendarCapacities());
     }
 

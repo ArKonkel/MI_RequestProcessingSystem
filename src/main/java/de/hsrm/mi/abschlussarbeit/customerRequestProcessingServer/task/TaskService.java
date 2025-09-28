@@ -11,8 +11,6 @@ public interface TaskService {
 
     TaskDto updateTask(Long taskId, UpdateTaskDto dto);
 
-    void assignTaskToUserOfEmployee(Long taskId, Long employeeId); //TODO gehört zu processItem
-
     void addWorkingTime(Long taskId, BigDecimal workingTime, WorkingTimeUnit unit);
 
 }

@@ -15,10 +15,10 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
-    public UserDto getUserOfEmployee(Long employeeId) {
+    public User getUserOfEmployee(Long employeeId) {
         log.info("Get user of employee {}", employeeId);
 
-        return userMapper.toDto(userRepository.findByEmployeeId(employeeId));
+        return userRepository.findByEmployeeId(employeeId);
     }
 
     @Override

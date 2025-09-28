@@ -7,10 +7,8 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptio
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.UpdateProcessItemDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.ProjectService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -108,25 +106,6 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.save(task);
 
         return taskMapper.toDto(task);
-    }
-
-
-    @Override
-    @Transactional
-    public void assignTaskToUserOfEmployee(Long taskId, Long employeeId) {
-        log.info("Assigning task {} to user of employee {}", taskId, employeeId);
-
-        UserDto userDto = userService.getUserOfEmployee(employeeId);
-
-        UpdateProcessItemDto processItemDto = UpdateProcessItemDto.builder()
-                .assigneeId(userDto.id())
-                .build();
-
-        UpdateTaskDto updateTaskDto = UpdateTaskDto.builder().
-                processItem(processItemDto).
-                build();
-
-        updateTask(taskId, updateTaskDto);
     }
 
     /**
