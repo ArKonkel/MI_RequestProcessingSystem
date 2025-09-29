@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
 @AllArgsConstructor
-@RequestMapping("/processItem")
+@RequestMapping("/processItems")
 public class ProcessItemController {
 
     private final ProcessItemService processItemService;

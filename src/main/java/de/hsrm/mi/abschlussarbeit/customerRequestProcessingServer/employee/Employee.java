@@ -46,6 +46,7 @@ public class Employee {
     @JoinColumn(name = "department_id")
     private Department department;
 
+    @NotNull
     @OneToOne(mappedBy = "employee")
     private User user;
 

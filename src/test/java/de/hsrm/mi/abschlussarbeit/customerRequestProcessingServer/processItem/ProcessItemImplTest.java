@@ -34,23 +34,23 @@ class ProcessItemImplTest {
     ProcessItemImpl processItemService;
 
     @Test
-    void assignProcessItemToUserOfEmployee_shouldAssignAndPublishEvent() {
+    void assignProcessItemToUser_shouldAssignAndPublishEvent() {
         // GIVEN
         ProcessItem item = new Task();
         item.setId(100L);
         item.setTitle("Test Task");
 
-        User employee = new User();
-        employee.setId(42L);
+        User user = new User();
+        user.setId(42L);
 
         when(processItemRepository.findById(100L)).thenReturn(Optional.of(item));
-        when(userService.getUserOfEmployee(42L)).thenReturn(employee);
+        when(userService.getUserById(42L)).thenReturn(user);
 
         // WHEN
         processItemService.assignProcessItemToUser(100L, 42L);
 
         // THEN
-        assertThat(item.getAssignee()).isEqualTo(employee);
+        assertThat(item.getAssignee()).isEqualTo(user);
 
         //Check if event was published
         verify(publisher).publishNotificationEvent(argThat(event ->
