@@ -16,6 +16,6 @@ public class NotificationEventListener {
     public void handleNotificationEvent(NotificationEvent event) {
         log.info("Handling notification event {}", event);
 
-        this.notificationService.sendNotification(event);
+        notificationService.sendNotification(event);
     }
 }

@@ -64,8 +64,8 @@ class CommentServiceImplTest {
         // THEN
         verify(publisher).publishNotificationEvent(argThat(event ->
                 event.processItemId().equals(processItem.getId()) &&
-                        event.userIds().contains(1L) &&
-                        event.userIds().contains(42L) &&
+                        event.userIdsToNotify().contains(1L) &&
+                        event.userIdsToNotify().contains(42L) &&
                         event.text().equals(commentText) &&
                         event.processItemTitle().equals("Test Process")
         ));

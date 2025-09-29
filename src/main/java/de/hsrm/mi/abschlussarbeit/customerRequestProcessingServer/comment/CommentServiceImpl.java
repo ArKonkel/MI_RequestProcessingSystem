@@ -33,7 +33,7 @@ public class CommentServiceImpl implements CommentService {
         log.info("Adding comment {} to process item {}", comment.text(), processItemId);
 
         ProcessItem processItem = processItemService.getProcessItemById(processItemId);
-        User user = userService.getUserById(comment.userId());
+        User user = userService.getUserById(comment.authorId());
 
         Comment commentToCreate = new Comment();
         commentToCreate.setProcessItem(processItem);

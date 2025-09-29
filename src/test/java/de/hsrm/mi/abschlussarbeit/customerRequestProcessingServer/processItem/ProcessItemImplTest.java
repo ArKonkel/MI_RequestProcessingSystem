@@ -56,7 +56,7 @@ class ProcessItemImplTest {
         verify(publisher).publishNotificationEvent(argThat(event ->
                 event.type() == NotificationType.ASSIGNED &&
                         event.processItemTitle().equals("Test Task") &&
-                        event.userIds().contains(42L)
+                        event.userIdsToNotify().contains(42L)
         ));
 
         //Check if saved
