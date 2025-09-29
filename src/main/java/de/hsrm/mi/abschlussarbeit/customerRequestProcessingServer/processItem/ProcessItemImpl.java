@@ -1,5 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem;
 
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotFoundException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserService;
 import jakarta.transaction.Transactional;
@@ -27,5 +28,11 @@ public class ProcessItemImpl implements ProcessItemService {
         processItem.setAssignee(user);
 
         processItemRepository.save(processItem);
+    }
+
+    @Override
+    public ProcessItem getProcessItemById(Long id) {
+
+        return processItemRepository.findById(id).orElseThrow(() -> new NotFoundException("Process item with id " + id + " not found"));
     }
 }

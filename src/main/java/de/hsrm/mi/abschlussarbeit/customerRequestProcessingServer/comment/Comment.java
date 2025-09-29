@@ -1,5 +1,6 @@
-package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem;
+package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment;
 
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItem;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

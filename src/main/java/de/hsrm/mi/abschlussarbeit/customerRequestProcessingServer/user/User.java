@@ -2,7 +2,7 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItem;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.Employee;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.Comment;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment.Comment;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.authentication.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

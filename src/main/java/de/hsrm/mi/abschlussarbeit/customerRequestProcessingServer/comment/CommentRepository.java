@@ -1,4 +1,4 @@
-package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem;
+package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
