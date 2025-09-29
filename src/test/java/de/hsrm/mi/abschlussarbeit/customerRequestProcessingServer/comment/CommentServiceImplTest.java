@@ -63,10 +63,11 @@ class CommentServiceImplTest {
 
         // THEN
         verify(publisher).publishNotificationEvent(argThat(event ->
-                event.userIds().contains(1L) &&
-                event.userIds().contains(42L) &&
-                event.text().equals(commentText) &&
-                event.processItemTitle().equals("Test Process")
+                event.processItemId().equals(processItem.getId()) &&
+                        event.userIds().contains(1L) &&
+                        event.userIds().contains(42L) &&
+                        event.text().equals(commentText) &&
+                        event.processItemTitle().equals("Test Process")
         ));
     }
 }

@@ -47,7 +47,7 @@ public class CommentServiceImpl implements CommentService {
         List<Long> usersIds = users.stream().map(User::getId).toList();
 
         if (!users.isEmpty())
-            publisher.publishNotificationEvent(new NotificationEvent(NotificationType.COMMENT_MENTIONING, processItem.getTitle(),
+            publisher.publishNotificationEvent(new NotificationEvent(NotificationType.COMMENT_MENTIONING, processItem.getId(), processItem.getTitle(),
                     usersIds, savedComment.getText(), savedComment.getTimeStamp()));
     }
 
