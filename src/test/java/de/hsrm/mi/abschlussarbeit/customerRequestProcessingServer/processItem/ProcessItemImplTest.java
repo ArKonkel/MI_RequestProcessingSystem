@@ -47,7 +47,7 @@ class ProcessItemImplTest {
         when(userService.getUserOfEmployee(42L)).thenReturn(employee);
 
         // WHEN
-        processItemService.assignProcessItemToUserOfEmployee(100L, 42L);
+        processItemService.assignProcessItemToUser(100L, 42L);
 
         // THEN
         assertThat(item.getAssignee()).isEqualTo(employee);

@@ -104,8 +104,9 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
         log.info("Assigning task {} to employee {}", taskId, selectedMatch.getEmployee().id());
 
         CalculatedCapacitiesOfMatchVO vo = capacityMapper.toVo(selectedMatch);
+        Employee employee = employeeService.getEmployeeById(vo.employee().getId());
 
-        processItemService.assignProcessItemToUserOfEmployee(taskId, vo.employee().getId());
+        processItemService.assignProcessItemToUser(taskId, employee.getUser().getId());
         calendarService.createCalendarEntriesForTask(taskId, vo.employee().getCalendar().getId(), vo.calculatedCalendarCapacities());
     }
 

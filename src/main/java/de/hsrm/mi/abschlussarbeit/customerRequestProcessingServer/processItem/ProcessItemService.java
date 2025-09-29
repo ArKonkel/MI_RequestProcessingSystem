@@ -2,7 +2,7 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem;
 
 public interface ProcessItemService {
 
-    void assignProcessItemToUserOfEmployee(Long processItemId, Long employeeId);
+    void assignProcessItemToUser(Long processItemId, Long userId);
 
     ProcessItem getProcessItemById(Long id);
 }

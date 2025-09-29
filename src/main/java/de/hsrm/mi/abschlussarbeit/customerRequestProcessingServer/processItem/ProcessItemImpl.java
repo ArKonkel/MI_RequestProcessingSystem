@@ -27,11 +27,11 @@ public class ProcessItemImpl implements ProcessItemService {
 
     @Override
     @Transactional
-    public void assignProcessItemToUserOfEmployee(Long processItemId, Long employeeId) {
-        log.info("Assigning process item {} to employee {}", processItemId, employeeId);
+    public void assignProcessItemToUser(Long processItemId, Long userId) {
+        log.info("Assigning process item {} to user {}", processItemId, userId);
 
         ProcessItem processItem = getProcessItemById(processItemId);
-        User user = userService.getUserOfEmployee(employeeId);
+        User user = userService.getUserById(userId);
 
         processItem.setAssignee(user);
 
