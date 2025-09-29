@@ -1,5 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler;
 
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.BlockedByDependencyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,6 +21,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotAllowedException.class)
     public ResponseEntity<String> handleProjectNotReady(NotAllowedException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    @ExceptionHandler(BlockedByDependencyException.class)
+    public ResponseEntity<String> handleBlockedByDependency(BlockedByDependencyException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 }

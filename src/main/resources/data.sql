@@ -167,3 +167,5 @@ VALUES (1, '2025-11-05', '2025-09-26', 6, 'CREATED'),
 --------------------------------- Project_Dependencies  ------------------------------------------------
 INSERT INTO project_dependency(id, type, source_project_id, target_project_id)
 VALUES (1, 'FINISH_TO_START', 1, 2);
+
+SELECT setval('project_dependency_seq', (SELECT MAX(id) FROM task));

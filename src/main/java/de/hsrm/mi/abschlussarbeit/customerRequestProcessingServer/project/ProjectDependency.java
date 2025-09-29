@@ -15,7 +15,8 @@ import lombok.Setter;
 public class ProjectDependency {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "project_dependency_seq")
+    @SequenceGenerator(name = "project_dependency_seq", sequenceName = "project_dependency_seq", allocationSize = 1)
     private Long id;
 
     @ManyToOne
