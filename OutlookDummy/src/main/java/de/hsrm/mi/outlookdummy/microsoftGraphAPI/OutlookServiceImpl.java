@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -29,9 +30,12 @@ public class OutlookServiceImpl implements MailService, OutlookCalendarService {
 
     @Override
     public void sendMail(String fromPrincipal, SendMailRequest request) {
-        log.info("Sending mail from {} to {}", fromPrincipal, request.message().toRecipients());
+        log.info("Sending mail from {} to {}", fromPrincipal,
+                request.message().toRecipients().stream()
+                        .map(recipient -> recipient.emailAddress().address())
+                        .collect(Collectors.joining(", ")));
     }
-
+    
     @Override
     public OutlookCalendarViewResponse getCalendarView(String userPrincipalName, String start, String end) {
         log.info("Getting calendar view of {}", userPrincipalName);

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import {reactive, ref} from 'vue'
 
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import {Input} from '@/components/ui/input'
+import {Textarea} from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -10,12 +10,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Button } from '@/components/ui/button'
-import type { RequestCreateDtd } from '@/documentTypes/dtds/RequestCreateDtd.ts'
-import { submitRequest } from '@/services/requestService.ts'
-import { useAlertStore } from '@/stores/useAlertStore.ts'
+import {Button} from '@/components/ui/button'
+import type {RequestCreateDtd} from '@/documentTypes/dtds/RequestCreateDtd.ts'
+import {submitRequest} from '@/services/requestService.ts'
+import {useAlertStore} from '@/stores/useAlertStore.ts'
 import {PriorityLabel} from "@/documentTypes/types/Priority.ts";
 import {CategoryLabel} from "@/documentTypes/types/Category.ts";
+import {
+  TagsInput,
+  TagsInputInput,
+  TagsInputItem,
+  TagsInputItemText,
+  TagsInputItemDelete
+} from "@/components/ui/tags-input";
 
 const alertStore = useAlertStore()
 
@@ -27,9 +34,11 @@ const requestForm = reactive<RequestCreateDtd>({
   priority: null,
   category: null,
   customerId: null,
+  toRecipients: []
 })
 
 const customerIdString = ref<string>('')
+const recipientStrings = ref<string[]>([])
 
 // Validation and errors
 const errors = reactive({
@@ -58,6 +67,7 @@ function validate(): boolean {
 //Buttons
 async function submit() {
   requestForm.customerId = customerIdString.value ? Number(customerIdString.value) : null
+  requestForm.toRecipients = recipientStrings.value.map(email => ({address: email}))
 
   //dont submit if validation fails
   if (!validate()) {
@@ -65,6 +75,8 @@ async function submit() {
   }
 
   try {
+    console.log(requestForm)
+
     await submitRequest(requestForm)
     console.log('Request created')
 
@@ -82,7 +94,9 @@ function resetFrom() {
   customerIdString.value = ''
   requestForm.priority = null
   requestForm.category = null
-  Object.keys(errors).forEach((k) => (errors[k as keyof typeof errors] = ''))
+  requestForm.toRecipients = []
+  recipientStrings.value = []
+  Object.keys(errors).forEach((k) => (errors[k as keyof typeof errors] = '')) //Set all errors to empty string
 }
 </script>
 
@@ -91,7 +105,7 @@ function resetFrom() {
     <div class="flex flex-col md:flex-row gap-4">
       <div class="flex-1">
         <label class="text-sm font-medium mb-1">Kunde</label>
-        <Input v-model="customerIdString" placeholder="Kunden-ID" />
+        <Input v-model="customerIdString" placeholder="Kunden-ID"/>
         <p v-if="errors.customerId" class="text-red-600 text-xs mt-1">{{ errors.customerId }}</p>
       </div>
       <div class="flex-1"></div>
@@ -99,8 +113,19 @@ function resetFrom() {
 
     <div class="flex-1">
       <label class="block text-sm font-medium mb-1">Titel</label>
-      <Input v-model="requestForm.processItem.title" placeholder="Kurzer Titel" />
+      <Input v-model="requestForm.processItem.title" placeholder="Kurzer Titel"/>
       <p v-if="errors.title" class="text-red-600 text-xs mt-1">{{ errors.title }}</p>
+    </div>
+
+    <div class="flex-1">
+      <label class="block text-sm font-medium mb-1">Empfänger</label>
+      <TagsInput v-model="recipientStrings" placeholder="Emails...">
+        <TagsInputItem v-for="item in recipientStrings" :key="item" :value="item">
+          <TagsInputItemText/>
+          <TagsInputItemDelete/>
+        </TagsInputItem>
+        <TagsInputInput placeholder="Emails..."/>
+      </TagsInput>
     </div>
 
     <div class="flex flex-col md:flex-row gap-4">
@@ -108,7 +133,7 @@ function resetFrom() {
         <label class="block text-sm font-medium mb-1">Priorität</label>
         <Select v-model="requestForm.priority" :value="requestForm.priority">
           <SelectTrigger class="w-full">
-            <SelectValue placeholder="Priorität wählen" />
+            <SelectValue placeholder="Priorität wählen"/>
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -127,7 +152,7 @@ function resetFrom() {
         <label class="block text-sm font-medium mb-1">Kategorie</label>
         <Select v-model="requestForm.category" :value="requestForm.category">
           <SelectTrigger class="w-full">
-            <SelectValue placeholder="Kategorie wählen" />
+            <SelectValue placeholder="Kategorie wählen"/>
           </SelectTrigger>
           <SelectContent>
             <SelectItem

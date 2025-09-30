@@ -2,7 +2,6 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.o
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.OutlookCalendarViewResponse;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.SendMailRequest;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.mail.EmailAddress;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.mail.MailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,7 +13,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -26,19 +25,24 @@ public class OutlookServiceImpl implements MailService, OutlookCalendarService {
     /**
      * Converts a CustomerRequest to a SendMailRequest and sends it to the given email addresses.
      *
-     * @param senderMail     to send mail from
-     * @param recipients to send the mail to
+     * @param senderMail to send mail from
      */
     @Override
-    public void sendMails(SendMailRequest mail, String senderMail, List<EmailAddress> recipients) {
-        log.info("Sending mail from {} to {} with title {}", senderMail, recipients, mail.message().subject());
+    public void sendMails(SendMailRequest mail, String senderMail) {
+        log.info("Sending mail from {} to {} with title {}",
+                senderMail,
+                mail.message().toRecipients().stream()
+                        .map(recipient -> recipient.emailAddress().address())
+                        .collect(Collectors.joining(", ")),
+                mail.message().subject());
+
         String path = outlookURL + "v1.0/users/" + senderMail + "/sendMail";
 
         if (senderMail == null || senderMail.isEmpty()) {
             throw new IllegalArgumentException("Sender mail is null or empty");
         }
 
-        if (recipients.isEmpty()) {
+        if (mail.message().toRecipients().isEmpty()) {
             return;
         }
 

@@ -125,7 +125,10 @@ VALUES (1, 'Customizing der Software beim Kunden für Produktdruck',
        (6, 'Anfrage Lagerschulung', 'Hallo. Wir möchten eine Lagerschulung haben.', '2025-09-14'),
        (7, 'Idee zur Verbesserung von XX', 'Wir haben hier einen Verbesserungsvorschlag.', '2025-09-14'),
        (8, 'Scannen funktioniert nicht mehr seit Update', 'Seit dem letzten Update funktioniert das scannen nicht.',
-        '2025-09-14');
+        '2025-09-14'),
+-- PROJECT
+       (9, 'Project zur Auslieferung einer PWA', 'Auslieferung der PWA bei Kunde XY', '2025-09-14'),
+       (10, 'Project zum Spaß haben', 'Teambuildingmaßnahme', '2025-09-14');
 
 
 -- Requests (gehören zu den Process Items, gleiche ID wie process_item.id)
@@ -142,8 +145,13 @@ VALUES (1, 2, 'HOUR', '2025-11-05', 'HIGH', 'OPEN', 6),
        (4, 3, 'HOUR', '2025-10-15', 'LOW', 'OPEN', 7),
        (5, 5, 'HOUR', '2025-12-01', 'MEDIUM', 'OPEN', 8);
 
+-- Projects  (gehören zu den Process Items, gleiche ID wie process_item.id)
 
-SELECT setval('process_item_seq', (SELECT MAX(id) FROM task));
+INSERT INTO project (id, end_date, start_date, request_id, status)
+VALUES (9, '2025-11-05', '2025-09-26', 6, 'CREATED'),
+       (8, '2025-11-05', '2025-09-26', 7, 'CREATED');
+
+SELECT setval('process_item_seq', (SELECT MAX(id) FROM process_item));
 --------------------------------- TASK_EXPERTISE ------------------------------------------------
 
 INSERT INTO task_expertise (task_id, expertise_id)
@@ -158,14 +166,10 @@ VALUES (1, 7),
        (5, 7),
        (5, 9);
 
---------------------------------- Project  ------------------------------------------------
 
-INSERT INTO project (id, end_date, start_date, request_id, status)
-VALUES (1, '2025-11-05', '2025-09-26', 6, 'CREATED'),
-       (2, '2025-11-05', '2025-09-26', 7, 'CREATED');
 
 --------------------------------- Project_Dependencies  ------------------------------------------------
 INSERT INTO project_dependency(id, type, source_project_id, target_project_id)
-VALUES (1, 'FINISH_TO_START', 1, 2);
+VALUES (1, 'FINISH_TO_START', 8,9);
 
 SELECT setval('project_dependency_seq', (SELECT MAX(id) FROM task));

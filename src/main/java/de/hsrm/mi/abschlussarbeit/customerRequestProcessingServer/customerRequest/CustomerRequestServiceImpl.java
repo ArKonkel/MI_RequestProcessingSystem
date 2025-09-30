@@ -39,7 +39,7 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
 
         //Send mails
         SendMailRequest mailRequest = parseCustomerRequestToMail(savedRequest, request.getToRecipients());
-        mailService.sendMails(mailRequest, savedRequest.getCustomer().getEmail(), request.getToRecipients());
+        mailService.sendMails(mailRequest, savedRequest.getCustomer().getEmail());
 
         return requestMapper.toDto(savedRequest);
     }
