@@ -25,7 +25,7 @@ public class ProjectController {
     }
 
     @PostMapping("/dependency")
-    public ResponseEntity<Void> createProject(@Valid @RequestBody CreateDependencyDto dependency) {
+    public ResponseEntity<Void> createProjectDependency(@Valid @RequestBody CreateDependencyDto dependency) {
         log.info("REST request to create a new dependency");
 
         ProjectDependency createdDependency = projectService.createProjectDependency(dependency.sourceProjectId(), dependency.targetProjectId(), dependency.type());

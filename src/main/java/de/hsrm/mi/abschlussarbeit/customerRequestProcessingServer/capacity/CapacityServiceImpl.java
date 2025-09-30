@@ -124,7 +124,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
         }
 
         if (!errors.isEmpty()) {
-            throw new TaskNotReadyForResourcePlanningException(
+            throw new TaskNotReadyForCapacityPlanningException(
                     "Task not ready for resource planning. " + String.join(", ", errors)
             );
         }

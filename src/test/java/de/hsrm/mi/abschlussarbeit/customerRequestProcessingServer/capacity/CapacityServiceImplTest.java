@@ -147,7 +147,7 @@ class CapacityServiceImplTest {
         when(taskService.getTaskById(taskId)).thenReturn(task);
 
         assertThrows(
-                TaskNotReadyForResourcePlanningException.class,
+                TaskNotReadyForCapacityPlanningException.class,
                 () -> resourceCapacityService.findBestMatches(taskId)
         );
     }
@@ -164,7 +164,7 @@ class CapacityServiceImplTest {
         when(taskService.getTaskById(taskId)).thenReturn(task);
 
         assertThrows(
-                TaskNotReadyForResourcePlanningException.class,
+                TaskNotReadyForCapacityPlanningException.class,
                 () -> resourceCapacityService.findBestMatches(taskId)
         );
     }
@@ -187,7 +187,7 @@ class CapacityServiceImplTest {
         when(taskService.getTaskById(taskId)).thenReturn(task);
 
         assertThrows(
-                TaskNotReadyForResourcePlanningException.class,
+                TaskNotReadyForCapacityPlanningException.class,
                 () -> resourceCapacityService.findBestMatches(taskId)
         );
     }

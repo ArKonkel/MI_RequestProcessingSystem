@@ -35,9 +35,6 @@ public class Project extends ProcessItem {
     @OneToMany(mappedBy = "project")
     private Set<Task> tasks;
 
-    @OneToMany(mappedBy = "sourceProject")
-    private Set<ProjectDependency> outgoingDependencies;
-
     @OneToMany(mappedBy = "targetProject")
     private Set<ProjectDependency> incomingDependencies;
 
