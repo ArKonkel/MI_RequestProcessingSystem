@@ -2,6 +2,7 @@ import {defineStore} from "pinia";
 import type {TaskDtd} from "@/documentTypes/dtds/TaskDtd.ts";
 import {reactive} from "vue";
 import axios from "axios";
+import {getAllTasks} from "@/services/taskService.ts";
 
 export const useTaskStore = defineStore('taskStore', () => {
 
@@ -12,8 +13,7 @@ export const useTaskStore = defineStore('taskStore', () => {
 
   async function fetchTasks() {
     try {
-      const response = await axios.get<TaskDtd[]>("/api/task");
-      taskData.tasks = response.data;
+      taskData.tasks = await getAllTasks();
 
       if (taskData.tasks.length > 0){
         taskData.selectedTask = taskData.tasks[0];

@@ -11,7 +11,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @AllArgsConstructor
-@RequestMapping("/task")
+@RequestMapping("/tasks")
 public class TaskController {
 
     private final TaskService taskService;
@@ -22,6 +22,15 @@ public class TaskController {
         List<TaskDto> tasks = taskService.getAllTasks();
 
         return ResponseEntity.ok(tasks);
+    }
+
+    @GetMapping("/{taskId}")
+    ResponseEntity<TaskDto> getTask(@PathVariable Long taskId) {
+        log.info("REST request to get task with id {}", taskId);
+
+        TaskDto task = taskService.getTaskDtoById(taskId);
+
+        return ResponseEntity.ok(task);
     }
 
     @PatchMapping("/{taskId}")

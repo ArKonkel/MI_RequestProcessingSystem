@@ -10,32 +10,38 @@ import {Button} from "@/components/ui/button";
 import {Card, CardHeader, CardTitle} from "@/components/ui/card";
 import {Avatar, AvatarFallback} from "@/components/ui/avatar";
 
-import type {MatchCalculationResultDtd} from "@/documentTypes/dtds/MatchCalculationResultDtd.ts";
-import type {MatchingEmployeeForTaskDtd} from "@/documentTypes/dtds/MatchingEmployeeForTaskDtd.ts";
+import type {
+  CalculatedCapacitiesOfMatchDto
+} from "@/documentTypes/dtds/CalculatedCapacitiesOfMatchDto.ts";
+import type {
+  MatchingEmployeeCapacitiesDtd
+} from "@/documentTypes/dtds/MatchingEmployeeCapacitiesDtd.ts";
 import type {CalendarDtd} from "@/documentTypes/dtds/CalendarDtd.ts";
 
 import {assignTaskToEmployee, getMatchingEmployees} from "@/services/capacityPlanningsService.ts";
 import {getEmployeeCalendar} from "@/services/calendarService.ts";
 import type {EmployeeDtd} from "@/documentTypes/dtds/EmployeeDtd.ts";
-import type {CompetenceDtd} from "@/documentTypes/dtds/CompetenceDtd.ts";
+import type {ExpertiseDtd} from "@/documentTypes/dtds/ExpertiseDtd.ts";
 import type {EmployeeExpertiseDtd} from "@/documentTypes/dtds/EmployeeExpertiseDtd.ts";
 import type {
   CalculatedCapacityCalendarEntryDtd
 } from "@/documentTypes/dtds/CalculatedCapacityCalendarEntryDtd .ts";
+import type {TaskDtd} from "@/documentTypes/dtds/TaskDtd.ts";
+import {getTask} from "@/services/taskService.ts";
 
 const route = useRoute();
 const taskId = Number(route.params.id);
-const matchResults = ref<MatchingEmployeeForTaskDtd | null>(null);
+const matchResults = ref<MatchingEmployeeCapacitiesDtd | null>(null);
+const task = ref<TaskDtd | null>(null)
 
 const visibleDays = 8;
 const startDate = ref(new Date());
-const selectedMatchResult= ref<MatchCalculationResultDtd | null>(null);
+const selectedMatchResult = ref<CalculatedCapacitiesOfMatchDto | null>(null);
 const bestMatchPoints = ref<number | null>(null);
 
 // Drag & Drop State
 const draggedEntry = ref<CalculatedCapacityCalendarEntryDtd | null>(null);
 
-// --- Lifecycle
 onMounted(async () => {
   if (!taskId) {
     console.error("Kein Task ausgewählt");
@@ -44,6 +50,7 @@ onMounted(async () => {
 
   try {
     matchResults.value = await getMatchingEmployees(taskId);
+    task.value = await getTask(taskId);
 
     await loadCalendars(); // initial Kalender laden
     calculateBestMatchPoints()
@@ -117,7 +124,7 @@ function nextDay() {
   startDate.value = newDate;
 }
 
-function selectMatchResult(matchResult: MatchCalculationResultDtd) {
+function selectMatchResult(matchResult: CalculatedCapacitiesOfMatchDto) {
   selectedMatchResult.value = matchResult;
 }
 
@@ -135,18 +142,17 @@ function calculateBestMatchPoints() {
   }
 
   bestMatchPoints.value = Math.max(
-    ...matchResults.value.matchCalculationResult.map(m => m.competencePoints)
+    ...matchResults.value.matchCalculationResult.map(match => match.expertisePoints)
   );
 }
 
 function getMatchingExpertise(
   employee: EmployeeDtd,
-  taskCompetences: CompetenceDtd[]
+  taskExpertise: ExpertiseDtd[]
 ): EmployeeExpertiseDtd[] {
-  const taskCompetenceIds = new Set(taskCompetences.map(competence => competence.id));
 
-  return employee.employeeExpertise.filter(expertise =>
-    taskCompetenceIds.has(expertise.expertise.id)
+  return employee.employeeExpertise.filter(employeeExpertise =>
+    taskExpertise.some(taskExpertise => taskExpertise.id === employeeExpertise.expertise.id)
   );
 }
 
@@ -155,7 +161,7 @@ function onDragStart(entry: CalculatedCapacityCalendarEntryDtd) {
   draggedEntry.value = entry;
 }
 
-function onDrop(dayDate: string, matchResult: MatchCalculationResultDtd) {
+function onDrop(dayDate: string, matchResult: CalculatedCapacitiesOfMatchDto) {
   if (!draggedEntry.value) return;
 
   const entry = draggedEntry.value;
@@ -190,18 +196,18 @@ async function assignEmployee() {
     <Card>
       <CardHeader class="flex flex-row justify-between">
         <div>
-          <CardTitle class="text-xl">{{ matchResults?.task.processItem.id }} -
-            {{ matchResults?.task.processItem.title }}
+          <CardTitle class="text-xl">{{ task?.processItem.id }} -
+            {{ task?.processItem.title }}
           </CardTitle>
           <div class="flex gap-2 mt-2">
-            <Badge v-for="(competence) in matchResults?.task.competences"
-                   variant="secondary">{{ competence.name }}
+            <Badge v-for="(expertise) in task?.expertise"
+                   variant="secondary">{{ expertise.name }}
             </Badge>
           </div>
         </div>
         <div class="flex flex-col text-sm text-right">
-          <span>Geschätzte Zeit: <strong>{{ matchResults?.task.estimatedTime }}</strong></span>
-          <span>Geplant bis <strong>{{ matchResults?.task.dueDate }}</strong></span>
+          <span>Geschätzte Zeit: <strong>{{ task?.estimatedTime }}</strong></span>
+          <span>Geplant bis <strong>{{ task?.dueDate }}</strong></span>
         </div>
       </CardHeader>
     </Card>
@@ -242,14 +248,14 @@ async function assignEmployee() {
         <!-- Person -->
         <div class="relative flex flex-col items-center justify-center gap-2 p-2 border-r">
           <Star
-            v-if="matchResult.competencePoints === bestMatchPoints"
+            v-if="matchResult.expertisePoints === bestMatchPoints"
             class="absolute top-1 left-1 w-5 h-5"
           />
 
           <CircleGauge
             v-if="matchResult.canCompleteTaskEarliest"
             :class="['absolute top-1 w-5 h-5',
-             matchResult.competencePoints === bestMatchPoints ? 'left-7' : 'left-1']"
+             matchResult.expertisePoints === bestMatchPoints ? 'left-7' : 'left-1']"
           />
 
           <Avatar>
@@ -260,7 +266,7 @@ async function assignEmployee() {
           </div>
           <div class="flex flex-wrap gap-1 justify-center">
             <Badge
-              v-for="expertise in getMatchingExpertise(matchResult.employee, matchResults!.task.competences)"
+              v-for="expertise in getMatchingExpertise(matchResult.employee, task!.expertise)"
               :key="expertise.id"
               variant="outline"
               class="text-[10px]"
@@ -290,7 +296,7 @@ async function assignEmployee() {
             @dragstart="onDragStart(entry)"
           >
             <strong :title="entry.title">{{ entry.title }}</strong>
-            <div class="text-[10px]">{{ entry.duration / 60 }}h</div>
+            <div class="text-[10px]">{{ entry.durationInMinutes / 60 }}h</div>
           </div>
 
           <!-- calendar entries -->
@@ -300,7 +306,7 @@ async function assignEmployee() {
             class="bg-accent text-xs rounded px-2 py-1 border shadow-sm mb-1 w-full truncate"
           >
             <strong :title="entry.title">{{ entry.title }}</strong>
-            <div class="text-[10px]">{{ entry.duration / 60 }}h</div>
+            <div class="text-[10px]">{{ entry.durationInMinutes / 60 }}h</div>
           </div>
         </div>
       </div>
@@ -309,8 +315,9 @@ async function assignEmployee() {
     <!-- Buttons -->
     <div class="flex justify-end">
       <Button
-      @click="assignEmployee"
-      >Zuweisen</Button>
+        @click="assignEmployee"
+      >Zuweisen
+      </Button>
     </div>
   </div>
 </template>

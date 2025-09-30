@@ -107,7 +107,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
         Employee employee = employeeService.getEmployeeById(vo.employee().getId());
 
         processItemService.assignProcessItemToUser(taskId, employee.getUser().getId());
-        calendarService.createCalendarEntriesForTask(taskId, vo.employee().getCalendar().getId(), vo.calculatedCalendarCapacities());
+        calendarService.createCalendarEntriesForTask(taskId, employee.getCalendar().getId(), vo.calculatedCalendarCapacities());
     }
 
     private void checkIfTaskReadyForCapacityPlanning(Task task) {
