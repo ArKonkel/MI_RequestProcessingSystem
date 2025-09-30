@@ -1,7 +1,7 @@
 export interface CalendarEntryDtd {
   id: number;
   title: string;
-  description: string | null;
+  description: string;
   date: string;
-  duration: number; // in minutes
+  durationInMinutes: number;
 }

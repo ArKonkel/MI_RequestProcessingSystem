@@ -71,7 +71,7 @@ function addComment() {
 
         <!-- Shadcn-Accordion -->
         <Accordion type="multiple" class="w-full" collapsible
-                   :defaultValue="['desc', 'acceptance', 'comments']">
+                   :defaultValue="['desc', 'comments']">
           <AccordionItem value="desc">
             <AccordionTrigger>Beschreibung</AccordionTrigger>
             <AccordionContent>
@@ -112,7 +112,7 @@ function addComment() {
               </div>
             </AccordionContent>
           </AccordionItem>
-<!--
+
           <AccordionItem value="comments">
             <AccordionTrigger>Kommentare</AccordionTrigger>
             <AccordionContent>
@@ -130,7 +130,6 @@ function addComment() {
               </div>
             </AccordionContent>
           </AccordionItem>
-          -->
         </Accordion>
         <RouterLink :to="{ name: 'capacityPlanningView', params: { id: task.processItem.id } }">
           <Button class="mt-6">Zur Planung</Button>

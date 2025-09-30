@@ -36,7 +36,15 @@ public class TaskServiceImpl implements TaskService {
     public Task getTaskById(Long id) {
         log.info("Getting task with id {}", id);
 
-        return taskRepository.getReferenceById(id);
+        return taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Task with id " + id + " not found."));
+    }
+
+    @Override
+    public TaskDto getTaskDtoById(Long id) {
+        log.info("Getting task dto with id {}", id);
+        Task task = getTaskById(id);
+
+        return taskMapper.toDto(task);
     }
 
     @Override

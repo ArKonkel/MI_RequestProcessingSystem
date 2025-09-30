@@ -11,7 +11,7 @@ import java.time.Year;
 @RestController
 @AllArgsConstructor
 @Slf4j
-@RequestMapping("/calendar")
+@RequestMapping("/calendars")
 public class CalendarController {
 
     private final CalendarService calendarService;

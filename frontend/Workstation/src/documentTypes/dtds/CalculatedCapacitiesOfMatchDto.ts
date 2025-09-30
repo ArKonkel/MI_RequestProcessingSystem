@@ -4,9 +4,9 @@ import type {
 } from "@/documentTypes/dtds/CalculatedCapacityCalendarEntryDtd .ts";
 import type {CalendarDtd} from "@/documentTypes/dtds/CalendarDtd.ts";
 
-export interface MatchCalculationResultDtd {
+export interface CalculatedCapacitiesOfMatchDto {
   employee: EmployeeDtd
-  competencePoints: number
+  expertisePoints: number
   canCompleteTaskEarliest: boolean
   calculatedCalendarCapacities: CalculatedCapacityCalendarEntryDtd[]
   calendar?: CalendarDtd

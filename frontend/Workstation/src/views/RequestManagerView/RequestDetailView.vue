@@ -140,9 +140,13 @@ function addComment() {
                     </AccordionItem>
                     -->
         </Accordion>
+
+        <!--
+        //TODO add hier zur projektplanung
         <RouterLink :to="{ name: 'capacityPlanningView', params: { id: request.processItem.id } }">
           <Button class="mt-6">Zur Planung</Button>
         </RouterLink>
+        -->
       </div>
     </ScrollArea>
 
