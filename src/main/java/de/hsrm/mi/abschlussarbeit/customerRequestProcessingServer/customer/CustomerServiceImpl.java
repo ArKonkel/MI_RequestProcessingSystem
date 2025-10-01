@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class CustomerServiceImpl implements CustomerService{
+public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
 
@@ -16,10 +16,6 @@ public class CustomerServiceImpl implements CustomerService{
     public Customer getCustomerById(Long id) {
         log.info("Getting customer with id {}", id);
 
-        if (customerRepository.existsById(id)) {
-            return customerRepository.getReferenceById(id);
-        }
-
-        throw new NotFoundException("Customer with id " + id + " not found");
+        return customerRepository.findById(id).orElseThrow(() -> new NotFoundException("Customer with id " + id + " not found"));
     }
 }

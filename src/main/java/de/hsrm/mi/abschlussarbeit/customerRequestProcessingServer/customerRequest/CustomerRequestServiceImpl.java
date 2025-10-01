@@ -20,7 +20,7 @@ import java.util.NoSuchElementException;
 @AllArgsConstructor
 public class CustomerRequestServiceImpl implements CustomerRequestService {
 
-    private final CustomerRequestRepository requestRepository;
+    private final CustomerRequestRepository customerRequestRepository;
 
     private final CustomerService customerService;
 
@@ -35,7 +35,7 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
         CustomerRequest requestEntity = requestMapper.toEntity(request);
         requestEntity.setCustomer(customerService.getCustomerById(request.getCustomerId()));
 
-        CustomerRequest savedRequest = requestRepository.save(requestEntity);
+        CustomerRequest savedRequest = customerRequestRepository.save(requestEntity);
 
         //Send mails
         SendMailRequest mailRequest = parseCustomerRequestToMail(savedRequest, request.getToRecipients());
@@ -47,21 +47,29 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
     @Override
     public List<CustomerRequestDto> getAllRequests() {
         log.info("Getting all requests");
-        return requestRepository.findAll().stream().map(requestMapper::toDto).toList();
+        return customerRequestRepository.findAll().stream().map(requestMapper::toDto).toList();
+    }
+
+    @Override
+    public List<CustomerRequestDto> getRequestsByCustomerId(Long customerId) {
+        log.info("Getting all requests for customer {}", customerId);
+
+        return customerRequestRepository.findByCustomerIdOrderByCreationDateDesc(customerId)
+                .stream().map(requestMapper::toDto).toList();
     }
 
     @Override
     public CustomerRequestDto getRequestById(Long id) {
         log.info("Getting request with id {}", id);
-        return requestMapper.toDto(requestRepository.getReferenceById(id));
+        return requestMapper.toDto(customerRequestRepository.getReferenceById(id));
     }
 
     @Override
     public boolean isRequestReadyForProcessing(Long requestId) {
-        CustomerRequest request = requestRepository.findById(requestId).orElseThrow(() ->
+        CustomerRequest request = customerRequestRepository.findById(requestId).orElseThrow(() ->
                 new NoSuchElementException("Request with id " + requestId + " not found"));
 
-       return request.getStatus().equals(CustomerRequestStatus.WAITING_FOR_PROCESSING) || request.getStatus().equals(CustomerRequestStatus.IN_PROCESS);
+        return request.getStatus().equals(CustomerRequestStatus.WAITING_FOR_PROCESSING) || request.getStatus().equals(CustomerRequestStatus.IN_PROCESS);
     }
 
     /**

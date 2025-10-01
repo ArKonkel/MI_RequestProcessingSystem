@@ -33,6 +33,14 @@ public class CustomerRequestController {
         return ResponseEntity.ok(requests);
     }
 
+    @GetMapping("/customer/{customerId}")
+    public ResponseEntity<List<CustomerRequestDto>> getRequestFromCustomer(@PathVariable Long customerId) {
+        log.info("REST request to get all requests from customer {}", customerId);
+
+        List<CustomerRequestDto> requests = customerRequestService.getRequestsByCustomerId(customerId);
+        return ResponseEntity.ok(requests);
+    }
+
     @PostMapping
     ResponseEntity<CustomerRequestDto> createRequest(@Valid @RequestBody CustomerRequestCreateDto requestDto) {
         log.info("REST request to create request {}", requestDto);

@@ -8,6 +8,8 @@ public interface CustomerRequestService {
 
     List<CustomerRequestDto> getAllRequests();
 
+    List<CustomerRequestDto> getRequestsByCustomerId(Long customerId);
+
     CustomerRequestDto getRequestById(Long id);
 
     boolean isRequestReadyForProcessing(Long requestId);

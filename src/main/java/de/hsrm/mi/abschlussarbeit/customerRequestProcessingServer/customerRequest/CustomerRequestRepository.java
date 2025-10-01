@@ -2,5 +2,10 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerReque
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface CustomerRequestRepository extends JpaRepository<CustomerRequest, Long> {
+
+    List<CustomerRequest> findByCustomerIdOrderByCreationDateDesc(Long customerId);
+
 }
