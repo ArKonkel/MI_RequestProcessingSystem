@@ -266,6 +266,7 @@ async function assignEmployee() {
           </div>
           <div class="flex flex-wrap gap-1 justify-center">
             <Badge
+              v-if="task"
               v-for="expertise in getMatchingExpertise(matchResult.employee, task!.expertise)"
               :key="expertise.id"
               variant="outline"

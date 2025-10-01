@@ -22,7 +22,7 @@ const items = [
   },
   {
     title: "Projects",
-    url: "#",
+    url: "/projects",
     icon: Calendar,
   },
 ];

@@ -1,0 +1,8 @@
+export enum ProjectDependencyType {
+  FINISH_TO_START = "FINISH_TO_START",
+  START_TO_START = "START_TO_START",
+  FINISH_TO_FINISH = "FINISH_TO_FINISH",
+  PART_OF = "PART_OF",
+  USES_RESULT = "USES_RESULT",
+}
+
