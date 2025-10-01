@@ -1,6 +1,5 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification;
 
-public enum NotificationType {
-    ASSIGNED,
-    COMMENT_MENTIONING
+public enum ChangeType {
+    CREATED, UPDATED, DELETED
 }

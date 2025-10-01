@@ -1,10 +1,11 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment;
 
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationEvent;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationService;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationType;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequest;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.*;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItem;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItemService;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.Project;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.Task;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserService;
 import lombok.AllArgsConstructor;
@@ -46,8 +47,11 @@ public class CommentServiceImpl implements CommentService {
         List<User> users = findMentionedUsers(comment.text());
         List<Long> usersIds = users.stream().map(User::getId).toList();
 
+        TargetType targetType = determineTargetType(processItem);
+        notificationService.sendChangeNotification(new ChangeNotificationEvent(processItem.getId(), ChangeType.UPDATED, targetType));
+
         if (!users.isEmpty())
-            notificationService.sendNotification(new NotificationEvent(NotificationType.COMMENT_MENTIONING, processItem.getId(), processItem.getTitle(),
+            notificationService.sendUserNotification(new UserNotificationEvent(UserNotificationType.COMMENT_MENTIONING, processItem.getId(), processItem.getTitle(),
                     usersIds, savedComment.getText(), savedComment.getTimeStamp()));
     }
 
@@ -68,6 +72,19 @@ public class CommentServiceImpl implements CommentService {
         return mentionedIds.stream()
                 .map(userService::getUserById)
                 .toList();
+    }
+
+    private TargetType determineTargetType(ProcessItem processItem) {
+        TargetType targetType = null;
+        if (processItem instanceof CustomerRequest) {
+            targetType = TargetType.CUSTOMER_REQUEST;
+        } else if (processItem instanceof Task) {
+            targetType = TargetType.TASK;
+        } else if (processItem instanceof Project) {
+            targetType = TargetType.PROJECT;
+        }
+
+        return targetType;
     }
 
 }

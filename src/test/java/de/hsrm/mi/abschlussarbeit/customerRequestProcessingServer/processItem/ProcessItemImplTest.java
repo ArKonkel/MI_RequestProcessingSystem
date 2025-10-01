@@ -1,7 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationService;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationType;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.UserNotificationType;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.Task;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserService;
@@ -53,8 +53,8 @@ class ProcessItemImplTest {
         assertThat(item.getAssignee()).isEqualTo(user);
 
         //Check if event was published
-        verify(notificationService).sendNotification((argThat(event ->
-                event.type() == NotificationType.ASSIGNED &&
+        verify(notificationService).sendUserNotification((argThat(event ->
+                event.type() == UserNotificationType.ASSIGNED &&
                         event.processItemTitle().equals("Test Task") &&
                         event.userIdsToNotify().contains(42L)
         )));

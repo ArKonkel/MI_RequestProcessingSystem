@@ -62,7 +62,7 @@ class CommentServiceImplTest {
         commentService.addCommentToProcessItem(processItem.getId(), dto);
 
         // THEN
-        verify(notificationService).sendNotification((argThat(event ->
+        verify(notificationService).sendUserNotification((argThat(event ->
                 event.processItemId().equals(processItem.getId()) &&
                         event.userIdsToNotify().contains(1L) &&
                         event.userIdsToNotify().contains(42L) &&
