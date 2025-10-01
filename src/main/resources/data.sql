@@ -82,9 +82,9 @@ VALUES (1, 'Max.Mustermann@mail.de', 'Max', 'Mustermann', null, 8, 1),
 
 --------------------------------- USER ------------------------------------------------
 
-INSERT INTO users (id, name, description, employee_id)
-VALUES (1, 'Max Mustermann', 'Kann alles.', 1),
-       (2, 'Sabine Musterfrau', '', 2);
+INSERT INTO users (id, name, employee_id)
+VALUES (1, 'Max Mustermann', 1),
+       (2, 'Sabine Musterfrau', 2);
 
 --------------------------------- USER_ROLES ------------------------------------------------
 

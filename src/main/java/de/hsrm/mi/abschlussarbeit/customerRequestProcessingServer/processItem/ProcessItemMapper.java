@@ -1,12 +1,13 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem;
 
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment.CommentMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 /**
  * Mapper for {@link ProcessItem} and {@link ProcessItemDto}.
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {CommentMapper.class})
 public interface ProcessItemMapper {
 
     @Mapping(target = "assigneeId", source = "assignee.id")

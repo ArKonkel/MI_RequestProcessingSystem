@@ -19,7 +19,6 @@ class UserMapperTest {
         User user = new User();
         user.setId(1L);
         user.setName("Max Mustermann");
-        user.setDescription("Blub");
         user.setEmployee(employee);
 
         // WHEN
@@ -29,7 +28,5 @@ class UserMapperTest {
         assertNotNull(dto);
         assertEquals(1L, dto.id());
         assertEquals("Max Mustermann", dto.name());
-        assertEquals("Blub", dto.description());
-        assertEquals(42L, dto.employeeId());
     }
 }

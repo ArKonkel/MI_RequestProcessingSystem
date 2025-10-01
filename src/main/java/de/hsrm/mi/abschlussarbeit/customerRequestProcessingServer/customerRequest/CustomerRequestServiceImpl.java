@@ -1,5 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest;
 
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment.CommentDto;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment.CommentMapper;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customer.CustomerService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.ItemBody;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.Message;
@@ -12,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -25,6 +28,8 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
     private final CustomerService customerService;
 
     private final CustomerRequestMapper requestMapper;
+
+    private final CommentMapper commentMapper;
 
     private final MailService mailService;
 
@@ -49,14 +54,56 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
         log.info("Getting all requests");
         return customerRequestRepository.findAll().stream().map(requestMapper::toDto).toList();
     }
+/*
+    @Override
+    public List<CustomerRequestDto> getRequestsByCustomerId(Long customerId) {
+        log.info("Getting all requests for customer {}", customerId);
+
+        //TODO sollte sortiert sein
+        val requestDtos = customerRequestRepository.findByCustomerIdOrderByCreationDateDesc(customerId)
+                .stream().map(requestMapper::toDto).toList();
+
+        for (CustomerRequestDto requestDto : requestDtos) {
+            val comments = requestDto.processItem().comments();
+
+            comments.stream().sorted(Comparator.comparing(commentDto -> commentDto.timeStamp()).reversed()).collect(Collectors.toList());
+
+        }
+
+        return requestDtos;
+    }
+
+ */
 
     @Override
     public List<CustomerRequestDto> getRequestsByCustomerId(Long customerId) {
         log.info("Getting all requests for customer {}", customerId);
 
-        return customerRequestRepository.findByCustomerIdOrderByCreationDateDesc(customerId)
-                .stream().map(requestMapper::toDto).toList();
+        // Alle Requests als DTOs holen (ohne Kommentar-Sortierung)
+        List<CustomerRequestDto> requestDtos = customerRequestRepository.findByCustomerIdOrderByCreationDateDesc(customerId)
+                .stream()
+                .map(requestMapper::toDto)
+                .toList();
+
+        //Sort comments desc timeStamp
+        for (CustomerRequestDto requestDto : requestDtos) {
+            List<CommentDto> comments = requestDto.processItem.getComments();
+
+            // Neue sortierte Liste erzeugen
+            List<CommentDto> sortedComments = comments.stream()
+                    .sorted(Comparator.comparing(CommentDto::timeStamp).reversed()).toList();
+
+            // Sorted Comments im DTO setzen - Dazu brauchst du einen Setter oder ein neues DTO.
+            // Beispiel mit mutierbarem DTO:
+            requestDto.processItem.setComments(sortedComments);
+
+            // Falls die ProcessItem immutable ist, musst du ggf. ein neues ProcessItemDto erstellen und ersetzen
+        }
+
+        return requestDtos;
     }
+
+
 
     @Override
     public CustomerRequestDto getRequestById(Long id) {

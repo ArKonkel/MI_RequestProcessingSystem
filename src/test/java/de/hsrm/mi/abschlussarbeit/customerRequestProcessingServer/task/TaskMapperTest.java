@@ -59,10 +59,10 @@ class TaskMapperTest {
         // THEN
         assertNotNull(dto);
         assertNotNull(dto.processItem());
-        assertEquals(1L, dto.processItem().id());
-        assertEquals("Task Title", dto.processItem().title());
-        assertEquals("Task Description", dto.processItem().description());
-        assertEquals(Instant.parse("2025-09-23T14:00:00Z"), dto.processItem().creationDate());
+        assertEquals(1L, dto.processItem().getId());
+        assertEquals("Task Title", dto.processItem().getTitle());
+        assertEquals("Task Description", dto.processItem().getDescription());
+        assertEquals(Instant.parse("2025-09-23T14:00:00Z"), dto.processItem().getCreationDate());
 
         assertEquals(BigDecimal.valueOf(12.5), dto.estimatedTime());
         assertEquals(TimeUnit.HOUR, dto.estimationUnit());

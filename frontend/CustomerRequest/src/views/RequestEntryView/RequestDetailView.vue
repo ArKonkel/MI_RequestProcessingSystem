@@ -26,9 +26,14 @@ import {CategoryLabel} from "@/documentTypes/types/Category.ts";
 import type {RequestDtd} from "@/documentTypes/dtds/RequestDtd.ts";
 import {getPriorityColor, PriorityLabel} from "@/documentTypes/types/Priority.ts";
 import {RequestStatusLabel} from "@/documentTypes/types/RequestStatus.ts";
+import {addCommentToRequest} from "@/services/commentService.ts";
+import type {CommentCreateDtd} from "@/documentTypes/dtds/CommentCreateDtd.ts";
+import {useAlertStore} from "@/stores/useAlertStore.ts";
 
 const requestStore = useRequestStore()
 const request = computed<RequestDtd>(() => requestStore.requestData.selectedRequest!);
+
+const alertStore = useAlertStore()
 
 const commentText = ref("")
 const comments = ref([
@@ -41,9 +46,26 @@ const comments = ref([
 ])
 
 function addComment() {
-  if (!commentText.value) return
-  //TODO add her comment API call
-  console.log(comments.value + "added as comment.")
+  if (!commentText.value)
+    return
+
+  const commentCreateDtd: CommentCreateDtd = {
+    text: commentText.value,
+    //TODO make author from user
+    authorId: 1
+  };
+
+  try {
+    addCommentToRequest(request.value.processItem.id, commentCreateDtd)
+
+    alertStore.show('Kommentar erfolgreich erstellt', 'success')
+  } catch (error: any) {
+    console.error(error)
+
+    alertStore.show(error.response?.data || 'Unbekannter Fehler', 'error')
+  }
+
+  commentText.value = ""
 }
 </script>
 
@@ -119,12 +141,15 @@ function addComment() {
                 <div class="flex justify-end">
                   <Button @click="addComment">Senden</Button>
                 </div>
-                <div v-for="comment in comments" :key="comment.id" class="border-t pt-2 text-sm">
-                  <div class="font-semibold">{{ comment.author }}</div>
+                <div v-for="comment in request.processItem.comments" :key="comment.id"
+                     class="border-t pt-2 text-sm">
+                  <div class="font-semibold">{{ comment.author.name }}</div>
                   <div class="text-xs text-muted-foreground">
-                    {{ new Date(comment.date).toLocaleString("de-DE") }}
+                    {{ new Date(comment.timeStamp).toLocaleString("de-DE") }}
                   </div>
-                  <p>{{ comment.text }}</p>
+                  <div class="mt-2">
+                    <p class="text-lg">{{ comment.text }}</p>
+                  </div>
                 </div>
               </div>
             </AccordionContent>

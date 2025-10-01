@@ -52,24 +52,24 @@ class CustomerRequestMapperTest {
 
         // THEN
         assertNotNull(dto);
-        assertNotNull(dto.processItem());
-        assertEquals("Feature Request", dto.processItem().title());
-        assertEquals("Add export functionality", dto.processItem().description());
-        assertEquals(creationDate, dto.processItem().creationDate());
-        assertNull(dto.processItem().assigneeId());
+        assertNotNull(dto.getProcessItem());
+        assertEquals("Feature Request", dto.getProcessItem().getTitle());
+        assertEquals("Add export functionality", dto.getProcessItem().getDescription());
+        assertEquals(creationDate, dto.getProcessItem().getCreationDate());
+        assertNull(dto.getProcessItem().getAssigneeId());
 
-        assertEquals(Priority.HIGH, dto.priority());
-        assertEquals(BigDecimal.valueOf(15).longValue(), dto.estimatedScope());
-        assertEquals(CustomerRequestStatus.RECEIVED, dto.status());
-        assertEquals(Chargeable.NOT_DETERMINED, dto.chargeable());
-        assertEquals(Category.BUG_REPORT, dto.category());
+        assertEquals(Priority.HIGH, dto.getPriority());
+        assertEquals(BigDecimal.valueOf(15).longValue(), dto.getEstimatedScope());
+        assertEquals(CustomerRequestStatus.RECEIVED, dto.getStatus());
+        assertEquals(Chargeable.NOT_DETERMINED, dto.getChargeable());
+        assertEquals(Category.BUG_REPORT, dto.getCategory());
 
-        assertNotNull(dto.customer());
-        assertEquals(5L, dto.customer().id());
-        assertEquals("Anna", dto.customer().firstName());
-        assertEquals("Schmidt", dto.customer().lastName());
-        assertEquals("anna.schmidt@example.com", dto.customer().email());
-        assertEquals("Beispielstraße 12, 54321 Beispielstadt", dto.customer().address());
+        assertNotNull(dto.getCustomer());
+        assertEquals(5L, dto.getCustomer().id());
+        assertEquals("Anna", dto.getCustomer().firstName());
+        assertEquals("Schmidt", dto.getCustomer().lastName());
+        assertEquals("anna.schmidt@example.com", dto.getCustomer().email());
+        assertEquals("Beispielstraße 12, 54321 Beispielstadt", dto.getCustomer().address());
     }
 
     @Test

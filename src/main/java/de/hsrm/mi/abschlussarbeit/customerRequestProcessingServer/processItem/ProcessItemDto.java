@@ -1,12 +1,19 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem;
 
-import java.time.Instant;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment.CommentDto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-public record ProcessItemDto (
-        Long id,
-        String title,
-        String description,
-        Instant creationDate,
-        Long assigneeId
-        //Set<Long> commentIds
-) {}
+import java.time.Instant;
+import java.util.List;
+
+@Data
+@AllArgsConstructor
+public class ProcessItemDto {
+    Long id;
+    String title;
+    String description;
+    Instant creationDate;
+    Long assigneeId;
+    List<CommentDto> comments;
+}

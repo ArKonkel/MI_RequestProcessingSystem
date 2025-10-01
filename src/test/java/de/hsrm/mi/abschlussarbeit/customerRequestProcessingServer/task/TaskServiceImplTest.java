@@ -19,6 +19,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -88,7 +89,7 @@ class TaskServiceWithoutMapperTest {
 
 
         TaskDto expectedDto = new TaskDto(
-                new ProcessItemDto(1L, "New Title", "New Description", null, 42L),
+                new ProcessItemDto(1L, "New Title", "New Description", null, 42L,  List.of()),
                 BigDecimal.valueOf(8),
                 TimeUnit.HOUR,
                 480L,

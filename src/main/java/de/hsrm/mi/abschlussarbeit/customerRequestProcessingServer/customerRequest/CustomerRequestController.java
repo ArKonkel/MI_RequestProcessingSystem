@@ -46,7 +46,7 @@ public class CustomerRequestController {
         log.info("REST request to create request {}", requestDto);
 
         CustomerRequestDto createdRequest = customerRequestService.createRequest(requestDto);
-        URI location = URI.create("/api/requests/" + createdRequest.processItem().id());
+        URI location = URI.create("/api/requests/" + createdRequest.processItem.getId());
 
         return ResponseEntity.created(location).body(createdRequest);
     }
