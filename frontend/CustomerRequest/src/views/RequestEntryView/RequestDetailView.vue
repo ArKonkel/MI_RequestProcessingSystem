@@ -45,7 +45,7 @@ const comments = ref([
   }
 ])
 
-function addComment() {
+async function addComment() {
   if (!commentText.value)
     return
 
@@ -56,8 +56,7 @@ function addComment() {
   };
 
   try {
-    addCommentToRequest(request.value.processItem.id, commentCreateDtd)
-
+    await addCommentToRequest(request.value.processItem.id, commentCreateDtd)
     alertStore.show('Kommentar erfolgreich erstellt', 'success')
   } catch (error: any) {
     console.error(error)

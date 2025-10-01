@@ -16,21 +16,12 @@ export default defineConfig({
     }
   },
   server: {
-    //port: 5174,
+    port: 5174,
     proxy: {
       '/api': 'http://localhost:8080',
-      '/stompbroker': {
+      '/api/stompbroker': {
         target: 'http://localhost:8080/',
         ws: true,
-        changeOrigin: true,
-        configure(proxy) {
-          proxy.on('proxyReq', (proxyReq, req, res) => {
-            console.log('Proxying request to:', proxyReq.path);
-          });
-          proxy.on('error', (err) => {
-            console.error('Proxy error:', err);
-          });
-        }
       }
     }
   }
