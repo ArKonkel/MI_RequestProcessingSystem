@@ -2,7 +2,7 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotFoundException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationEvent;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationEventPublisher;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationType;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserService;
@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ProcessItemImpl implements ProcessItemService {
 
-    private final NotificationEventPublisher publisher;
+    private final NotificationService notificationService;
 
     private final ProcessItemRepository processItemRepository;
 
@@ -37,7 +37,7 @@ public class ProcessItemImpl implements ProcessItemService {
 
         processItemRepository.save(processItem);
 
-        publisher.publishNotificationEvent(new NotificationEvent(NotificationType.ASSIGNED, processItem.getId(), processItem.getTitle(),
+        notificationService.sendNotification(new NotificationEvent(NotificationType.ASSIGNED, processItem.getId(), processItem.getTitle(),
                 List.of(user.getId()), "", Instant.now()));
     }
 

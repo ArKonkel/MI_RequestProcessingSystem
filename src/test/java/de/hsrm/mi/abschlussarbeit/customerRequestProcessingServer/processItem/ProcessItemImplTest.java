@@ -1,6 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem;
 
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationEventPublisher;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationType;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.Task;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 class ProcessItemImplTest {
 
     @Mock
-    NotificationEventPublisher publisher;
+    NotificationService notificationService;
 
     @Mock
     ProcessItemRepository processItemRepository;
@@ -53,11 +53,11 @@ class ProcessItemImplTest {
         assertThat(item.getAssignee()).isEqualTo(user);
 
         //Check if event was published
-        verify(publisher).publishNotificationEvent(argThat(event ->
+        verify(notificationService).sendNotification((argThat(event ->
                 event.type() == NotificationType.ASSIGNED &&
                         event.processItemTitle().equals("Test Task") &&
                         event.userIdsToNotify().contains(42L)
-        ));
+        )));
 
         //Check if saved
         verify(processItemRepository).save(item);

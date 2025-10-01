@@ -1,7 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationEvent;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationEventPublisher;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationType;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItem;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItemService;
@@ -20,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CommentServiceImpl implements CommentService {
 
-    private final NotificationEventPublisher publisher;
+    private final NotificationService notificationService;
 
     private final CommentRepository commentRepository;
 
@@ -47,7 +47,7 @@ public class CommentServiceImpl implements CommentService {
         List<Long> usersIds = users.stream().map(User::getId).toList();
 
         if (!users.isEmpty())
-            publisher.publishNotificationEvent(new NotificationEvent(NotificationType.COMMENT_MENTIONING, processItem.getId(), processItem.getTitle(),
+            notificationService.sendNotification(new NotificationEvent(NotificationType.COMMENT_MENTIONING, processItem.getId(), processItem.getTitle(),
                     usersIds, savedComment.getText(), savedComment.getTimeStamp()));
     }
 

@@ -1,6 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment;
 
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationEventPublisher;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItem;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItemService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.Task;
@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 class CommentServiceImplTest {
 
     @Mock
-    NotificationEventPublisher publisher;
+    NotificationService notificationService;
 
     @Mock
     CommentRepository commentRepository;
@@ -62,12 +62,12 @@ class CommentServiceImplTest {
         commentService.addCommentToProcessItem(processItem.getId(), dto);
 
         // THEN
-        verify(publisher).publishNotificationEvent(argThat(event ->
+        verify(notificationService).sendNotification((argThat(event ->
                 event.processItemId().equals(processItem.getId()) &&
                         event.userIdsToNotify().contains(1L) &&
                         event.userIdsToNotify().contains(42L) &&
                         event.text().equals(commentText) &&
                         event.processItemTitle().equals("Test Process")
-        ));
+        )));
     }
 }
