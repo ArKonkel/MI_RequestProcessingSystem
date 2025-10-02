@@ -20,7 +20,6 @@ export const useRequestStore = defineStore('requestStore', () => {
   async function fetchRequests() {
     try {
       requestData.requests = await getRequests();
-      console.log("has fetched");
 
       if (requestData.selectedRequest) {
         const updatedRequest = requestData.requests

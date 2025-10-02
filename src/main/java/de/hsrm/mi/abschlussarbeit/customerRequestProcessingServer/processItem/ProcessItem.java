@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -34,8 +35,9 @@ public abstract class ProcessItem {
     @Column(nullable = false, updatable = false)
     private Instant creationDate;
 
+    @OrderBy("timeStamp DESC")
     @OneToMany(mappedBy = "processItem", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Comment> comments;
+    private List<Comment> comments = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "user_id")

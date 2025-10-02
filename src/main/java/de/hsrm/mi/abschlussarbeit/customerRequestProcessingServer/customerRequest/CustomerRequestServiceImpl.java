@@ -1,6 +1,5 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest;
 
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment.CommentDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customer.CustomerService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotFoundException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.ItemBody;
@@ -19,7 +18,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -67,7 +65,7 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
                 .map(requestMapper::toDto)
                 .toList();
 
-        return sortCommentsOfRequestsDtos(requestDtos);
+        return requestDtos;
     }
 
 
@@ -82,7 +80,7 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
                 .toList();
 
         //Sort comments desc timeStamp
-        return sortCommentsOfRequestsDtos(requestDtos);
+        return requestDtos;
     }
 
 
@@ -102,18 +100,6 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
         return request.getStatus().equals(CustomerRequestStatus.WAITING_FOR_PROCESSING) || request.getStatus().equals(CustomerRequestStatus.IN_PROCESS);
     }
 
-    private List<CustomerRequestDto> sortCommentsOfRequestsDtos(List<CustomerRequestDto> requestDtos) {
-        for (CustomerRequestDto requestDto : requestDtos) {
-            List<CommentDto> comments = requestDto.processItem.getComments();
-
-            List<CommentDto> sortedComments = comments.stream()
-                    .sorted(Comparator.comparing(CommentDto::timeStamp).reversed()).toList();
-
-            requestDto.processItem.setComments(sortedComments);
-        }
-
-        return requestDtos;
-    }
 
     /**
      * Converts a CustomerRequest to a SendMailRequest.
