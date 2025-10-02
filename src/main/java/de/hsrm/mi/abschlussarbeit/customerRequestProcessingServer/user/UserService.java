@@ -1,8 +1,10 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user;
 
+import java.util.List;
+
 public interface UserService {
 
-    User getUserOfEmployee(Long employeeId);
+    List<UserDto> getAllUsers();
 
     User getUserById(Long id);
 }

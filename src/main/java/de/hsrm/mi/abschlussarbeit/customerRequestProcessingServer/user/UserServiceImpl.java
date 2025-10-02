@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 @Slf4j
@@ -15,10 +17,10 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
-    public User getUserOfEmployee(Long employeeId) {
-        log.info("Get user of employee {}", employeeId);
+    public List<UserDto> getAllUsers() {
+        log.info("Get all users dto");
 
-        return userRepository.findByEmployeeId(employeeId);
+        return userRepository.findAll().stream().map(userMapper::toDto).toList();
     }
 
     @Override

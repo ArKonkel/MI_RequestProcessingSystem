@@ -33,6 +33,7 @@ import type {RequestDtd} from "@/documentTypes/dtds/RequestDtd.ts";
 import type {CommentCreateDtd} from "@/documentTypes/dtds/CommentCreateDtd.ts";
 import {useDebounceFn} from "@vueuse/core";
 import {TimeUnitLabel} from "@/documentTypes/types/TimeUnit.ts";
+import UserSelect from "@/components/UserSelect.vue";
 
 const requestStore = useRequestStore();
 const alertStore = useAlertStore();
@@ -80,7 +81,6 @@ watch(
 
 // save changes
 async function saveRequest() {
-  console.log("save changes")
   if (!editableRequest.value) return;
 
   try {
@@ -222,13 +222,8 @@ async function addComment() {
         </Select>
       </div>
 
-      <div>
-        <label class="text-sm font-semibold">Zugewiesene Person</label>
-        <Input
-          v-model="editableRequest.processItem.assigneeId"
-          placeholder="Keine Person zugewiesen"
-        />
-      </div>
+      <UserSelect v-model="editableRequest.processItem.assigneeId"
+                  @update:modelValue="saveRequest"/>
 
       <div>
         <label class="text-sm font-semibold">Geschätzte Zeit</label>

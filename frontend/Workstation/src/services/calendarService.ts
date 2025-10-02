@@ -1,4 +1,3 @@
-import type {MatchingEmployeeCapacitiesDtd} from "@/documentTypes/dtds/MatchingEmployeeCapacitiesDtd.ts";
 import axios from "axios";
 import type {CalendarDtd} from "@/documentTypes/dtds/CalendarDtd.ts";
 
