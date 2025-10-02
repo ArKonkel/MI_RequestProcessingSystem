@@ -132,10 +132,10 @@ VALUES (1, 'Customizing der Software beim Kunden für Produktdruck',
 
 
 -- Requests (gehören zu den Process Items, gleiche ID wie process_item.id)
-INSERT INTO customer_request (id, priority, chargeable, estimated_scope, category, customer_id, status)
-VALUES (6, 'LOW', 'NOT_DETERMINED', 0, 'TRAINING_REQUEST', 1, 'RECEIVED'),
-       (7, 'MEDIUM', 'NOT_DETERMINED', 0, 'SUGGESTION_FOR_IMPROVEMENT', 1, 'WAITING_FOR_PROCESSING'),
-       (8, 'HIGH', 'NOT_DETERMINED', 0, 'BUG_REPORT', 1, 'RECEIVED');
+INSERT INTO customer_request (id, priority, chargeable, estimated_scope, scope_unit, category, customer_id, status)
+VALUES (6, 'LOW', 'NOT_DETERMINED', 0, 'HOUR','TRAINING_REQUEST', 1, 'RECEIVED'),
+       (7, 'MEDIUM', 'NOT_DETERMINED', 0, 'HOUR','SUGGESTION_FOR_IMPROVEMENT', 1, 'WAITING_FOR_PROCESSING'),
+       (8, 'HIGH', 'NOT_DETERMINED', 0, 'HOUR','BUG_REPORT', 1, 'RECEIVED');
 
 -- Tasks (gehören zu den Process Items, gleiche ID wie process_item.id)
 INSERT INTO task (id, estimated_time, estimation_unit, due_date, priority, status, request_id)

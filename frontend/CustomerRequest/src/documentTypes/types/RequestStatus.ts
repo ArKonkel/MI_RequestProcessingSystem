@@ -1,6 +1,6 @@
 export enum RequestStatus {
   RECEIVED = 'RECEIVED',
-  CLASSIFICATION = 'CLASSIFICATION',
+  IN_CLASSIFICATION = 'IN_CLASSIFICATION',
   SCOPE_CHECK = 'SCOPE_CHECK',
   EFFORT_ESTIMATION = 'EFFORT_ESTIMATION',
   PAYMENT_CLEARANCE = 'PAYMENT_CLEARANCE',
@@ -10,13 +10,13 @@ export enum RequestStatus {
   OFFER_REJECTED = 'OFFER_REJECTED',
   OFFER_ACCEPTED = 'OFFER_ACCEPTED',
   WAITING_FOR_PROCESSING = 'WAITING_FOR_PROCESSING',
-  PROCESSING = 'PROCESSING',
+  IN_PROCESS = 'IN_PROCESS',
   DONE = 'DONE',
 }
 
 export const RequestStatusLabel: Record<RequestStatus, string> = {
   [RequestStatus.RECEIVED]: 'Eingegangen',
-  [RequestStatus.CLASSIFICATION]: 'In Klassifizierung',
+  [RequestStatus.IN_CLASSIFICATION]: 'In Klassifizierung',
   [RequestStatus.SCOPE_CHECK]: 'In Umfangsprüfung',
   [RequestStatus.EFFORT_ESTIMATION]: 'In Aufwandsschätzung',
   [RequestStatus.PAYMENT_CLEARANCE]: 'In Zahlungspflichtabklärung',
@@ -26,6 +26,6 @@ export const RequestStatusLabel: Record<RequestStatus, string> = {
   [RequestStatus.OFFER_REJECTED]: 'Angebot abgelehnt',
   [RequestStatus.OFFER_ACCEPTED]: 'Angebot angenommen',
   [RequestStatus.WAITING_FOR_PROCESSING]: 'Warten auf Bearbeitung',
-  [RequestStatus.PROCESSING]: 'In Bearbeitung',
+  [RequestStatus.IN_PROCESS]: 'In Bearbeitung',
   [RequestStatus.DONE]: 'Erledigt',
 }

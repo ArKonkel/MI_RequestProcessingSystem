@@ -1,149 +1,166 @@
 <script setup lang="ts">
-import {computed, ref} from "vue"
+import { ref, watch } from "vue";
 
-import {Badge} from "@/components/ui/badge"
-import {Button} from "@/components/ui/button"
-import {Input} from "@/components/ui/input"
+import { useRequestStore } from "@/stores/requestStore.ts";
+import { useAlertStore } from "@/stores/useAlertStore.ts";
+import { addCommentToRequest } from "@/services/commentService.ts";
+import { updateCustomerRequest } from "@/services/customerRequestService.ts";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
-import {Textarea} from "@/components/ui/textarea";
+} from "@/components/ui/accordion";
 import {
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
+import { CategoryLabel } from "@/documentTypes/types/Category.ts";
+import { PriorityLabel } from "@/documentTypes/types/Priority.ts";
+import { RequestStatusLabel } from "@/documentTypes/types/RequestStatus.ts";
+import { useDebouncedRef} from "@/composable/debounce.ts";
 
-import {ScrollArea} from "@/components/ui/scroll-area";
-import {useRequestStore} from "@/stores/requestStore.ts";
-import {CategoryLabel} from "@/documentTypes/types/Category.ts";
-import type {RequestDtd} from "@/documentTypes/dtds/RequestDtd.ts";
-import {PriorityLabel} from "@/documentTypes/types/Priority.ts";
-import {RequestStatusLabel} from "@/documentTypes/types/RequestStatus.ts";
-import type {CommentCreateDtd} from "@/documentTypes/dtds/CommentCreateDtd.ts";
-import {addCommentToRequest} from "@/services/commentService.ts";
-import {useAlertStore} from "@/stores/useAlertStore.ts";
+import type { RequestDtd } from "@/documentTypes/dtds/RequestDtd.ts";
+import type { CommentCreateDtd } from "@/documentTypes/dtds/CommentCreateDtd.ts";
 
-const requestStore = useRequestStore()
-const alertStore = useAlertStore()
-const request = computed<RequestDtd>(() => requestStore.requestData.selectedRequest!);
+const requestStore = useRequestStore();
+const alertStore = useAlertStore();
 
-const commentText = ref("")
+const editableRequest = ref<RequestDtd | null>(null);
+const commentText = ref("");
 
-async function addComment() {
-  if (!commentText.value)
-    return
+/*
+const description = useDebouncedRef(
+  editableRequest.value?.processItem.description || "",
+  500
+);
 
-  const commentCreateDtd: CommentCreateDtd = {
-    text: commentText.value,
-    //TODO make author from user
-    authorId: 1
-  };
+ */
+
+// Watch the store for changes
+watch(
+  () => requestStore.requestData.selectedRequest,
+  (newReq) => {
+    if (newReq) {
+      // make local copy
+      editableRequest.value = { ...newReq };
+    } else {
+      editableRequest.value = null;
+    }
+  },
+  { immediate: true, deep: true }
+);
+
+/*
+//watch description with debounce, so not every keystroke triggers a save
+watch(description, async (newVal) => {
+  if (!editableRequest.value) return;
+
+  editableRequest.value.processItem.description = newVal;
+  await saveRequest();
+});
+
+ */
+
+// save changes
+async function saveRequest() {
+  console.log("save changes")
+  if (!editableRequest.value) return;
 
   try {
-    await addCommentToRequest(request.value.processItem.id, commentCreateDtd)
+    const dto = {
+      description: editableRequest.value.processItem.description,
+      priority: editableRequest.value.priority,
+      status: editableRequest.value.status,
+      assigneeId: editableRequest.value.processItem.assigneeId,
+      estimatedScope: editableRequest.value.estimatedScope,
+    };
 
-    alertStore.show('Kommentar erfolgreich erstellt', 'success')
-    commentText.value = ""
-  } catch (error: any) {
-    console.error(error)
+    await updateCustomerRequest(editableRequest.value.processItem.id, dto);
 
-    alertStore.show(error.response?.data || 'Unbekannter Fehler', 'error')
+  } catch (err) {
+    console.error(err);
+    alertStore.show("Fehler beim Speichern", "error");
   }
 }
 
+async function addComment() {
+  if (!editableRequest.value || !commentText.value) return;
+
+  const commentCreateDtd: CommentCreateDtd = {
+    text: commentText.value,
+    authorId: 1,
+  };
+
+  try {
+    await addCommentToRequest(editableRequest.value.processItem.id, commentCreateDtd);
+    alertStore.show("Kommentar erfolgreich erstellt", "success");
+    commentText.value = "";
+
+  } catch (err: any) {
+    console.error(err);
+    alertStore.show(err.response?.data || "Unbekannter Fehler", "error");
+  }
+}
 </script>
 
 <template>
-  <div v-if="request" class="flex h-screen gap-6 p-6">
-    <!-- Linker Hauptbereich -->
+  <div v-if="editableRequest" class="flex h-screen gap-6 p-6">
+    <!-- Left Area -->
     <ScrollArea class="flex-1 overflow-auto">
       <div class="p-6 space-y-4">
         <div>
-          <Badge variant="secondary">{{
-              CategoryLabel[request.category]
-            }}
-          </Badge>
-          <h2 class="text-xl font-bold"> {{ request.processItem.id }} - {{
-              request.processItem.title
-            }}</h2>
-
+          <Badge variant="secondary">{{ CategoryLabel[editableRequest.category] }}</Badge>
+          <h2 class="text-xl font-bold">
+            {{ editableRequest.processItem.id }} - {{ editableRequest.processItem.title }}
+          </h2>
           <div class="flex gap-6 mt-4 text-sm">
-            <div><span class="font-semibold">Kunde: </span><br/>{{ request.customer.id }} -
-              {{ request.customer.firstName }}
+            <div>
+              <span class="font-semibold">Kunde: </span><br/>
+              {{ editableRequest.customer.id }} - {{ editableRequest.customer.firstName }}
             </div>
-            <div><span class="font-semibold">Eingegangen am: </span><br/>{{
-                new Date(request.processItem.creationDate!).toLocaleDateString("de-DE")
-              }}
+            <div>
+              <span class="font-semibold">Eingegangen am: </span><br/>
+              {{ new Date(editableRequest.processItem.creationDate!).toLocaleDateString("de-DE") }}
             </div>
           </div>
         </div>
 
-        <!-- Shadcn-Accordion -->
-        <Accordion type="multiple" class="w-full" collapsible
-                   :defaultValue="['desc', 'acceptance', 'comments']">
+        <Accordion type="multiple" class="w-full" collapsible :defaultValue="['desc','comments']">
           <AccordionItem value="desc">
             <AccordionTrigger>Beschreibung</AccordionTrigger>
             <AccordionContent>
               <Textarea
-                v-model="request.processItem.description"
+                v-model="editableRequest.processItem.description"
                 class="mt-2 min-h-[200px] resize-none"
               />
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="attachments">
-            <AccordionTrigger>Anhänge</AccordionTrigger>
-            <AccordionContent>
-              <Button variant="outline">Datei hochladen</Button>
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="linked_tasks">
-            <AccordionTrigger>Verknüpfte Aufgaben</AccordionTrigger>
-            <AccordionContent>
-              <div class="flex items-center justify-between border p-2 rounded">
-                <div class="flex items-center gap-2">
-                  <input type="checkbox" checked/>
-                  <span class="font-semibold">A-01</span>
-                  <span>Lorem Ipsum dolor set amet</span>
-                </div>
-                <Badge>Status</Badge>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="linked_projects">
-            <AccordionTrigger>Verknüpfte Projekte</AccordionTrigger>
-            <AccordionContent>
-              <div class="flex items-center justify-between border p-2 rounded">
-                <div class="flex items-center gap-2">
-                  <input type="checkbox" checked/>
-                  <span class="font-semibold">A-01</span>
-                  <span>Lorem Ipsum dolor set amet</span>
-                </div>
-                <Badge>Status</Badge>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
           <AccordionItem value="comments">
             <AccordionTrigger>Kommentare</AccordionTrigger>
             <AccordionContent>
               <div class="space-y-4">
-                <Textarea v-model="commentText"
-                          placeholder="Verfasse dein Kommentar"
-                          class="resize-none"
-                          @keydown.enter.prevent="addComment"/>
+                <Textarea
+                  v-model="commentText"
+                  placeholder="Verfasse dein Kommentar"
+                  class="resize-none"
+                  @keydown.enter.prevent="addComment"
+                />
                 <div class="flex justify-end">
                   <Button @click="addComment">Senden</Button>
                 </div>
-                <div v-for="comment in request.processItem.comments" :key="comment.id"
+                <div v-for="comment in editableRequest.processItem.comments" :key="comment.id"
                      class="border-t pt-2 text-sm">
                   <div class="font-semibold">{{ comment.author.name }}</div>
                   <div class="text-xs text-muted-foreground">
@@ -156,25 +173,17 @@ async function addComment() {
               </div>
             </AccordionContent>
           </AccordionItem>
-
         </Accordion>
-
-        <!--
-        //TODO add hier zur projektplanung
-        <RouterLink :to="{ name: 'capacityPlanningView', params: { id: request.processItem.id } }">
-          <Button class="mt-6">Zur Planung</Button>
-        </RouterLink>
-        -->
       </div>
     </ScrollArea>
 
-    <!-- Rechte Sidebar -->
+    <!-- right sidebar -->
     <div class="w-[200px] space-y-4 p-4 border-l-2 border-accent-200 h-screen">
       <div>
         <label class="text-sm font-semibold">Priorität</label>
-        <Select v-model="request.priority">
+        <Select v-model="editableRequest.priority" @update:modelValue="saveRequest">
           <SelectTrigger>
-            <SelectValue placeholder="Select..."/>
+            <SelectValue placeholder="Select..." />
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -190,9 +199,9 @@ async function addComment() {
 
       <div>
         <label class="text-sm font-semibold">Status</label>
-        <Select v-model="request.status">
+        <Select v-model="editableRequest.status"  @update:modelValue="saveRequest">
           <SelectTrigger>
-            <SelectValue placeholder="Offen"/>
+            <SelectValue placeholder="Offen" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -208,17 +217,17 @@ async function addComment() {
 
       <div>
         <label class="text-sm font-semibold">Zugewiesene Person</label>
-
         <Input
-          v-model="request.processItem.assigneeId"
+          v-model="editableRequest.processItem.assigneeId"
           placeholder="Keine Person zugewiesen"
-        /></div>
+        />
+      </div>
 
       <div>
         <label class="text-sm font-semibold">Geschätzte Zeit</label>
         <Input
           type="number"
-          v-model="request.estimatedScope"
+          v-model="editableRequest.estimatedScope"
           placeholder="Schätzung in Minuten"
         />
       </div>

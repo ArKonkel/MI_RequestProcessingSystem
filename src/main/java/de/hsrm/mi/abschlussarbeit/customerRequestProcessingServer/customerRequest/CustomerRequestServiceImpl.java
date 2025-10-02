@@ -142,6 +142,8 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
 
         CustomerRequest savedRequest = customerRequestRepository.save(request);
 
+        notificationService.sendChangeNotification(new ChangeNotificationEvent(savedRequest.getId(), ChangeType.UPDATED, TargetType.CUSTOMER_REQUEST));
+
         return requestMapper.toDto(savedRequest);
     }
 

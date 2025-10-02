@@ -2,8 +2,9 @@ import {defineStore} from "pinia";
 import type {RequestDtd} from "@/documentTypes/dtds/RequestDtd.ts";
 import {reactive} from "vue";
 import axios from "axios";
-import {getRequests} from "@/services/customerRequestService.ts";
+import {getRequests, updateCustomerRequest} from "@/services/customerRequestService.ts";
 import {Client} from "@stomp/stompjs";
+import type {UpdateCustomerRequestDtd} from "@/documentTypes/dtds/UpdateCustomerRequestDtd.ts";
 
 export const useRequestStore = defineStore('requestStore', () => {
 
@@ -66,6 +67,17 @@ export const useRequestStore = defineStore('requestStore', () => {
     }
   }
 
+  async function updateSelectedRequest(dto: UpdateCustomerRequestDtd) {
+    if (!requestData.selectedRequest) return;
+
+    try {
+      const updatedRequest = await updateCustomerRequest(requestData.selectedRequest.processItem.id, dto);
+      requestData.selectedRequest = updatedRequest;
+    } catch (error) {
+      console.error("Something went wrong on updating request:", error);
+    }
+  }
+
   async function setSelectedRequest(request: RequestDtd) {
     requestData.selectedRequest = request;
   }
@@ -73,7 +85,8 @@ export const useRequestStore = defineStore('requestStore', () => {
   return {
     requestData,
     fetchRequests,
-    setSelectedRequest
+    setSelectedRequest,
+    updateSelectedRequest,
   }
 })
 
