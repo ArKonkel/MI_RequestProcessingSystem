@@ -2,6 +2,7 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerReque
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment.CommentDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customer.CustomerService;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotFoundException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.ItemBody;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.Message;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.Recipient;
@@ -14,6 +15,7 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.N
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.TargetType;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -58,48 +60,38 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
     @Override
     public List<CustomerRequestDto> getAllRequests() {
         log.info("Getting all requests");
-        return customerRequestRepository.findAll().stream().map(requestMapper::toDto).toList();
+
+        List<CustomerRequestDto> requestDtos = customerRequestRepository
+                .findAll(Sort.by(Sort.Direction.DESC, "creationDate"))
+                .stream()
+                .map(requestMapper::toDto)
+                .toList();
+
+        return sortCommentsOfRequestsDtos(requestDtos);
     }
 
-    @Override
-    public List<CustomerRequestDto> getRequestsByStatus(CustomerRequestStatus status) {
-        log.info("Getting all requests with status {}", status);
-        return customerRequestRepository.findByStatus(status).stream().map(requestMapper::toDto).toList();
-    }
 
     @Override
     public List<CustomerRequestDto> getRequestsByCustomerId(Long customerId) {
         log.info("Getting all requests for customer {}", customerId);
 
-        // Alle Requests als DTOs holen (ohne Kommentar-Sortierung)
-        List<CustomerRequestDto> requestDtos = customerRequestRepository.findByCustomerIdOrderByCreationDateDesc(customerId)
+        List<CustomerRequestDto> requestDtos = customerRequestRepository
+                .findByCustomerId(customerId, Sort.by(Sort.Direction.DESC, "creationDate"))
                 .stream()
                 .map(requestMapper::toDto)
                 .toList();
 
         //Sort comments desc timeStamp
-        for (CustomerRequestDto requestDto : requestDtos) {
-            List<CommentDto> comments = requestDto.processItem.getComments();
-
-            // Neue sortierte Liste erzeugen
-            List<CommentDto> sortedComments = comments.stream()
-                    .sorted(Comparator.comparing(CommentDto::timeStamp).reversed()).toList();
-
-            // Sorted Comments im DTO setzen - Dazu brauchst du einen Setter oder ein neues DTO.
-            // Beispiel mit mutierbarem DTO:
-            requestDto.processItem.setComments(sortedComments);
-
-            // Falls die ProcessItem immutable ist, musst du ggf. ein neues ProcessItemDto erstellen und ersetzen
-        }
-
-        return requestDtos;
+        return sortCommentsOfRequestsDtos(requestDtos);
     }
 
 
     @Override
     public CustomerRequestDto getRequestById(Long id) {
         log.info("Getting request with id {}", id);
-        return requestMapper.toDto(customerRequestRepository.getReferenceById(id));
+
+        return requestMapper.toDto(customerRequestRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Request with id " + id + " not found")));
     }
 
     @Override
@@ -108,6 +100,19 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
                 new NoSuchElementException("Request with id " + requestId + " not found"));
 
         return request.getStatus().equals(CustomerRequestStatus.WAITING_FOR_PROCESSING) || request.getStatus().equals(CustomerRequestStatus.IN_PROCESS);
+    }
+
+    private List<CustomerRequestDto> sortCommentsOfRequestsDtos(List<CustomerRequestDto> requestDtos) {
+        for (CustomerRequestDto requestDto : requestDtos) {
+            List<CommentDto> comments = requestDto.processItem.getComments();
+
+            List<CommentDto> sortedComments = comments.stream()
+                    .sorted(Comparator.comparing(CommentDto::timeStamp).reversed()).toList();
+
+            requestDto.processItem.setComments(sortedComments);
+        }
+
+        return requestDtos;
     }
 
     /**

@@ -20,6 +20,7 @@ export const useRequestStore = defineStore('requestStore', () => {
   async function fetchRequests() {
     try {
       requestData.requests = await getRequests();
+      console.log("has fetched");
 
       if (requestData.selectedRequest) {
         const updatedRequest = requestData.requests
@@ -54,7 +55,7 @@ export const useRequestStore = defineStore('requestStore', () => {
         stompClient.subscribe(DEST, (message) => {
           console.log("Received message: " + message.body);
 
-          getRequests();
+          fetchRequests();
         });
 
         stompClient.onDisconnect = () => {

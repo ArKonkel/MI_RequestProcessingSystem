@@ -8,8 +8,6 @@ public interface CustomerRequestService {
 
     List<CustomerRequestDto> getAllRequests();
 
-    List<CustomerRequestDto> getRequestsByStatus(CustomerRequestStatus status);
-
     List<CustomerRequestDto> getRequestsByCustomerId(Long customerId);
 
     CustomerRequestDto getRequestById(Long id);

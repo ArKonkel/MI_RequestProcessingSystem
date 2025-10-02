@@ -26,25 +26,38 @@ import {CategoryLabel} from "@/documentTypes/types/Category.ts";
 import type {RequestDtd} from "@/documentTypes/dtds/RequestDtd.ts";
 import {PriorityLabel} from "@/documentTypes/types/Priority.ts";
 import {RequestStatusLabel} from "@/documentTypes/types/RequestStatus.ts";
+import type {CommentCreateDtd} from "@/documentTypes/dtds/CommentCreateDtd.ts";
+import {addCommentToRequest} from "@/services/commentService.ts";
+import {useAlertStore} from "@/stores/useAlertStore.ts";
 
 const requestStore = useRequestStore()
+const alertStore = useAlertStore()
 const request = computed<RequestDtd>(() => requestStore.requestData.selectedRequest!);
 
 const commentText = ref("")
-const comments = ref([
-  {
-    id: 1,
-    author: "Lorem Ipsum",
-    date: "2025-01-01T16:20:00",
-    text: "consetetur sadipscing elitr..."
-  }
-])
 
-function addComment() {
-  if (!commentText.value) return
-  //TODO add her comment API call
-  console.log(comments.value + "added as comment.")
+async function addComment() {
+  if (!commentText.value)
+    return
+
+  const commentCreateDtd: CommentCreateDtd = {
+    text: commentText.value,
+    //TODO make author from user
+    authorId: 1
+  };
+
+  try {
+    await addCommentToRequest(request.value.processItem.id, commentCreateDtd)
+
+    alertStore.show('Kommentar erfolgreich erstellt', 'success')
+    commentText.value = ""
+  } catch (error: any) {
+    console.error(error)
+
+    alertStore.show(error.response?.data || 'Unbekannter Fehler', 'error')
+  }
 }
+
 </script>
 
 <template>
@@ -53,7 +66,7 @@ function addComment() {
     <ScrollArea class="flex-1 overflow-auto">
       <div class="p-6 space-y-4">
         <div>
-          <Badge>{{
+          <Badge variant="secondary">{{
               CategoryLabel[request.category]
             }}
           </Badge>
@@ -119,26 +132,31 @@ function addComment() {
               </div>
             </AccordionContent>
           </AccordionItem>
+          <AccordionItem value="comments">
+            <AccordionTrigger>Kommentare</AccordionTrigger>
+            <AccordionContent>
+              <div class="space-y-4">
+                <Textarea v-model="commentText"
+                          placeholder="Verfasse dein Kommentar"
+                          class="resize-none"
+                          @keydown.enter.prevent="addComment"/>
+                <div class="flex justify-end">
+                  <Button @click="addComment">Senden</Button>
+                </div>
+                <div v-for="comment in request.processItem.comments" :key="comment.id"
+                     class="border-t pt-2 text-sm">
+                  <div class="font-semibold">{{ comment.author.name }}</div>
+                  <div class="text-xs text-muted-foreground">
+                    {{ new Date(comment.timeStamp).toLocaleString("de-DE") }}
+                  </div>
+                  <div class="mt-2">
+                    <p class="text-lg">{{ comment.text }}</p>
+                  </div>
+                </div>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
 
-          <!--
-                    <AccordionItem value="comments">
-                      <AccordionTrigger>Kommentare</AccordionTrigger>
-                      <AccordionContent>
-                        <div class="space-y-4">
-                          <Textarea v-model="commentText" placeholder="Verfasse dein Kommentar"/>
-                          <Button @click="addComment">Senden</Button>
-
-                          <div v-for="comment in comments" :key="comment.id" class="border-t pt-2 text-sm">
-                            <div class="font-semibold">{{ comment.author }}</div>
-                            <div class="text-xs text-muted-foreground">
-                              {{ new Date(comment.date).toLocaleString("de-DE") }}
-                            </div>
-                            <p>{{ comment.text }}</p>
-                          </div>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                    -->
         </Accordion>
 
         <!--

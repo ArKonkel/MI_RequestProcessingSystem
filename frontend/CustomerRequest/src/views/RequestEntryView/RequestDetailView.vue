@@ -58,13 +58,13 @@ async function addComment() {
   try {
     await addCommentToRequest(request.value.processItem.id, commentCreateDtd)
     alertStore.show('Kommentar erfolgreich erstellt', 'success')
+    commentText.value = ""
   } catch (error: any) {
     console.error(error)
 
     alertStore.show(error.response?.data || 'Unbekannter Fehler', 'error')
   }
 
-  commentText.value = ""
 }
 </script>
 

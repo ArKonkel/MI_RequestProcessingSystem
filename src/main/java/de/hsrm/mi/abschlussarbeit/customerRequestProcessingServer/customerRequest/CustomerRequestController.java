@@ -26,15 +26,10 @@ public class CustomerRequestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CustomerRequestDto>> getAllRequests(@RequestParam(required = false) CustomerRequestStatus status) {
+    public ResponseEntity<List<CustomerRequestDto>> getAllRequests() {
         log.info("REST request to get all requests");
-        List<CustomerRequestDto> requests;
 
-        if (status != null) {
-            requests = customerRequestService.getRequestsByStatus(status);
-        } else {
-            requests = customerRequestService.getAllRequests();
-        }
+        List<CustomerRequestDto> requests = customerRequestService.getAllRequests();
 
         return ResponseEntity.ok(requests);
     }
