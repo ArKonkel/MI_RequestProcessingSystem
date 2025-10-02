@@ -22,9 +22,13 @@ export const useRequestStore = defineStore('requestStore', () => {
       //TODO add customer from login
       requestData.requests = await getRequestsFromCustomer(1)
 
-      //TODO fix on change not updaing selected request
-      if (requestData.requests.length > 0) {
-        requestData.selectedRequest = requestData.requests[0];
+      if (requestData.selectedRequest) {
+        const updatedRequest = requestData.requests
+          .find(request => request.processItem.id === requestData.selectedRequest?.processItem.id);
+
+        requestData.selectedRequest = updatedRequest ?? requestData.requests[0] ?? null;
+      } else {
+        requestData.selectedRequest = requestData.requests[0] ?? null;
       }
 
       await startLiveUpdate()
