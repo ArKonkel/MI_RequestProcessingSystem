@@ -1,7 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment.CommentDto;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment.CommentMapper;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customer.CustomerService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.ItemBody;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.Message;
@@ -9,6 +8,10 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.ou
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.SendMailRequest;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.mail.EmailAddress;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.mail.MailService;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.ChangeNotificationEvent;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.ChangeType;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationService;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.TargetType;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,13 +26,13 @@ import java.util.NoSuchElementException;
 @AllArgsConstructor
 public class CustomerRequestServiceImpl implements CustomerRequestService {
 
+    private final NotificationService notificationService;
+
     private final CustomerRequestRepository customerRequestRepository;
 
     private final CustomerService customerService;
 
     private final CustomerRequestMapper requestMapper;
-
-    private final CommentMapper commentMapper;
 
     private final MailService mailService;
 
@@ -46,6 +49,9 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
         SendMailRequest mailRequest = parseCustomerRequestToMail(savedRequest, request.getToRecipients());
         mailService.sendMails(mailRequest, savedRequest.getCustomer().getEmail());
 
+        notificationService.sendChangeNotification(
+                new ChangeNotificationEvent(savedRequest.getId(), ChangeType.CREATED, TargetType.CUSTOMER_REQUEST));
+
         return requestMapper.toDto(savedRequest);
     }
 
@@ -54,26 +60,12 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
         log.info("Getting all requests");
         return customerRequestRepository.findAll().stream().map(requestMapper::toDto).toList();
     }
-/*
+
     @Override
-    public List<CustomerRequestDto> getRequestsByCustomerId(Long customerId) {
-        log.info("Getting all requests for customer {}", customerId);
-
-        //TODO sollte sortiert sein
-        val requestDtos = customerRequestRepository.findByCustomerIdOrderByCreationDateDesc(customerId)
-                .stream().map(requestMapper::toDto).toList();
-
-        for (CustomerRequestDto requestDto : requestDtos) {
-            val comments = requestDto.processItem().comments();
-
-            comments.stream().sorted(Comparator.comparing(commentDto -> commentDto.timeStamp()).reversed()).collect(Collectors.toList());
-
-        }
-
-        return requestDtos;
+    public List<CustomerRequestDto> getRequestsByStatus(CustomerRequestStatus status) {
+        log.info("Getting all requests with status {}", status);
+        return customerRequestRepository.findByStatus(status).stream().map(requestMapper::toDto).toList();
     }
-
- */
 
     @Override
     public List<CustomerRequestDto> getRequestsByCustomerId(Long customerId) {
@@ -102,7 +94,6 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
 
         return requestDtos;
     }
-
 
 
     @Override

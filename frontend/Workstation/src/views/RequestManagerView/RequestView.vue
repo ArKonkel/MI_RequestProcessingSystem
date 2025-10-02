@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
-import RequestOverviewView from "@/views/RequestManagerView/RequestOverviewView.vue";
+import RequestListView from "@/views/RequestManagerView/RequestListView.vue";
 import RequestDetailView from "@/views/RequestManagerView/RequestDetailView.vue";
 
 </script>
@@ -9,7 +9,7 @@ import RequestDetailView from "@/views/RequestManagerView/RequestDetailView.vue"
   <ResizablePanelGroup direction="horizontal">
     <!-- Linkes Panel -->
     <ResizablePanel :default-size="50" class="min-w-70 max-w-100" >
-      <RequestOverviewView/>
+      <RequestListView/>
     </ResizablePanel>
 
     <!-- Divider -->

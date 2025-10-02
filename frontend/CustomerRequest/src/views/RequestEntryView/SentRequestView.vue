@@ -13,7 +13,7 @@ import RequestDetailView from "@/views/RequestEntryView/RequestDetailView.vue";
     </ResizablePanel>
 
     <!-- Divider -->
-    <ResizableHandle class="bg-gray-400 w-1 cursor-col-resize"/>
+    <ResizableHandle class="bg-gray-300 w-0.5 cursor-col-resize"/>
 
     <!-- Rechtes Panel -->
     <ResizablePanel class="min-w-140">

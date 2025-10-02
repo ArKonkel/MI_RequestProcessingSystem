@@ -1,23 +1,30 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import {createRouter, createWebHistory} from 'vue-router'
 import TaskManagerView from "@/views/TaskManagerView/TaskManagerView.vue";
 import TaskCapacityPlanningView
   from "@/views/ResourceCapacityPlanningView/TaskCapacityPlanningView.vue";
-import RequestManagerView from "@/views/RequestManagerView/RequestManagerView.vue";
-import ProjectPlanningView from "@/views/ProjectPlannerView/ProjectPlanningView.vue";
+import RequestView from "@/views/RequestManagerView/RequestView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/requests',
-      name: 'requestManagerView',
-      component: RequestManagerView,
+      path: '/',
+      redirect: '/requests',
     },
     {
-      path: '/projects',
-      name: 'projectsPlanningView',
-      component: ProjectPlanningView,
+      path: '/requests',
+      name: 'requestManagerView',
+      component: RequestView,
     },
+    /*
+
+  {
+    path: '/projects',
+    name: 'projectsPlanningView',
+    component: ProjectPlanningView,
+
+  },
+     */
     {
       path: '/tasks',
       name: 'taskManagerView',

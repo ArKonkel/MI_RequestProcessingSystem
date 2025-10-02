@@ -8,4 +8,6 @@ public interface CustomerRequestRepository extends JpaRepository<CustomerRequest
 
     List<CustomerRequest> findByCustomerIdOrderByCreationDateDesc(Long customerId);
 
+    List<CustomerRequest> findByStatus(CustomerRequestStatus status);
+
 }
