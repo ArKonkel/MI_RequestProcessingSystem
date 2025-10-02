@@ -4,6 +4,7 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customer.Custo
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.mail.EmailAddress;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItemCreateDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.Priority;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,6 +38,7 @@ class CustomerRequestMapperTest {
         request.setId(10L);
         request.setPriority(Priority.HIGH);
         request.setEstimatedScope(BigDecimal.valueOf(15));
+        request.setScopeUnit(TimeUnit.HOUR);
         request.setStatus(CustomerRequestStatus.RECEIVED);
         request.setChargeable(Chargeable.NOT_DETERMINED);
         request.setCategory(Category.BUG_REPORT);
@@ -59,7 +61,8 @@ class CustomerRequestMapperTest {
         assertNull(dto.getProcessItem().getAssigneeId());
 
         assertEquals(Priority.HIGH, dto.getPriority());
-        assertEquals(BigDecimal.valueOf(15).longValue(), dto.getEstimatedScope());
+        assertEquals(BigDecimal.valueOf(15), dto.getEstimatedScope());
+        assertEquals(TimeUnit.HOUR, dto.getScopeUnit());
         assertEquals(CustomerRequestStatus.RECEIVED, dto.getStatus());
         assertEquals(Chargeable.NOT_DETERMINED, dto.getChargeable());
         assertEquals(Category.BUG_REPORT, dto.getCategory());

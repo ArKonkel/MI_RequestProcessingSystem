@@ -42,6 +42,15 @@ public class CustomerRequestController {
         return ResponseEntity.ok(requests);
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<CustomerRequestDto> updateCustomerRequest(@PathVariable Long id, @RequestBody UpdateCustomerRequestDto dto){
+        log.info("REST request to update customerRequest {}", id);
+
+        CustomerRequestDto requestDto = customerRequestService.updateCustomerRequest(id, dto);
+
+        return ResponseEntity.ok(requestDto);
+    }
+
     @PostMapping
     ResponseEntity<CustomerRequestDto> createRequest(@Valid @RequestBody CustomerRequestCreateDto requestDto) {
         log.info("REST request to create request {}", requestDto);

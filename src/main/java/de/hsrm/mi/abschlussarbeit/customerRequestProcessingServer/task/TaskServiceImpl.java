@@ -4,7 +4,6 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerReques
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotAllowedException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotFoundException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.SaveException;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.UpdateProcessItemDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.ProjectService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserService;
@@ -96,24 +95,20 @@ public class TaskServiceImpl implements TaskService {
             task.setStatus(updateDto.getStatus());
         }
 
-        //Update processItem
-        UpdateProcessItemDto processItemDto = updateDto.getProcessItem();
-        if (processItemDto != null) {
-            if (processItemDto.getTitle() != null) {
-                task.setTitle(processItemDto.getTitle());
-            }
-            if (processItemDto.getDescription() != null) {
-                task.setDescription(processItemDto.getDescription());
-            }
-            if (processItemDto.getAssigneeId() != null) {
-                User assignee = userService.getUserById(processItemDto.getAssigneeId());
-                task.setAssignee(assignee);
-            }
+        if (updateDto.getTitle() != null) {
+            task.setTitle(updateDto.getTitle());
+        }
+        if (updateDto.getDescription() != null) {
+            task.setDescription(updateDto.getDescription());
+        }
+        if (updateDto.getAssigneeId() != null) {
+            User assignee = userService.getUserById(updateDto.getAssigneeId());
+            task.setAssignee(assignee);
         }
 
-        taskRepository.save(task);
+        Task savedTask = taskRepository.save(task);
 
-        return taskMapper.toDto(task);
+        return taskMapper.toDto(savedTask);
     }
 
     /**

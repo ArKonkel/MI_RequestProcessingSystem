@@ -1,4 +1,4 @@
-package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task;
+package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.Priority;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.TimeUnit;
@@ -6,19 +6,17 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Builder
 @Data
-public class UpdateTaskDto {
+public class UpdateCustomerRequestDto {
     private String title;
     private String description;
     private Long assigneeId;
-    private BigDecimal estimatedTime;
-    private TimeUnit estimationUnit;
-    private Long workingTimeInMinutes;
-    private LocalDate dueDate;
-    private TaskStatus status;
     private Priority priority;
-    private String acceptanceCriteria;
+    private BigDecimal estimatedScope;
+    private TimeUnit scopeUnit;
+    private CustomerRequestStatus status;
+    private Chargeable chargeable;
+    private Category category;
 }

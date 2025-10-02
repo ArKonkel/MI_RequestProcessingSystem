@@ -12,5 +12,7 @@ public interface CustomerRequestService {
 
     CustomerRequestDto getRequestById(Long id);
 
+    CustomerRequestDto updateCustomerRequest(Long id, UpdateCustomerRequestDto updateDto);
+
     boolean isRequestReadyForProcessing(Long requestId);
 }

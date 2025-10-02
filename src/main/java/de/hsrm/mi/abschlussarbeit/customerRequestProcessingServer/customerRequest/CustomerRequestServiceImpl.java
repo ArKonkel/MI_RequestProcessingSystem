@@ -12,6 +12,8 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.C
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.ChangeType;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.TargetType;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
@@ -31,6 +33,8 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
     private final CustomerRequestRepository customerRequestRepository;
 
     private final CustomerService customerService;
+
+    private final UserService userService;
 
     private final CustomerRequestMapper requestMapper;
 
@@ -91,6 +95,56 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
         return requestMapper.toDto(customerRequestRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Request with id " + id + " not found")));
     }
+
+    @Override
+    public CustomerRequestDto updateCustomerRequest(Long id, UpdateCustomerRequestDto updateDto) {
+        log.info("Updating request with id {}, {}", id, updateDto);
+
+        CustomerRequest request = customerRequestRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Request with id " + id + " not found"));
+
+        if (updateDto.getPriority() != null) {
+            request.setPriority(updateDto.getPriority());
+        }
+
+        if (updateDto.getEstimatedScope() != null) {
+            request.setEstimatedScope(updateDto.getEstimatedScope());
+        }
+
+        if (updateDto.getScopeUnit() != null) {
+            request.setScopeUnit(updateDto.getScopeUnit());
+        }
+
+        if (updateDto.getStatus() != null) {
+            request.setStatus(updateDto.getStatus());
+        }
+
+        if (updateDto.getChargeable() != null) {
+            request.setChargeable(updateDto.getChargeable());
+        }
+
+        if (updateDto.getCategory() != null) {
+            request.setCategory(updateDto.getCategory());
+        }
+
+        if (updateDto.getTitle() != null) {
+            request.setTitle(updateDto.getTitle());
+        }
+
+        if (updateDto.getDescription() != null) {
+            request.setDescription(updateDto.getDescription());
+        }
+
+        if (updateDto.getAssigneeId() != null) {
+            User assignee = userService.getUserById(updateDto.getAssigneeId());
+            request.setAssignee(assignee);
+        }
+
+        CustomerRequest savedRequest = customerRequestRepository.save(request);
+
+        return requestMapper.toDto(savedRequest);
+    }
+
 
     @Override
     public boolean isRequestReadyForProcessing(Long requestId) {

@@ -4,7 +4,6 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerReques
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequestService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotAllowedException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItemDto;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.UpdateProcessItemDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.Project;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.ProjectService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.Priority;
@@ -24,6 +23,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -64,14 +64,10 @@ class TaskServiceWithoutMapperTest {
     @Test
     void updateTask_shouldUpdateAllFields() {
         // GIVEN
-        UpdateProcessItemDto processItemDto = UpdateProcessItemDto.builder()
+        UpdateTaskDto updateDto = UpdateTaskDto.builder()
                 .title("New Title")
                 .description("New Description")
                 .assigneeId(42L)
-                .build();
-
-        UpdateTaskDto updateDto = UpdateTaskDto.builder()
-                .processItem(processItemDto)
                 .estimatedTime(BigDecimal.valueOf(8))
                 .estimationUnit(TimeUnit.HOUR)
                 .workingTimeInMinutes(480L)
@@ -86,7 +82,7 @@ class TaskServiceWithoutMapperTest {
 
         when(taskRepository.findById(1L)).thenReturn(Optional.of(existingTask));
         when(userService.getUserById(42L)).thenReturn(assignee);
-
+        when(taskRepository.save(any(Task.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         TaskDto expectedDto = new TaskDto(
                 new ProcessItemDto(1L, "New Title", "New Description", null, 42L,  List.of()),
@@ -137,14 +133,10 @@ class TaskServiceWithoutMapperTest {
 
         existingTask.setRequest(customerRequest);
 
-        UpdateProcessItemDto processItemDto = UpdateProcessItemDto.builder()
+        UpdateTaskDto updateDto = UpdateTaskDto.builder()
                 .title("New Title")
                 .description("New Description")
                 .assigneeId(42L)
-                .build();
-
-        UpdateTaskDto updateDto = UpdateTaskDto.builder()
-                .processItem(processItemDto)
                 .estimatedTime(BigDecimal.valueOf(8))
                 .estimationUnit(TimeUnit.HOUR)
                 .workingTimeInMinutes(480L)
@@ -174,14 +166,10 @@ class TaskServiceWithoutMapperTest {
 
         existingTask.setProject(project);
 
-        UpdateProcessItemDto processItemDto = UpdateProcessItemDto.builder()
+        UpdateTaskDto updateDto = UpdateTaskDto.builder()
                 .title("New Title")
                 .description("New Description")
                 .assigneeId(42L)
-                .build();
-
-        UpdateTaskDto updateDto = UpdateTaskDto.builder()
-                .processItem(processItemDto)
                 .estimatedTime(BigDecimal.valueOf(8))
                 .estimationUnit(TimeUnit.HOUR)
                 .workingTimeInMinutes(480L)
