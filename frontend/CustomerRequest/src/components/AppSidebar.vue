@@ -16,7 +16,7 @@ import {
 
 const items = [
   {
-    title: 'Requests',
+    title: 'Anfragen',
     url: '/requests',
     icon: Inbox,
   },

@@ -7,13 +7,17 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'requestCreationView',
-      component: RequestCreationView,
+      redirect: '/requests',
     },
     {
       path: '/requests',
       name: 'sentRequestView',
       component: SentRequestView,
+    },
+    {
+      path: '/requests/create',
+      name: 'requestCreationView',
+      component: RequestCreationView,
     },
   ],
 })

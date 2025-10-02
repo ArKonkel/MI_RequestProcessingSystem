@@ -8,6 +8,11 @@ import type {RequestDtd} from "@/documentTypes/dtds/RequestDtd.ts";
 import {CategoryLabel} from "@/documentTypes/types/Category.ts";
 import {getPriorityColor, PriorityLabel} from "@/documentTypes/types/Priority.ts";
 import {RequestStatusLabel} from "@/documentTypes/types/RequestStatus.ts";
+import {Button} from "@/components/ui/button";
+import {Plus} from 'lucide-vue-next'
+import {useRouter} from "vue-router";
+
+const router = useRouter();
 
 const requestStore = useRequestStore();
 const selectedRequestId = ref<number>(); // für Highlight
@@ -27,13 +32,22 @@ function formatDate(date: string | null) {
   });
 }
 
-
 function selectRequest(request: RequestDtd) {
   requestStore.setSelectedRequest(request)
+}
+
+function goToCreateRequest() {
+  router.push("/requests/create");
 }
 </script>
 
 <template>
+  <div class="flex items-center justify-end space-x-4 m-4">
+    <span class="text-gray-700">Anfrage erstellen</span>
+    <Button @click="goToCreateRequest">
+      <Plus />
+    </Button>
+  </div>
   <ScrollArea class="h-screen rounded-md border overflow-y-auto p-4">
     <div class="flex flex-col gap-3">
       <Card
@@ -76,7 +90,6 @@ function selectRequest(request: RequestDtd) {
             {{ formatDate(request.processItem.creationDate) }}
           </p>
         </CardFooter>
-
       </Card>
     </div>
   </ScrollArea>

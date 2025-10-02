@@ -23,8 +23,13 @@ import {
   TagsInputItemText,
   TagsInputItemDelete
 } from "@/components/ui/tags-input";
+import {useRequestStore} from "@/stores/requestStore.ts";
+import type {RequestDtd} from "@/documentTypes/dtds/RequestDtd.ts";
+import {useRouter} from "vue-router";
 
 const alertStore = useAlertStore()
+const requestStore = useRequestStore()
+const router = useRouter()
 
 const requestForm = reactive<RequestCreateDtd>({
   processItem: {
@@ -37,7 +42,6 @@ const requestForm = reactive<RequestCreateDtd>({
   toRecipients: []
 })
 
-const customerIdString = ref<string>('')
 const recipientStrings = ref<string[]>([])
 
 // Validation and errors
@@ -46,27 +50,26 @@ const errors = reactive({
   description: '' as string | null,
   priority: '' as string | null,
   category: '' as string | null,
-  customerId: '' as string | null,
 })
+
+function goToRequests(createdRequest: RequestDtd) {
+  router.push('/requests')
+  requestStore.setSelectedRequest(createdRequest)
+}
 
 function validate(): boolean {
   errors.title = requestForm.processItem.title.trim() ? '' : 'Titel ist erforderlich'
   errors.description = requestForm.processItem.description.trim() ? '' : ''
   errors.priority = requestForm.priority ? '' : 'Priorität wählen'
   errors.category = requestForm.category ? '' : 'Kategorie wählen'
-  errors.customerId =
-    //trim removes leading and trailing whitespace
-    //checks if the string is not empty and if it is a number --> In JavaScript is everything a string at first
-    customerIdString.value.trim() && !Number.isNaN(Number(customerIdString.value))
-      ? ''
-      : 'Gültige KundenId nötig'
 
-  return !errors.title && !errors.priority && !errors.category && !errors.customerId
+  return !errors.title && !errors.priority && !errors.category
 }
 
 //Buttons
 async function submit() {
-  requestForm.customerId = customerIdString.value ? Number(customerIdString.value) : null
+  //TODO change to customerId from login
+  requestForm.customerId = 1
   requestForm.toRecipients = recipientStrings.value.map(email => ({address: email}))
 
   //dont submit if validation fails
@@ -77,11 +80,14 @@ async function submit() {
   try {
     console.log(requestForm)
 
-    await submitRequest(requestForm)
+    const response = await submitRequest(requestForm)
     console.log('Request created')
+
 
     alertStore.show('Anfrage erfolgreich erstellt', 'success')
     resetFrom()
+    goToRequests(response)
+
   } catch (error: any) {
     console.error(error)
     alertStore.show(error.response?.data || 'Unbekannter Fehler', 'error')
@@ -91,7 +97,6 @@ async function submit() {
 function resetFrom() {
   requestForm.processItem.title = ''
   requestForm.processItem.description = ''
-  customerIdString.value = ''
   requestForm.priority = null
   requestForm.category = null
   requestForm.toRecipients = []
@@ -102,15 +107,6 @@ function resetFrom() {
 
 <template>
   <form @submit.prevent="submit" class="flex flex-col max-w-3xl mx-auto p-6 gap-6">
-    <div class="flex flex-col md:flex-row gap-4">
-      <div class="flex-1">
-        <label class="text-sm font-medium mb-1">Kunde</label>
-        <Input v-model="customerIdString" placeholder="Kunden-ID"/>
-        <p v-if="errors.customerId" class="text-red-600 text-xs mt-1">{{ errors.customerId }}</p>
-      </div>
-      <div class="flex-1"></div>
-    </div>
-
     <div class="flex-1">
       <label class="block text-sm font-medium mb-1">Titel</label>
       <Input v-model="requestForm.processItem.title" placeholder="Kurzer Titel"/>

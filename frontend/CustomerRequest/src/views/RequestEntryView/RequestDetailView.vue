@@ -135,8 +135,10 @@ async function addComment() {
             <AccordionTrigger>Kommentare</AccordionTrigger>
             <AccordionContent>
               <div class="space-y-4">
-                <Textarea v-model="commentText" placeholder="Verfasse dein Kommentar"
-                          class="resize-none"/>
+                <Textarea v-model="commentText"
+                          placeholder="Verfasse dein Kommentar"
+                          class="resize-none"
+                          @keydown.enter.prevent="addComment"/>
                 <div class="flex justify-end">
                   <Button @click="addComment">Senden</Button>
                 </div>
