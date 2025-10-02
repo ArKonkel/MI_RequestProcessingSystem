@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import {ref, watch} from "vue";
 
-import { useRequestStore } from "@/stores/requestStore.ts";
-import { useAlertStore } from "@/stores/useAlertStore.ts";
-import { addCommentToRequest } from "@/services/commentService.ts";
-import { updateCustomerRequest } from "@/services/customerRequestService.ts";
+import {useRequestStore} from "@/stores/requestStore.ts";
+import {useAlertStore} from "@/stores/useAlertStore.ts";
+import {addCommentToRequest} from "@/services/commentService.ts";
+import {updateCustomerRequest} from "@/services/customerRequestService.ts";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import {Badge} from "@/components/ui/badge";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
+import {Textarea} from "@/components/ui/textarea";
 import {
   Accordion,
   AccordionContent,
@@ -23,29 +23,24 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import {ScrollArea} from "@/components/ui/scroll-area";
 
-import { CategoryLabel } from "@/documentTypes/types/Category.ts";
-import { PriorityLabel } from "@/documentTypes/types/Priority.ts";
-import { RequestStatusLabel } from "@/documentTypes/types/RequestStatus.ts";
-import { useDebouncedRef} from "@/composable/debounce.ts";
+import {CategoryLabel} from "@/documentTypes/types/Category.ts";
+import {PriorityLabel} from "@/documentTypes/types/Priority.ts";
+import {RequestStatusLabel} from "@/documentTypes/types/RequestStatus.ts";
 
-import type { RequestDtd } from "@/documentTypes/dtds/RequestDtd.ts";
-import type { CommentCreateDtd } from "@/documentTypes/dtds/CommentCreateDtd.ts";
+import type {RequestDtd} from "@/documentTypes/dtds/RequestDtd.ts";
+import type {CommentCreateDtd} from "@/documentTypes/dtds/CommentCreateDtd.ts";
+import {useDebounceFn} from "@vueuse/core";
+import {TimeUnitLabel} from "@/documentTypes/types/TimeUnit.ts";
 
 const requestStore = useRequestStore();
 const alertStore = useAlertStore();
 
 const editableRequest = ref<RequestDtd | null>(null);
-const commentText = ref("");
-
-/*
-const description = useDebouncedRef(
-  editableRequest.value?.processItem.description || "",
-  500
-);
-
- */
+const commentText = ref('');
+const description = ref('')
+const estimatedScope = ref(0)
 
 // Watch the store for changes
 watch(
@@ -53,24 +48,35 @@ watch(
   (newReq) => {
     if (newReq) {
       // make local copy
-      editableRequest.value = { ...newReq };
+      editableRequest.value = {...newReq};
+      description.value = newReq.processItem.description
+      estimatedScope.value = newReq.estimatedScope
     } else {
       editableRequest.value = null;
+      description.value = ''
+      estimatedScope.value = 0
     }
   },
-  { immediate: true, deep: true }
+  {immediate: true, deep: true}
 );
 
-/*
-//watch description with debounce, so not every keystroke triggers a save
-watch(description, async (newVal) => {
-  if (!editableRequest.value) return;
+//Debounce to not trigger save on every keystroke
+const debouncedSave = useDebounceFn(async () => {
+  if (!editableRequest.value) return
 
-  editableRequest.value.processItem.description = newVal;
-  await saveRequest();
-});
+  await saveRequest()
+}, 500)
 
- */
+
+watch(
+  () => [
+    description.value,
+    estimatedScope.value
+  ],
+  () => {
+    debouncedSave()
+  }
+)
 
 // save changes
 async function saveRequest() {
@@ -79,11 +85,12 @@ async function saveRequest() {
 
   try {
     const dto = {
-      description: editableRequest.value.processItem.description,
+      description: description.value,
       priority: editableRequest.value.priority,
       status: editableRequest.value.status,
       assigneeId: editableRequest.value.processItem.assigneeId,
-      estimatedScope: editableRequest.value.estimatedScope,
+      estimatedScope: estimatedScope.value,
+      scopeUnit: editableRequest.value.scopeUnit,
     };
 
     await updateCustomerRequest(editableRequest.value.processItem.id, dto);
@@ -141,7 +148,7 @@ async function addComment() {
             <AccordionTrigger>Beschreibung</AccordionTrigger>
             <AccordionContent>
               <Textarea
-                v-model="editableRequest.processItem.description"
+                v-model="description"
                 class="mt-2 min-h-[200px] resize-none"
               />
             </AccordionContent>
@@ -183,7 +190,7 @@ async function addComment() {
         <label class="text-sm font-semibold">Priorität</label>
         <Select v-model="editableRequest.priority" @update:modelValue="saveRequest">
           <SelectTrigger>
-            <SelectValue placeholder="Select..." />
+            <SelectValue placeholder="Select..."/>
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -199,9 +206,9 @@ async function addComment() {
 
       <div>
         <label class="text-sm font-semibold">Status</label>
-        <Select v-model="editableRequest.status"  @update:modelValue="saveRequest">
+        <Select v-model="editableRequest.status" @update:modelValue="saveRequest">
           <SelectTrigger>
-            <SelectValue placeholder="Offen" />
+            <SelectValue placeholder="Offen"/>
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -227,10 +234,29 @@ async function addComment() {
         <label class="text-sm font-semibold">Geschätzte Zeit</label>
         <Input
           type="number"
-          v-model="editableRequest.estimatedScope"
+          v-model="estimatedScope"
           placeholder="Schätzung in Minuten"
         />
       </div>
+
+      <div>
+        <label class="text-sm font-semibold">Status</label>
+        <Select v-model="editableRequest.scopeUnit" @update:modelValue="saveRequest">
+          <SelectTrigger>
+            <SelectValue placeholder="Zeiteinheit"/>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem
+              v-for="[value, timeUnitLabel] in Object.entries(TimeUnitLabel)"
+              :key="value"
+              :value="value"
+            >
+              {{ timeUnitLabel }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
     </div>
   </div>
 </template>

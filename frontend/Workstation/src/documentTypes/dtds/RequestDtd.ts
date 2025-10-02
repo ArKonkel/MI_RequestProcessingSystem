@@ -4,11 +4,13 @@ import type { RequestStatus } from '@/documentTypes/types/RequestStatus.ts'
 import type { Category } from '@/documentTypes/types/Category.ts'
 import type {CustomerDtd} from "@/documentTypes/dtds/CustomerDtd.ts";
 import type {Chargeable} from "@/documentTypes/types/Chargeable.ts";
+import type {TimeUnit} from "@/documentTypes/types/TimeUnit.ts";
 
 export interface RequestDtd {
   processItem: ProcessItemDtd
   priority: Priority
   estimatedScope: number
+  scopeUnit: TimeUnit
   status: RequestStatus
   chargeable: Chargeable
   category: Category
