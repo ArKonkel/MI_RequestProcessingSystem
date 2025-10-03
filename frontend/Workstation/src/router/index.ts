@@ -3,6 +3,7 @@ import TaskManagerView from "@/views/TaskManagerView/TaskManagerView.vue";
 import TaskCapacityPlanningView
   from "@/views/ResourceCapacityPlanningView/TaskCapacityPlanningView.vue";
 import RequestView from "@/views/RequestManagerView/RequestView.vue";
+import RequestDetailView from "@/views/RequestManagerView/RequestDetailView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -13,8 +14,15 @@ const router = createRouter({
     },
     {
       path: '/requests',
-      name: 'requestManagerView',
+      name: 'requestView',
       component: RequestView,
+      children: [
+        {
+          path: ':requestId',
+          name: 'requestDetailView',
+          component: RequestDetailView
+        }
+      ]
     },
     /*
 
