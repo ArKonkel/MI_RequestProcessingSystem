@@ -43,13 +43,16 @@ const commentText = ref('');
 const description = ref('')
 const estimatedScope = ref(0)
 
+const ignoreNextUpdate = ref(false); //Need to not trigger save on switching between requests
+
 // Watch the store for changes
 watch(
-  () => requestStore.requestData.selectedRequest,
+  () => requestStore.selectedRequest,
   (newReq) => {
     if (newReq) {
       // make local copy
       editableRequest.value = {...newReq};
+      ignoreNextUpdate.value = true;
       description.value = newReq.processItem.description
       estimatedScope.value = newReq.estimatedScope
     } else {
@@ -68,19 +71,24 @@ const debouncedSave = useDebounceFn(async () => {
   await saveRequest()
 }, 500)
 
-
 watch(
   () => [
     description.value,
     estimatedScope.value
   ],
   () => {
+    if (ignoreNextUpdate.value) {
+      console.log("ignore next update")
+      ignoreNextUpdate.value = false; //skip first update
+      return;
+    }
     debouncedSave()
   }
 )
 
 // save changes
 async function saveRequest() {
+  console.log("save request")
   if (!editableRequest.value) return;
 
   try {

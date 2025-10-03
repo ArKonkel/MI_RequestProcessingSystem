@@ -35,8 +35,7 @@ function formatDate(date: string | null) {
 }
 
 function selectRequest(request: RequestDtd) {
-  requestStore.setSelectedRequest(request);
-  selectedRequestId.value = request.processItem.id;
+  requestStore.setSelectedRequest(request.processItem.id);
 }
 </script>
 
