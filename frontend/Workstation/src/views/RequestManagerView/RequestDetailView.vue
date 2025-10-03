@@ -3,7 +3,7 @@ import { ref, watch } from 'vue'
 
 import { useRequestStore } from '@/stores/requestStore.ts'
 import { useAlertStore } from '@/stores/useAlertStore.ts'
-import { addCommentToRequest } from '@/services/commentService.ts'
+import { addCommentToProcessItem } from '@/services/commentService.ts'
 import { updateCustomerRequest } from '@/services/customerRequestService.ts'
 
 import { Badge } from '@/components/ui/badge'
@@ -110,11 +110,12 @@ async function addComment() {
 
   const commentCreateDtd: CommentCreateDtd = {
     text: commentText.value,
+    //TODO add authorId from logged in user
     authorId: 1,
   }
 
   try {
-    await addCommentToRequest(editableRequest.value.processItem.id, commentCreateDtd)
+    await addCommentToProcessItem(editableRequest.value.processItem.id, commentCreateDtd)
     alertStore.show('Kommentar erfolgreich erstellt', 'success')
     commentText.value = ''
   } catch (err: any) {
@@ -151,6 +152,20 @@ async function addComment() {
             <AccordionTrigger>Beschreibung</AccordionTrigger>
             <AccordionContent>
               <Textarea v-model="description" class="mt-2 min-h-[200px] resize-none" />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="linked">
+            <AccordionTrigger>Verknüpfte Aufgaben</AccordionTrigger>
+            <AccordionContent>
+              <div class="flex items-center justify-between border p-2 rounded">
+                <div class="flex items-center gap-2">
+                  <input type="checkbox" checked />
+                  <span class="font-semibold">A-01</span>
+                  <span>Lorem Ipsum dolor set amet</span>
+                </div>
+                <Badge>Status</Badge>
+              </div>
             </AccordionContent>
           </AccordionItem>
 
@@ -212,7 +227,7 @@ async function addComment() {
       </div>
 
       <div>
-        <label class="text-sm font-semibold">Status</label>
+        <label class="text-sm font-semibold">Einheit</label>
         <Select v-model="editableRequest.scopeUnit" @update:modelValue="saveRequest">
           <SelectTrigger>
             <SelectValue placeholder="Zeiteinheit" />

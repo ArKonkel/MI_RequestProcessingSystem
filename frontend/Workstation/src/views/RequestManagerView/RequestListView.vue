@@ -31,7 +31,6 @@ watch(
   () => route.params.requestId,
   (requestId) => {
     if (requestId) {
-      console.log('route changed to ' + requestId)
       requestStore.setSelectedRequest(Number(requestId))
     }
   },

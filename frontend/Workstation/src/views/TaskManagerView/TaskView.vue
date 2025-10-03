@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import TaskOverviewView from '@/views/TaskManagerView/TaskOverviewView.vue'
-import TaskEditView from '@/views/TaskManagerView/TaskEditView.vue'
+import TaskListView from '@/views/TaskManagerView/TaskListView.vue'
+import TaskDetailView from '@/views/TaskManagerView/TaskDetailView.vue'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 </script>
 
@@ -8,7 +8,7 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/componen
   <ResizablePanelGroup direction="horizontal">
     <!-- Linkes Panel -->
     <ResizablePanel :default-size="50" class="min-w-70 max-w-100">
-      <TaskOverviewView />
+      <TaskListView />
     </ResizablePanel>
 
     <!-- Divider -->
@@ -16,7 +16,7 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/componen
 
     <!-- Rechtes Panel -->
     <ResizablePanel class="min-w-140">
-      <TaskEditView />
+      <TaskDetailView />
     </ResizablePanel>
   </ResizablePanelGroup>
 </template>
