@@ -86,7 +86,9 @@ function selectTask(task: TaskDtd) {
         @click="selectTask(task)"
         :class="[
           'hover:bg-accent/30 transition-colors cursor-pointer',
-          taskStore.selectedTaskId === task.processItem.id ? 'bg-accent border-accent-foreground' : '',
+          taskStore.selectedTaskId === task.processItem.id
+            ? 'bg-accent border-accent-foreground'
+            : '',
         ]"
       >
         <CardHeader>

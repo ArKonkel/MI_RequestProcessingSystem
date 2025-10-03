@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
 import type { TaskDtd } from '@/documentTypes/dtds/TaskDtd.ts'
-import {computed, reactive, ref} from 'vue'
+import { computed, reactive, ref } from 'vue'
 import axios from 'axios'
 import { getAllTasks } from '@/services/taskService.ts'
-import {Client} from "@stomp/stompjs";
+import { Client } from '@stomp/stompjs'
 
 export const useTaskStore = defineStore('taskStore', () => {
   const wsurl = `/api/stompbroker`
@@ -12,14 +12,13 @@ export const useTaskStore = defineStore('taskStore', () => {
   let stompClient: Client | null = null
 
   const taskData = reactive({
-    tasks: [] as TaskDtd[]
+    tasks: [] as TaskDtd[],
   })
 
   const selectedTaskId = ref<number | null>(null)
 
   const selectedTask = computed(
-    () =>
-      taskData.tasks.find((task) => task.processItem.id === selectedTaskId.value) ?? null,
+    () => taskData.tasks.find((task) => task.processItem.id === selectedTaskId.value) ?? null,
   )
 
   async function fetchTasks() {

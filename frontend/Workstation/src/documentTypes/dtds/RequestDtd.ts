@@ -5,7 +5,7 @@ import type { Category } from '@/documentTypes/types/Category.ts'
 import type { CustomerDtd } from '@/documentTypes/dtds/CustomerDtd.ts'
 import type { Chargeable } from '@/documentTypes/types/Chargeable.ts'
 import type { TimeUnit } from '@/documentTypes/types/TimeUnit.ts'
-import type {TaskDtd} from "@/documentTypes/dtds/TaskDtd.ts";
+import type { TaskDtd } from '@/documentTypes/dtds/TaskDtd.ts'
 
 export interface RequestDtd {
   processItem: ProcessItemDtd

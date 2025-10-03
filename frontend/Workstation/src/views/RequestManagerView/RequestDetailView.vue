@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import {ref, watch} from 'vue'
+import { ref, watch } from 'vue'
 
-import {useRequestStore} from '@/stores/requestStore.ts'
-import {useAlertStore} from '@/stores/useAlertStore.ts'
-import {addCommentToProcessItem} from '@/services/commentService.ts'
-import {updateCustomerRequest} from '@/services/customerRequestService.ts'
+import { useRequestStore } from '@/stores/requestStore.ts'
+import { useAlertStore } from '@/stores/useAlertStore.ts'
+import { addCommentToProcessItem } from '@/services/commentService.ts'
+import { updateCustomerRequest } from '@/services/customerRequestService.ts'
 
-import {Badge} from '@/components/ui/badge'
-import {Input} from '@/components/ui/input'
-import {Textarea} from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Accordion,
   AccordionContent,
@@ -22,16 +22,16 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select'
-import {ScrollArea} from '@/components/ui/scroll-area'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
-import {CategoryLabel} from '@/documentTypes/types/Category.ts'
-import {PriorityLabel} from '@/documentTypes/types/Priority.ts'
-import {RequestStatusLabel} from '@/documentTypes/types/RequestStatus.ts'
+import { CategoryLabel } from '@/documentTypes/types/Category.ts'
+import { PriorityLabel } from '@/documentTypes/types/Priority.ts'
+import { RequestStatusLabel } from '@/documentTypes/types/RequestStatus.ts'
 
-import type {RequestDtd} from '@/documentTypes/dtds/RequestDtd.ts'
-import type {CommentCreateDtd} from '@/documentTypes/dtds/CommentCreateDtd.ts'
-import {useDebounceFn} from '@vueuse/core'
-import {TimeUnitLabel} from '@/documentTypes/types/TimeUnit.ts'
+import type { RequestDtd } from '@/documentTypes/dtds/RequestDtd.ts'
+import type { CommentCreateDtd } from '@/documentTypes/dtds/CommentCreateDtd.ts'
+import { useDebounceFn } from '@vueuse/core'
+import { TimeUnitLabel } from '@/documentTypes/types/TimeUnit.ts'
 import UserSelect from '@/components/UserSelect.vue'
 import CommentsAccordion from '@/components/CommentsAccordion.vue'
 
@@ -51,7 +51,7 @@ watch(
   (newReq) => {
     if (newReq) {
       // make local copy
-      editableRequest.value = {...newReq}
+      editableRequest.value = { ...newReq }
       ignoreNextUpdate.value = true
       description.value = newReq.processItem.description
       estimatedScope.value = newReq.estimatedScope
@@ -61,7 +61,7 @@ watch(
       estimatedScope.value = 0
     }
   },
-  {immediate: true, deep: true},
+  { immediate: true, deep: true },
 )
 
 //Debounce to not trigger save on every keystroke
@@ -99,9 +99,11 @@ async function saveRequest() {
     }
 
     await updateCustomerRequest(editableRequest.value.processItem.id, dto)
-  } catch (err) {
-    console.error(err)
-    alertStore.show('Fehler beim Speichern', 'error')
+  } catch (err: any) {
+    editableRequest.value = requestStore.selectedRequest
+
+    const msg = err.response?.data?.message || err.response?.data || err.message || String(err)
+    alertStore.show('Fehler beim Speichern: ' + msg, 'error')
   }
 }
 
@@ -137,11 +139,11 @@ async function addComment() {
           </h2>
           <div class="flex gap-6 mt-4 text-sm">
             <div>
-              <span class="font-semibold">Kunde: </span><br/>
+              <span class="font-semibold">Kunde: </span><br />
               {{ editableRequest.customer.id }} - {{ editableRequest.customer.firstName }}
             </div>
             <div>
-              <span class="font-semibold">Eingegangen am: </span><br/>
+              <span class="font-semibold">Eingegangen am: </span><br />
               {{ new Date(editableRequest.processItem.creationDate!).toLocaleDateString('de-DE') }}
             </div>
           </div>
@@ -151,7 +153,7 @@ async function addComment() {
           <AccordionItem value="desc">
             <AccordionTrigger>Beschreibung</AccordionTrigger>
             <AccordionContent>
-              <Textarea v-model="description" class="mt-2 min-h-[200px] resize-none"/>
+              <Textarea v-model="description" class="mt-2 min-h-[200px] resize-none" />
             </AccordionContent>
           </AccordionItem>
 
@@ -161,7 +163,8 @@ async function addComment() {
               <div v-for="task in editableRequest.tasks" :key="task.processItem.id">
                 <RouterLink :to="`/tasks/${task.processItem.id}`" class="block">
                   <div
-                    class="flex items-center justify-between border p-2 rounded cursor-pointer hover:bg-accent/20">
+                    class="flex items-center justify-between border p-2 rounded cursor-pointer hover:bg-accent/20"
+                  >
                     <div class="flex items-center gap-2">
                       <span>{{ task.processItem.id }}</span>
                       <span class="font-semibold">{{ task.processItem.title }}</span>
@@ -170,10 +173,8 @@ async function addComment() {
                   </div>
                 </RouterLink>
               </div>
-
             </AccordionContent>
           </AccordionItem>
-
 
           <CommentsAccordion
             v-model="commentText"
@@ -190,7 +191,7 @@ async function addComment() {
         <label class="text-sm font-semibold">Priorität</label>
         <Select v-model="editableRequest.priority" @update:modelValue="saveRequest">
           <SelectTrigger>
-            <SelectValue placeholder="Select..."/>
+            <SelectValue placeholder="Select..." />
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -208,7 +209,7 @@ async function addComment() {
         <label class="text-sm font-semibold">Status</label>
         <Select v-model="editableRequest.status" @update:modelValue="saveRequest">
           <SelectTrigger>
-            <SelectValue placeholder="Offen"/>
+            <SelectValue placeholder="Offen" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -229,14 +230,14 @@ async function addComment() {
 
       <div>
         <label class="text-sm font-semibold">Geschätzte Zeit</label>
-        <Input type="number" v-model="estimatedScope" placeholder="Schätzung in Minuten"/>
+        <Input type="number" v-model="estimatedScope" placeholder="Schätzung in Minuten" />
       </div>
 
       <div>
         <label class="text-sm font-semibold">Einheit</label>
         <Select v-model="editableRequest.scopeUnit" @update:modelValue="saveRequest">
           <SelectTrigger>
-            <SelectValue placeholder="Zeiteinheit"/>
+            <SelectValue placeholder="Zeiteinheit" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem
