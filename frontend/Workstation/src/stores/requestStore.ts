@@ -1,37 +1,36 @@
-import {defineStore} from "pinia";
-import type {RequestDtd} from "@/documentTypes/dtds/RequestDtd.ts";
-import {reactive} from "vue";
-import axios from "axios";
-import {getRequests, updateCustomerRequest} from "@/services/customerRequestService.ts";
-import {Client} from "@stomp/stompjs";
-import type {UpdateCustomerRequestDtd} from "@/documentTypes/dtds/UpdateCustomerRequestDtd.ts";
+import { defineStore } from "pinia";
+import type { RequestDtd } from "@/documentTypes/dtds/RequestDtd.ts";
+import { reactive, ref, computed } from "vue";
+import { getRequests } from "@/services/customerRequestService.ts";
+import { Client } from "@stomp/stompjs";
 
-export const useRequestStore = defineStore('requestStore', () => {
-
+export const useRequestStore = defineStore("requestStore", () => {
   const wsurl = `/api/stompbroker`;
-  const DEST = '/topic/customer-request'
+  const DEST = "/topic/customer-request";
 
   let stompClient: Client | null = null;
 
   const requestData = reactive({
     requests: [] as RequestDtd[],
-    selectedRequest: null as RequestDtd | null,
-  })
+  });
+
+  const selectedRequestId = ref<number | null>(null);
+
+  const selectedRequest = computed(() =>
+    requestData.requests.find(
+      (req) => req.processItem.id === selectedRequestId.value
+    ) ?? null
+  );
 
   async function fetchRequests() {
     try {
       requestData.requests = await getRequests();
 
-      if (requestData.selectedRequest) {
-        const updatedRequest = requestData.requests
-          .find(request => request.processItem.id === requestData.selectedRequest?.processItem.id);
-
-        requestData.selectedRequest = updatedRequest ?? requestData.requests[0] ?? null;
-      } else {
-        requestData.selectedRequest = requestData.requests[0] ?? null;
+      if (!selectedRequestId.value && requestData.requests.length > 0) {
+        selectedRequestId.value = requestData.requests[0].processItem.id;
       }
 
-      await startLiveUpdate()
+      await startLiveUpdate();
     } catch (error) {
       console.error("Fehler beim Laden der Requests:", error);
     }
@@ -39,14 +38,14 @@ export const useRequestStore = defineStore('requestStore', () => {
 
   async function startLiveUpdate() {
     if (!stompClient) {
-      stompClient = new Client({brokerURL: wsurl});
+      stompClient = new Client({ brokerURL: wsurl });
       stompClient.onWebSocketError = (event) => {
         throw new Error("WebSocket Error: " + event);
-      }
+      };
       stompClient.onStompError = (frameElement) => {
         throw new Error("Stompclient with Message: " + frameElement);
-      }
-      stompClient.onConnect = (frame) => {
+      };
+      stompClient.onConnect = () => {
         console.log("Stomp client connected");
         if (stompClient == null) {
           throw new Error("Stomp client connection failed");
@@ -54,39 +53,27 @@ export const useRequestStore = defineStore('requestStore', () => {
 
         stompClient.subscribe(DEST, (message) => {
           console.log("Received message: " + message.body);
-
-          fetchRequests();
+          fetchRequests(); // Reload bei Updates
         });
 
         stompClient.onDisconnect = () => {
           console.log("Disconnected");
-        }
-      }
+        };
+      };
 
       stompClient.activate();
     }
   }
 
-  async function updateSelectedRequest(dto: UpdateCustomerRequestDtd) {
-    if (!requestData.selectedRequest) return;
-
-    try {
-      const updatedRequest = await updateCustomerRequest(requestData.selectedRequest.processItem.id, dto);
-      requestData.selectedRequest = updatedRequest;
-    } catch (error) {
-      console.error("Something went wrong on updating request:", error);
-    }
-  }
-
-  async function setSelectedRequest(request: RequestDtd) {
-    requestData.selectedRequest = request;
+  function setSelectedRequest(id: number) {
+    selectedRequestId.value = id;
   }
 
   return {
     requestData,
+    selectedRequestId,
+    selectedRequest,
     fetchRequests,
     setSelectedRequest,
-    updateSelectedRequest,
-  }
-})
-
+  };
+});
