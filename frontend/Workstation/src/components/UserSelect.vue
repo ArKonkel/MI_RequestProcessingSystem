@@ -1,43 +1,46 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { getAllUser } from "@/services/userService";
-import type { UserDtd } from "@/documentTypes/dtds/UserDtd";
+import { ref, watch } from 'vue'
+import { Input } from '@/components/ui/input'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { getAllUser } from '@/services/userService'
+import type { UserDtd } from '@/documentTypes/dtds/UserDtd'
 
-const props = defineProps<{ modelValue: number | null }>();
+const props = defineProps<{ modelValue: number | null }>()
 const emit = defineEmits<{
   (emit: 'update:modelValue', value: number | null): void
-}>();
+}>()
 
-const users = ref<UserDtd[]>([]);
-const filteredUsers = ref<UserDtd[]>([]);
-const search = ref("");
-const dropdownOpen = ref(false);
+const users = ref<UserDtd[]>([])
+const filteredUsers = ref<UserDtd[]>([])
+const search = ref('')
+const dropdownOpen = ref(false)
 
-watch(() => props.modelValue, (val) => {
-  const selected = users.value.find(user => user.id === val);
-  search.value = selected?.name ?? "";
-});
+watch(
+  () => props.modelValue,
+  (val) => {
+    const selected = users.value.find((user) => user.id === val)
+    search.value = selected?.name ?? ''
+  },
+)
 
 async function loadUsers() {
   if (users.value.length === 0) {
-    users.value = await getAllUser();
+    users.value = await getAllUser()
   }
-  filteredUsers.value = users.value;
-  dropdownOpen.value = true;
+  filteredUsers.value = users.value
+  dropdownOpen.value = true
 }
 
 watch(search, (val) => {
-  filteredUsers.value = users.value.filter(user =>
-    user.name.toLowerCase().includes(val.toLowerCase())
-  );
-});
+  filteredUsers.value = users.value.filter((user) =>
+    user.name.toLowerCase().includes(val.toLowerCase()),
+  )
+})
 
 function selectUser(user: UserDtd) {
-  emit("update:modelValue", user.id);
-  search.value = user.name;
-  dropdownOpen.value = false;
+  emit('update:modelValue', user.id)
+  search.value = user.name
+  dropdownOpen.value = false
 }
 </script>
 
@@ -58,21 +61,18 @@ function selectUser(user: UserDtd) {
     >
       <ScrollArea class="max-h-60">
         <div v-for="user in filteredUsers" :key="user.id">
-          <div
-            class="p-2 hover:bg-blue-100 cursor-pointer"
-            @click="selectUser(user)"
-          >
+          <div class="p-2 hover:bg-blue-100 cursor-pointer" @click="selectUser(user)">
             {{ user.name }}
           </div>
         </div>
-        <div v-if="filteredUsers.length === 0" class="p-2 text-gray-400">
-          Kein Ergebnis
-        </div>
+        <div v-if="filteredUsers.length === 0" class="p-2 text-gray-400">Kein Ergebnis</div>
       </ScrollArea>
     </div>
   </div>
 </template>
 
 <style scoped>
-.relative { position: relative; }
+.relative {
+  position: relative;
+}
 </style>

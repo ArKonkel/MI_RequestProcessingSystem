@@ -1,50 +1,49 @@
 <script setup lang="ts">
-import {ref, watch} from "vue";
+import { ref, watch } from 'vue'
 
-import {useRequestStore} from "@/stores/requestStore.ts";
-import {useAlertStore} from "@/stores/useAlertStore.ts";
-import {addCommentToRequest} from "@/services/commentService.ts";
-import {updateCustomerRequest} from "@/services/customerRequestService.ts";
+import { useRequestStore } from '@/stores/requestStore.ts'
+import { useAlertStore } from '@/stores/useAlertStore.ts'
+import { addCommentToRequest } from '@/services/commentService.ts'
+import { updateCustomerRequest } from '@/services/customerRequestService.ts'
 
-import {Badge} from "@/components/ui/badge";
-import {Button} from "@/components/ui/button";
-import {Input} from "@/components/ui/input";
-import {Textarea} from "@/components/ui/textarea";
+import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
+} from '@/components/ui/accordion'
 import {
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select";
-import {ScrollArea} from "@/components/ui/scroll-area";
+} from '@/components/ui/select'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
-import {CategoryLabel} from "@/documentTypes/types/Category.ts";
-import {PriorityLabel} from "@/documentTypes/types/Priority.ts";
-import {RequestStatusLabel} from "@/documentTypes/types/RequestStatus.ts";
+import { CategoryLabel } from '@/documentTypes/types/Category.ts'
+import { PriorityLabel } from '@/documentTypes/types/Priority.ts'
+import { RequestStatusLabel } from '@/documentTypes/types/RequestStatus.ts'
 
-import type {RequestDtd} from "@/documentTypes/dtds/RequestDtd.ts";
-import type {CommentCreateDtd} from "@/documentTypes/dtds/CommentCreateDtd.ts";
-import {useDebounceFn} from "@vueuse/core";
-import {TimeUnitLabel} from "@/documentTypes/types/TimeUnit.ts";
-import UserSelect from "@/components/UserSelect.vue";
-import CommentsAccordion from "@/components/CommentsAccordion.vue";
+import type { RequestDtd } from '@/documentTypes/dtds/RequestDtd.ts'
+import type { CommentCreateDtd } from '@/documentTypes/dtds/CommentCreateDtd.ts'
+import { useDebounceFn } from '@vueuse/core'
+import { TimeUnitLabel } from '@/documentTypes/types/TimeUnit.ts'
+import UserSelect from '@/components/UserSelect.vue'
+import CommentsAccordion from '@/components/CommentsAccordion.vue'
 
-const requestStore = useRequestStore();
-const alertStore = useAlertStore();
+const requestStore = useRequestStore()
+const alertStore = useAlertStore()
 
-const editableRequest = ref<RequestDtd | null>(null);
-const commentText = ref('');
+const editableRequest = ref<RequestDtd | null>(null)
+const commentText = ref('')
 const description = ref('')
 const estimatedScope = ref(0)
 
-const ignoreNextUpdate = ref(false); //Need to not trigger save on switching between requests
+const ignoreNextUpdate = ref(false) //Need to not trigger save on switching between requests
 
 // Watch the store for changes
 watch(
@@ -52,18 +51,18 @@ watch(
   (newReq) => {
     if (newReq) {
       // make local copy
-      editableRequest.value = {...newReq};
-      ignoreNextUpdate.value = true;
+      editableRequest.value = { ...newReq }
+      ignoreNextUpdate.value = true
       description.value = newReq.processItem.description
       estimatedScope.value = newReq.estimatedScope
     } else {
-      editableRequest.value = null;
+      editableRequest.value = null
       description.value = ''
       estimatedScope.value = 0
     }
   },
-  {immediate: true, deep: true}
-);
+  { immediate: true, deep: true },
+)
 
 //Debounce to not trigger save on every keystroke
 const debouncedSave = useDebounceFn(async () => {
@@ -73,24 +72,21 @@ const debouncedSave = useDebounceFn(async () => {
 }, 500)
 
 watch(
-  () => [
-    description.value,
-    estimatedScope.value
-  ],
+  () => [description.value, estimatedScope.value],
   () => {
     if (ignoreNextUpdate.value) {
-      console.log("ignore next update")
-      ignoreNextUpdate.value = false; //skip first update
-      return;
+      console.log('ignore next update')
+      ignoreNextUpdate.value = false //skip first update
+      return
     }
     debouncedSave()
-  }
+  },
 )
 
 // save changes
 async function saveRequest() {
-  console.log("save request")
-  if (!editableRequest.value) return;
+  console.log('save request')
+  if (!editableRequest.value) return
 
   try {
     const dto = {
@@ -100,32 +96,30 @@ async function saveRequest() {
       assigneeId: editableRequest.value.processItem.assigneeId,
       estimatedScope: estimatedScope.value,
       scopeUnit: editableRequest.value.scopeUnit,
-    };
+    }
 
-    await updateCustomerRequest(editableRequest.value.processItem.id, dto);
-
+    await updateCustomerRequest(editableRequest.value.processItem.id, dto)
   } catch (err) {
-    console.error(err);
-    alertStore.show("Fehler beim Speichern", "error");
+    console.error(err)
+    alertStore.show('Fehler beim Speichern', 'error')
   }
 }
 
 async function addComment() {
-  if (!editableRequest.value || !commentText.value) return;
+  if (!editableRequest.value || !commentText.value) return
 
   const commentCreateDtd: CommentCreateDtd = {
     text: commentText.value,
     authorId: 1,
-  };
+  }
 
   try {
-    await addCommentToRequest(editableRequest.value.processItem.id, commentCreateDtd);
-    alertStore.show("Kommentar erfolgreich erstellt", "success");
-    commentText.value = "";
-
+    await addCommentToRequest(editableRequest.value.processItem.id, commentCreateDtd)
+    alertStore.show('Kommentar erfolgreich erstellt', 'success')
+    commentText.value = ''
   } catch (err: any) {
-    console.error(err);
-    alertStore.show(err.response?.data || "Unbekannter Fehler", "error");
+    console.error(err)
+    alertStore.show(err.response?.data || 'Unbekannter Fehler', 'error')
   }
 }
 </script>
@@ -142,24 +136,21 @@ async function addComment() {
           </h2>
           <div class="flex gap-6 mt-4 text-sm">
             <div>
-              <span class="font-semibold">Kunde: </span><br/>
+              <span class="font-semibold">Kunde: </span><br />
               {{ editableRequest.customer.id }} - {{ editableRequest.customer.firstName }}
             </div>
             <div>
-              <span class="font-semibold">Eingegangen am: </span><br/>
-              {{ new Date(editableRequest.processItem.creationDate!).toLocaleDateString("de-DE") }}
+              <span class="font-semibold">Eingegangen am: </span><br />
+              {{ new Date(editableRequest.processItem.creationDate!).toLocaleDateString('de-DE') }}
             </div>
           </div>
         </div>
 
-        <Accordion type="multiple" class="w-full" collapsible :defaultValue="['desc','comments']">
+        <Accordion type="multiple" class="w-full" collapsible :defaultValue="['desc', 'comments']">
           <AccordionItem value="desc">
             <AccordionTrigger>Beschreibung</AccordionTrigger>
             <AccordionContent>
-              <Textarea
-                v-model="description"
-                class="mt-2 min-h-[200px] resize-none"
-              />
+              <Textarea v-model="description" class="mt-2 min-h-[200px] resize-none" />
             </AccordionContent>
           </AccordionItem>
 
@@ -168,7 +159,6 @@ async function addComment() {
             :comments="editableRequest.processItem.comments"
             @submit="addComment"
           />
-
         </Accordion>
       </div>
     </ScrollArea>
@@ -179,7 +169,7 @@ async function addComment() {
         <label class="text-sm font-semibold">Priorität</label>
         <Select v-model="editableRequest.priority" @update:modelValue="saveRequest">
           <SelectTrigger>
-            <SelectValue placeholder="Select..."/>
+            <SelectValue placeholder="Select..." />
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -197,7 +187,7 @@ async function addComment() {
         <label class="text-sm font-semibold">Status</label>
         <Select v-model="editableRequest.status" @update:modelValue="saveRequest">
           <SelectTrigger>
-            <SelectValue placeholder="Offen"/>
+            <SelectValue placeholder="Offen" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -211,23 +201,21 @@ async function addComment() {
         </Select>
       </div>
 
-      <UserSelect v-model="editableRequest.processItem.assigneeId"
-                  @update:modelValue="saveRequest"/>
+      <UserSelect
+        v-model="editableRequest.processItem.assigneeId"
+        @update:modelValue="saveRequest"
+      />
 
       <div>
         <label class="text-sm font-semibold">Geschätzte Zeit</label>
-        <Input
-          type="number"
-          v-model="estimatedScope"
-          placeholder="Schätzung in Minuten"
-        />
+        <Input type="number" v-model="estimatedScope" placeholder="Schätzung in Minuten" />
       </div>
 
       <div>
         <label class="text-sm font-semibold">Status</label>
         <Select v-model="editableRequest.scopeUnit" @update:modelValue="saveRequest">
           <SelectTrigger>
-            <SelectValue placeholder="Zeiteinheit"/>
+            <SelectValue placeholder="Zeiteinheit" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -240,7 +228,6 @@ async function addComment() {
           </SelectContent>
         </Select>
       </div>
-
     </div>
   </div>
 </template>

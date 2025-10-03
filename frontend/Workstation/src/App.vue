@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import {SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar";
-import AppSidebar from "@/components/AppSidebar.vue";
-import ErrorAlert from "@/components/ErrorAlert.vue";
-
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import AppSidebar from '@/components/AppSidebar.vue'
+import ErrorAlert from '@/components/ErrorAlert.vue'
 </script>
 
 <template>

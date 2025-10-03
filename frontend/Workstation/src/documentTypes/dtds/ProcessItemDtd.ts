@@ -1,4 +1,4 @@
-import type {CommentDtd} from "@/documentTypes/dtds/CommentDtd.ts";
+import type { CommentDtd } from '@/documentTypes/dtds/CommentDtd.ts'
 
 export interface ProcessItemDtd {
   id: number

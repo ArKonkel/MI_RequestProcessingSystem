@@ -1,4 +1,4 @@
 export interface UserDtd {
-  id: number,
-  name: string,
+  id: number
+  name: string
 }

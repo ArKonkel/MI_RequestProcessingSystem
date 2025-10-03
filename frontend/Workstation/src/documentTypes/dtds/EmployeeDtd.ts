@@ -1,5 +1,5 @@
 import type { ExpertiseDtd } from './ExpertiseDtd.ts'
-import type {EmployeeExpertiseDtd} from "@/documentTypes/dtds/EmployeeExpertiseDtd.ts";
+import type { EmployeeExpertiseDtd } from '@/documentTypes/dtds/EmployeeExpertiseDtd.ts'
 
 export interface EmployeeDtd {
   id: number

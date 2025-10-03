@@ -1,8 +1,8 @@
-import type {ProcessItemDtd} from "@/documentTypes/dtds/ProcessItemDtd.ts"
-import type {ExpertiseDtd} from "@/documentTypes/dtds/ExpertiseDtd.ts"
-import type {TaskStatus} from "@/documentTypes/types/TaskStatus.ts"
-import type {Priority} from "@/documentTypes/types/Priority.ts"
-import type {TimeUnit} from "@/documentTypes/types/TimeUnit.ts"
+import type { ProcessItemDtd } from '@/documentTypes/dtds/ProcessItemDtd.ts'
+import type { ExpertiseDtd } from '@/documentTypes/dtds/ExpertiseDtd.ts'
+import type { TaskStatus } from '@/documentTypes/types/TaskStatus.ts'
+import type { Priority } from '@/documentTypes/types/Priority.ts'
+import type { TimeUnit } from '@/documentTypes/types/TimeUnit.ts'
 
 export interface TaskDtd {
   processItem: ProcessItemDtd
@@ -15,6 +15,6 @@ export interface TaskDtd {
   status: TaskStatus
   calendarEntryId: number | null
   expertise: ExpertiseDtd[]
-  requestId: number | null;
-  projectId: number | null;
+  requestId: number | null
+  projectId: number | null
 }

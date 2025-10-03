@@ -1,63 +1,62 @@
 <script setup lang="ts">
-import {computed, onMounted, ref, watch} from "vue";
-import {useRequestStore} from "@/stores/requestStore.ts";
-import {ScrollArea} from "@/components/ui/scroll-area";
-import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
-import {Badge} from "@/components/ui/badge";
-import type {RequestDtd} from "@/documentTypes/dtds/RequestDtd.ts";
-import {CategoryLabel} from "@/documentTypes/types/Category.ts";
-import {getPriorityColor, PriorityLabel} from "@/documentTypes/types/Priority.ts";
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRequestStore } from '@/stores/requestStore.ts'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import type { RequestDtd } from '@/documentTypes/dtds/RequestDtd.ts'
+import { CategoryLabel } from '@/documentTypes/types/Category.ts'
+import { getPriorityColor, PriorityLabel } from '@/documentTypes/types/Priority.ts'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
-import {RequestStatus, RequestStatusLabel} from "@/documentTypes/types/RequestStatus.ts";
-import {useRoute, useRouter} from "vue-router";
+  SelectValue,
+} from '@/components/ui/select'
+import { RequestStatus, RequestStatusLabel } from '@/documentTypes/types/RequestStatus.ts'
+import { useRoute, useRouter } from 'vue-router'
 
-const requestStore = useRequestStore();
-const selectedStatus = ref<RequestStatus | null>(null); // Status-Filter
-const router = useRouter();
-const route = useRoute();
+const requestStore = useRequestStore()
+const selectedStatus = ref<RequestStatus | null>(null) // Status-Filter
+const router = useRouter()
+const route = useRoute()
 
 onMounted(async () => {
-  await requestStore.fetchRequests();
-});
+  await requestStore.fetchRequests()
+})
 
 //Watch when route changes, then jump to selected request
 watch(
   () => route.params.requestId,
   (requestId) => {
     if (requestId) {
-      console.log("route changed to " + requestId);
-      requestStore.setSelectedRequest(Number(requestId));
+      console.log('route changed to ' + requestId)
+      requestStore.setSelectedRequest(Number(requestId))
     }
   },
-  {immediate: true}
-);
-
+  { immediate: true },
+)
 
 // Computed: gefilterte Requests nach Status
 const filteredRequests = computed(() => {
-  const allRequests = requestStore.requestData?.requests ?? [];
-  if (!selectedStatus.value) return allRequests;
-  return allRequests.filter(r => r.status === selectedStatus.value);
-});
+  const allRequests = requestStore.requestData?.requests ?? []
+  if (!selectedStatus.value) return allRequests
+  return allRequests.filter((r) => r.status === selectedStatus.value)
+})
 
 function formatDate(date: string | null) {
-  if (!date) return "Kein Eingangsdatum";
-  return new Date(date).toLocaleDateString("de-DE", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  if (!date) return 'Kein Eingangsdatum'
+  return new Date(date).toLocaleDateString('de-DE', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
 }
 
 function selectRequest(request: RequestDtd) {
-  requestStore.setSelectedRequest(request.processItem.id);
-  router.push({name: 'requestDetailView', params: {requestId: request.processItem.id}});
+  requestStore.setSelectedRequest(request.processItem.id)
+  router.push({ name: 'requestDetailView', params: { requestId: request.processItem.id } })
 }
 </script>
 
@@ -65,7 +64,7 @@ function selectRequest(request: RequestDtd) {
   <div class="flex-1 mb-4 w-60 justify-end">
     <Select v-model="selectedStatus">
       <SelectTrigger>
-        <SelectValue placeholder="Alle Status"/>
+        <SelectValue placeholder="Alle Status" />
       </SelectTrigger>
       <SelectContent>
         <SelectItem :value="null">Alle Status</SelectItem>
@@ -90,8 +89,8 @@ function selectRequest(request: RequestDtd) {
           'hover:bg-accent/30 transition-colors cursor-pointer',
           requestStore.selectedRequestId === request.processItem.id
             ? 'bg-accent border-accent-foreground'
-            : ''
-          ]"
+            : '',
+        ]"
       >
         <CardHeader>
           <div class="flex w-full justify-between mb-2">
@@ -103,9 +102,7 @@ function selectRequest(request: RequestDtd) {
             </Badge>
           </div>
           <CardTitle>{{ request.processItem.id }} - {{ request.processItem.title }}</CardTitle>
-          <p class="text-sm text-muted-foreground">
-            Kunde: {{ request.customer.firstName }}
-          </p>
+          <p class="text-sm text-muted-foreground">Kunde: {{ request.customer.firstName }}</p>
         </CardHeader>
 
         <CardContent class="space-y-2">

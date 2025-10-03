@@ -1,10 +1,10 @@
 export enum TimeUnit {
-  MINUTES = "MINUTES",
-  HOUR = "HOUR",
-  DAY = "DAY",
-  WEEK = "WEEK",
-  MONTH = "MONTH",
-  YEAR = "YEAR"
+  MINUTES = 'MINUTES',
+  HOUR = 'HOUR',
+  DAY = 'DAY',
+  WEEK = 'WEEK',
+  MONTH = 'MONTH',
+  YEAR = 'YEAR',
 }
 
 export const TimeUnitLabel: Record<TimeUnit, string> = {
