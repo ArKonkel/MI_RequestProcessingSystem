@@ -34,6 +34,7 @@ import { useDebounceFn } from '@vueuse/core'
 import { TimeUnitLabel } from '@/documentTypes/types/TimeUnit.ts'
 import UserSelect from '@/components/UserSelect.vue'
 import CommentsAccordion from '@/components/CommentsAccordion.vue'
+import {ChargeableLabel} from "@/documentTypes/types/Chargeable.ts";
 
 const requestStore = useRequestStore()
 const alertStore = useAlertStore()
@@ -95,6 +96,7 @@ async function saveRequest() {
       status: editableRequest.value.status,
       assigneeId: editableRequest.value.processItem.assigneeId,
       estimatedScope: estimatedScope.value,
+      chargeable: editableRequest.value.chargeable,
       scopeUnit: editableRequest.value.scopeUnit,
     }
 
@@ -246,6 +248,24 @@ async function addComment() {
               :value="value"
             >
               {{ timeUnitLabel }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
+        <label class="text-sm font-semibold">Zu berechnen</label>
+        <Select v-model="editableRequest.chargeable" @update:modelValue="saveRequest">
+          <SelectTrigger>
+            <SelectValue placeholder="Zeiteinheit" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem
+              v-for="[value, chargeableLabel] in Object.entries(ChargeableLabel)"
+              :key="value"
+              :value="value"
+            >
+              {{ chargeableLabel }}
             </SelectItem>
           </SelectContent>
         </Select>

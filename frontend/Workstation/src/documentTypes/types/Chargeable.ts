@@ -1,11 +1,11 @@
 export enum Chargeable {
-  NOT_DEFINED = 'NOT_DEFINED',
+  NOT_DETERMINED = 'NOT_DETERMINED',
   YES = 'YES',
   NO = 'NO',
 }
 
 export const ChargeableLabel: Record<Chargeable, string> = {
-  [Chargeable.NOT_DEFINED]: 'Nicht geklärt',
+  [Chargeable.NOT_DETERMINED]: 'Nicht geklärt',
   [Chargeable.YES]: 'Ja',
   [Chargeable.NO]: 'Nein',
 }
