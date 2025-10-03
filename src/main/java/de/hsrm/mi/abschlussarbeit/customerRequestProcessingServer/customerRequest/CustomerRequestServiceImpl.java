@@ -63,13 +63,11 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
     public List<CustomerRequestDto> getAllRequests() {
         log.info("Getting all requests");
 
-        List<CustomerRequestDto> requestDtos = customerRequestRepository
-                .findAll(Sort.by(Sort.Direction.DESC, "creationDate"))
+        return customerRequestRepository.
+                findAllByOrderByCreationDateDescIdDesc()
                 .stream()
                 .map(requestMapper::toDto)
                 .toList();
-
-        return requestDtos;
     }
 
 
