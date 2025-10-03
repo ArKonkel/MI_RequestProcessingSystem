@@ -17,6 +17,8 @@ public interface TaskMapper {
     @Mapping(target = "processItem", source = ".")
     @Mapping(target = "calendarEntryId", source = "calendarEntry.id")
     @Mapping(target = "requestId", source = "request.id")
+    @Mapping(target = "requestTitle", source = "request.title")
+    @Mapping(target = "projectTitle", source = "project.title")
     @Mapping(target = "projectId", source = "project.id")
     TaskDto toDto(Task task);
 

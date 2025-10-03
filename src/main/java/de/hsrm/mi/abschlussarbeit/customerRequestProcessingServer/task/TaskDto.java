@@ -21,5 +21,7 @@ public record TaskDto(
         Long calendarEntryId, //TODO das brauche ich hier nicht
         Set<ExpertiseDto> expertise,
         Long requestId,
-        Long projectId
+        String requestTitle,
+        Long projectId,
+        String projectTitle
 ) {}

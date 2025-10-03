@@ -16,5 +16,7 @@ export interface TaskDtd {
   calendarEntryId: number | null
   expertise: ExpertiseDtd[]
   requestId: number | null
+  requestTitle: string
   projectId: number | null
+  projectTitle: string
 }

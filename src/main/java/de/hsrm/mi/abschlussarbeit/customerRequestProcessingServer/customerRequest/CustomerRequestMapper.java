@@ -2,13 +2,14 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerReque
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItemMapper;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customer.CustomerMapper;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 /**
  * Mapper class for {@link CustomerRequest} and {@link CustomerRequestDto}.
  */
-@Mapper(componentModel = "spring", uses = {ProcessItemMapper.class, CustomerMapper.class})
+@Mapper(componentModel = "spring", uses = {TaskMapper.class, ProcessItemMapper.class, CustomerMapper.class})
 public interface CustomerRequestMapper {
 
     @Mapping(target = "processItem", source = ".")

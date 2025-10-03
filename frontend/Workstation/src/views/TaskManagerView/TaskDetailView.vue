@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import {ref, watch} from 'vue'
 
-import { useTaskStore } from '@/stores/taskStore.ts'
-import { useAlertStore } from '@/stores/useAlertStore.ts'
+import {useTaskStore} from '@/stores/taskStore.ts'
+import {useAlertStore} from '@/stores/useAlertStore.ts'
 // import { updateTask } from '@/services/taskService.ts'
 
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import {Badge} from '@/components/ui/badge'
+import {Input} from '@/components/ui/input'
+import {Textarea} from '@/components/ui/textarea'
 import {
   Accordion,
   AccordionContent,
@@ -21,12 +21,12 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import {ScrollArea} from '@/components/ui/scroll-area'
 
-import { PriorityLabel } from '@/documentTypes/types/Priority.ts'
-import { TaskStatusLabel } from '@/documentTypes/types/TaskStatus.ts'
-import type { TaskDtd } from '@/documentTypes/dtds/TaskDtd.ts'
-import { useDebounceFn } from '@vueuse/core'
+import {PriorityLabel} from '@/documentTypes/types/Priority.ts'
+import {TaskStatusLabel} from '@/documentTypes/types/TaskStatus.ts'
+import type {TaskDtd} from '@/documentTypes/dtds/TaskDtd.ts'
+import {useDebounceFn} from '@vueuse/core'
 import CommentsAccordion from "@/components/CommentsAccordion.vue";
 import type {CommentCreateDtd} from "@/documentTypes/dtds/CommentCreateDtd.ts";
 import {addCommentToProcessItem} from "@/services/commentService.ts";
@@ -48,7 +48,7 @@ watch(
   () => taskStore.selectedTask,
   (newTask) => {
     if (newTask) {
-      editableTask.value = { ...newTask }
+      editableTask.value = {...newTask}
       ignoreNextUpdate.value = true
       description.value = newTask.processItem.description
       acceptanceCriteria.value = newTask.acceptanceCriteria
@@ -62,7 +62,7 @@ watch(
       workingTimeInMinutes.value = 0
     }
   },
-  { immediate: true, deep: true },
+  {immediate: true, deep: true},
 )
 
 const debouncedSave = useDebounceFn(async () => {
@@ -140,17 +140,26 @@ async function addComment() {
             </Badge>
           </div>
           <div class="flex gap-6 mt-4 text-sm">
-            <div><span class="font-semibold">Anfrage</span><br />{{ editableTask.requestId }}</div>
-            <div><span class="font-semibold">Projekt</span><br />{{ editableTask.projectId }}</div>
+            <div v-if="editableTask.requestId"><span class="font-semibold">Anfrage</span><br/>
+              <RouterLink :to="`/requests/${editableTask.requestId}`">
+                {{ editableTask.requestId }} - {{ editableTask.requestTitle }}
+              </RouterLink>
+            </div>
+
+            <div v-if="editableTask.projectId"><span class="font-semibold">Projekt</span><br/>
+              <RouterLink :to="`/projects/requests/${editableTask.projectId}`">
+              {{ editableTask.projectId }} - {{ editableTask.projectTitle }}
+              </RouterLink>
+            </div>
             <div>
-              <span class="font-semibold">Geplant bis</span><br />{{
+              <span class="font-semibold">Geplant bis</span><br/>{{
                 new Date(editableTask.dueDate!).toLocaleDateString('de-DE')
               }}
             </div>
           </div>
         </div>
 
-        <Accordion type="multiple" class="w-full" collapsible :defaultValue="['desc', 'acceptance', 'comments']">
+        <Accordion type="multiple" class="w-full" collapsible :defaultValue="['desc', 'comments']">
           <AccordionItem value="desc">
             <AccordionTrigger>Beschreibung</AccordionTrigger>
             <AccordionContent>
@@ -186,7 +195,7 @@ async function addComment() {
         <label class="text-sm font-semibold">Priorität</label>
         <Select v-model="editableTask.priority" @update:modelValue="saveTask">
           <SelectTrigger>
-            <SelectValue placeholder="Select..." />
+            <SelectValue placeholder="Select..."/>
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -204,7 +213,7 @@ async function addComment() {
         <label class="text-sm font-semibold">Status</label>
         <Select v-model="editableTask.status" @update:modelValue="saveTask">
           <SelectTrigger>
-            <SelectValue placeholder="Offen" />
+            <SelectValue placeholder="Offen"/>
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -220,19 +229,19 @@ async function addComment() {
 
       <div>
         <label class="text-sm font-semibold">Zugewiesene Person</label>
-        <Input v-model="editableTask.processItem.assigneeId" placeholder="Keine Person zugewiesen" />
+        <Input v-model="editableTask.processItem.assigneeId" placeholder="Keine Person zugewiesen"/>
       </div>
 
       <div>
         <label class="text-sm font-semibold">Geschätzte Zeit</label>
-        <Input type="number" v-model="estimatedTime" placeholder="Schätzung in Minuten" />
+        <Input type="number" v-model="estimatedTime" placeholder="Schätzung in Minuten"/>
       </div>
 
       <div class="border-b border-gray-300 pb-2 mb-2">
         <label class="text-sm font-semibold">Einheit</label>
         <Select v-model="editableTask.estimationUnit" @update:modelValue="saveTask">
           <SelectTrigger>
-            <SelectValue placeholder="Zeiteinheit" />
+            <SelectValue placeholder="Zeiteinheit"/>
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -249,7 +258,7 @@ async function addComment() {
       <div>
         <label class="text-sm font-semibold">Aufgewandte Zeit (min)</label>
         <Input type="number" v-model="workingTimeInMinutes" placeholder="Zeit eintragen"
-               @update:modelValue="saveTask" />
+               @update:modelValue="saveTask"/>
       </div>
     </div>
   </div>
