@@ -20,7 +20,7 @@ public class CustomerRequestController {
     @GetMapping("/{id}")
     public ResponseEntity<CustomerRequestDto> getRequestById(@PathVariable Long id) {
         log.info("REST request to get request with id {}", id);
-        CustomerRequestDto request = customerRequestService.getRequestById(id);
+        CustomerRequestDto request = customerRequestService.getRequestDtoById(id);
 
         return ResponseEntity.ok(request);
     }

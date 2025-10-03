@@ -87,7 +87,7 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
 
 
     @Override
-    public CustomerRequestDto getRequestById(Long id) {
+    public CustomerRequestDto getRequestDtoById(Long id) {
         log.info("Getting request with id {}", id);
 
         return requestMapper.toDto(customerRequestRepository.findById(id)
@@ -143,6 +143,13 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
         notificationService.sendChangeNotification(new ChangeNotificationEvent(savedRequest.getId(), ChangeType.UPDATED, TargetType.CUSTOMER_REQUEST));
 
         return requestMapper.toDto(savedRequest);
+    }
+
+    @Override
+    public CustomerRequest getRequestById(Long id) {
+        log.info("Getting customer request with id {}", id);
+
+        return customerRequestRepository.findById(id).orElseThrow(() -> new NotFoundException("Request with id " + id + " not found"));
     }
 
 

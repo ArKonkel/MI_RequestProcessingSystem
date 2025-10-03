@@ -10,9 +10,11 @@ public interface CustomerRequestService {
 
     List<CustomerRequestDto> getRequestsByCustomerId(Long customerId);
 
-    CustomerRequestDto getRequestById(Long id);
+    CustomerRequestDto getRequestDtoById(Long id);
 
     CustomerRequestDto updateCustomerRequest(Long id, UpdateCustomerRequestDto updateDto);
+
+    CustomerRequest getRequestById(Long id);
 
     boolean isRequestReadyForProcessing(Long requestId);
 }

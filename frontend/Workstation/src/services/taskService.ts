@@ -3,6 +3,7 @@ import axios from 'axios'
 import type { UpdateCustomerRequestDtd } from '@/documentTypes/dtds/UpdateCustomerRequestDtd.ts'
 import type { RequestDtd } from '@/documentTypes/dtds/RequestDtd.ts'
 import type { UpdateTaskDtd } from '@/documentTypes/dtds/UpdateTaskDtd.ts'
+import type {TaskCreateDtd} from "@/documentTypes/dtds/TaskCreateDtd.ts";
 
 export async function getTask(taskId: number): Promise<TaskDtd> {
   const response = await axios.get<TaskDtd>(`/api/tasks/${taskId}`)
@@ -16,5 +17,10 @@ export async function getAllTasks(): Promise<TaskDtd[]> {
 
 export async function updateTask(id: number, dto: UpdateTaskDtd): Promise<TaskDtd> {
   const response = await axios.patch(`/api/tasks/${id}`, dto)
+  return response.data
+}
+
+export async function createTask(dto: TaskCreateDtd): Promise<TaskDtd> {
+  const response = await axios.post(`/api/tasks`, dto)
   return response.data
 }

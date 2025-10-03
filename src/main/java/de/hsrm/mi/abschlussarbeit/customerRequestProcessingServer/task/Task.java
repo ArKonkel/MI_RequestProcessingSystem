@@ -27,10 +27,10 @@ import java.util.Set;
 public class Task extends ProcessItem {
 
     @PositiveOrZero
-    private BigDecimal estimatedTime;
+    private BigDecimal estimatedTime = BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
-    private TimeUnit estimationUnit;
+    private TimeUnit estimationUnit = TimeUnit.HOUR;
 
     @PositiveOrZero
     private Long workingTimeInMinutes = 0L;

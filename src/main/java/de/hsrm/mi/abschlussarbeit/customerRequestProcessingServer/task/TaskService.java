@@ -11,6 +11,8 @@ public interface TaskService {
 
     List<TaskDto> getAllTasks();
 
+    TaskDto createTask(TaskCreateDto createDto);
+
     TaskDto updateTask(Long taskId, UpdateTaskDto dto);
 
     void addWorkingTime(Long taskId, BigDecimal workingTime, WorkingTimeUnit unit);

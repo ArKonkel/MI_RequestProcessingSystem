@@ -30,7 +30,7 @@ public abstract class ProcessItem {
     @NotBlank
     private String title;
 
-    private String description;
+    private String description = "";
 
     @Column(nullable = false, updatable = false)
     private Instant creationDate;

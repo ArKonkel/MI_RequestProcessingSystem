@@ -1,5 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task;
 
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequest;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequestService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotAllowedException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotFoundException;
@@ -54,7 +55,45 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<TaskDto> getAllTasks() {
         log.info("Getting all tasks");
-        return taskRepository.findAll().stream().map(taskMapper::toDto).toList();
+        return taskRepository.findAllByOrderByCreationDateDescIdDesc().stream().map(taskMapper::toDto).toList();
+    }
+
+    @Override
+    public TaskDto createTask(TaskCreateDto createDto) {
+        Task taskToCreate = new Task();
+
+        if (createDto.title != null) {
+            taskToCreate.setTitle(createDto.title);
+        }
+
+        if (createDto.description != null) {
+            taskToCreate.setDescription(createDto.description);
+        }
+
+        if (createDto.dueDate != null) {
+            taskToCreate.setDueDate(createDto.dueDate);
+        }
+
+        if (createDto.priority != null) {
+            taskToCreate.setPriority(createDto.priority);
+        }
+
+        if (createDto.requestId != null) {
+            CustomerRequest customerRequest = customerRequestService.getRequestById(createDto.requestId);
+            taskToCreate.setRequest(customerRequest);
+        }
+
+
+        Task savedTask = taskRepository.save(taskToCreate);
+
+        notificationService.sendChangeNotification(new ChangeNotificationEvent(savedTask.getId(), ChangeType.CREATED, TargetType.TASK));
+
+        //Also send notification to Customer-Requests because it was created
+        if(savedTask.getRequest() != null) {
+            notificationService.sendChangeNotification(new ChangeNotificationEvent(savedTask.getRequest().getId(), ChangeType.UPDATED, TargetType.CUSTOMER_REQUEST));
+        }
+
+        return taskMapper.toDto(savedTask);
     }
 
     public TaskDto updateTask(Long taskId, UpdateTaskDto updateDto) {
