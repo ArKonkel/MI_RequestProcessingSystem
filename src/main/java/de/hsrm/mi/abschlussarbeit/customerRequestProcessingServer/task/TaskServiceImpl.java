@@ -4,6 +4,10 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerReques
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotAllowedException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotFoundException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.SaveException;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.ChangeNotificationEvent;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.ChangeType;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationService;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.TargetType;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.ProjectService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserService;
@@ -20,6 +24,7 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 public class TaskServiceImpl implements TaskService {
+    private final NotificationService notificationService;
 
     private final TaskRepository taskRepository;
 
@@ -107,6 +112,8 @@ public class TaskServiceImpl implements TaskService {
         }
 
         Task savedTask = taskRepository.save(task);
+
+        notificationService.sendChangeNotification(new ChangeNotificationEvent(savedTask.getId(), ChangeType.UPDATED, TargetType.TASK));
 
         return taskMapper.toDto(savedTask);
     }

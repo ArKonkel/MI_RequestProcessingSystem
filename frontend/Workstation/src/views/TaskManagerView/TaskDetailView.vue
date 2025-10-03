@@ -31,6 +31,8 @@ import CommentsAccordion from "@/components/CommentsAccordion.vue";
 import type {CommentCreateDtd} from "@/documentTypes/dtds/CommentCreateDtd.ts";
 import {addCommentToProcessItem} from "@/services/commentService.ts";
 import {TimeUnitLabel} from "@/documentTypes/types/TimeUnit.ts";
+import {updateTask} from "@/services/taskService.ts";
+import UserSelect from "@/components/UserSelect.vue";
 
 const taskStore = useTaskStore()
 const alertStore = useAlertStore()
@@ -98,10 +100,10 @@ async function saveTask() {
       acceptanceCriteria: acceptanceCriteria.value,
       workingTimeInMinutes: workingTimeInMinutes.value,
     }
-    // await updateTask(editableTask.value.processItem.id, dto)
-    //TODO
-  } catch (err) {
-    alertStore.show('Fehler beim Speichern', 'error')
+    await updateTask(editableTask.value.processItem.id, dto)
+  } catch (err: any) {
+    const msg = err.response?.data?.message || err.response?.data || err.message || String(err);
+    alertStore.show('Fehler beim Speichern: ' + msg, 'error');
   }
 }
 
@@ -148,7 +150,7 @@ async function addComment() {
 
             <div v-if="editableTask.projectId"><span class="font-semibold">Projekt</span><br/>
               <RouterLink :to="`/projects/requests/${editableTask.projectId}`">
-              {{ editableTask.projectId }} - {{ editableTask.projectTitle }}
+                {{ editableTask.projectId }} - {{ editableTask.projectTitle }}
               </RouterLink>
             </div>
             <div>
@@ -227,10 +229,10 @@ async function addComment() {
         </Select>
       </div>
 
-      <div>
-        <label class="text-sm font-semibold">Zugewiesene Person</label>
-        <Input v-model="editableTask.processItem.assigneeId" placeholder="Keine Person zugewiesen"/>
-      </div>
+      <UserSelect
+        v-model="editableTask.processItem.assigneeId"
+        @update:modelValue="saveTask"
+      />
 
       <div>
         <label class="text-sm font-semibold">Geschätzte Zeit</label>

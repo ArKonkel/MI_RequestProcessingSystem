@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Calendar, Home, Inbox, Search, Settings, Mail, ClipboardList } from 'lucide-vue-next'
+import { Calendar, User, Inbox, Search, Settings, Mail, ClipboardList } from 'lucide-vue-next'
 
 import {
   Sidebar,
@@ -29,6 +29,11 @@ const items = [
     title: 'Projects',
     url: '/projects',
     icon: Calendar,
+  },
+  {
+    title: 'Employees',
+    url: '/employees',
+    icon: User,
   },
 ]
 </script>
