@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import {ref, watch} from 'vue'
+import { ref, watch } from 'vue'
 
-import {useTaskStore} from '@/stores/taskStore.ts'
-import {useAlertStore} from '@/stores/useAlertStore.ts'
+import { useTaskStore } from '@/stores/taskStore.ts'
+import { useAlertStore } from '@/stores/useAlertStore.ts'
 
-import {Badge} from '@/components/ui/badge'
-import {Input} from '@/components/ui/input'
-import {Textarea} from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Accordion,
   AccordionContent,
@@ -20,32 +20,28 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select'
-import {ScrollArea} from '@/components/ui/scroll-area'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
-import {PriorityLabel} from '@/documentTypes/types/Priority.ts'
-import {TaskStatusLabel} from '@/documentTypes/types/TaskStatus.ts'
-import type {TaskDtd} from '@/documentTypes/dtds/TaskDtd.ts'
-import {useDebounceFn} from '@vueuse/core'
+import { PriorityLabel } from '@/documentTypes/types/Priority.ts'
+import { TaskStatusLabel } from '@/documentTypes/types/TaskStatus.ts'
+import type { TaskDtd } from '@/documentTypes/dtds/TaskDtd.ts'
+import { useDebounceFn } from '@vueuse/core'
 import CommentsAccordion from '@/components/CommentsAccordion.vue'
-import type {CommentCreateDtd} from '@/documentTypes/dtds/CommentCreateDtd.ts'
-import {addCommentToProcessItem} from '@/services/commentService.ts'
-import {TimeUnitLabel} from '@/documentTypes/types/TimeUnit.ts'
-import {updateTask} from '@/services/taskService.ts'
+import type { CommentCreateDtd } from '@/documentTypes/dtds/CommentCreateDtd.ts'
+import { addCommentToProcessItem } from '@/services/commentService.ts'
+import { TimeUnitLabel } from '@/documentTypes/types/TimeUnit.ts'
+import { updateTask } from '@/services/taskService.ts'
 import UserSelect from '@/components/UserSelect.vue'
-import type {DateValue} from "@internationalized/date";
-import {
-  DateFormatter,
-  getLocalTimeZone,
-  CalendarDate,
-} from "@internationalized/date";
-import {CalendarIcon} from "lucide-vue-next";
+import type { DateValue } from '@internationalized/date'
+import { DateFormatter, getLocalTimeZone, CalendarDate } from '@internationalized/date'
+import { CalendarIcon } from 'lucide-vue-next'
 
-import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
-import {Button} from "@/components/ui/button";
-import {Calendar} from "@/components/ui/calendar";
-import type {UpdateTaskDtd} from "@/documentTypes/dtds/UpdateTaskDtd.ts";
-import ExpertiseSelect from "@/components/ExpertiseSelect.vue";
-import {useRouter} from "vue-router";
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
+import type { UpdateTaskDtd } from '@/documentTypes/dtds/UpdateTaskDtd.ts'
+import ExpertiseSelect from '@/components/ExpertiseSelect.vue'
+import { useRouter } from 'vue-router'
 
 const taskStore = useTaskStore()
 const alertStore = useAlertStore()
@@ -57,14 +53,14 @@ const description = ref('')
 const acceptanceCriteria = ref('')
 const estimatedTime = ref(0)
 const workingTimeInMinutes = ref(0)
-const dueDateValue = ref<DateValue>();
+const dueDateValue = ref<DateValue>()
 const showAddExpertise = ref(false)
 
 const ignoreNextUpdate = ref(false)
 
-const dataFormatter = new DateFormatter("de-DE", {
-  dateStyle: "medium",
-});
+const dataFormatter = new DateFormatter('de-DE', {
+  dateStyle: 'medium',
+})
 
 const expertiseIdToAdd = ref<number | null>(null)
 
@@ -72,25 +68,25 @@ watch(
   () => taskStore.selectedTask,
   (newTask) => {
     if (newTask) {
-      editableTask.value = {...newTask}
+      editableTask.value = { ...newTask }
       ignoreNextUpdate.value = true
       description.value = newTask.processItem.description
       acceptanceCriteria.value = newTask.acceptanceCriteria
       estimatedTime.value = newTask.estimatedTime
       workingTimeInMinutes.value = newTask.workingTimeInMinutes ?? 0
 
-      const [year, month, day] = newTask.dueDate!.split("-").map(Number);
-      dueDateValue.value = new CalendarDate(year, month, day);
+      const [year, month, day] = newTask.dueDate!.split('-').map(Number)
+      dueDateValue.value = new CalendarDate(year, month, day)
     } else {
       editableTask.value = null
       description.value = ''
       acceptanceCriteria.value = ''
       estimatedTime.value = 0
       workingTimeInMinutes.value = 0
-      dueDateValue.value = undefined;
+      dueDateValue.value = undefined
     }
   },
-  {immediate: true, deep: true},
+  { immediate: true, deep: true },
 )
 
 const debouncedSave = useDebounceFn(async () => {
@@ -127,7 +123,7 @@ async function saveTask() {
       acceptanceCriteria: acceptanceCriteria.value,
       workingTimeInMinutes: workingTimeInMinutes.value,
       dueDate: dueDateValue.value ? dueDateValue.value.toString() : undefined,
-      expertiseIds: expertiseIdToAdd.value ? [expertiseIdToAdd.value] : undefined
+      expertiseIds: expertiseIdToAdd.value ? [expertiseIdToAdd.value] : undefined,
     }
     await updateTask(editableTask.value.processItem.id, dto)
   } catch (err: any) {
@@ -136,12 +132,11 @@ async function saveTask() {
   }
 }
 
-
 function addExpertise() {
   if (!expertiseIdToAdd.value) return
 
   const existsInTask = editableTask.value!.expertise.some(
-    (expertise) => expertise.id === expertiseIdToAdd.value
+    (expertise) => expertise.id === expertiseIdToAdd.value,
   )
   if (existsInTask) {
     alertStore.show('Expertise ist bereits vorhanden')
@@ -160,7 +155,6 @@ function switchShowExpertise() {
     showAddExpertise.value = true
   }
 }
-
 
 async function addComment() {
   if (!editableTask.value || !commentText.value) return
@@ -183,12 +177,14 @@ async function addComment() {
 
 function moveToCapacityPlanning() {
   if (editableTask.value?.processItem.id) {
-    router.push({ name: 'capacityPlanningView', params: { taskId: editableTask.value.processItem.id } })
+    router.push({
+      name: 'capacityPlanningView',
+      params: { taskId: editableTask.value.processItem.id },
+    })
   } else {
     alert('Task Id fehlt')
   }
 }
-
 </script>
 
 <template>
@@ -208,43 +204,45 @@ function moveToCapacityPlanning() {
           </div>
 
           <div v-if="showAddExpertise" class="flex pt-3 space-x-2">
-            <ExpertiseSelect v-model="expertiseIdToAdd"/>
+            <ExpertiseSelect v-model="expertiseIdToAdd" />
             <Button @click="addExpertise">Hinzufügen</Button>
             <Button variant="secondary" @click="switchShowExpertise">Abbrechen</Button>
           </div>
           <div class="flex gap-6 mt-4 text-sm">
             <div v-if="editableTask.requestId">
-              <span class="font-semibold">Anfrage</span><br/>
+              <span class="font-semibold">Anfrage</span><br />
               <RouterLink :to="`/requests/${editableTask.requestId}`">
                 {{ editableTask.requestId }} - {{ editableTask.requestTitle }}
               </RouterLink>
             </div>
 
             <div v-if="editableTask.projectId">
-              <span class="font-semibold">Projekt</span><br/>
+              <span class="font-semibold">Projekt</span><br />
               <RouterLink :to="`/projects/requests/${editableTask.projectId}`">
                 {{ editableTask.projectId }} - {{ editableTask.projectTitle }}
               </RouterLink>
             </div>
             <div>
-              <span class="font-semibold">Geplant bis</span><br/>
+              <span class="font-semibold">Geplant bis</span><br />
               <Popover>
                 <PopoverTrigger as-child>
                   <Button
                     variant="outline"
                     :class="[
                       'w-[150px] justify-start',
-                      !dueDateValue ? 'text-muted-foreground' : ''
+                      !dueDateValue ? 'text-muted-foreground' : '',
                     ]"
                   >
-                    <CalendarIcon class="mr-2 h-4 w-4"/>
+                    <CalendarIcon class="mr-2 h-4 w-4" />
                     {{
-                      dueDateValue ? dataFormatter.format(dueDateValue.toDate(getLocalTimeZone())) : "Datum wählen"
+                      dueDateValue
+                        ? dataFormatter.format(dueDateValue.toDate(getLocalTimeZone()))
+                        : 'Datum wählen'
                     }}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent class="w-auto p-0">
-                  <Calendar v-model="dueDateValue" initial-focus @update:modelValue="saveTask"/>
+                  <Calendar v-model="dueDateValue" initial-focus @update:modelValue="saveTask" />
                 </PopoverContent>
               </Popover>
             </div>
@@ -255,14 +253,14 @@ function moveToCapacityPlanning() {
           <AccordionItem value="desc">
             <AccordionTrigger>Beschreibung</AccordionTrigger>
             <AccordionContent>
-              <Textarea v-model="description" class="mt-2 min-h-[200px] resize-none"/>
+              <Textarea v-model="description" class="mt-2 min-h-[200px] resize-none" />
             </AccordionContent>
           </AccordionItem>
 
           <AccordionItem value="acceptance">
             <AccordionTrigger>Akzeptanzkriterien</AccordionTrigger>
             <AccordionContent>
-              <Textarea v-model="acceptanceCriteria" class="mt-2 min-h-[130px] resize-none"/>
+              <Textarea v-model="acceptanceCriteria" class="mt-2 min-h-[130px] resize-none" />
             </AccordionContent>
           </AccordionItem>
 
@@ -282,7 +280,7 @@ function moveToCapacityPlanning() {
         <label class="text-sm font-semibold">Priorität</label>
         <Select v-model="editableTask.priority" @update:modelValue="saveTask">
           <SelectTrigger>
-            <SelectValue placeholder="Select..."/>
+            <SelectValue placeholder="Select..." />
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -300,7 +298,7 @@ function moveToCapacityPlanning() {
         <label class="text-sm font-semibold">Status</label>
         <Select v-model="editableTask.status" @update:modelValue="saveTask">
           <SelectTrigger>
-            <SelectValue placeholder="Offen"/>
+            <SelectValue placeholder="Offen" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -314,18 +312,18 @@ function moveToCapacityPlanning() {
         </Select>
       </div>
 
-      <UserSelect v-model="editableTask.processItem.assignee" @update:modelValue="saveTask"/>
+      <UserSelect v-model="editableTask.processItem.assignee" @update:modelValue="saveTask" />
 
       <div>
         <label class="text-sm font-semibold">Geschätzte Zeit</label>
-        <Input type="number" v-model="estimatedTime" placeholder="Schätzung in Minuten"/>
+        <Input type="number" v-model="estimatedTime" placeholder="Schätzung in Minuten" />
       </div>
 
       <div class="border-b border-gray-300 pb-2 mb-2">
         <label class="text-sm font-semibold">Einheit</label>
         <Select v-model="editableTask.estimationUnit" @update:modelValue="saveTask">
           <SelectTrigger>
-            <SelectValue placeholder="Zeiteinheit"/>
+            <SelectValue placeholder="Zeiteinheit" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem

@@ -1,5 +1,5 @@
-import type {ExpertiseDtd} from "@/documentTypes/dtds/ExpertiseDtd.ts";
-import axios from "axios";
+import type { ExpertiseDtd } from '@/documentTypes/dtds/ExpertiseDtd.ts'
+import axios from 'axios'
 
 export async function getAllExpertise(): Promise<ExpertiseDtd[]> {
   const result = await axios.get('/api/expertise')

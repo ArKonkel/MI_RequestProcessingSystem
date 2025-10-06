@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import {ref, watch} from 'vue'
+import { ref, watch } from 'vue'
 
-import {useRequestStore} from '@/stores/requestStore.ts'
-import {useAlertStore} from '@/stores/useAlertStore.ts'
-import {addCommentToProcessItem} from '@/services/commentService.ts'
-import {updateCustomerRequest} from '@/services/customerRequestService.ts'
+import { useRequestStore } from '@/stores/requestStore.ts'
+import { useAlertStore } from '@/stores/useAlertStore.ts'
+import { addCommentToProcessItem } from '@/services/commentService.ts'
+import { updateCustomerRequest } from '@/services/customerRequestService.ts'
 
-import {Badge} from '@/components/ui/badge'
-import {Input} from '@/components/ui/input'
-import {Textarea} from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Accordion,
   AccordionContent,
@@ -22,22 +22,22 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select'
-import {ScrollArea} from '@/components/ui/scroll-area'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
-import {CategoryLabel} from '@/documentTypes/types/Category.ts'
-import {PriorityLabel} from '@/documentTypes/types/Priority.ts'
-import {RequestStatusLabel} from '@/documentTypes/types/RequestStatus.ts'
+import { CategoryLabel } from '@/documentTypes/types/Category.ts'
+import { PriorityLabel } from '@/documentTypes/types/Priority.ts'
+import { RequestStatusLabel } from '@/documentTypes/types/RequestStatus.ts'
 
-import type {RequestDtd} from '@/documentTypes/dtds/RequestDtd.ts'
-import type {CommentCreateDtd} from '@/documentTypes/dtds/CommentCreateDtd.ts'
-import {useDebounceFn} from '@vueuse/core'
-import {TimeUnitLabel} from '@/documentTypes/types/TimeUnit.ts'
+import type { RequestDtd } from '@/documentTypes/dtds/RequestDtd.ts'
+import type { CommentCreateDtd } from '@/documentTypes/dtds/CommentCreateDtd.ts'
+import { useDebounceFn } from '@vueuse/core'
+import { TimeUnitLabel } from '@/documentTypes/types/TimeUnit.ts'
 import UserSelect from '@/components/UserSelect.vue'
 import CommentsAccordion from '@/components/CommentsAccordion.vue'
-import {ChargeableLabel} from "@/documentTypes/types/Chargeable.ts";
-import {Button} from "@/components/ui/button";
-import type {TaskCreateDtd} from "@/documentTypes/dtds/TaskCreateDtd.ts";
-import {createTask} from "@/services/taskService.ts";
+import { ChargeableLabel } from '@/documentTypes/types/Chargeable.ts'
+import { Button } from '@/components/ui/button'
+import type { TaskCreateDtd } from '@/documentTypes/dtds/TaskCreateDtd.ts'
+import { createTask } from '@/services/taskService.ts'
 
 const requestStore = useRequestStore()
 const alertStore = useAlertStore()
@@ -47,8 +47,8 @@ const commentText = ref('')
 const description = ref('')
 const estimatedScope = ref(0)
 
-const addingTask = ref(false);
-const newTaskTitle = ref("");
+const addingTask = ref(false)
+const newTaskTitle = ref('')
 
 const ignoreNextUpdate = ref(false) //Need to not trigger save on switching between requests
 
@@ -58,7 +58,7 @@ watch(
   (newReq) => {
     if (newReq) {
       // make local copy
-      editableRequest.value = {...newReq}
+      editableRequest.value = { ...newReq }
       ignoreNextUpdate.value = true
       description.value = newReq.processItem.description
       estimatedScope.value = newReq.estimatedScope
@@ -68,7 +68,7 @@ watch(
       estimatedScope.value = 0
     }
   },
-  {immediate: true, deep: true},
+  { immediate: true, deep: true },
 )
 
 //Debounce to not trigger save on every keystroke
@@ -91,31 +91,31 @@ watch(
 )
 
 async function addTaskToRequest() {
-  if (!newTaskTitle.value) return;
+  if (!newTaskTitle.value) return
 
   try {
     const dtd: TaskCreateDtd = {
       title: newTaskTitle.value,
-      requestId: editableRequest.value?.processItem.id
-    };
+      requestId: editableRequest.value?.processItem.id,
+    }
 
-    await createTask(dtd);
-    alertStore.show("Aufgabe erfolgreich erstellt", "success");
-    newTaskTitle.value = '';
-    addingTask.value = false;
+    await createTask(dtd)
+    alertStore.show('Aufgabe erfolgreich erstellt', 'success')
+    newTaskTitle.value = ''
+    addingTask.value = false
   } catch (err: any) {
-    console.error(err);
-    alertStore.show(err.response?.data || "Fehler beim Erstellen der Aufgabe", "error");
+    console.error(err)
+    alertStore.show(err.response?.data || 'Fehler beim Erstellen der Aufgabe', 'error')
   }
 }
 
 function showAddingTask() {
-  addingTask.value = true;
+  addingTask.value = true
 }
 
 function cancelTask() {
-  newTaskTitle.value = "";
-  addingTask.value = false;
+  newTaskTitle.value = ''
+  addingTask.value = false
 }
 
 // save changes
@@ -175,11 +175,11 @@ async function addComment() {
           </h2>
           <div class="flex gap-6 mt-4 text-sm">
             <div>
-              <span class="font-semibold">Kunde: </span><br/>
+              <span class="font-semibold">Kunde: </span><br />
               {{ editableRequest.customer.id }} - {{ editableRequest.customer.firstName }}
             </div>
             <div>
-              <span class="font-semibold">Eingegangen am: </span><br/>
+              <span class="font-semibold">Eingegangen am: </span><br />
               {{ new Date(editableRequest.processItem.creationDate!).toLocaleDateString('de-DE') }}
             </div>
           </div>
@@ -189,7 +189,7 @@ async function addComment() {
           <AccordionItem value="desc">
             <AccordionTrigger>Beschreibung</AccordionTrigger>
             <AccordionContent>
-              <Textarea v-model="description" class="mt-2 min-h-[200px] resize-none"/>
+              <Textarea v-model="description" class="mt-2 min-h-[200px] resize-none" />
             </AccordionContent>
           </AccordionItem>
 
@@ -229,7 +229,6 @@ async function addComment() {
             </AccordionContent>
           </AccordionItem>
 
-
           <CommentsAccordion
             v-model="commentText"
             :comments="editableRequest.processItem.comments"
@@ -245,7 +244,7 @@ async function addComment() {
         <label class="text-sm font-semibold">Priorität</label>
         <Select v-model="editableRequest.priority" @update:modelValue="saveRequest">
           <SelectTrigger>
-            <SelectValue placeholder="Select..."/>
+            <SelectValue placeholder="Select..." />
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -263,7 +262,7 @@ async function addComment() {
         <label class="text-sm font-semibold">Status</label>
         <Select v-model="editableRequest.status" @update:modelValue="saveRequest">
           <SelectTrigger>
-            <SelectValue placeholder="Offen"/>
+            <SelectValue placeholder="Offen" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -277,21 +276,18 @@ async function addComment() {
         </Select>
       </div>
 
-      <UserSelect
-        v-model="editableRequest.processItem.assignee"
-        @update:modelValue="saveRequest"
-      />
+      <UserSelect v-model="editableRequest.processItem.assignee" @update:modelValue="saveRequest" />
 
       <div>
         <label class="text-sm font-semibold">Geschätzte Zeit</label>
-        <Input type="number" v-model="estimatedScope" placeholder="Schätzung in Minuten"/>
+        <Input type="number" v-model="estimatedScope" placeholder="Schätzung in Minuten" />
       </div>
 
       <div>
         <label class="text-sm font-semibold">Einheit</label>
         <Select v-model="editableRequest.scopeUnit" @update:modelValue="saveRequest">
           <SelectTrigger>
-            <SelectValue placeholder="Zeiteinheit"/>
+            <SelectValue placeholder="Zeiteinheit" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -309,7 +305,7 @@ async function addComment() {
         <label class="text-sm font-semibold">Zu berechnen</label>
         <Select v-model="editableRequest.chargeable" @update:modelValue="saveRequest">
           <SelectTrigger>
-            <SelectValue placeholder="Zeiteinheit"/>
+            <SelectValue placeholder="Zeiteinheit" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem

@@ -1,4 +1,4 @@
-import type {Priority} from "@/documentTypes/types/Priority.ts";
+import type { Priority } from '@/documentTypes/types/Priority.ts'
 
 export interface TaskCreateDtd {
   title: string
