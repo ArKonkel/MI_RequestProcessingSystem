@@ -99,6 +99,10 @@ public class TaskServiceImpl implements TaskService {
             notificationService.sendChangeNotification(new ChangeNotificationEvent(savedTask.getRequest().getId(), ChangeType.UPDATED, TargetType.CUSTOMER_REQUEST));
         }
 
+        if (savedTask.getProject() != null) {
+            notificationService.sendChangeNotification(new ChangeNotificationEvent(savedTask.getProject().getId(), ChangeType.UPDATED, TargetType.PROJECT));
+        }
+
         return taskMapper.toDto(savedTask);
     }
 
@@ -147,7 +151,7 @@ public class TaskServiceImpl implements TaskService {
 
         if (updateDto.getExpertiseIds() != null && !updateDto.getExpertiseIds().isEmpty()) {
 
-            for(Long expertiseId : updateDto.getExpertiseIds()) {
+            for (Long expertiseId : updateDto.getExpertiseIds()) {
                 Expertise expertise = new Expertise();
                 expertise.setId(expertiseId);
 

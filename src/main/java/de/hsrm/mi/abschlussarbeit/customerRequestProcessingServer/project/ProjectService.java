@@ -12,6 +12,8 @@ public interface ProjectService {
 
     boolean isProjectReadyForProcessing(Long projectId);
 
+    ProjectDto updateProject(Long projectId, ProjectUpdateDto updateDto);
+
     void updateProjectStatus(Long projectId, ProjectStatus newStatus);
 
     ProjectDependency createProjectDependency(Long sourceProjectId, Long targetProjectId, ProjectDependencyType type);

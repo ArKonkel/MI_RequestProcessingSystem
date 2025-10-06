@@ -33,6 +33,14 @@ public class ProjectController {
         return ResponseEntity.ok().body(dtos);
     }
 
+    @PatchMapping("/{projectId}")
+    public ResponseEntity<ProjectDto> updateProject(@PathVariable Long projectId, @Valid @RequestBody ProjectUpdateDto updateDto) {
+        log.info("REST request to update project {}", projectId);
+
+        ProjectDto updatedDto = projectService.updateProject(projectId, updateDto);
+        return ResponseEntity.ok().body(updatedDto);
+    }
+
     @PostMapping("/dependency")
     public ResponseEntity<Void> createProjectDependency(@Valid @RequestBody CreateDependencyDto dependency) {
         log.info("REST request to create a new dependency");

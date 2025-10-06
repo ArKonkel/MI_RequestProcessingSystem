@@ -31,6 +31,8 @@ import {addCommentToProcessItem} from "@/services/commentService.ts";
 import type {TaskCreateDtd} from "@/documentTypes/dtds/TaskCreateDtd.ts";
 import {createTask} from "@/services/taskService.ts";
 import {ProjectDependencyTypeLabel} from "@/documentTypes/types/ProjectDependencyType.ts";
+import type {ProjectUpdateDtd} from "@/documentTypes/dtds/ProjectUpdateDtd.ts";
+import {updateProject} from "@/services/projectService.ts";
 
 const projectStore = useProjectStore()
 const alertStore = useAlertStore()
@@ -58,6 +60,7 @@ watch(
       editableProject.value = {...newProj}
       ignoreNextUpdate.value = true
       description.value = newProj.processItem.description
+
 
       const [yearStart, monthStart, dayStart] = newProj.startDate!.split('-').map(Number)
       const [yearEnd, monthEnd, dayEnd] = newProj.endDate!.split('-').map(Number)
@@ -94,14 +97,14 @@ watch(
 async function saveProject() {
   if (!editableProject.value) return
   try {
-    const dto = {
+    const dto: ProjectUpdateDtd = {
       description: description.value,
       status: editableProject.value.status,
-      assigneeId: editableProject.value.processItem.assignee.id,
-      startDate: startDateValue.value ? startDateValue.value.toString() : null,
-      endDate: endDateValue.value ? endDateValue.value.toString() : null,
+      assigneeId: editableProject.value.processItem.assignee?.id,
+      startDate: startDateValue.value ? startDateValue.value.toString() : undefined,
+      endDate: endDateValue.value ? endDateValue.value.toString() : undefined,
     }
-    //await updateProject(editableProject.value.processItem.id, dto)
+    await updateProject(editableProject.value.processItem.id, dto)
   } catch (err: any) {
     editableProject.value = projectStore.selectedProjects
     const msg = err.response?.data?.message || err.response?.data || err.message || String(err)
@@ -195,7 +198,7 @@ function openRequest(reqId: number) {
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent class="w-auto p-0">
-                  <Calendar v-model="startDateValue" initial-focus/>
+                  <Calendar v-model="startDateValue" initial-focus @update:modelValue="saveProject"/>
                 </PopoverContent>
               </Popover>
             </div>
@@ -221,7 +224,7 @@ function openRequest(reqId: number) {
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent class="w-auto p-0">
-                  <Calendar v-model="endDateValue" initial-focus/>
+                  <Calendar v-model="endDateValue" initial-focus @update:modelValue="saveProject"/>
                 </PopoverContent>
               </Popover>
             </div>
