@@ -2,10 +2,9 @@
 import {ref, watch} from 'vue'
 import {useProjectStore} from '@/stores/projectStore.ts'
 import {useAlertStore} from '@/stores/useAlertStore.ts'
-import {addCommentToProcessItem} from '@/services/commentService.ts'
-
+import {useDebounceFn} from '@vueuse/core'
+import {ScrollArea} from '@/components/ui/scroll-area'
 import {Badge} from '@/components/ui/badge'
-import {Input} from '@/components/ui/input'
 import {Textarea} from '@/components/ui/textarea'
 import {
   Accordion,
@@ -13,38 +12,45 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion'
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from '@/components/ui/select'
-import {ScrollArea} from '@/components/ui/scroll-area'
-
-import {ProjectStatusLabel} from '@/documentTypes/types/ProjectStatus.ts'
-import type {ProjectDtd} from '@/documentTypes/dtds/ProjectDtd.ts'
-import type {CommentCreateDtd} from '@/documentTypes/dtds/CommentCreateDtd.ts'
-
-import {useDebounceFn} from '@vueuse/core'
-import UserSelect from '@/components/UserSelect.vue'
-import CommentsAccordion from '@/components/CommentsAccordion.vue'
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select'
 import {Button} from '@/components/ui/button'
-import type {TaskCreateDtd} from '@/documentTypes/dtds/TaskCreateDtd.ts'
-import {createTask} from '@/services/taskService.ts'
+import {Popover, PopoverTrigger, PopoverContent} from '@/components/ui/popover'
+import {Calendar} from '@/components/ui/calendar'
+import {CalendarIcon} from 'lucide-vue-next'
+import type {DateValue} from '@internationalized/date'
+import {getLocalTimeZone, parseDate, DateFormatter, CalendarDate} from '@internationalized/date'
+import {useRouter} from 'vue-router'
+
+import type {ProjectDtd} from '@/documentTypes/dtds/ProjectDtd.ts'
+import {ProjectStatusLabel} from '@/documentTypes/types/ProjectStatus.ts'
+import UserSelect from "@/components/UserSelect.vue";
+import CommentsAccordion from "@/components/CommentsAccordion.vue";
+import {Input} from "@/components/ui/input";
+import type {CommentCreateDtd} from "@/documentTypes/dtds/CommentCreateDtd.ts";
+import {addCommentToProcessItem} from "@/services/commentService.ts";
+import type {TaskCreateDtd} from "@/documentTypes/dtds/TaskCreateDtd.ts";
+import {createTask} from "@/services/taskService.ts";
 import {ProjectDependencyTypeLabel} from "@/documentTypes/types/ProjectDependencyType.ts";
 
 const projectStore = useProjectStore()
 const alertStore = useAlertStore()
+const router = useRouter()
 
 const editableProject = ref<ProjectDtd | null>(null)
-const commentText = ref('')
 const description = ref('')
-const addingTask = ref(false)
-const newTaskTitle = ref('')
+const startDateValue = ref<DateValue>()
+const endDateValue = ref<DateValue>()
 const ignoreNextUpdate = ref(false)
 
-// Watch: wenn ausgewähltes Projekt im Store wechselt
+const commentText = ref('')
+const addingTask = ref(false)
+const newTaskTitle = ref('')
+
+const dataFormatter = new DateFormatter('de-DE', {
+  dateStyle: 'medium',
+})
+
+// Watch store
 watch(
   () => projectStore.selectedProjects,
   (newProj) => {
@@ -52,15 +58,22 @@ watch(
       editableProject.value = {...newProj}
       ignoreNextUpdate.value = true
       description.value = newProj.processItem.description
+
+      const [yearStart, monthStart, dayStart] = newProj.startDate!.split('-').map(Number)
+      const [yearEnd, monthEnd, dayEnd] = newProj.endDate!.split('-').map(Number)
+      startDateValue.value = new CalendarDate(yearStart, monthStart, dayStart)
+      endDateValue.value = new CalendarDate(yearEnd, monthEnd, dayEnd)
     } else {
       editableProject.value = null
       description.value = ''
+      startDateValue.value = undefined
+      endDateValue.value = undefined
     }
   },
-  {immediate: true, deep: true},
+  {immediate: true},
 )
 
-// Debounced save
+// debounce save
 const debouncedSave = useDebounceFn(async () => {
   if (!editableProject.value) return
   await saveProject()
@@ -77,32 +90,7 @@ watch(
   },
 )
 
-async function addTaskToProject() {
-  if (!newTaskTitle.value) return
-  try {
-    const dtd: TaskCreateDtd = {
-      title: newTaskTitle.value,
-      projectId: editableProject.value?.processItem.id,
-    }
-    await createTask(dtd)
-    alertStore.show('Aufgabe erfolgreich erstellt', 'success')
-    newTaskTitle.value = ''
-    addingTask.value = false
-  } catch (err: any) {
-    console.error(err)
-    alertStore.show(err.response?.data || 'Fehler beim Erstellen der Aufgabe', 'error')
-  }
-}
-
-function showAddingTask() {
-  addingTask.value = true
-}
-
-function cancelTask() {
-  newTaskTitle.value = ''
-  addingTask.value = false
-}
-
+// save changes
 async function saveProject() {
   if (!editableProject.value) return
   try {
@@ -110,11 +98,9 @@ async function saveProject() {
       description: description.value,
       status: editableProject.value.status,
       assigneeId: editableProject.value.processItem.assignee.id,
-      startDate: editableProject.value.startDate,
-      endDate: editableProject.value.endDate,
+      startDate: startDateValue.value ? startDateValue.value.toString() : null,
+      endDate: endDateValue.value ? endDateValue.value.toString() : null,
     }
-
-    console.log("project should be updated TODO")
     //await updateProject(editableProject.value.processItem.id, dto)
   } catch (err: any) {
     editableProject.value = projectStore.selectedProjects
@@ -138,6 +124,37 @@ async function addComment() {
     alertStore.show(err.response?.data || 'Unbekannter Fehler', 'error')
   }
 }
+
+async function addTaskToProject() {
+  if (!newTaskTitle.value) return
+  try {
+    const dtd: TaskCreateDtd = {
+      title: newTaskTitle.value,
+      projectId: editableProject.value?.processItem.id,
+    }
+    await createTask(dtd)
+    alertStore.show('Aufgabe erfolgreich erstellt', 'success')
+    newTaskTitle.value = ''
+    addingTask.value = false
+  } catch (err: any) {
+    console.error(err)
+    alertStore.show(err.response?.data || 'Fehler beim Erstellen der Aufgabe', 'error')
+  }
+}
+
+function showAddingTask() {
+  addingTask.value = true
+}
+function cancelTask() {
+  newTaskTitle.value = ''
+  addingTask.value = false
+}
+
+
+// navigation zu request
+function openRequest(reqId: number) {
+  router.push({name: 'requestDetailView', params: {requestId: reqId}})
+}
 </script>
 
 <template>
@@ -149,24 +166,69 @@ async function addComment() {
           <h2 class="text-xl font-bold">
             {{ editableProject.processItem.id }} - {{ editableProject.processItem.title }}
           </h2>
+
           <div class="flex gap-6 mt-4 text-sm">
-            <div>
-              <span class="font-semibold">Request: </span><br/>
-              {{ editableProject.requestId }} - {{ editableProject.requestTitle }}
+            <div v-if="editableProject.requestId">
+              <span class="font-semibold">Anfrage</span><br/>
+              <RouterLink :to="`/requests/${editableProject.requestId}`">
+                {{ editableProject.requestId }} - {{ editableProject.requestTitle }}
+              </RouterLink>
             </div>
+            <!-- End -->
             <div>
               <span class="font-semibold">Start: </span><br/>
-              {{ new Date(editableProject.startDate).toLocaleDateString('de-DE') }}
+              <Popover>
+                <PopoverTrigger as-child>
+                  <Button
+                    variant="outline"
+                    :class="[
+                      'w-[120px] justify-start',
+                      !startDateValue ? 'text-muted-foreground' : '',
+                    ]"
+                  >
+                    <CalendarIcon class="mr-2 h-4 w-4"/>
+                    {{
+                      startDateValue
+                        ? dataFormatter.format(startDateValue.toDate(getLocalTimeZone()))
+                        : 'Datum wählen'
+                    }}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent class="w-auto p-0">
+                  <Calendar v-model="startDateValue" initial-focus/>
+                </PopoverContent>
+              </Popover>
             </div>
+
+            <!-- End -->
             <div>
               <span class="font-semibold">Ende: </span><br/>
-              {{ new Date(editableProject.endDate).toLocaleDateString('de-DE') }}
+              <Popover>
+                <PopoverTrigger as-child>
+                  <Button
+                    variant="outline"
+                    :class="[
+                      'w-[120px] justify-start',
+                      !endDateValue ? 'text-muted-foreground' : '',
+                    ]"
+                  >
+                    <CalendarIcon class="mr-2 h-4 w-4"/>
+                    {{
+                      endDateValue
+                        ? dataFormatter.format(endDateValue.toDate(getLocalTimeZone()))
+                        : 'Datum wählen'
+                    }}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent class="w-auto p-0">
+                  <Calendar v-model="endDateValue" initial-focus/>
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
         </div>
 
-        <Accordion type="multiple" class="w-full" collapsible
-                   :defaultValue="['desc', 'tasks', 'comments']">
+        <Accordion type="multiple" class="w-full" collapsible :defaultValue="['desc', 'comments']">
           <AccordionItem value="desc">
             <AccordionTrigger>Beschreibung</AccordionTrigger>
             <AccordionContent>
@@ -179,8 +241,7 @@ async function addComment() {
             <AccordionContent class="flex flex-col gap-2">
               <div v-for="task in editableProject.tasks" :key="task.processItem.id">
                 <RouterLink :to="`/tasks/${task.processItem.id}`" class="block">
-                  <div
-                    class="flex items-center justify-between border p-2 rounded cursor-pointer hover:bg-accent/20">
+                  <div class="flex items-center justify-between border p-2 rounded cursor-pointer hover:bg-accent/20">
                     <div class="flex items-center gap-2">
                       <span>{{ task.processItem.id }}</span>
                       <span class="font-semibold">{{ task.processItem.title }}</span>
@@ -191,7 +252,7 @@ async function addComment() {
               </div>
 
               <div v-if="addingTask" class="flex gap-2 items-center">
-                <Input v-model="newTaskTitle" placeholder="Titel der neuen Aufgabe" class="flex-1"/>
+                <Input v-model="newTaskTitle" placeholder="Titel der neuen Aufgabe" class="flex-1" />
                 <Button @click="addTaskToProject">Erstellen</Button>
                 <Button variant="ghost" @click="cancelTask">Abbrechen</Button>
               </div>
@@ -221,13 +282,13 @@ async function addComment() {
       </div>
     </ScrollArea>
 
-    <!-- Sidebar -->
+    <!-- right sidebar -->
     <div class="w-[200px] space-y-4 p-4 border-l-2 border-accent-200 h-screen">
       <div>
         <label class="text-sm font-semibold">Status</label>
         <Select v-model="editableProject.status" @update:modelValue="saveProject">
           <SelectTrigger>
-            <SelectValue placeholder="Status auswählen"/>
+            <SelectValue placeholder="Status wählen"/>
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -241,7 +302,7 @@ async function addComment() {
         </Select>
       </div>
 
-      <UserSelect v-model="editableProject.processItem.assignee" @update:modelValue="saveProject"/>
+      <UserSelect v-model="editableProject.processItem.assignee" @update:modelValue="saveProject" />
     </div>
   </div>
 </template>
