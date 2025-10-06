@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -24,12 +25,21 @@ public class ProjectController {
         return ResponseEntity.ok().body(dto);
     }
 
+    @GetMapping
+    public ResponseEntity<List<ProjectDto>> getAllProjects() {
+        log.info("REST request to get all projects");
+
+        List<ProjectDto> dtos = projectService.getAllDtoProjects();
+        return ResponseEntity.ok().body(dtos);
+    }
+
     @PostMapping("/dependency")
     public ResponseEntity<Void> createProjectDependency(@Valid @RequestBody CreateDependencyDto dependency) {
         log.info("REST request to create a new dependency");
 
         ProjectDependency createdDependency = projectService.createProjectDependency(dependency.sourceProjectId(), dependency.targetProjectId(), dependency.type());
 
+        //TODO hier falsche url
         URI location = URI.create("api/dependencies/" + createdDependency.getId());
         return ResponseEntity.created(location).build();
     }

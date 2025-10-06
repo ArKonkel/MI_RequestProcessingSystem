@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @Slf4j
 @AllArgsConstructor
@@ -13,6 +15,8 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectRepository projectRepository;
 
     private final ProjectDependencyRepository dependencyRepository;
+
+    private final ProjectMapper projectMapper;
 
     public Project getProjectById(Long projectId) {
         log.info("Getting project with id {}", projectId);
@@ -24,6 +28,13 @@ public class ProjectServiceImpl implements ProjectService {
     public ProjectDto getProjectDtoById(Long projectId) {
         //TODO implement me
         return null;
+    }
+
+    @Override
+    public List<ProjectDto> getAllDtoProjects() {
+        log.info("Getting all dto projects");
+
+        return projectRepository.findAll().stream().map(projectMapper::toDto).toList();
     }
 
     @Override
