@@ -16,5 +16,7 @@ public interface ProjectService {
 
     void updateProjectStatus(Long projectId, ProjectStatus newStatus);
 
+    ProjectDto createProject(ProjectCreateDto createDto);
+
     ProjectDependency createProjectDependency(Long sourceProjectId, Long targetProjectId, ProjectDependencyType type);
 }

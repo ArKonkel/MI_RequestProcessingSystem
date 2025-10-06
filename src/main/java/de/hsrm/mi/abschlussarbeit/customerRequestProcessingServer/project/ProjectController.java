@@ -41,6 +41,16 @@ public class ProjectController {
         return ResponseEntity.ok().body(updatedDto);
     }
 
+    @PostMapping
+    public ResponseEntity<ProjectDto> createProject(@Valid @RequestBody ProjectCreateDto createDto) {
+        log.info("REST request to create a new project");
+
+        ProjectDto createdProject = projectService.createProject(createDto);
+        URI location = URI.create("/api/projects/" + createdProject.processItem().getId());
+
+        return ResponseEntity.created(location).body(createdProject);
+    }
+
     @PostMapping("/dependency")
     public ResponseEntity<Void> createProjectDependency(@Valid @RequestBody CreateDependencyDto dependency) {
         log.info("REST request to create a new dependency");

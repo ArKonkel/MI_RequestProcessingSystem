@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import {ref, watch} from 'vue'
 
-import { useRequestStore } from '@/stores/requestStore.ts'
-import { useAlertStore } from '@/stores/useAlertStore.ts'
-import { addCommentToProcessItem } from '@/services/commentService.ts'
-import { updateCustomerRequest } from '@/services/customerRequestService.ts'
+import {useRequestStore} from '@/stores/requestStore.ts'
+import {useAlertStore} from '@/stores/useAlertStore.ts'
+import {addCommentToProcessItem} from '@/services/commentService.ts'
+import {updateCustomerRequest} from '@/services/customerRequestService.ts'
 
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import {Badge} from '@/components/ui/badge'
+import {Input} from '@/components/ui/input'
+import {Textarea} from '@/components/ui/textarea'
 import {
   Accordion,
   AccordionContent,
@@ -22,22 +22,24 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import {ScrollArea} from '@/components/ui/scroll-area'
 
-import { CategoryLabel } from '@/documentTypes/types/Category.ts'
-import { PriorityLabel } from '@/documentTypes/types/Priority.ts'
-import { RequestStatusLabel } from '@/documentTypes/types/RequestStatus.ts'
+import {CategoryLabel} from '@/documentTypes/types/Category.ts'
+import {PriorityLabel} from '@/documentTypes/types/Priority.ts'
+import {RequestStatusLabel} from '@/documentTypes/types/RequestStatus.ts'
 
-import type { RequestDtd } from '@/documentTypes/dtds/RequestDtd.ts'
-import type { CommentCreateDtd } from '@/documentTypes/dtds/CommentCreateDtd.ts'
-import { useDebounceFn } from '@vueuse/core'
-import { TimeUnitLabel } from '@/documentTypes/types/TimeUnit.ts'
+import type {RequestDtd} from '@/documentTypes/dtds/RequestDtd.ts'
+import type {CommentCreateDtd} from '@/documentTypes/dtds/CommentCreateDtd.ts'
+import {useDebounceFn} from '@vueuse/core'
+import {TimeUnitLabel} from '@/documentTypes/types/TimeUnit.ts'
 import UserSelect from '@/components/UserSelect.vue'
 import CommentsAccordion from '@/components/CommentsAccordion.vue'
-import { ChargeableLabel } from '@/documentTypes/types/Chargeable.ts'
-import { Button } from '@/components/ui/button'
-import type { TaskCreateDtd } from '@/documentTypes/dtds/TaskCreateDtd.ts'
-import { createTask } from '@/services/taskService.ts'
+import {ChargeableLabel} from '@/documentTypes/types/Chargeable.ts'
+import {Button} from '@/components/ui/button'
+import type {TaskCreateDtd} from '@/documentTypes/dtds/TaskCreateDtd.ts'
+import {createTask} from '@/services/taskService.ts'
+import type {ProjectCreateDtd} from "@/documentTypes/dtds/ProjectCreateDtd.ts";
+import {createProject} from "@/services/projectService.ts";
 
 const requestStore = useRequestStore()
 const alertStore = useAlertStore()
@@ -50,6 +52,9 @@ const estimatedScope = ref(0)
 const addingTask = ref(false)
 const newTaskTitle = ref('')
 
+const addingProject = ref(false)
+const newProjectTitle = ref('')
+
 const ignoreNextUpdate = ref(false) //Need to not trigger save on switching between requests
 
 // Watch the store for changes
@@ -58,7 +63,7 @@ watch(
   (newReq) => {
     if (newReq) {
       // make local copy
-      editableRequest.value = { ...newReq }
+      editableRequest.value = {...newReq}
       ignoreNextUpdate.value = true
       description.value = newReq.processItem.description
       estimatedScope.value = newReq.estimatedScope
@@ -68,7 +73,7 @@ watch(
       estimatedScope.value = 0
     }
   },
-  { immediate: true, deep: true },
+  {immediate: true, deep: true},
 )
 
 //Debounce to not trigger save on every keystroke
@@ -109,8 +114,35 @@ async function addTaskToRequest() {
   }
 }
 
+async function addProjectToRequest() {
+  if (!newProjectTitle.value) return
+
+  try {
+    const dtd: ProjectCreateDtd = {
+      title: newProjectTitle.value,
+      requestId: editableRequest.value?.processItem.id,
+    }
+    await createProject(dtd)
+    alertStore.show('Projekt erfolgreich erstellt', 'success')
+    newProjectTitle.value = ''
+    addingProject.value = false
+  } catch (err: any) {
+    console.error(err)
+    alertStore.show(err.response?.data || 'Fehler beim Erstellen des Projekts', 'error')
+  }
+}
+
 function showAddingTask() {
   addingTask.value = true
+}
+
+function showAddingProject() {
+  addingProject.value = true
+}
+
+function cancelProject() {
+  newProjectTitle.value = ''
+  addingProject.value = false
 }
 
 function cancelTask() {
@@ -175,11 +207,11 @@ async function addComment() {
           </h2>
           <div class="flex gap-6 mt-4 text-sm">
             <div>
-              <span class="font-semibold">Kunde: </span><br />
+              <span class="font-semibold">Kunde: </span><br/>
               {{ editableRequest.customer.id }} - {{ editableRequest.customer.firstName }}
             </div>
             <div>
-              <span class="font-semibold">Eingegangen am: </span><br />
+              <span class="font-semibold">Eingegangen am: </span><br/>
               {{ new Date(editableRequest.processItem.creationDate!).toLocaleDateString('de-DE') }}
             </div>
           </div>
@@ -189,11 +221,11 @@ async function addComment() {
           <AccordionItem value="desc">
             <AccordionTrigger>Beschreibung</AccordionTrigger>
             <AccordionContent>
-              <Textarea v-model="description" class="mt-2 min-h-[200px] resize-none" />
+              <Textarea v-model="description" class="mt-2 min-h-[200px] resize-none"/>
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="linked">
+          <AccordionItem value="linked-tasks">
             <AccordionTrigger>Verknüpfte Aufgaben</AccordionTrigger>
             <AccordionContent class="flex flex-col gap-2">
               <!-- Tasks -->
@@ -221,10 +253,43 @@ async function addComment() {
                 <Button @click="addTaskToRequest">Erstellen</Button>
                 <Button variant="ghost" @click="cancelTask">Abbrechen</Button>
               </div>
-
               <!-- Show Add Button -->
               <div class="flex justify-end">
                 <Button @click="showAddingTask">+</Button>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="linked-projects">
+            <AccordionTrigger>Verknüpfte Projekte</AccordionTrigger>
+            <AccordionContent class="flex flex-col gap-2">
+              <!-- Projects -->
+              <div v-for="project in editableRequest.projects" :key="project.processItem.id">
+                <RouterLink :to="`/projects/${project.processItem.id}`" class="block">
+                  <div
+                    class="flex items-center justify-between border p-2 rounded cursor-pointer hover:bg-accent/20"
+                  >
+                    <div class="flex items-center gap-2">
+                      <span>{{ project.processItem.id }}</span>
+                      <span class="font-semibold">{{ project.processItem.title }}</span>
+                    </div>
+                  </div>
+                </RouterLink>
+              </div>
+
+              <div v-if="addingProject" class="flex gap-2 items-center">
+                <Input
+                  v-model="newProjectTitle"
+                  placeholder="Titel des neuen Projekts"
+                  class="flex-1"
+                />
+                <Button @click="addProjectToRequest">Erstellen</Button>
+                <Button variant="secondary" @click="cancelProject">Abbrechen</Button>
+              </div>
+
+              <!-- Show Add Button -->
+              <div class="flex justify-end">
+                <Button @click="showAddingProject">+</Button>
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -244,7 +309,7 @@ async function addComment() {
         <label class="text-sm font-semibold">Priorität</label>
         <Select v-model="editableRequest.priority" @update:modelValue="saveRequest">
           <SelectTrigger>
-            <SelectValue placeholder="Select..." />
+            <SelectValue placeholder="Select..."/>
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -262,7 +327,7 @@ async function addComment() {
         <label class="text-sm font-semibold">Status</label>
         <Select v-model="editableRequest.status" @update:modelValue="saveRequest">
           <SelectTrigger>
-            <SelectValue placeholder="Offen" />
+            <SelectValue placeholder="Offen"/>
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -276,18 +341,18 @@ async function addComment() {
         </Select>
       </div>
 
-      <UserSelect v-model="editableRequest.processItem.assignee" @update:modelValue="saveRequest" />
+      <UserSelect v-model="editableRequest.processItem.assignee" @update:modelValue="saveRequest"/>
 
       <div>
         <label class="text-sm font-semibold">Geschätzte Zeit</label>
-        <Input type="number" v-model="estimatedScope" placeholder="Schätzung in Minuten" />
+        <Input type="number" v-model="estimatedScope" placeholder="Schätzung in Minuten"/>
       </div>
 
       <div>
         <label class="text-sm font-semibold">Einheit</label>
         <Select v-model="editableRequest.scopeUnit" @update:modelValue="saveRequest">
           <SelectTrigger>
-            <SelectValue placeholder="Zeiteinheit" />
+            <SelectValue placeholder="Zeiteinheit"/>
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -305,7 +370,7 @@ async function addComment() {
         <label class="text-sm font-semibold">Zu berechnen</label>
         <Select v-model="editableRequest.chargeable" @update:modelValue="saveRequest">
           <SelectTrigger>
-            <SelectValue placeholder="Zeiteinheit" />
+            <SelectValue placeholder="Zeiteinheit"/>
           </SelectTrigger>
           <SelectContent>
             <SelectItem

@@ -1,11 +1,11 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest;
 
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customer.Customer;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItem;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.Priority;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.Project;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.Priority;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.TimeUnit;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.Task;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customer.Customer;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -50,10 +51,10 @@ public class CustomerRequest extends ProcessItem {
     private Customer customer;
 
     @OneToMany(mappedBy = "request")
-    private Set<Task> tasks;
+    private Set<Task> tasks = new HashSet<>();
 
     @OneToMany(mappedBy = "request")
-    private Set<Project> projects;
+    private Set<Project> projects = new HashSet<>();
 
 
     /**

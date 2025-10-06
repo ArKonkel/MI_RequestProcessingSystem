@@ -149,7 +149,7 @@ VALUES (1, 2, 'HOUR', '2025-11-05', 'HIGH', 'OPEN', 6),
 
 INSERT INTO project (id, end_date, start_date, request_id, status)
 VALUES (9, '2025-11-05', '2025-09-26', 6, 'CREATED'),
-       (8, '2025-11-05', '2025-09-26', 7, 'CREATED');
+       (10, '2025-11-05', '2025-09-26', 7, 'CREATED');
 
 SELECT setval('process_item_seq', (SELECT MAX(id) FROM process_item));
 --------------------------------- TASK_EXPERTISE ------------------------------------------------
@@ -170,6 +170,6 @@ VALUES (1, 7),
 
 --------------------------------- Project_Dependencies  ------------------------------------------------
 INSERT INTO project_dependency(id, type, source_project_id, target_project_id)
-VALUES (1, 'FINISH_TO_START', 8,9);
+VALUES (1, 'FINISH_TO_START', 9,10);
 
 SELECT setval('project_dependency_seq', (SELECT MAX(id) FROM task));

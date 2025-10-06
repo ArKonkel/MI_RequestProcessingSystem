@@ -118,7 +118,6 @@ watch(
 async function saveTask() {
   if (!editableTask.value) return
   try {
-    console.log(editableTask.value)
 
     const dto: UpdateTaskDtd = {
       description: description.value,

@@ -2,6 +2,7 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerReque
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customer.CustomerDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItemDto;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.ProjectDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.Priority;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.TimeUnit;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskDto;
@@ -21,4 +22,5 @@ public class CustomerRequestDto {
     Category category;
     CustomerDto customer;
     List<TaskDto> tasks;
+    List<ProjectDto> projects;
 }

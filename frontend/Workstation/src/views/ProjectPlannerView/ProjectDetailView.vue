@@ -61,11 +61,19 @@ watch(
       ignoreNextUpdate.value = true
       description.value = newProj.processItem.description
 
+      if (newProj.startDate) {
+        const [yearStart, monthStart, dayStart] = newProj.startDate!.split('-').map(Number)
+        startDateValue.value = new CalendarDate(yearStart, monthStart, dayStart)
+      } else {
+        startDateValue.value = undefined
+      }
 
-      const [yearStart, monthStart, dayStart] = newProj.startDate!.split('-').map(Number)
-      const [yearEnd, monthEnd, dayEnd] = newProj.endDate!.split('-').map(Number)
-      startDateValue.value = new CalendarDate(yearStart, monthStart, dayStart)
-      endDateValue.value = new CalendarDate(yearEnd, monthEnd, dayEnd)
+      if (newProj.endDate) {
+        const [yearEnd, monthEnd, dayEnd] = newProj.endDate!.split('-').map(Number)
+        endDateValue.value = new CalendarDate(yearEnd, monthEnd, dayEnd)
+      } else {
+        endDateValue.value = undefined
+      }
     } else {
       editableProject.value = null
       description.value = ''
@@ -148,6 +156,7 @@ async function addTaskToProject() {
 function showAddingTask() {
   addingTask.value = true
 }
+
 function cancelTask() {
   newTaskTitle.value = ''
   addingTask.value = false
@@ -185,7 +194,7 @@ function openRequest(reqId: number) {
                   <Button
                     variant="outline"
                     :class="[
-                      'w-[120px] justify-start',
+                      'w-[150px] justify-start',
                       !startDateValue ? 'text-muted-foreground' : '',
                     ]"
                   >
@@ -198,7 +207,8 @@ function openRequest(reqId: number) {
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent class="w-auto p-0">
-                  <Calendar v-model="startDateValue" initial-focus @update:modelValue="saveProject"/>
+                  <Calendar v-model="startDateValue" initial-focus
+                            @update:modelValue="saveProject"/>
                 </PopoverContent>
               </Popover>
             </div>
@@ -211,7 +221,7 @@ function openRequest(reqId: number) {
                   <Button
                     variant="outline"
                     :class="[
-                      'w-[120px] justify-start',
+                      'w-[150px] justify-start',
                       !endDateValue ? 'text-muted-foreground' : '',
                     ]"
                   >
@@ -244,7 +254,8 @@ function openRequest(reqId: number) {
             <AccordionContent class="flex flex-col gap-2">
               <div v-for="task in editableProject.tasks" :key="task.processItem.id">
                 <RouterLink :to="`/tasks/${task.processItem.id}`" class="block">
-                  <div class="flex items-center justify-between border p-2 rounded cursor-pointer hover:bg-accent/20">
+                  <div
+                    class="flex items-center justify-between border p-2 rounded cursor-pointer hover:bg-accent/20">
                     <div class="flex items-center gap-2">
                       <span>{{ task.processItem.id }}</span>
                       <span class="font-semibold">{{ task.processItem.title }}</span>
@@ -255,7 +266,7 @@ function openRequest(reqId: number) {
               </div>
 
               <div v-if="addingTask" class="flex gap-2 items-center">
-                <Input v-model="newTaskTitle" placeholder="Titel der neuen Aufgabe" class="flex-1" />
+                <Input v-model="newTaskTitle" placeholder="Titel der neuen Aufgabe" class="flex-1"/>
                 <Button @click="addTaskToProject">Erstellen</Button>
                 <Button variant="ghost" @click="cancelTask">Abbrechen</Button>
               </div>
@@ -305,7 +316,7 @@ function openRequest(reqId: number) {
         </Select>
       </div>
 
-      <UserSelect v-model="editableProject.processItem.assignee" @update:modelValue="saveProject" />
+      <UserSelect v-model="editableProject.processItem.assignee" @update:modelValue="saveProject"/>
     </div>
   </div>
 </template>

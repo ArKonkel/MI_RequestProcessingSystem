@@ -1,5 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project;
 
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequest;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequestService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotFoundException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.ChangeNotificationEvent;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.ChangeType;
@@ -21,6 +23,8 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectRepository projectRepository;
 
     private final ProjectDependencyRepository dependencyRepository;
+
+    private final CustomerRequestService customerRequestService;
 
     private final ProjectMapper projectMapper;
 
@@ -108,6 +112,43 @@ public class ProjectServiceImpl implements ProjectService {
 
         project.setStatus(newStatus);
         projectRepository.save(project);
+    }
+
+    @Override
+    public ProjectDto createProject(ProjectCreateDto createDto) {
+        Project projectToCreate = new Project();
+
+        if (createDto.title() != null) {
+            projectToCreate.setTitle(createDto.title());
+        }
+        if (createDto.description() != null) {
+            projectToCreate.setDescription(createDto.description());
+        }
+        if (createDto.status() != null) {
+            projectToCreate.setStatus(createDto.status());
+        }
+        if (createDto.startDate() != null) {
+            projectToCreate.setStartDate(createDto.startDate());
+        }
+        if (createDto.endDate() != null) {
+            projectToCreate.setEndDate(createDto.endDate());
+        }
+
+        if (createDto.requestId() != null) {
+            CustomerRequest customerRequest = customerRequestService.getRequestById(createDto.requestId());
+            projectToCreate.setRequest(customerRequest);
+        }
+
+        Project savedProject = projectRepository.save(projectToCreate);
+
+        notificationService.sendChangeNotification(new ChangeNotificationEvent(savedProject.getId(), ChangeType.CREATED, TargetType.PROJECT));
+
+        //Also send notification to Customer-Requests because it was created
+        if (savedProject.getRequest() != null) {
+            notificationService.sendChangeNotification(new ChangeNotificationEvent(savedProject.getRequest().getId(), ChangeType.UPDATED, TargetType.CUSTOMER_REQUEST));
+        }
+
+        return projectMapper.toDto(savedProject);
     }
 
     @Override
