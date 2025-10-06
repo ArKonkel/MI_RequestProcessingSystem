@@ -45,9 +45,11 @@ import {Button} from "@/components/ui/button";
 import {Calendar} from "@/components/ui/calendar";
 import type {UpdateTaskDtd} from "@/documentTypes/dtds/UpdateTaskDtd.ts";
 import ExpertiseSelect from "@/components/ExpertiseSelect.vue";
+import {useRouter} from "vue-router";
 
 const taskStore = useTaskStore()
 const alertStore = useAlertStore()
+const router = useRouter()
 
 const editableTask = ref<TaskDtd | null>(null)
 const commentText = ref('')
@@ -120,7 +122,7 @@ async function saveTask() {
       description: description.value,
       priority: editableTask.value.priority,
       status: editableTask.value.status,
-      assigneeId: editableTask.value.processItem.assigneeId,
+      assigneeId: editableTask.value.processItem.assignee.id,
       estimatedTime: estimatedTime.value,
       acceptanceCriteria: acceptanceCriteria.value,
       workingTimeInMinutes: workingTimeInMinutes.value,
@@ -178,6 +180,15 @@ async function addComment() {
     alertStore.show('Fehler beim Kommentieren', 'error')
   }
 }
+
+function moveToCapacityPlanning() {
+  if (editableTask.value?.processItem.id) {
+    router.push({ name: 'capacityPlanningView', params: { taskId: editableTask.value.processItem.id } })
+  } else {
+    alert('Task Id fehlt')
+  }
+}
+
 </script>
 
 <template>
@@ -201,20 +212,6 @@ async function addComment() {
             <Button @click="addExpertise">Hinzufügen</Button>
             <Button variant="secondary" @click="switchShowExpertise">Abbrechen</Button>
           </div>
-
-          <!--
-            <TagsInput v-model="editableTask.expertise" placeholder="Emails...">
-              <TagsInputItem v-for="expertise in editableTask.expertise" :key="expertise.id" :value="expertise.name">
-                <TagsInputItemText/>
-                <TagsInputItemDelete/>
-              </TagsInputItem>
-              <TagsInputInput placeholder="Expertisen..."/>
-            </TagsInput>
-
-          <UserSelect v-model="editableTask.processItem.assigneeId" @update:modelValue="saveTask" />
-
-            -->
-
           <div class="flex gap-6 mt-4 text-sm">
             <div v-if="editableTask.requestId">
               <span class="font-semibold">Anfrage</span><br/>
@@ -276,6 +273,7 @@ async function addComment() {
           />
         </Accordion>
       </div>
+      <Button @click="moveToCapacityPlanning">Zur Planung</Button>
     </ScrollArea>
 
     <!-- right sidebar -->
@@ -316,7 +314,7 @@ async function addComment() {
         </Select>
       </div>
 
-      <UserSelect v-model="editableTask.processItem.assigneeId" @update:modelValue="saveTask"/>
+      <UserSelect v-model="editableTask.processItem.assignee" @update:modelValue="saveTask"/>
 
       <div>
         <label class="text-sm font-semibold">Geschätzte Zeit</label>

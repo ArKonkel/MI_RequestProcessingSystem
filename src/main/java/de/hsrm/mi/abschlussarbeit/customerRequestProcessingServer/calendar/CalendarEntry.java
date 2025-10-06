@@ -38,7 +38,7 @@ public class CalendarEntry {
     @JoinColumn(name = "calendar_id")
     private Calendar calendar;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "task_id")
     private Task task;
 }

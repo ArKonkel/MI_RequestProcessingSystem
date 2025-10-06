@@ -17,6 +17,8 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -47,8 +49,8 @@ public class Task extends ProcessItem {
     @Enumerated(EnumType.STRING)
     private TaskStatus status = TaskStatus.OPEN;
 
-    @OneToOne(mappedBy = "task")
-    private CalendarEntry calendarEntry;
+    @OneToMany(mappedBy = "task")
+    private List<CalendarEntry> calendarEntry = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(

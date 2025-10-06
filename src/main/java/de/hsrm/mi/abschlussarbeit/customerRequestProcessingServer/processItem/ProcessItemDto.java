@@ -1,6 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment.CommentDto;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -14,6 +15,6 @@ public class ProcessItemDto {
     String title;
     String description;
     Instant creationDate;
-    Long assigneeId;
+    UserDto assignee;
     List<CommentDto> comments;
 }

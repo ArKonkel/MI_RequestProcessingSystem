@@ -5,9 +5,9 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { getAllUser } from '@/services/userService'
 import type { UserDtd } from '@/documentTypes/dtds/UserDtd'
 
-const props = defineProps<{ modelValue: number | null }>()
+const props = defineProps<{ modelValue: UserDtd | null }>()
 const emit = defineEmits<{
-  (emit: 'update:modelValue', value: number | null): void
+  (emit: 'update:modelValue', value: UserDtd | null): void
 }>()
 
 const users = ref<UserDtd[]>([])
@@ -18,8 +18,7 @@ const dropdownOpen = ref(false)
 watch(
   () => props.modelValue,
   (val) => {
-    const selected = users.value.find((user) => user.id === val)
-    search.value = selected?.name ?? ''
+    search.value = val?.name ?? ''
   },
 )
 
@@ -38,7 +37,7 @@ watch(search, (val) => {
 })
 
 function selectUser(user: UserDtd) {
-  emit('update:modelValue', user.id)
+  emit('update:modelValue', user)
   search.value = user.name
   dropdownOpen.value = false
 }

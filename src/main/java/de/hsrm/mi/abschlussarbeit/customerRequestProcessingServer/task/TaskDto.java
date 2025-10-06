@@ -18,7 +18,6 @@ public record TaskDto(
         Priority priority,
         String acceptanceCriteria,
         TaskStatus status,
-        Long calendarEntryId, //TODO das brauche ich hier nicht
         Set<ExpertiseDto> expertise,
         Long requestId,
         String requestTitle,
