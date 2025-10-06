@@ -3,7 +3,6 @@ import { ref, watch } from 'vue'
 
 import { useTaskStore } from '@/stores/taskStore.ts'
 import { useAlertStore } from '@/stores/useAlertStore.ts'
-// import { updateTask } from '@/services/taskService.ts'
 
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
@@ -33,6 +32,18 @@ import { addCommentToProcessItem } from '@/services/commentService.ts'
 import { TimeUnitLabel } from '@/documentTypes/types/TimeUnit.ts'
 import { updateTask } from '@/services/taskService.ts'
 import UserSelect from '@/components/UserSelect.vue'
+import type { DateValue} from "@internationalized/date";
+import {
+  DateFormatter,
+  getLocalTimeZone,
+  CalendarDate,
+} from "@internationalized/date";
+import { CalendarIcon } from "lucide-vue-next";
+
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import type {UpdateTaskDtd} from "@/documentTypes/dtds/UpdateTaskDtd.ts";
 
 const taskStore = useTaskStore()
 const alertStore = useAlertStore()
@@ -43,8 +54,13 @@ const description = ref('')
 const acceptanceCriteria = ref('')
 const estimatedTime = ref(0)
 const workingTimeInMinutes = ref(0)
+const dueDateValue = ref<DateValue>();
 
 const ignoreNextUpdate = ref(false)
+
+const dataFormatter = new DateFormatter("de-DE", {
+  dateStyle: "medium",
+});
 
 watch(
   () => taskStore.selectedTask,
@@ -56,12 +72,16 @@ watch(
       acceptanceCriteria.value = newTask.acceptanceCriteria
       estimatedTime.value = newTask.estimatedTime
       workingTimeInMinutes.value = newTask.workingTimeInMinutes ?? 0
+
+      const [year, month, day] = newTask.dueDate!.split("-").map(Number);
+      dueDateValue.value = new CalendarDate(year, month, day);
     } else {
       editableTask.value = null
       description.value = ''
       acceptanceCriteria.value = ''
       estimatedTime.value = 0
       workingTimeInMinutes.value = 0
+      dueDateValue.value = undefined;
     }
   },
   { immediate: true, deep: true },
@@ -92,7 +112,7 @@ watch(
 async function saveTask() {
   if (!editableTask.value) return
   try {
-    const dto = {
+    const dto: UpdateTaskDtd = {
       description: description.value,
       priority: editableTask.value.priority,
       status: editableTask.value.status,
@@ -100,6 +120,7 @@ async function saveTask() {
       estimatedTime: estimatedTime.value,
       acceptanceCriteria: acceptanceCriteria.value,
       workingTimeInMinutes: workingTimeInMinutes.value,
+      dueDate: dueDateValue.value ? dueDateValue.value.toString() : undefined
     }
     await updateTask(editableTask.value.processItem.id, dto)
   } catch (err: any) {
@@ -156,10 +177,27 @@ async function addComment() {
                 {{ editableTask.projectId }} - {{ editableTask.projectTitle }}
               </RouterLink>
             </div>
-            <div>
-              <span class="font-semibold">Geplant bis</span><br />{{
-                new Date(editableTask.dueDate!).toLocaleDateString('de-DE')
-              }}
+            <div >
+              <span class="font-semibold">Geplant bis</span><br />
+              <Popover>
+                <PopoverTrigger as-child>
+                  <Button
+                    variant="outline"
+                    :class="[
+                      'w-[150px] justify-start',
+                      !dueDateValue ? 'text-muted-foreground' : ''
+                    ]"
+                  >
+                    <CalendarIcon class="mr-2 h-4 w-4" />
+                    {{
+                      dueDateValue ? dataFormatter.format(dueDateValue.toDate(getLocalTimeZone())) : "Datum wählen"
+                    }}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent class="w-auto p-0">
+                  <Calendar v-model="dueDateValue" initial-focus @update:modelValue="saveTask"/>
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
         </div>
