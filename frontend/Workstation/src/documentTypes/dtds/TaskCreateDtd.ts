@@ -6,4 +6,5 @@ export interface TaskCreateDtd {
   dueDate?: string
   priority?: Priority
   requestId?: number
+  projectId?: number
 }

@@ -4,6 +4,8 @@ import TaskCapacityPlanningView from '@/views/ResourceCapacityPlanningView/TaskC
 import RequestView from '@/views/RequestManagerView/RequestView.vue'
 import RequestDetailView from '@/views/RequestManagerView/RequestDetailView.vue'
 import TaskDetailView from '@/views/TaskManagerView/TaskDetailView.vue'
+import ProjectDetailView from "@/views/ProjectPlannerView/ProjectDetailView.vue";
+import ProjectView from "@/views/ProjectPlannerView/ProjectView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,15 +26,18 @@ const router = createRouter({
         },
       ],
     },
-    /*
-
   {
     path: '/projects',
-    name: 'projectsPlanningView',
-    component: ProjectPlanningView,
-
+    name: 'projectView',
+    component: ProjectView,
+    children: [
+      {
+        path: ':projectId',
+        name: 'projectDetailView',
+        component: ProjectDetailView,
+      },
+    ],
   },
-     */
     {
       path: '/tasks',
       name: 'taskView',

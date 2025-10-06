@@ -12,5 +12,5 @@ public class TaskCreateDto {
     LocalDate dueDate;
     Priority priority;
     Long requestId;
-    //Long projectId;
+    Long projectId;
 }

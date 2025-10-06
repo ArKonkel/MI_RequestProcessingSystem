@@ -10,6 +10,7 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.C
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.ChangeType;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.TargetType;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.Project;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.ProjectService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserService;
@@ -79,11 +80,15 @@ public class TaskServiceImpl implements TaskService {
             taskToCreate.setPriority(createDto.priority);
         }
 
-        if (createDto.requestId != null) {
+        if (createDto.requestId != null && createDto.projectId == null) {
             CustomerRequest customerRequest = customerRequestService.getRequestById(createDto.requestId);
             taskToCreate.setRequest(customerRequest);
         }
 
+        if (createDto.projectId != null) {
+            Project project = projectService.getProjectById(createDto.projectId);
+            taskToCreate.setProject(project);
+        }
 
         Task savedTask = taskRepository.save(taskToCreate);
 
