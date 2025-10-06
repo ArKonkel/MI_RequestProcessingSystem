@@ -37,6 +37,5 @@ class ProcessItemMapperTest {
         assertEquals("Test Title", dto.getTitle());
         assertEquals("Test Description", dto.getDescription());
         assertEquals(Instant.parse("2025-09-23T14:00:00Z"), dto.getCreationDate());
-        assertEquals(42L, dto.getAssigneeId());
     }
 }

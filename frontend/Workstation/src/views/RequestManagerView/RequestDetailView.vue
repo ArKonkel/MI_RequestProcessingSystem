@@ -128,7 +128,7 @@ async function saveRequest() {
       description: description.value,
       priority: editableRequest.value.priority,
       status: editableRequest.value.status,
-      assigneeId: editableRequest.value.processItem.assigneeId,
+      assigneeId: editableRequest.value.processItem.assignee.id,
       estimatedScope: estimatedScope.value,
       chargeable: editableRequest.value.chargeable,
       scopeUnit: editableRequest.value.scopeUnit,
@@ -278,7 +278,7 @@ async function addComment() {
       </div>
 
       <UserSelect
-        v-model="editableRequest.processItem.assigneeId"
+        v-model="editableRequest.processItem.assignee"
         @update:modelValue="saveRequest"
       />
 

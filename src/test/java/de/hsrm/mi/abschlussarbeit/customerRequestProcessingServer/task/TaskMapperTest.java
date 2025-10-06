@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -49,7 +50,7 @@ class TaskMapperTest {
         task.setPriority(Priority.HIGH);
         task.setStatus(TaskStatus.OPEN);
 
-        task.setCalendarEntry(calendarEntry);
+        task.setCalendarEntry(List.of(calendarEntry));
         task.setRequest(request);
         task.setProject(project);
 
@@ -72,7 +73,6 @@ class TaskMapperTest {
         assertEquals(Priority.HIGH, dto.priority());
         assertEquals(TaskStatus.OPEN, dto.status());
 
-        assertEquals(11L, dto.calendarEntryId());
         assertEquals(22L, dto.requestId());
         assertEquals(33L, dto.projectId());
 

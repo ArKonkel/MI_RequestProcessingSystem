@@ -3,12 +3,14 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequest;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequestService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotAllowedException;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItemDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.Project;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.ProjectService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.Priority;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.TimeUnit;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +22,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,6 +44,9 @@ class TaskServiceWithoutMapperTest {
 
     @Mock
     private CustomerRequestService customerRequestService;
+
+    @Mock
+    private NotificationService notificationService;
 
     @InjectMocks
     private TaskServiceImpl taskService;
@@ -79,13 +83,14 @@ class TaskServiceWithoutMapperTest {
 
         User assignee = new User();
         assignee.setId(42L);
+        assignee.setName("Gandalf");
 
         when(taskRepository.findById(1L)).thenReturn(Optional.of(existingTask));
         when(userService.getUserById(42L)).thenReturn(assignee);
         when(taskRepository.save(any(Task.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         TaskDto expectedDto = new TaskDto(
-                new ProcessItemDto(1L, "New Title", "New Description", null, 42L,  List.of()),
+                new ProcessItemDto(1L, "New Title", "New Description", null, new UserDto(42L, "Gandalf"),  List.of()),
                 BigDecimal.valueOf(8),
                 TimeUnit.HOUR,
                 480L,
@@ -94,9 +99,10 @@ class TaskServiceWithoutMapperTest {
                 "",
                 TaskStatus.IN_PROGRESS,
                 null,
-                Set.of(),
                 null,
-                1L
+                null,
+                1L,
+                null
 
         );
         when(taskMapper.toDto(existingTask)).thenReturn(expectedDto);

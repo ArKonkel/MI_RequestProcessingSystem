@@ -58,7 +58,7 @@ class CustomerRequestMapperTest {
         assertEquals("Feature Request", dto.getProcessItem().getTitle());
         assertEquals("Add export functionality", dto.getProcessItem().getDescription());
         assertEquals(creationDate, dto.getProcessItem().getCreationDate());
-        assertNull(dto.getProcessItem().getAssigneeId());
+        assertNull(dto.getProcessItem().getAssignee());
 
         assertEquals(Priority.HIGH, dto.getPriority());
         assertEquals(BigDecimal.valueOf(15), dto.getEstimatedScope());
