@@ -2,6 +2,7 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequest;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequestService;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.expertise.Expertise;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotAllowedException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotFoundException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.SaveException;
@@ -89,7 +90,7 @@ public class TaskServiceImpl implements TaskService {
         notificationService.sendChangeNotification(new ChangeNotificationEvent(savedTask.getId(), ChangeType.CREATED, TargetType.TASK));
 
         //Also send notification to Customer-Requests because it was created
-        if(savedTask.getRequest() != null) {
+        if (savedTask.getRequest() != null) {
             notificationService.sendChangeNotification(new ChangeNotificationEvent(savedTask.getRequest().getId(), ChangeType.UPDATED, TargetType.CUSTOMER_REQUEST));
         }
 
@@ -124,7 +125,7 @@ public class TaskServiceImpl implements TaskService {
             task.setPriority(updateDto.getPriority());
         }
 
-        if (updateDto.getStatus() != null) {
+        if (updateDto.getStatus() != null && updateDto.getStatus() != task.getStatus()) {
             //Status can only be updated when project xor request is ready for processing.
             if (task.getProject() != null &&
                     !projectService.isProjectReadyForProcessing(task.getProject().getId())) {
@@ -137,6 +138,16 @@ public class TaskServiceImpl implements TaskService {
             }
 
             task.setStatus(updateDto.getStatus());
+        }
+
+        if (updateDto.getExpertiseIds() != null && !updateDto.getExpertiseIds().isEmpty()) {
+
+            for(Long expertiseId : updateDto.getExpertiseIds()) {
+                Expertise expertise = new Expertise();
+                expertise.setId(expertiseId);
+
+                task.getExpertise().add(expertise);
+            }
         }
 
         if (updateDto.getTitle() != null) {

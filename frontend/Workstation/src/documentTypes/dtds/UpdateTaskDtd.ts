@@ -13,4 +13,5 @@ export interface UpdateTaskDtd {
   status?: TaskStatus
   priority?: Priority
   acceptanceCriteria?: string
+  expertiseIds?: number[]
 }

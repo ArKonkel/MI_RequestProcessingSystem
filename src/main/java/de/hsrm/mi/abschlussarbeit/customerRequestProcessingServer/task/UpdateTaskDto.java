@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Builder
 @Data
@@ -21,4 +22,5 @@ public class UpdateTaskDto {
     private TaskStatus status;
     private Priority priority;
     private String acceptanceCriteria;
+    private List<Long> expertiseIds;
 }
