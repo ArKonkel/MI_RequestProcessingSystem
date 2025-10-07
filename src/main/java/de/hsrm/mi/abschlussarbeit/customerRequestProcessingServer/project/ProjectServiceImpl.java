@@ -48,7 +48,7 @@ public class ProjectServiceImpl implements ProjectService {
     public List<ProjectDto> getAllDtoProjects() {
         log.info("Getting all dto projects");
 
-        return projectRepository.findAll().stream().map(projectMapper::toDto).toList();
+        return projectRepository.findAllByOrderByCreationDateDescIdDesc().stream().map(projectMapper::toDto).toList();
     }
 
     @Override
@@ -111,7 +111,7 @@ public class ProjectServiceImpl implements ProjectService {
                     " Project: " + project.getId() + " Status: " + project.getStatus() + " Dependencies: " + project.getIncomingDependencies());
 
         project.setStatus(newStatus);
-        projectRepository.save(project);
+        //projectRepository.save(project);
     }
 
     @Override
