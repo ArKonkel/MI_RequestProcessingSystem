@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ref, watch, computed, onMounted} from 'vue'
-import {addDays, format} from 'date-fns'
+import {addDays, format, getYear} from 'date-fns'
 import {de} from 'date-fns/locale'
 import {useEmployeeStore} from '@/stores/employeeStore.ts'
 import {useAlertStore} from '@/stores/useAlertStore.ts'
@@ -9,7 +9,7 @@ import {Input} from '@/components/ui/input'
 import {Label} from '@/components/ui/label'
 import {Badge} from '@/components/ui/badge'
 import {Button} from '@/components/ui/button'
-import {getEmployeeCalendar} from '@/services/calendarService.ts'
+import {getEmployeeCalendar, initCalendarOfEmployee} from '@/services/calendarService.ts'
 import type {CalendarDtd} from '@/documentTypes/dtds/CalendarDtd.ts'
 import type {EmployeeDtd} from '@/documentTypes/dtds/EmployeeDtd.ts'
 import {ExpertiseLevelLabel} from "@/documentTypes/types/ExpertiseLevel.ts";
@@ -63,6 +63,8 @@ async function loadCalendar() {
       format(startDate.value, 'yyyy-MM-dd'),
       format(addDays(startDate.value, visibleDays), 'yyyy-MM-dd'),
     )
+
+    alertStore.show('Kalender erfolgreich geladen.', 'success')
   } catch (err: any) {
     console.error(err)
     alertStore.show('Fehler beim Laden des Kalenders', 'error')
@@ -70,7 +72,17 @@ async function loadCalendar() {
 }
 
 async function importOutlookCalendar() {
-  //TODO
+  if (!editableEmployee.value) return
+
+  try {
+    await initCalendarOfEmployee(editableEmployee.value?.id, new Date().getFullYear())
+    await loadCalendar()
+
+    alertStore.show('Kalender erfolgreich importiert.', 'success')
+  } catch (err: any) {
+    console.error(err)
+    alertStore.show('Fehler beim importieren des Outlook Kalenders', 'error')
+  }
 
 }
 

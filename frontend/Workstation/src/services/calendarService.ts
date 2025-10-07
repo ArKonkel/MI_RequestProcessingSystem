@@ -9,3 +9,7 @@ export async function getEmployeeCalendar(
   const response = await axios.get<CalendarDtd>(`/api/calendars/${employeeId}/${from}/${to}`)
   return response.data
 }
+
+export async function initCalendarOfEmployee(employeeId: number, year: number): Promise<void> {
+  await axios.post(`/api/calendars/${employeeId}/${year}`)
+}
