@@ -1,9 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee;
 
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.expertise.ExpertiseDto;
-
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Set;
 
 public record EmployeeDto(

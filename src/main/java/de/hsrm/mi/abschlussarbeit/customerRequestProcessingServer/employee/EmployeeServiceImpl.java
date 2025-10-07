@@ -9,7 +9,7 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class EmployeeServiceImpl implements EmployeeService{
+public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeExpertiseRepository employeeExpertiseRepository;
 
@@ -28,10 +28,12 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     @Override
-    public List<Employee> getEmployeesByIds(List<Long> ids) {
-        log.info("Getting employees with ids {}", ids);
+    public List<EmployeeDto> getAllDtoEmployees() {
+        log.info("Getting all dto employees");
 
-        return employeeRepository.findByIdIn(ids);
+        List<Employee> employees = employeeRepository.findAllByOrderByLastNameAscFirstNameAsc();
+
+        return employees.stream().map(employeeMapper::toDto).toList();
     }
 
     @Override

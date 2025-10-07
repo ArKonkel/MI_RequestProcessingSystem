@@ -6,7 +6,7 @@ public interface EmployeeService {
 
     List<EmployeeExpertise> getAllEmployeeExpertises();
 
-    List<Employee> getEmployeesByIds(List<Long> ids);
+    List<EmployeeDto> getAllDtoEmployees();
 
     Employee getEmployeeById(Long employeeId);
 }

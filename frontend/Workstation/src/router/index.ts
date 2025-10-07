@@ -1,11 +1,14 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import {createRouter, createWebHistory} from 'vue-router'
 import TaskView from '@/views/TaskManagerView/TaskView.vue'
-import TaskCapacityPlanningView from '@/views/ResourceCapacityPlanningView/TaskCapacityPlanningView.vue'
+import TaskCapacityPlanningView
+  from '@/views/ResourceCapacityPlanningView/TaskCapacityPlanningView.vue'
 import RequestView from '@/views/RequestManagerView/RequestView.vue'
 import RequestDetailView from '@/views/RequestManagerView/RequestDetailView.vue'
 import TaskDetailView from '@/views/TaskManagerView/TaskDetailView.vue'
 import ProjectDetailView from "@/views/ProjectPlannerView/ProjectDetailView.vue";
 import ProjectView from "@/views/ProjectPlannerView/ProjectView.vue";
+import EmployeeView from "@/views/EmployeeViews/EmployeeView.vue";
+import EmployeeDetailView from "@/views/EmployeeViews/EmployeeDetailView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,18 +29,18 @@ const router = createRouter({
         },
       ],
     },
-  {
-    path: '/projects',
-    name: 'projectView',
-    component: ProjectView,
-    children: [
-      {
-        path: ':projectId',
-        name: 'projectDetailView',
-        component: ProjectDetailView,
-      },
-    ],
-  },
+    {
+      path: '/projects',
+      name: 'projectView',
+      component: ProjectView,
+      children: [
+        {
+          path: ':projectId',
+          name: 'projectDetailView',
+          component: ProjectDetailView,
+        },
+      ],
+    },
     {
       path: '/tasks',
       name: 'taskView',
@@ -47,6 +50,18 @@ const router = createRouter({
           path: ':taskId',
           name: 'taskDetailView',
           component: TaskDetailView,
+        },
+      ],
+    },
+    {
+      path: '/employees',
+      name: 'employeeView',
+      component: EmployeeView,
+      children: [
+        {
+          path: ':employeeId',
+          name: 'employeeDetailView',
+          component: EmployeeDetailView,
         },
       ],
     },

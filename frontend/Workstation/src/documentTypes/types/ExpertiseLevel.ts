@@ -1,6 +1,13 @@
 export enum ExpertiseLevel {
-  BEGINNER = 1,
-  INTERMEDIATE = 2,
-  ADVANCED = 3,
-  EXPERT = 4,
+  BEGINNER = "BEGINNER",
+  INTERMEDIATE = "INTERMEDIATE",
+  ADVANCED = "ADVANCED",
+  EXPERT = "EXPERT",
+}
+
+export const ExpertiseLevelLabel: Record<ExpertiseLevel, string> = {
+  [ExpertiseLevel.BEGINNER]: 'Anfänger',
+  [ExpertiseLevel.INTERMEDIATE]: 'Mittel',
+  [ExpertiseLevel.ADVANCED]: 'Fortgeschritten',
+  [ExpertiseLevel.EXPERT]: 'Experte',
 }
