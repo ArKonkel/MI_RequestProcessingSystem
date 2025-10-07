@@ -8,5 +8,7 @@ public interface EmployeeService {
 
     List<EmployeeDto> getAllDtoEmployees();
 
+    void addEmployeeExpertise(Long employeeId, Long expertiseId, ExpertiseLevel level);
+
     Employee getEmployeeById(Long employeeId);
 }

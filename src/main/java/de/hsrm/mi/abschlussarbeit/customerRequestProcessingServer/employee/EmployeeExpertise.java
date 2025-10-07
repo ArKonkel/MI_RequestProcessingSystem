@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
+@Table(
+        uniqueConstraints = @UniqueConstraint(columnNames = {"employee_id", "expertise_id"})
+)
 @Getter
 @Setter
 @AllArgsConstructor
@@ -33,5 +36,4 @@ public class EmployeeExpertise {
     @Enumerated(EnumType.STRING)
     @NotNull
     private ExpertiseLevel level;
-
 }

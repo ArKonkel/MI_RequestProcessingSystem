@@ -102,6 +102,7 @@ VALUES (1, 1, 7, 'EXPERT'),
        (5, 2, 4, 'EXPERT'),
        (6, 2, 7, 'INTERMEDIATE');
 
+SELECT setval('employee_expertise_seq', (SELECT MAX(id) FROM employee_expertise));
 
 --------------------------------- CUSTOMER ------------------------------------------------
 

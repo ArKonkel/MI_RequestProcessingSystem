@@ -12,7 +12,17 @@ import {Button} from '@/components/ui/button'
 import {getEmployeeCalendar, initCalendarOfEmployee} from '@/services/calendarService.ts'
 import type {CalendarDtd} from '@/documentTypes/dtds/CalendarDtd.ts'
 import type {EmployeeDtd} from '@/documentTypes/dtds/EmployeeDtd.ts'
-import {ExpertiseLevelLabel} from "@/documentTypes/types/ExpertiseLevel.ts";
+import {ExpertiseLevel, ExpertiseLevelLabel} from "@/documentTypes/types/ExpertiseLevel.ts";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
+import type {ExpertiseDtd} from "@/documentTypes/dtds/ExpertiseDtd.ts";
+import ExpertiseSelect from "@/components/ExpertiseSelect.vue";
+import {addExpertiseToEmployee} from "@/services/employeeService.ts";
 //import { updateEmployee } from '@/services/employeeService.ts'
 
 const employeeStore = useEmployeeStore()
@@ -23,6 +33,9 @@ const calendar = ref<CalendarDtd | null>(null)
 const startDate = ref(new Date())
 const visibleDays = 8
 const ignoreNextUpdate = ref(false)
+const addingExpertise = ref(false)
+const selectedExpertiseLevel = ref<ExpertiseLevel | null>(null)
+const expertiseIdToAdd = ref<number | null>(null)
 
 watch(
   () => employeeStore.selectedEmployees,
@@ -38,6 +51,30 @@ watch(
   },
   {immediate: true},
 )
+
+async function addExpertise() {
+  if (!editableEmployee.value || !selectedExpertiseLevel.value || !expertiseIdToAdd.value) return
+
+  try {
+    await addExpertiseToEmployee(editableEmployee.value?.id, expertiseIdToAdd.value, selectedExpertiseLevel.value)
+
+    await employeeStore.fetchEmployees()
+    alertStore.show('Expertise erfolgreich erstellt.', 'success')
+    cancelExpertise()
+  } catch (err: any) {
+    console.error(err)
+    alertStore.show('Fehler beim Erstellen der Expertise', 'error')
+  }
+}
+
+function toggleAddExpertise() {
+  addingExpertise.value = !addingExpertise.value
+}
+
+function cancelExpertise() {
+  addingExpertise.value = false
+  selectedExpertiseLevel.value = null
+}
 
 const days = computed(() => {
   const result = []
@@ -63,8 +100,6 @@ async function loadCalendar() {
       format(startDate.value, 'yyyy-MM-dd'),
       format(addDays(startDate.value, visibleDays), 'yyyy-MM-dd'),
     )
-
-    alertStore.show('Kalender erfolgreich geladen.', 'success')
   } catch (err: any) {
     console.error(err)
     alertStore.show('Fehler beim Laden des Kalenders', 'error')
@@ -159,33 +194,54 @@ async function saveEmployee() {
           <Button @click="saveEmployee">Manuell speichern</Button>
         </div>
 
-        <div>
-          <h3 class="text-lg font-semibold mt-6 mb-2">Expertisen</h3>
+        <h3 class="text-lg font-semibold mt-6 mb-2">Expertisen</h3>
+        <div
+          v-if="editableEmployee.employeeExpertise.length"
+          class="flex flex-col gap-2 text-sm border p-3 rounded-md bg-muted/20"
+        >
           <div
-            v-if="editableEmployee.employeeExpertise.length"
-            class="flex flex-col gap-2 text-sm border p-3 rounded-md bg-muted/20"
+            v-for="expertise in editableEmployee.employeeExpertise"
+            :key="expertise.id"
+            class="flex justify-between border-b border-accent/20 pb-1 last:border-none"
           >
-            <div
-              v-for="expertise in editableEmployee.employeeExpertise"
-              :key="expertise.id"
-              class="flex justify-between border-b border-accent/20 pb-1 last:border-none"
-            >
-              <div>
-                <span class="font-semibold">{{ expertise.expertise.name }}</span>
-                <span class="text-muted-foreground text-xs ml-2">
+            <div>
+              <span class="font-semibold">{{ expertise.expertise.name }}</span>
+              <span class="text-muted-foreground text-xs ml-2">
                   {{ expertise.expertise.description }}
                 </span>
-              </div>
-              <Badge variant="secondary">
-                {{ ExpertiseLevelLabel[expertise.level] }}
-              </Badge>
             </div>
+            <Badge variant="secondary">
+              {{ ExpertiseLevelLabel[expertise.level] }}
+            </Badge>
           </div>
-          <div v-else class="text-muted-foreground text-sm">Keine Expertisen vorhanden.</div>
         </div>
+        <div v-else class="text-muted-foreground text-sm">Keine Expertisen vorhanden.</div>
 
+        <div v-if="addingExpertise" class="flex justify-between">
+          <div class="flex justify-between gap-2 items-center">
+            <Select v-model="selectedExpertiseLevel">
+              <SelectTrigger class="min-w-50">
+                <SelectValue placeholder="Select..."/>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem
+                  v-for="[value, expLabel] in Object.entries(ExpertiseLevelLabel)"
+                  :key="value"
+                  :value="value"
+                >
+                  {{ expLabel }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+
+            <ExpertiseSelect v-model="expertiseIdToAdd"/>
+
+            <Button @click="addExpertise">Erstellen</Button>
+            <Button variant="ghost" @click="cancelExpertise">Abbrechen</Button>
+          </div>
+        </div>
         <div class="flex justify-end">
-          <Button>+</Button>
+          <Button @click="toggleAddExpertise">+</Button>
         </div>
 
         <!-- Calendar -->
