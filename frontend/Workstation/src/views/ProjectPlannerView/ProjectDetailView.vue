@@ -6,6 +6,7 @@ import {useDebounceFn} from '@vueuse/core'
 import {ScrollArea} from '@/components/ui/scroll-area'
 import {Badge} from '@/components/ui/badge'
 import {Textarea} from '@/components/ui/textarea'
+import {Label} from '@/components/ui/label'
 import {
   Accordion,
   AccordionContent,
@@ -320,32 +321,51 @@ function openRequest(reqId: number) {
 
           <AccordionItem value="deps">
             <AccordionTrigger>Abhängigkeiten</AccordionTrigger>
-            <AccordionContent>
-              <div v-for="dep in editableProject.projectDependencies" :key="dep.sourceProjectId">
-                <span class="font-semibold"> {{ ProjectDependencyTypeLabel[dep.type] }}: </span>
-                {{ dep.sourceProjectId }} - {{ dep.sourceProjectTitle }}
+            <AccordionContent class="space-y-4">
+              <div>
+                <Label class="text-xs">Abhängig von folgenden Projekten:</Label>
+                <div v-for="dep in editableProject.incomingDependencies" :key="dep.sourceProjectId">
+                  <span class="font-semibold"> {{ ProjectDependencyTypeLabel[dep.type] }}: </span>
+                  {{ dep.sourceProjectId }} - {{ dep.sourceProjectTitle }}
+                </div>
+
+                <div v-if="editableProject.incomingDependencies.length == 0">
+                  -
+                </div>
               </div>
 
-              <div v-if="addingDependency" class="flex gap-2 items-center">
-                <Select v-model="selectedDependency">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select..."/>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem
-                      v-for="[value, depLabel] in Object.entries(ProjectDependencyTypeLabel)"
-                      :key="value"
-                      :value="value"
-                    >
-                      {{ depLabel }}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+              <div class="space-y-4">
+                <Label class="text-xs">Abhängigkeiten zu folgenden Projekten:</Label>
+                <div v-for="dep in editableProject.outgoingDependencies" :key="dep.targetProjectId">
+                  <span class="font-semibold"> {{ ProjectDependencyTypeLabel[dep.type] }}: </span>
+                  {{ dep.targetProjectId }} - {{ dep.targetProjectTitle }}
+                </div>
+                <div v-if="editableProject.outgoingDependencies.length == 0">
+                  -
+                </div>
 
-                <ProjectSelect v-model="selectedDependencyProject"/>
 
-                <Button @click="addDependencyToProject">Erstellen</Button>
-                <Button variant="ghost" @click="cancelDependency">Abbrechen</Button>
+                <div v-if="addingDependency" class="flex gap-2 items-center">
+                  <Select v-model="selectedDependency">
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select..."/>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem
+                        v-for="[value, depLabel] in Object.entries(ProjectDependencyTypeLabel)"
+                        :key="value"
+                        :value="value"
+                      >
+                        {{ depLabel }}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <ProjectSelect v-model="selectedDependencyProject"/>
+
+                  <Button @click="addDependencyToProject">Erstellen</Button>
+                  <Button variant="ghost" @click="cancelDependency">Abbrechen</Button>
+                </div>
               </div>
               <div class="flex justify-end">
                 <Button @click="showAddingDependency">+</Button>

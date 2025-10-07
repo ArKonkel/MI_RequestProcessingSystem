@@ -10,6 +10,7 @@ export interface ProjectDtd {
   endDate: string,
   requestId: number,
   requestTitle: string,
-  projectDependencies: ProjectDependencyDtd[],
+  incomingDependencies: ProjectDependencyDtd[],
+  outgoingDependencies: ProjectDependencyDtd[],
   tasks: TaskDtd[]
 }

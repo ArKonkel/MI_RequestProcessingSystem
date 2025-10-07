@@ -13,6 +13,7 @@ public record ProjectDto(
         LocalDate endDate,
         Long requestId,
         String requestTitle,
-        List<ProjectDependencyDto> projectDependencies,
+        List<ProjectDependencyDto> incomingDependencies,
+        List<ProjectDependencyDto> outgoingDependencies,
         List<TaskDto> tasks
 ) {}

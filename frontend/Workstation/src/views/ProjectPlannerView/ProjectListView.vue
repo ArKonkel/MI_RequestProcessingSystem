@@ -94,9 +94,8 @@ function selectProject(project: ProjectDtd) {
             <Badge variant="outline" class="text-xs">
               {{ ProjectStatusLabel[project.status] }}
             </Badge>
-            <!-- Optional: falls Abhängigkeiten wichtig sind -->
             <Badge variant="secondary" class="text-xs">
-              {{ project.projectDependencies.length }} Dependencies
+              {{ project.incomingDependencies.length }} Abhängigkeiten
             </Badge>
           </div>
           <CardTitle>

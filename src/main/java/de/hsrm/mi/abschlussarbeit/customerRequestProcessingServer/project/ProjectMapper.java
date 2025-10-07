@@ -15,7 +15,6 @@ import java.util.Set;
 public interface ProjectMapper {
 
     @Mapping(target = "processItem", source = ".")
-    @Mapping(target = "projectDependencies", source = "incomingDependencies")
     @Mapping(target = "requestId", source = "request.id")
     @Mapping(target = "requestTitle", source = "request.title")
     ProjectDto toDto(Project project);
