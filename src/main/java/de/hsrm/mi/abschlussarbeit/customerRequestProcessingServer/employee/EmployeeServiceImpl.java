@@ -63,6 +63,33 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public EmployeeDto updateEmployee(Long employeeId, EmployeeUpdateDto employeeUpdateDto) {
+        log.info("Updating employee {}", employeeId);
+
+        Employee employee = getEmployeeById(employeeId);
+
+        if (employeeUpdateDto.firstName() != null) {
+            employee.setFirstName(employeeUpdateDto.firstName());
+        }
+
+        if (employeeUpdateDto.lastName() != null) {
+            employee.setLastName(employeeUpdateDto.lastName());
+        }
+
+        if (employeeUpdateDto.email() != null) {
+            employee.setEmail(employeeUpdateDto.email());
+        }
+
+        if (employeeUpdateDto.workingHoursPerDay() != null) {
+            employee.setWorkingHoursPerDay(employeeUpdateDto.workingHoursPerDay());
+        }
+
+        Employee savedEmployee = employeeRepository.save(employee);
+
+        return employeeMapper.toDto(savedEmployee);
+    }
+
+    @Override
     public Employee getEmployeeById(Long employeeId) {
         log.info("Getting employee with id {}", employeeId);
 

@@ -20,9 +20,9 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import type {ExpertiseDtd} from "@/documentTypes/dtds/ExpertiseDtd.ts";
 import ExpertiseSelect from "@/components/ExpertiseSelect.vue";
-import {addExpertiseToEmployee} from "@/services/employeeService.ts";
+import {addExpertiseToEmployee, updateEmployee} from "@/services/employeeService.ts";
+import type {EmployeeUpdateDtd} from "@/documentTypes/dtds/EmployeeUpdateDtd.ts";
 //import { updateEmployee } from '@/services/employeeService.ts'
 
 const employeeStore = useEmployeeStore()
@@ -142,7 +142,16 @@ function nextDay() {
 async function saveEmployee() {
   if (!editableEmployee.value) return
   try {
-    //await updateEmployee(editableEmployee.value.id, editableEmployee.value)
+    const dto: EmployeeUpdateDtd =
+      {
+        firstName: editableEmployee.value.firstName,
+        lastName: editableEmployee.value.lastName,
+        email: editableEmployee.value.email,
+        workingHoursPerDay: editableEmployee.value.workingHoursPerDay
+      }
+
+    await updateEmployee(editableEmployee.value.id, dto)
+    await employeeStore.fetchEmployees()
     alertStore.show('Mitarbeiter gespeichert', 'success')
   } catch (err: any) {
     console.error(err)

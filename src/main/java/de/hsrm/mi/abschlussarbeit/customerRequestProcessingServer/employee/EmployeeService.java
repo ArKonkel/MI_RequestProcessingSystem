@@ -10,5 +10,7 @@ public interface EmployeeService {
 
     void addEmployeeExpertise(Long employeeId, Long expertiseId, ExpertiseLevel level);
 
+    EmployeeDto updateEmployee(Long employeeId, EmployeeUpdateDto employeeUpdateDto);
+
     Employee getEmployeeById(Long employeeId);
 }

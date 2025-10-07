@@ -32,4 +32,13 @@ public class EmployeeController {
 
         return ResponseEntity.ok().build();
     }
+
+    @PatchMapping("/{employeeId}")
+    public ResponseEntity<EmployeeDto> updateEmployee(@PathVariable Long employeeId, @RequestBody EmployeeUpdateDto employeeUpdateDto) {
+        log.info("REST request to update employee {}", employeeId);
+
+        EmployeeDto updatedEmployee = employeeService.updateEmployee(employeeId, employeeUpdateDto);
+
+        return ResponseEntity.ok(updatedEmployee);
+    }
 }
