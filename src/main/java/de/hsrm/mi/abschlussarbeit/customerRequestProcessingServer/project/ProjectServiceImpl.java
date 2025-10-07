@@ -158,6 +158,10 @@ public class ProjectServiceImpl implements ProjectService {
         Project sourceProject = getProjectById(sourceProjectId);
         Project targetProject = getProjectById(targetProjectId);
 
+        if (sourceProject.getId().equals(targetProject.getId())) {
+            throw new IllegalArgumentException("Cannot create dependency between project and itself");
+        }
+
         ProjectDependency dependency = new ProjectDependency();
         dependency.setSourceProject(sourceProject);
         dependency.setTargetProject(targetProject);

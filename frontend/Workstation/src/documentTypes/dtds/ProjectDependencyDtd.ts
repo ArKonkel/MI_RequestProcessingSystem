@@ -2,6 +2,7 @@ import type {ProjectDependencyType} from "@/documentTypes/types/ProjectDependenc
 
 export interface ProjectDependencyDtd {
   sourceProjectId: number
+  sourceProjectTitle: string
   targetProjectId: number
   targetProjectTitle: string
   type: ProjectDependencyType

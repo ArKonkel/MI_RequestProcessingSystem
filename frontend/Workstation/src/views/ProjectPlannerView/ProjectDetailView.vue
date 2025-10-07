@@ -30,9 +30,13 @@ import type {CommentCreateDtd} from "@/documentTypes/dtds/CommentCreateDtd.ts";
 import {addCommentToProcessItem} from "@/services/commentService.ts";
 import type {TaskCreateDtd} from "@/documentTypes/dtds/TaskCreateDtd.ts";
 import {createTask} from "@/services/taskService.ts";
-import {ProjectDependencyTypeLabel} from "@/documentTypes/types/ProjectDependencyType.ts";
+import {
+  ProjectDependencyType,
+  ProjectDependencyTypeLabel
+} from "@/documentTypes/types/ProjectDependencyType.ts";
 import type {ProjectUpdateDtd} from "@/documentTypes/dtds/ProjectUpdateDtd.ts";
 import {updateProject} from "@/services/projectService.ts";
+import ProjectSelect from "@/components/ProjectSelect.vue";
 
 const projectStore = useProjectStore()
 const alertStore = useAlertStore()
@@ -47,6 +51,10 @@ const ignoreNextUpdate = ref(false)
 const commentText = ref('')
 const addingTask = ref(false)
 const newTaskTitle = ref('')
+
+const addingDependency = ref(false)
+const selectedDependency = ref<ProjectDependencyType | null>(null)
+const selectedDependencyProject = ref<ProjectDtd | null>(null)
 
 const dataFormatter = new DateFormatter('de-DE', {
   dateStyle: 'medium',
@@ -160,6 +168,19 @@ function showAddingTask() {
 function cancelTask() {
   newTaskTitle.value = ''
   addingTask.value = false
+}
+
+async function addDependencyToProject() {
+//TODO
+}
+
+function showAddingDependency() {
+  addingDependency.value = true
+}
+
+function cancelDependency() {
+  addingDependency.value = false
+  selectedDependency.value = null
 }
 
 
@@ -280,9 +301,34 @@ function openRequest(reqId: number) {
           <AccordionItem value="deps">
             <AccordionTrigger>Abhängigkeiten</AccordionTrigger>
             <AccordionContent>
-              <div v-for="dep in editableProject.projectDependencies" :key="dep.targetProjectId">
+              <div v-for="dep in editableProject.projectDependencies" :key="dep.sourceProjectId">
                 <span class="font-semibold"> {{ ProjectDependencyTypeLabel[dep.type] }}: </span>
-                {{ dep.targetProjectId }} - {{ dep.targetProjectTitle }}
+                {{ dep.sourceProjectId }} - {{ dep.sourceProjectTitle }}
+              </div>
+
+              <div v-if="addingDependency" class="flex gap-2 items-center">
+                <Select v-model="selectedDependency">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select..."/>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem
+                      v-for="[value, depLabel] in Object.entries(ProjectDependencyTypeLabel)"
+                      :key="value"
+                      :value="value"
+                    >
+                      {{ depLabel }}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <ProjectSelect v-model="selectedDependencyProject"/>
+
+                <Button @click="addDependencyToProject">Erstellen</Button>
+                <Button variant="ghost" @click="cancelDependency">Abbrechen</Button>
+              </div>
+              <div class="flex justify-end">
+                <Button @click="showAddingDependency">+</Button>
               </div>
             </AccordionContent>
           </AccordionItem>

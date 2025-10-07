@@ -28,5 +28,6 @@ public interface TaskMapper {
     @Mapping(target = "project", ignore = true)
     @Mapping(target = "request", ignore = true)
     @Mapping(target = "comments", ignore = true)
+    @Mapping(target = "assignee", ignore = true)
     Task toEntity(TaskDto taskDto);
 }

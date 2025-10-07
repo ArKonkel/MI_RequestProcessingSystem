@@ -10,6 +10,7 @@ import org.mapstruct.Mapping;
 public interface ProjectDependencyMapper {
 
     @Mapping(target = "sourceProjectId", source = "sourceProject.id")
+    @Mapping(target = "sourceProjectTitle", source = "sourceProject.title")
     @Mapping(target = "targetProjectId", source = "targetProject.id")
     @Mapping(target = "targetProjectTitle", source = "targetProject.title")
     ProjectDependencyDto toDto(ProjectDependency projectDependency);

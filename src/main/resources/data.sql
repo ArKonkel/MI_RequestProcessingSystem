@@ -128,7 +128,10 @@ VALUES (1, 'Customizing der Software beim Kunden für Produktdruck',
         '2025-09-14'),
 -- PROJECT
        (9, 'Project zur Auslieferung einer PWA', 'Auslieferung der PWA bei Kunde XY', '2025-09-14'),
-       (10, 'Project zum Spaß haben', 'Teambuildingmaßnahme', '2025-09-14');
+       (10, 'Verbesserung der Teamkommunikation', 'Teambuildingmaßnahme', '2025-09-14'),
+       (11, 'Sofwareinstallation bei BaumAg', 'Wir müssen bei der ...', '2025-09-14'),
+       (12, 'Erstellung einer Serverinfrastruktur', 'Plane für das interne Netz eine neue...', '2025-09-14'),
+       (13, 'Planung des Weihnachtsfestes', 'Wir haben am ... unser Weihnachtsfest..', '2025-09-14');
 
 
 -- Requests (gehören zu den Process Items, gleiche ID wie process_item.id)
@@ -149,7 +152,10 @@ VALUES (1, 2, 'HOUR', '2025-11-05', 'HIGH', 'OPEN', 6),
 
 INSERT INTO project (id, end_date, start_date, request_id, status)
 VALUES (9, '2025-11-05', '2025-09-26', 6, 'CREATED'),
-       (10, '2025-11-05', '2025-09-26', 7, 'CREATED');
+       (10, '2025-11-05', '2025-09-26', 7, 'CREATED'),
+       (11, '2025-11-05', '2025-09-26', 7, 'CREATED'),
+       (12, '2025-11-05', '2025-09-26', 7, 'CREATED'),
+       (13, '2025-11-05', '2025-09-26', 7, 'CREATED');
 
 SELECT setval('process_item_seq', (SELECT MAX(id) FROM process_item));
 --------------------------------- TASK_EXPERTISE ------------------------------------------------

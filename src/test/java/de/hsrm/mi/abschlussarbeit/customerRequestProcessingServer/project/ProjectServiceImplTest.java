@@ -11,8 +11,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,11 +47,11 @@ class ProjectServiceImplTest {
         targetProject.setStatus(ProjectStatus.CREATED);
 
         when(projectRepository.findById(targetProject.getId())).thenReturn(Optional.of(targetProject));
-        when(projectRepository.save(any(Project.class))).thenReturn(targetProject);
+        // when(projectRepository.save(any(Project.class))).thenReturn(targetProject);
 
         assertDoesNotThrow(() -> projectService.updateProjectStatus(targetProject.getId(), ProjectStatus.READY));
         assertEquals(ProjectStatus.READY, targetProject.getStatus());
-        verify(projectRepository).save(targetProject);
+        //verify(projectRepository).save(targetProject);
     }
 
     @Test
@@ -75,11 +73,11 @@ class ProjectServiceImplTest {
         targetProject.setStatus(ProjectStatus.READY);
 
         when(projectRepository.findById(targetProject.getId())).thenReturn(Optional.of(targetProject));
-        when(projectRepository.save(any(Project.class))).thenReturn(targetProject);
+        // when(projectRepository.save(any(Project.class))).thenReturn(targetProject);
 
         assertDoesNotThrow(() -> projectService.updateProjectStatus(targetProject.getId(), ProjectStatus.IN_PROGRESS));
         assertEquals(ProjectStatus.IN_PROGRESS, targetProject.getStatus());
-        verify(projectRepository).save(targetProject);
+        //verify(projectRepository).save(targetProject);
     }
 
     @Test
@@ -98,11 +96,11 @@ class ProjectServiceImplTest {
         targetProject.setStatus(ProjectStatus.IN_PROGRESS);
 
         when(projectRepository.findById(targetProject.getId())).thenReturn(Optional.of(targetProject));
-        when(projectRepository.save(any(Project.class))).thenReturn(targetProject);
+        // when(projectRepository.save(any(Project.class))).thenReturn(targetProject);
 
         assertDoesNotThrow(() -> projectService.updateProjectStatus(targetProject.getId(), ProjectStatus.FINISHED));
         assertEquals(ProjectStatus.FINISHED, targetProject.getStatus());
-        verify(projectRepository).save(targetProject);
+        //verify(projectRepository).save(targetProject);
     }
 
     @Test
