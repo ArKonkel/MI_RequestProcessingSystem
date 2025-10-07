@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { getAllExpertise } from '@/services/expertiseService'
 import type { ExpertiseDtd } from '@/documentTypes/dtds/ExpertiseDtd'
+import {onClickOutside} from "@vueuse/core";
 
 const props = defineProps<{ modelValue: number | null }>()
 const emit = defineEmits<{
@@ -14,6 +15,8 @@ const expertises = ref<ExpertiseDtd[]>([])
 const filteredExpertises = ref<ExpertiseDtd[]>([])
 const search = ref('')
 const dropdownOpen = ref(false)
+const dropdownRef = ref<HTMLElement | null>(null)
+
 
 watch(
   () => props.modelValue,
@@ -42,6 +45,10 @@ function selectExpertise(expertise: ExpertiseDtd) {
   search.value = expertise.name
   dropdownOpen.value = false
 }
+
+onClickOutside(dropdownRef, () => {
+  dropdownOpen.value = false
+})
 </script>
 
 <template>
@@ -56,6 +63,7 @@ function selectExpertise(expertise: ExpertiseDtd) {
 
     <div
       v-if="dropdownOpen"
+      ref="dropdownRef"
       class="absolute z-50 mt-1 w-full max-h-60 overflow-auto border rounded bg-white shadow-lg"
     >
       <ScrollArea class="max-h-60">

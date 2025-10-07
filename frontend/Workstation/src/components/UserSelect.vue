@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { getAllUser } from '@/services/userService'
 import type { UserDtd } from '@/documentTypes/dtds/UserDtd'
+import {onClickOutside} from "@vueuse/core";
 
 const props = defineProps<{ modelValue: UserDtd | null }>()
 const emit = defineEmits<{
@@ -14,6 +15,7 @@ const users = ref<UserDtd[]>([])
 const filteredUsers = ref<UserDtd[]>([])
 const search = ref('')
 const dropdownOpen = ref(false)
+const dropdownRef = ref<HTMLElement | null>(null)
 
 watch(
   () => props.modelValue,
@@ -41,6 +43,10 @@ function selectUser(user: UserDtd) {
   search.value = user.name
   dropdownOpen.value = false
 }
+
+onClickOutside(dropdownRef, () => {
+  dropdownOpen.value = false
+})
 </script>
 
 <template>
@@ -56,6 +62,7 @@ function selectUser(user: UserDtd) {
 
     <div
       v-if="dropdownOpen"
+      ref="dropdownRef"
       class="absolute z-50 mt-1 w-full max-h-60 overflow-auto border rounded bg-white shadow-lg"
     >
       <ScrollArea class="max-h-60">
