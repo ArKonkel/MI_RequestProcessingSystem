@@ -35,8 +35,9 @@ import {
   ProjectDependencyTypeLabel
 } from "@/documentTypes/types/ProjectDependencyType.ts";
 import type {ProjectUpdateDtd} from "@/documentTypes/dtds/ProjectUpdateDtd.ts";
-import {updateProject} from "@/services/projectService.ts";
+import {createProjectDependency, updateProject} from "@/services/projectService.ts";
 import ProjectSelect from "@/components/ProjectSelect.vue";
+import type {CreateDependencyDtd} from "@/documentTypes/dtds/CreateDependencyDtd.ts";
 
 const projectStore = useProjectStore()
 const alertStore = useAlertStore()
@@ -171,7 +172,27 @@ function cancelTask() {
 }
 
 async function addDependencyToProject() {
-//TODO
+  if (!(editableProject.value && selectedDependencyProject.value && selectedDependency.value))
+    return
+
+  try {
+    const createDto: CreateDependencyDtd = {
+      sourceProjectId: editableProject.value?.processItem.id,
+      targetProjectId: selectedDependencyProject.value?.processItem.id,
+      type: selectedDependency.value
+    }
+
+    await createProjectDependency(createDto)
+
+    alertStore.show('Abhängigkeit erfolgreich erstellt', 'success')
+    editableProject.value = null
+    selectedDependencyProject.value = null
+    selectedDependency.value = null
+
+  } catch (err: any) {
+    console.error(err)
+    alertStore.show(err.response?.data || 'Fehler beim Erstellen der Aufgabe', 'error')
+  }
 }
 
 function showAddingDependency() {
@@ -182,7 +203,6 @@ function cancelDependency() {
   addingDependency.value = false
   selectedDependency.value = null
 }
-
 
 // navigation zu request
 function openRequest(reqId: number) {

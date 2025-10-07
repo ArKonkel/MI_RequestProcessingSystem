@@ -2,6 +2,7 @@ import type {ProjectDtd} from "@/documentTypes/dtds/ProjectDtd.ts";
 import axios from "axios";
 import type {ProjectUpdateDtd} from "@/documentTypes/dtds/ProjectUpdateDtd.ts";
 import type {ProjectCreateDtd} from "@/documentTypes/dtds/ProjectCreateDtd.ts";
+import type {CreateDependencyDtd} from "@/documentTypes/dtds/CreateDependencyDtd.ts";
 
 export async function getAllProjects(): Promise<ProjectDtd[]> {
   const response = await axios.get('/api/projects')
@@ -16,4 +17,8 @@ export async function updateProject(id: number, dto: ProjectUpdateDtd): Promise<
 export async function createProject(dto: ProjectCreateDtd): Promise<ProjectDtd> {
   const response = await axios.post(`/api/projects`, dto)
   return response.data
+}
+
+export async function createProjectDependency(dto: CreateDependencyDtd): Promise<void> {
+  await axios.post(`/api/projects/dependency`, dto)
 }

@@ -159,7 +159,7 @@ public class ProjectServiceImpl implements ProjectService {
         Project targetProject = getProjectById(targetProjectId);
 
         if (sourceProject.getId().equals(targetProject.getId())) {
-            throw new IllegalArgumentException("Cannot create dependency between project and itself");
+            throw new InvalidDependencyException("Cannot create dependency between project and itself");
         }
 
         ProjectDependency dependency = new ProjectDependency();
@@ -168,6 +168,8 @@ public class ProjectServiceImpl implements ProjectService {
         dependency.setType(type);
 
         dependencyRepository.save(dependency);
+
+        notificationService.sendChangeNotification(new ChangeNotificationEvent(sourceProject.getId(), ChangeType.UPDATED, TargetType.PROJECT));
 
         return dependency;
     }
