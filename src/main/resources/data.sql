@@ -32,19 +32,6 @@ VALUES (1, 'Entwicklung', 'Abteilung für Software- und Produktentwicklung'),
        (4, 'ProjectSpecialists', 'Backoffice-Abteilung für Projektunterstützung'),
        (5, 'Support', 'Abteilung für Kunden- und Anwendersupport');
 
---------------------------------- ROLE ------------------------------------------------
-
---INSERT INTO role (id, name, description)
---VALUES (1, 'Projektplaner', 'Plant Projekte'),
---       (2, 'Anfragenbearbeiter', 'Nimmt Anfragen entgegen und leitet diese weiter.'),
---       (3, 'Kapazitätsplaner', 'Plant Kapazitäten bei Aufgabenzuweisungen'),
---       (4, 'Aufgabenbearbeiter', 'Bearbeitet aufgaben'),
---       (5, 'Admin', 'Hat Zugriff auf alles');
-
-INSERT INTO role (id, name, description)
-VALUES (1, 'ADMIN', 'Hat Zugriff auf alles'),
-       (2, 'USER', 'BLa');
-
 --------------------------------- CALENDAR ------------------------------------------------
 INSERT INTO calendar(id)
 VALUES (1),
@@ -65,18 +52,35 @@ INSERT INTO employee(id, email, first_name, last_name, department_id, working_ho
 VALUES (1, 'Max.Mustermann@mail.de', 'Max', 'Mustermann', null, 8, 1),
        (2, 'Sabine.Mustermann@mail.de', 'Sabine', 'Musterfrau', 1, 8, 2);
 
+--------------------------------- ROLE ------------------------------------------------
+
+--INSERT INTO role (id, name, description)
+--VALUES (1, 'Projektplaner', 'Plant Projekte'),
+--       (2, 'Anfragenbearbeiter', 'Nimmt Anfragen entgegen und leitet diese weiter.'),
+--       (3, 'Kapazitätsplaner', 'Plant Kapazitäten bei Aufgabenzuweisungen'),
+--       (4, 'Aufgabenbearbeiter', 'Bearbeitet aufgaben'),
+--       (5, 'Admin', 'Hat Zugriff auf alles');
+
+INSERT INTO role (id, name, description)
+VALUES (1, 'ADMIN', 'Hat Zugriff auf alles'),
+       (2, 'CUSTOMER', 'Ist ein Kunde'),
+       (3, 'CUSTOMER_REQUEST_REVISER', 'Bearbeitet und leitet Kundenanfragen weiter'),
+       (4, 'CAPACITY_PLANNER', 'Plant Kapazitäten'),
+       (5, 'TASK_REVISER', 'Bearbeitet zugewiesene Aufgaben'),
+       (6, 'PROJECT_PLANNER', 'Plant Projekte');
+
 --------------------------------- USER ------------------------------------------------
 
 INSERT INTO users (id, name, password, employee_id)
-VALUES (1, 'Max Mustermann', '{noop}Gandalf',1), -- {noop} is necessary for testing because pw encoding
+VALUES (1, 'Max Mustermann', '{noop}Gandalf', 1), -- {noop} is necessary for testing because pw encoding
        (2, 'Sabine Musterfrau', '{noop}Gandalf', 2);
 
 --------------------------------- USER_ROLES ------------------------------------------------
 
 INSERT INTO user_roles (user_id, role_id)
-VALUES (1, 1),
-       (2, 2);
-
+VALUES (1, 2),
+       (2, 3),
+       (2, 5);
 --------------------------------- EMPLOYEE_EXPERTISE ------------------------------------------------
 INSERT INTO employee_expertise(id, employee_id, expertise_id, level)
 VALUES (1, 1, 7, 'EXPERT'),
@@ -121,9 +125,9 @@ VALUES (1, 'Customizing der Software beim Kunden für Produktdruck',
 
 -- Requests (gehören zu den Process Items, gleiche ID wie process_item.id)
 INSERT INTO customer_request (id, priority, chargeable, estimated_scope, scope_unit, category, customer_id, status)
-VALUES (6, 'LOW', 'NOT_DETERMINED', 0, 'HOUR','TRAINING_REQUEST', 1, 'RECEIVED'),
-       (7, 'MEDIUM', 'NOT_DETERMINED', 0, 'HOUR','SUGGESTION_FOR_IMPROVEMENT', 1, 'WAITING_FOR_PROCESSING'),
-       (8, 'HIGH', 'NOT_DETERMINED', 0, 'HOUR','BUG_REPORT', 1, 'RECEIVED');
+VALUES (6, 'LOW', 'NOT_DETERMINED', 0, 'HOUR', 'TRAINING_REQUEST', 1, 'RECEIVED'),
+       (7, 'MEDIUM', 'NOT_DETERMINED', 0, 'HOUR', 'SUGGESTION_FOR_IMPROVEMENT', 1, 'WAITING_FOR_PROCESSING'),
+       (8, 'HIGH', 'NOT_DETERMINED', 0, 'HOUR', 'BUG_REPORT', 1, 'RECEIVED');
 
 -- Tasks (gehören zu den Process Items, gleiche ID wie process_item.id)
 INSERT INTO task (id, estimated_time, estimation_unit, due_date, priority, status, request_id)
@@ -158,9 +162,8 @@ VALUES (1, 7),
        (5, 9);
 
 
-
 --------------------------------- Project_Dependencies  ------------------------------------------------
 INSERT INTO project_dependency(id, type, source_project_id, target_project_id)
-VALUES (1, 'FINISH_TO_START', 9,10);
+VALUES (1, 'FINISH_TO_START', 9, 10);
 
 SELECT setval('project_dependency_seq', (SELECT MAX(id) FROM task));

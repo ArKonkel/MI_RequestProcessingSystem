@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -34,6 +35,7 @@ public class CustomerRequestController {
         return ResponseEntity.ok(requests);
     }
 
+    @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping("/customer/{customerId}")
     public ResponseEntity<List<CustomerRequestDto>> getRequestFromCustomer(@PathVariable Long customerId) {
         log.info("REST request to get all requests from customer {}", customerId);
@@ -43,7 +45,7 @@ public class CustomerRequestController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<CustomerRequestDto> updateCustomerRequest(@PathVariable Long id, @RequestBody UpdateCustomerRequestDto dto){
+    public ResponseEntity<CustomerRequestDto> updateCustomerRequest(@PathVariable Long id, @RequestBody UpdateCustomerRequestDto dto) {
         log.info("REST request to update customerRequest {}", id);
 
         CustomerRequestDto requestDto = customerRequestService.updateCustomerRequest(id, dto);
@@ -51,6 +53,8 @@ public class CustomerRequestController {
         return ResponseEntity.ok(requestDto);
     }
 
+
+    @PreAuthorize("hasRole('CUSTOMER')")
     @PostMapping
     ResponseEntity<CustomerRequestDto> createRequest(@Valid @RequestBody CustomerRequestCreateDto requestDto) {
         log.info("REST request to create request {}", requestDto);

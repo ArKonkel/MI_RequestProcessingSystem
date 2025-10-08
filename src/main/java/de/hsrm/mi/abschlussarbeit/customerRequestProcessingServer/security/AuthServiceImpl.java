@@ -21,7 +21,9 @@ import org.springframework.stereotype.Service;
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -76,9 +78,10 @@ public class AuthServiceImpl implements AuthService {
             }
 
             var authorities = authentication.getAuthorities().toArray();
-            au = authorities[0].toString();
 
-            jwtToken = generateToken(dto.getUsername(), au);
+            log.info(Arrays.toString(authorities));
+
+            jwtToken = generateToken(dto.getUsername(), Arrays.stream(authorities).map(Object::toString).toList());
 
         } catch (JOSEException | AuthenticationException | AccessDeniedException exc) {
             throw new AccessDeniedException(exc.getMessage());
@@ -86,15 +89,24 @@ public class AuthServiceImpl implements AuthService {
         return jwtToken;
     }
 
-    public String generateToken(String username, String role) throws JOSEException {
+    /**
+     * Generates a JSON Web Token (JWT) for the given username with specified roles.
+     * The token includes claims for the username, roles, issue time, and expiration time.
+     *
+     * @param username the username for which the token is being generated
+     * @param roles the list of roles associated with the user
+     * @return a signed JSON Web Token (JWT) as a string
+     * @throws JOSEException if there is an error during token signing
+     */
+    private String generateToken(String username, List<String> roles) throws JOSEException {
         var timeNow = LocalDateTime.now();
         var expirationTime = timeNow.plusSeconds(jwtExpirationSeconds);
 
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                .subject("RequestProcessingServer-Token")
+                .subject(username)
                 .issueTime(Date.from(timeNow.toInstant(ZoneOffset.UTC)))
                 .expirationTime(Date.from(expirationTime.toInstant(ZoneOffset.UTC)))
-                .claim("role", "ROLE_" + role)
+                .claim("roles", roles)
                 .build();
 
         SignedJWT signedJWT = new SignedJWT(
