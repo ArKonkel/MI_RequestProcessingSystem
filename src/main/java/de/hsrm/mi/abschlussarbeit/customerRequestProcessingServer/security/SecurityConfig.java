@@ -1,4 +1,4 @@
-package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.configuration;
+package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.security;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

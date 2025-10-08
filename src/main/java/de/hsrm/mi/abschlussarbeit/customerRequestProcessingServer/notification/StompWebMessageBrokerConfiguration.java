@@ -1,4 +1,4 @@
-package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.configuration;
+package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
