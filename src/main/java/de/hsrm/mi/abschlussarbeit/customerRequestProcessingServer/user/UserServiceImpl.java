@@ -3,6 +3,9 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,7 +13,7 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepository;
 
@@ -28,5 +31,24 @@ public class UserServiceImpl implements UserService {
         log.info("Get user with id {}", id);
 
         return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
+    }
+
+    @Override
+    public void addUser(User user) {
+        log.info("Add user {}", user);
+
+        if (userRepository.existsByName(user.getName())) {
+            throw new UserAlreadyExistsException("User with name " + user.getName() + " already exists");
+        }
+
+        userRepository.save(user);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        User user = userRepository.findByName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User with name " + username + " not found"));
+        return new CustomUserDetails(user);
     }
 }

@@ -31,34 +31,19 @@ VALUES (1, 'Entwicklung', 'Abteilung für Software- und Produktentwicklung'),
        (3, 'Projekte', 'Abteilung für Projektmanagement und -koordination'),
        (4, 'ProjectSpecialists', 'Backoffice-Abteilung für Projektunterstützung'),
        (5, 'Support', 'Abteilung für Kunden- und Anwendersupport');
---------------------------------- PERMISSION ------------------------------------------------
-
-INSERT INTO permission (id, name, description)
-VALUES (1, 'Projektplanung', 'Befugnis Projekte zu planen'),
-       (2, 'Kapazitätsplanung', 'Befugnis Kapazitäten einzusehen und Aufgaben zuzuweisen'),
-       (3, 'Aufgabenbearbeitung', 'Befugnis Aufgaben zu bearbeiten'),
-       (4, 'Anfrageeingangsprüfung', 'Befugnis Anfragen zu korrigieren und weiterzuleiten');
 
 --------------------------------- ROLE ------------------------------------------------
 
+--INSERT INTO role (id, name, description)
+--VALUES (1, 'Projektplaner', 'Plant Projekte'),
+--       (2, 'Anfragenbearbeiter', 'Nimmt Anfragen entgegen und leitet diese weiter.'),
+--       (3, 'Kapazitätsplaner', 'Plant Kapazitäten bei Aufgabenzuweisungen'),
+--       (4, 'Aufgabenbearbeiter', 'Bearbeitet aufgaben'),
+--       (5, 'Admin', 'Hat Zugriff auf alles');
+
 INSERT INTO role (id, name, description)
-VALUES (1, 'Projektplaner', 'Plant Projekte'),
-       (2, 'Anfragenbearbeiter', 'Nimmt Anfragen entgegen und leitet diese weiter.'),
-       (3, 'Kapazitätsplaner', 'Plant Kapazitäten bei Aufgabenzuweisungen'),
-       (4, 'Aufgabenbearbeiter', 'Bearbeitet aufgaben'),
-       (5, 'Admin', 'Hat Zugriff auf alles');
-
---------------------------------- ROLE_PERMISSION ------------------------------------------------
-
-INSERT INTO role_permission(role_id, permission_id)
-VALUES (1, 1),
-       (2, 4),
-       (3, 2),
-       (4, 3),
-       (5, 1),
-       (5, 2),
-       (5, 3),
-       (5, 4);
+VALUES (1, 'ADMIN', 'Hat Zugriff auf alles'),
+       (2, 'USER', 'BLa');
 
 --------------------------------- CALENDAR ------------------------------------------------
 INSERT INTO calendar(id)
@@ -82,16 +67,15 @@ VALUES (1, 'Max.Mustermann@mail.de', 'Max', 'Mustermann', null, 8, 1),
 
 --------------------------------- USER ------------------------------------------------
 
-INSERT INTO users (id, name, employee_id)
-VALUES (1, 'Max Mustermann', 1),
-       (2, 'Sabine Musterfrau', 2);
+INSERT INTO users (id, name, password, employee_id)
+VALUES (1, 'Max Mustermann', '{noop}Gandalf',1), -- {noop} is necessary for testing because pw encoding
+       (2, 'Sabine Musterfrau', '{noop}Gandalf', 2);
 
 --------------------------------- USER_ROLES ------------------------------------------------
 
 INSERT INTO user_roles (user_id, role_id)
-VALUES (1, 5),
-       (2, 3),
-       (2, 4);
+VALUES (1, 1),
+       (2, 2);
 
 --------------------------------- EMPLOYEE_EXPERTISE ------------------------------------------------
 INSERT INTO employee_expertise(id, employee_id, expertise_id, level)

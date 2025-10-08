@@ -2,6 +2,7 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExcepti
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.BlockedByDependencyException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.InvalidDependencyException;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -35,4 +36,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<String> handleUserAlreadyExists(UserAlreadyExistsException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
 }

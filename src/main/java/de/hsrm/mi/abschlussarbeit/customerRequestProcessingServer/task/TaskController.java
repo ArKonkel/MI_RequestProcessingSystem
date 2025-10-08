@@ -18,6 +18,7 @@ public class TaskController {
 
     private final TaskService taskService;
 
+    //@PreAuthorize("!hasRole('TASK_REVISOR') and hasAnyRole('CUSTOMER','ADMIN')")
     @GetMapping
     ResponseEntity<List<TaskDto>> getAllTasks() {
         log.info("REST request to get all tasks");

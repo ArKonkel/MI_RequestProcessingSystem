@@ -1,19 +1,20 @@
-package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.authentication;
+package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.role;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.Set;
 
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Permission {
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -22,7 +23,4 @@ public class Permission {
     private String name;
 
     private String description;
-
-    @ManyToMany(mappedBy = "permissions")
-    private Set<Role> roles;
 }
