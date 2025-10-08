@@ -1,4 +1,6 @@
 import {createRouter, createWebHistory} from 'vue-router'
+import axios from 'axios' // 💡 Axios importieren
+
 import TaskView from '@/views/TaskManagerView/TaskView.vue'
 import TaskCapacityPlanningView
   from '@/views/ResourceCapacityPlanningView/TaskCapacityPlanningView.vue'
@@ -9,10 +11,33 @@ import ProjectDetailView from "@/views/ProjectPlannerView/ProjectDetailView.vue"
 import ProjectView from "@/views/ProjectPlannerView/ProjectView.vue";
 import EmployeeView from "@/views/EmployeeViews/EmployeeView.vue";
 import EmployeeDetailView from "@/views/EmployeeViews/EmployeeDetailView.vue";
+import LoginView from "@/views/AuthenticationViews/LoginView.vue";
+
+// 💡 AXIOS REQUEST INTERCEPTOR --> Adds to every requests the Authorization header with the JWT token
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+// ------------------------------------
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: '/login',
+      name: 'Login',
+      component: LoginView
+    },
     {
       path: '/',
       redirect: '/requests',
@@ -71,6 +96,20 @@ const router = createRouter({
       component: TaskCapacityPlanningView,
     },
   ],
+})
+
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token') // JWT
+  const publicPages = ['/login']
+  const authRequired = !publicPages.includes(to.path) // check if route is public page
+
+  if (authRequired && !token) {
+    next('/login')
+  } else if (to.path === '/login' && token) {
+    next('/')
+  } else {
+    next()
+  }
 })
 
 export default router
