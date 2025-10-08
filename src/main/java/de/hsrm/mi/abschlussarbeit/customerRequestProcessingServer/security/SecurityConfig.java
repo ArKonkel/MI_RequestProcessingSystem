@@ -98,6 +98,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/stompbroker/**").permitAll() //for websockets
                         .requestMatchers("/requests/**").hasAnyRole("ADMIN", "CUSTOMER_REQUEST_REVISER", "PROJECT_PLANNER", "CAPACITY_PLANNER")
                         .requestMatchers("/tasks/**").hasAnyRole("ADMIN", "TASK_REVISER", "PROJECT_PLANNER", "CAPACITY_PLANNER")
                         .requestMatchers("/projects/**").hasAnyRole("ADMIN", "PROJECT_PLANNER")

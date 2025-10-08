@@ -39,7 +39,17 @@ export const useRequestStore = defineStore('requestStore', () => {
 
   async function startLiveUpdate() {
     if (!stompClient) {
-      stompClient = new Client({brokerURL: wsurl});
+     // const token = localStorage.getItem('token');
+
+      stompClient = new Client({
+        brokerURL: wsurl,
+        /*
+        connectHeaders: {
+          Authorization: `Bearer ${token}` // token aus deinem Login
+        },
+         */
+      });
+
       stompClient.onWebSocketError = (event) => {
         throw new Error("WebSocket Error: " + event);
       }
