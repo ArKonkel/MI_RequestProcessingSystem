@@ -13,21 +13,26 @@ import EmployeeView from "@/views/EmployeeViews/EmployeeView.vue";
 import EmployeeDetailView from "@/views/EmployeeViews/EmployeeDetailView.vue";
 import LoginView from "@/views/AuthenticationViews/LoginView.vue";
 
+const securityEnabled = import.meta.env.VITE_SECURITY_ENABLED === 'true';
+
+if (securityEnabled) {
+
 // 💡 AXIOS REQUEST INTERCEPTOR --> Adds to every requests the Authorization header with the JWT token
-axios.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
+  axios.interceptors.request.use(
+    (config) => {
+      const token = localStorage.getItem('token');
 
-    if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
+      if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
     }
-
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+  );
+}
 // ------------------------------------
 
 const router = createRouter({
@@ -99,6 +104,11 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  if (!securityEnabled) {
+    console.log('Security is disabled. Skipping authentication check.');
+    return next();
+  }
+
   const token = localStorage.getItem('token') // JWT
   const publicPages = ['/login']
   const authRequired = !publicPages.includes(to.path) // check if route is public page

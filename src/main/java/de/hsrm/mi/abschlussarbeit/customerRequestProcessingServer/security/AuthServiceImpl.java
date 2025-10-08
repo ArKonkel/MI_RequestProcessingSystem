@@ -13,6 +13,7 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -26,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+@Profile("!dev")
 @Slf4j
 public class AuthServiceImpl implements AuthService {
     private final UserService userService;

@@ -2,6 +2,7 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.security;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +13,7 @@ import java.nio.file.AccessDeniedException;
 
 @RestController
 @Slf4j
+@Profile("!dev")
 @AllArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {

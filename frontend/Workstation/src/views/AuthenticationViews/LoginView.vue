@@ -9,9 +9,15 @@ const username = ref('')
 const password = ref('')
 const errorMsg = ref('')
 
+const securityEnabled = import.meta.env.VITE_SECURITY_ENABLED === 'true';
+
 async function handleLogin(e) {
   e.preventDefault()
   errorMsg.value = ''
+  if (!securityEnabled) {
+    console.log('Security is disabled. Login not needed.')
+    return
+  }
 
   try {
     const response = await axios.post('/api/auth/login', {
