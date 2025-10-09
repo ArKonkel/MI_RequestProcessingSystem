@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
-import RequestListView from "@/views/RequestEntryView/RequestListView.vue";
-import RequestDetailView from "@/views/RequestEntryView/RequestDetailView.vue";
+import RequestListView from "@/views/RequestEntryViews/RequestListView.vue";
+import RequestDetailView from "@/views/RequestEntryViews/RequestDetailView.vue";
 
 </script>
 
