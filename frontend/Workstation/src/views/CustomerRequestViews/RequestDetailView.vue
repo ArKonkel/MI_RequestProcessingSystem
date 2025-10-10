@@ -3,7 +3,7 @@ import {ref, watch} from 'vue'
 
 import {useRequestStore} from '@/stores/requestStore.ts'
 import {useAlertStore} from '@/stores/useAlertStore.ts'
-import {addCommentToProcessItem} from '@/services/commentService.ts'
+import {addCommentToProcessItem} from '@/services/processItemService.ts'
 import {updateCustomerRequest} from '@/services/customerRequestService.ts'
 
 import {Badge} from '@/components/ui/badge'

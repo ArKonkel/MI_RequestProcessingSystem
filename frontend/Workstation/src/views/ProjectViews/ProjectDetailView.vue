@@ -28,7 +28,7 @@ import UserSelect from "@/components/UserSelect.vue";
 import CommentsAccordion from "@/components/CommentsAccordion.vue";
 import {Input} from "@/components/ui/input";
 import type {CommentCreateDtd} from "@/documentTypes/dtds/CommentCreateDtd.ts";
-import {addCommentToProcessItem} from "@/services/commentService.ts";
+import {addCommentToProcessItem} from "@/services/processItemService.ts";
 import type {TaskCreateDtd} from "@/documentTypes/dtds/TaskCreateDtd.ts";
 import {createTask} from "@/services/taskService.ts";
 import {
