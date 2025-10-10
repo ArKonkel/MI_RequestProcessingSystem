@@ -3,12 +3,12 @@ import axios from 'axios' // 💡 Axios importieren
 
 import TaskView from '@/views/TaskManagerView/TaskView.vue'
 import TaskCapacityPlanningView
-  from '@/views/ResourceCapacityPlanningView/TaskCapacityPlanningView.vue'
-import RequestView from '@/views/RequestManagerView/RequestView.vue'
-import RequestDetailView from '@/views/RequestManagerView/RequestDetailView.vue'
+  from '@/views/CapacityViews/TaskCapacityPlanningView.vue'
+import RequestView from '@/views/CustomerRequestViews/RequestView.vue'
+import RequestDetailView from '@/views/CustomerRequestViews/RequestDetailView.vue'
 import TaskDetailView from '@/views/TaskManagerView/TaskDetailView.vue'
-import ProjectDetailView from "@/views/ProjectPlannerView/ProjectDetailView.vue";
-import ProjectView from "@/views/ProjectPlannerView/ProjectView.vue";
+import ProjectDetailView from "@/views/ProjectViews/ProjectDetailView.vue";
+import ProjectView from "@/views/ProjectViews/ProjectView.vue";
 import EmployeeView from "@/views/EmployeeViews/EmployeeView.vue";
 import EmployeeDetailView from "@/views/EmployeeViews/EmployeeDetailView.vue";
 import LoginView from "@/views/AuthenticationViews/LoginView.vue";

@@ -1,14 +1,14 @@
 <script setup lang="ts">
+import ProjectListView from '@/views/ProjectViews/ProjectListView.vue'
+import ProjectDetailView from '@/views/ProjectViews/ProjectDetailView.vue'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
-import RequestListView from '@/views/RequestManagerView/RequestListView.vue'
-import RequestDetailView from '@/views/RequestManagerView/RequestDetailView.vue'
 </script>
 
 <template>
   <ResizablePanelGroup direction="horizontal">
     <!-- Linkes Panel -->
     <ResizablePanel :default-size="50" class="min-w-70 max-w-100">
-      <RequestListView />
+      <ProjectListView />
     </ResizablePanel>
 
     <!-- Divider -->
@@ -16,7 +16,7 @@ import RequestDetailView from '@/views/RequestManagerView/RequestDetailView.vue'
 
     <!-- Rechtes Panel -->
     <ResizablePanel class="min-w-140">
-      <RequestDetailView />
+      <ProjectDetailView />
     </ResizablePanel>
   </ResizablePanelGroup>
 </template>

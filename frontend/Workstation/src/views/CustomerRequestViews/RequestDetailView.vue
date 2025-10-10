@@ -160,7 +160,7 @@ async function saveRequest() {
       description: description.value,
       priority: editableRequest.value.priority,
       status: editableRequest.value.status,
-      assigneeId: editableRequest.value.processItem.assignee.id,
+      //assigneeId: editableRequest.value?.processItem.assignee.id,
       estimatedScope: estimatedScope.value,
       chargeable: editableRequest.value.chargeable,
       scopeUnit: editableRequest.value.scopeUnit,

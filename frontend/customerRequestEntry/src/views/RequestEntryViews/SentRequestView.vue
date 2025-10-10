@@ -12,6 +12,7 @@ import RequestDetailView from "@/views/RequestEntryViews/RequestDetailView.vue";
       <RequestListView/>
     </ResizablePanel>
 
+
     <!-- Divider -->
     <ResizableHandle class="bg-gray-300 w-0.5 cursor-col-resize"/>
 
