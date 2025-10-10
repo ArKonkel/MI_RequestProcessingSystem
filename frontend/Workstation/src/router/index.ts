@@ -3,14 +3,14 @@ import axios from 'axios' // 💡 Axios importieren
 
 import TaskView from '@/views/TaskManagerView/TaskView.vue'
 import TaskCapacityPlanningView
-  from '@/views/CapacityViews/TaskCapacityPlanningView.vue'
+  from '@/views/CapacityPlanningViews/TaskCapacityPlanningView.vue'
 import RequestView from '@/views/CustomerRequestViews/RequestView.vue'
 import RequestDetailView from '@/views/CustomerRequestViews/RequestDetailView.vue'
 import TaskDetailView from '@/views/TaskManagerView/TaskDetailView.vue'
 import ProjectDetailView from "@/views/ProjectViews/ProjectDetailView.vue";
 import ProjectView from "@/views/ProjectViews/ProjectView.vue";
-import EmployeeView from "@/views/EmployeeViews/EmployeeView.vue";
-import EmployeeDetailView from "@/views/EmployeeViews/EmployeeDetailView.vue";
+import EmployeeView from "@/views/CapacityPlanningViews/EmployeeView.vue";
+import EmployeeDetailView from "@/views/CapacityPlanningViews/EmployeeDetailView.vue";
 import LoginView from "@/views/AuthenticationViews/LoginView.vue";
 
 const securityEnabled = import.meta.env.VITE_SECURITY_ENABLED === 'true';

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
-import EmployeeDetailView from "@/views/EmployeeViews/EmployeeDetailView.vue";
-import EmployeeListView from "@/views/EmployeeViews/EmployeeListView.vue";
+import EmployeeDetailView from "@/views/CapacityPlanningViews/EmployeeDetailView.vue";
+import EmployeeListView from "@/views/CapacityPlanningViews/EmployeeListView.vue";
 </script>
 
 <template>
