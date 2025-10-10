@@ -37,7 +37,7 @@ public class CustomerRequestController {
 
     @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping("/customer/{customerId}")
-    public ResponseEntity<List<CustomerRequestDto>> getRequestFromCustomer(@PathVariable Long customerId) {
+    public ResponseEntity<List<CustomerRequestDto>> getRequestOfCustomer(@PathVariable Long customerId) {
         log.info("REST request to get all requests from customer {}", customerId);
 
         List<CustomerRequestDto> requests = customerRequestService.getRequestsByCustomerId(customerId);

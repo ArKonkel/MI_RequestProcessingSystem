@@ -14,7 +14,7 @@ import type { CalculatedCapacitiesOfMatchDto } from '@/documentTypes/dtds/Calcul
 import type { MatchingEmployeeCapacitiesDtd } from '@/documentTypes/dtds/MatchingEmployeeCapacitiesDtd.ts'
 import type { CalendarDtd } from '@/documentTypes/dtds/CalendarDtd.ts'
 
-import { assignTaskToEmployee, getMatchingEmployees } from '@/services/capacityPlanningsService.ts'
+import { assignTaskToEmployee, getMatchingEmployees } from '@/services/capacityService.ts'
 import { getEmployeeCalendar } from '@/services/calendarService.ts'
 import type { EmployeeDtd } from '@/documentTypes/dtds/EmployeeDtd.ts'
 import type { ExpertiseDtd } from '@/documentTypes/dtds/ExpertiseDtd.ts'

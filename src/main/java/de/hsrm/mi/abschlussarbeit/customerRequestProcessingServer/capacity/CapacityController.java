@@ -15,7 +15,7 @@ public class CapacityController {
 
 
     @GetMapping("/{taskId}")
-    public ResponseEntity<MatchingEmployeeCapacitiesDto> getMatchingEmployees(@PathVariable Long taskId) {
+    public ResponseEntity<MatchingEmployeeCapacitiesDto> calculateMatchingEmployees(@PathVariable Long taskId) {
         log.info("REST request to get best matches for task {}", taskId);
         MatchingEmployeeCapacitiesDto matches = capacityService.findBestMatchesForTask(taskId);
 
