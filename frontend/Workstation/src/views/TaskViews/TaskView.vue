@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import TaskListView from '@/views/TaskManagerView/TaskListView.vue'
-import TaskDetailView from '@/views/TaskManagerView/TaskDetailView.vue'
+import TaskListView from '@/views/TaskViews/TaskListView.vue'
+import TaskDetailView from '@/views/TaskViews/TaskDetailView.vue'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 </script>
 
