@@ -107,6 +107,9 @@ public class ProcessItemImpl implements ProcessItemService, CommentService {
 
         processItemRepository.save(processItem);
 
+        TargetType targetType = determineTargetType(processItem);
+        notificationService.sendChangeNotification(new ChangeNotificationEvent(processItem.getId(), ChangeType.UPDATED, targetType));
+
         return fileMapper.toDto(file);
     }
 
