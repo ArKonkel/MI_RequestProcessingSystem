@@ -42,6 +42,7 @@ import type {ProjectCreateDtd} from "@/documentTypes/dtds/ProjectCreateDtd.ts";
 import {createProject} from "@/services/projectService.ts";
 import type {UpdateCustomerRequestDtd} from "@/documentTypes/dtds/UpdateCustomerRequestDtd.ts";
 import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
+import {ProjectStatusLabel} from "@/documentTypes/types/ProjectStatus.ts";
 
 const requestStore = useRequestStore()
 const alertStore = useAlertStore()
@@ -289,6 +290,8 @@ async function addComment() {
                       <span>{{ project.processItem.id }}</span>
                       <span class="font-semibold">{{ project.processItem.title }}</span>
                     </div>
+
+                    <Badge variant="secondary">{{ ProjectStatusLabel[project.status] }}</Badge>
                   </div>
                 </RouterLink>
               </div>
