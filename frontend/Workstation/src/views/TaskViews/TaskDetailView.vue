@@ -51,7 +51,7 @@ import ExpertiseSelect from '@/components/ExpertiseSelect.vue'
 import {useRouter} from 'vue-router'
 import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
 import {WorkingTimeUnit, WorkingTimeUnitlabel} from "@/documentTypes/types/WorkingTimeUnit.ts";
-import {ProjectStatusLabel} from "@/documentTypes/types/ProjectStatus.ts";
+import AttachmentList from "@/components/AttachmentList.vue";
 
 const taskStore = useTaskStore()
 const alertStore = useAlertStore()
@@ -311,6 +311,13 @@ async function updateAssignee() {
             <AccordionTrigger>Akzeptanzkriterien</AccordionTrigger>
             <AccordionContent>
               <Textarea v-model="acceptanceCriteria" class="mt-2 min-h-[130px] resize-none"/>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="attachment">
+            <AccordionTrigger>Anhänge</AccordionTrigger>
+            <AccordionContent>
+              <AttachmentList :attachments="editableTask.processItem.attachments" />
             </AccordionContent>
           </AccordionItem>
 

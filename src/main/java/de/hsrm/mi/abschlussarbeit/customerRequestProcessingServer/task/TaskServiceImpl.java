@@ -16,6 +16,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -51,6 +52,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional(readOnly = true) //Needed because fetching blob
     public List<TaskDto> getAllTasks() {
         log.info("Getting all tasks");
         return taskRepository.findAllByOrderByCreationDateDescIdDesc().stream().map(taskMapper::toDto).toList();

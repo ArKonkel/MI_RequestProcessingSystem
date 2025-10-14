@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +57,7 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
     }
 
     @Override
+    @Transactional(readOnly = true) //Needed because fetching blob
     public List<CustomerRequestDto> getAllRequests() {
         log.info("Getting all requests");
 

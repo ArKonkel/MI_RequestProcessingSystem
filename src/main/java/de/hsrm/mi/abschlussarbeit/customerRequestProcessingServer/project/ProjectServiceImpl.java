@@ -10,6 +10,7 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.T
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -41,6 +42,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @Transactional(readOnly = true)//Needed because fetching blob
     public List<ProjectDto> getAllDtoProjects() {
         log.info("Getting all dto projects");
 

@@ -40,7 +40,7 @@ public abstract class ProcessItem {
     @OneToMany(mappedBy = "processItem", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "processItem")
+    @OneToMany(mappedBy = "processItem",  fetch = FetchType.LAZY)
     private List<File> attachments = new ArrayList<>();
 
     @ManyToOne

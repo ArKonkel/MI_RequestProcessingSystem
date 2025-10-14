@@ -23,6 +23,7 @@ public class File {
     private String contentType;
 
     @Lob
+    @Basic(fetch = FetchType.LAZY) //Only fetch when needed
     private byte[] data;
 
     @ManyToOne
