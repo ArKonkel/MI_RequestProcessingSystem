@@ -15,10 +15,10 @@ import {
 } from '@/components/ui/accordion'
 import {
   Select,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select'
 import {ScrollArea} from '@/components/ui/scroll-area'
 
@@ -30,10 +30,17 @@ import CommentsAccordion from '@/components/CommentsAccordion.vue'
 import type {CommentCreateDtd} from '@/documentTypes/dtds/CommentCreateDtd.ts'
 import {addCommentToProcessItem, assignProcessItemToUser} from '@/services/processItemService.ts'
 import {TimeUnitLabel} from '@/documentTypes/types/TimeUnit.ts'
-import {updateTask} from '@/services/taskService.ts'
+import {addWorkingTime, updateTask} from '@/services/taskService.ts'
 import UserSelect from '@/components/UserSelect.vue'
 import type {DateValue} from '@internationalized/date'
-import {DateFormatter, getLocalTimeZone, CalendarDate} from '@internationalized/date'
+import {CalendarDate, DateFormatter, getLocalTimeZone} from '@internationalized/date'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import {CalendarIcon} from 'lucide-vue-next'
 
 import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover'
@@ -43,6 +50,8 @@ import type {UpdateTaskDtd} from '@/documentTypes/dtds/UpdateTaskDtd.ts'
 import ExpertiseSelect from '@/components/ExpertiseSelect.vue'
 import {useRouter} from 'vue-router'
 import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
+import {WorkingTimeUnit, WorkingTimeUnitlabel} from "@/documentTypes/types/WorkingTimeUnit.ts";
+import {ProjectStatusLabel} from "@/documentTypes/types/ProjectStatus.ts";
 
 const taskStore = useTaskStore()
 const alertStore = useAlertStore()
@@ -60,6 +69,10 @@ const showAddExpertise = ref(false)
 const assignee = ref<UserDtd | null>(null)
 
 const ignoreNextUpdate = ref(false)
+
+const showWorkingTimeDialog = ref(false)
+const workingTimeToAdd = ref(0)
+const unit = ref<WorkingTimeUnit>(WorkingTimeUnit.MINUTES)
 
 const dataFormatter = new DateFormatter('de-DE', {
   dateStyle: 'medium',
@@ -119,6 +132,21 @@ watch(
   },
 )
 
+async function submitWorkingTime() {
+  if (editableTask.value === null) return
+
+  try {
+    await addWorkingTime(editableTask.value.processItem.id, workingTimeToAdd.value, unit.value)
+
+    alertStore.show('Arbeitszeit erfolgreich hinzugefügt', 'success')
+    showWorkingTimeDialog.value = false
+  } catch (error) {
+    alertStore.show('Fehler beim Hinzufügen der Arbeitszeit', 'error')
+  }
+
+  workingTimeToAdd.value = 0
+}
+
 async function saveTask() {
   if (!editableTask.value) return
   try {
@@ -128,8 +156,8 @@ async function saveTask() {
       priority: editableTask.value.priority,
       status: editableTask.value.status,
       estimatedTime: estimatedTime.value,
+      estimationUnit: editableTask.value.estimationUnit,
       acceptanceCriteria: acceptanceCriteria.value,
-      workingTimeInMinutes: workingTimeInMinutes.value,
       dueDate: dueDateValue.value ? dueDateValue.value.toString() : undefined,
       expertiseIds: expertiseIdToAdd.value ? [expertiseIdToAdd.value] : undefined,
     }
@@ -338,35 +366,76 @@ async function updateAssignee() {
 
       <div>
         <label class="text-sm font-semibold">Geschätzte Zeit</label>
-        <Input type="number" v-model="estimatedTime" placeholder="Schätzung in Minuten"/>
+
+        <div class="flex space-x-2 border-b border-gray-300 pb-2 mb-2">
+          <Input type="number" v-model="estimatedTime" placeholder="Schätzung in Minuten"/>
+
+          <Select v-model="editableTask.estimationUnit" @update:modelValue="saveTask">
+            <SelectTrigger>
+              <SelectValue placeholder="Zeiteinheit"/>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem
+                v-for="[value, timeUnitLabel] in Object.entries(TimeUnitLabel)"
+                :key="value"
+                :value="value"
+              >
+                {{ timeUnitLabel }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      <div class="border-b border-gray-300 pb-2 mb-2">
-        <label class="text-sm font-semibold">Einheit</label>
-        <Select v-model="editableTask.estimationUnit" @update:modelValue="saveTask">
-          <SelectTrigger>
-            <SelectValue placeholder="Zeiteinheit"/>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem
-              v-for="[value, timeUnitLabel] in Object.entries(TimeUnitLabel)"
-              :key="value"
-              :value="value"
-            >
-              {{ timeUnitLabel }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
 
       <div>
         <label class="text-sm font-semibold">Aufgewandte Zeit (min)</label>
-        <Input
-          type="number"
-          v-model="workingTimeInMinutes"
-          placeholder="Zeit eintragen"
-          @update:modelValue="saveTask"
-        />
+        <div class="flex space-x-2">
+          <Input
+            type="number"
+            v-model="workingTimeInMinutes"
+            disabled
+          />
+
+          <Dialog v-model:open="showWorkingTimeDialog">
+            <DialogTrigger as-child>
+              <Button>+</Button>
+            </DialogTrigger>
+
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Arbeitszeit hinzufügen</DialogTitle>
+              </DialogHeader>
+              <div class="space-y-4">
+                <Input
+                  type="number"
+                  v-model="workingTimeToAdd"
+                  placeholder="Arbeitszeit eingeben"
+                  class="w-full"
+                />
+                <Select v-model="unit" class="w-full">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Einheit wählen"/>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem
+                      v-for="[value, workingTimeUnitLabel] in Object.entries(WorkingTimeUnitlabel)"
+                      :key="value"
+                      :value="value"
+                    >
+                      {{ workingTimeUnitLabel }}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <div class="flex justify-end space-x-2">
+                  <Button variant="secondary" @click="showWorkingTimeDialog = false">Abbrechen
+                  </Button>
+                  <Button @click="submitWorkingTime">Hinzufügen</Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
     </div>
   </div>

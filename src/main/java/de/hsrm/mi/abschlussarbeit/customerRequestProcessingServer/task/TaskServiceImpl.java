@@ -12,7 +12,6 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.N
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.TargetType;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.Project;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.ProjectService;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -115,10 +114,6 @@ public class TaskServiceImpl implements TaskService {
             task.setEstimationUnit(updateDto.getEstimationUnit());
         }
 
-        if (updateDto.getWorkingTimeInMinutes() != null) {
-            task.setWorkingTimeInMinutes(updateDto.getWorkingTimeInMinutes());
-        }
-
         if (updateDto.getDueDate() != null) {
             task.setDueDate(updateDto.getDueDate());
         }
@@ -191,6 +186,8 @@ public class TaskServiceImpl implements TaskService {
 
         try {
             taskRepository.save(task);
+
+            notificationService.sendChangeNotification(new ChangeNotificationEvent(task.getId(), ChangeType.UPDATED, TargetType.TASK));
         } catch (Exception e) {
 
             throw new SaveException("Error while saving task " + taskId + " with message" + e);

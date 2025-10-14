@@ -16,7 +16,6 @@ public class UpdateTaskDto {
     private String description;
     private BigDecimal estimatedTime;
     private TimeUnit estimationUnit;
-    private Long workingTimeInMinutes;
     private LocalDate dueDate;
     private TaskStatus status;
     private Priority priority;

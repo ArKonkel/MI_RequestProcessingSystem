@@ -7,7 +7,6 @@ export interface UpdateTaskDtd {
   description?: string
   estimatedTime?: number
   estimationUnit?: TimeUnit
-  workingTimeInMinutes?: number
   dueDate?: string
   status?: TaskStatus
   priority?: Priority
