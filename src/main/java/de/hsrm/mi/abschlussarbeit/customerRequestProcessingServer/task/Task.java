@@ -58,6 +58,7 @@ public class Task extends ProcessItem {
             joinColumns = @JoinColumn(name = "task_id"),
             inverseJoinColumns = @JoinColumn(name = "expertise_id")
     )
+    @OrderBy("name ASC")
     private Set<Expertise> expertise = Set.of();
 
     @ManyToOne
