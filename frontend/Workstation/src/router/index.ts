@@ -105,7 +105,6 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   if (!securityEnabled) {
-    console.log('Security is disabled. Skipping authentication check.');
     return next();
   }
 

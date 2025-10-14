@@ -7,7 +7,6 @@ import type { Priority } from '@/documentTypes/types/Priority.ts'
 export interface UpdateCustomerRequestDtd {
   title?: string
   description?: string
-  assigneeId?: number
   priority?: Priority
   estimatedScope?: number
   scopeUnit?: TimeUnit

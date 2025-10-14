@@ -22,7 +22,7 @@ public class ProcessItemController {
     public ResponseEntity<Void> assignProcessItemToUser(
             @PathVariable Long processItemId,
             @PathVariable Long userId) {
-        log.info("REST request to assign process item {} to employee {}", processItemId, userId);
+        log.info("REST request to assign process item {} to user {}", processItemId, userId);
 
         processItemService.assignProcessItemToUser(processItemId, userId);
 

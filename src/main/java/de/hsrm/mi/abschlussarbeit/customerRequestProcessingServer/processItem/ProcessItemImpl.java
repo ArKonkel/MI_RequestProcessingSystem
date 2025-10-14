@@ -33,15 +33,29 @@ public class ProcessItemImpl implements ProcessItemService, CommentService {
 
     private final UserService userService;
 
+    /**
+     * Assigns a process item to a user or unassigns it if the userId is -1.
+     * Sends notifications about the assignment or unassignment to the relevant parties.
+     *
+     * @param processItemId the ID of the process item to be assigned or unassigned
+     * @param userId        the ID of the user to whom the process item will be assigned;
+     *                      pass -1 to unassign the process item
+     */
     @Override
     @Transactional
     public void assignProcessItemToUser(Long processItemId, Long userId) {
         log.info("Assigning process item {} to user {}", processItemId, userId);
+        User user = null;
 
         ProcessItem processItem = getProcessItemById(processItemId);
-        User user = userService.getUserById(userId);
 
-        processItem.setAssignee(user);
+        if (userId == -1) {
+            processItem.setAssignee(null);
+        } else {
+            user = userService.getUserById(userId);
+
+            processItem.setAssignee(user);
+        }
 
         processItemRepository.save(processItem);
 
@@ -56,8 +70,10 @@ public class ProcessItemImpl implements ProcessItemService, CommentService {
 
         notificationService.sendChangeNotification(new ChangeNotificationEvent(processItem.getId(), ChangeType.UPDATED, targetType));
 
-        notificationService.sendUserNotification(new UserNotificationEvent(UserNotificationType.ASSIGNED, processItem.getId(), processItem.getTitle(),
-                List.of(user.getId()), "", Instant.now()));
+        if (user != null) {
+            notificationService.sendUserNotification(new UserNotificationEvent(UserNotificationType.ASSIGNED, processItem.getId(), processItem.getTitle(),
+                    List.of(user.getId()), "", Instant.now()));
+        }
     }
 
     @Override

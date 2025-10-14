@@ -7,8 +7,6 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.C
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.ChangeType;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.TargetType;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,8 +27,6 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectMapper projectMapper;
 
     private final NotificationService notificationService;
-
-    private final UserService userService;
 
     public Project getProjectById(Long projectId) {
         log.info("Getting project with id {}", projectId);
@@ -82,10 +78,6 @@ public class ProjectServiceImpl implements ProjectService {
             project.setEndDate(updateDto.endDate());
         }
 
-        if (updateDto.assigneeId() != null) {
-            User assignee = userService.getUserById(updateDto.assigneeId());
-            project.setAssignee(assignee);
-        }
         Project savedProject = projectRepository.save(project);
 
         notificationService.sendChangeNotification(new ChangeNotificationEvent(savedProject.getId(), ChangeType.UPDATED, TargetType.PROJECT));

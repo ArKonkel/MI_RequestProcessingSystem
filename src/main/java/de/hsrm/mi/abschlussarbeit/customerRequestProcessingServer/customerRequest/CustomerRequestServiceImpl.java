@@ -12,8 +12,6 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.C
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.ChangeType;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.TargetType;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
@@ -33,8 +31,6 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
     private final CustomerRequestRepository customerRequestRepository;
 
     private final CustomerService customerService;
-
-    private final UserService userService;
 
     private final CustomerRequestMapper requestMapper;
 
@@ -131,11 +127,6 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
 
         if (updateDto.getDescription() != null) {
             request.setDescription(updateDto.getDescription());
-        }
-
-        if (updateDto.getAssigneeId() != null) {
-            User assignee = userService.getUserById(updateDto.getAssigneeId());
-            request.setAssignee(assignee);
         }
 
         CustomerRequest savedRequest = customerRequestRepository.save(request);

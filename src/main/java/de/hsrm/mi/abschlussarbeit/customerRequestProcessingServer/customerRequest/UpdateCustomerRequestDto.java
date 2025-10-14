@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 public class UpdateCustomerRequestDto {
     private String title;
     private String description;
-    private Long assigneeId;
     private Priority priority;
     private BigDecimal estimatedScope;
     private TimeUnit scopeUnit;

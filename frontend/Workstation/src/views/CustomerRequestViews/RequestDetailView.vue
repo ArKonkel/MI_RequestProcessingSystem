@@ -3,7 +3,7 @@ import {ref, watch} from 'vue'
 
 import {useRequestStore} from '@/stores/requestStore.ts'
 import {useAlertStore} from '@/stores/useAlertStore.ts'
-import {addCommentToProcessItem} from '@/services/processItemService.ts'
+import {addCommentToProcessItem, assignProcessItemToUser} from '@/services/processItemService.ts'
 import {updateCustomerRequest} from '@/services/customerRequestService.ts'
 
 import {Badge} from '@/components/ui/badge'
@@ -40,6 +40,8 @@ import type {TaskCreateDtd} from '@/documentTypes/dtds/TaskCreateDtd.ts'
 import {createTask} from '@/services/taskService.ts'
 import type {ProjectCreateDtd} from "@/documentTypes/dtds/ProjectCreateDtd.ts";
 import {createProject} from "@/services/projectService.ts";
+import type {UpdateCustomerRequestDtd} from "@/documentTypes/dtds/UpdateCustomerRequestDtd.ts";
+import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
 
 const requestStore = useRequestStore()
 const alertStore = useAlertStore()
@@ -51,6 +53,8 @@ const estimatedScope = ref(0)
 
 const addingTask = ref(false)
 const newTaskTitle = ref('')
+
+const assignee = ref<UserDtd | null>(null)
 
 const addingProject = ref(false)
 const newProjectTitle = ref('')
@@ -67,6 +71,7 @@ watch(
       ignoreNextUpdate.value = true
       description.value = newReq.processItem.description
       estimatedScope.value = newReq.estimatedScope
+      assignee.value = newReq.processItem.assignee
     } else {
       editableRequest.value = null
       description.value = ''
@@ -87,7 +92,6 @@ watch(
   () => [description.value, estimatedScope.value],
   () => {
     if (ignoreNextUpdate.value) {
-      console.log('ignore next update')
       ignoreNextUpdate.value = false //skip first update
       return
     }
@@ -150,17 +154,29 @@ function cancelTask() {
   addingTask.value = false
 }
 
+async function updateAssignee() {
+  if (!editableRequest.value) return
+
+  const id = assignee.value?.id ?? -1
+
+  try {
+    await assignProcessItemToUser(editableRequest.value.processItem.id, id)
+  } catch (err: any) {
+    const msg = err.response?.data?.message || err.response?.data || err.message || String(err)
+    alertStore.show(`Fehler bei der Zuweisung): ${msg}`, 'error')
+  }
+}
+
 // save changes
 async function saveRequest() {
   console.log('save request')
   if (!editableRequest.value) return
 
   try {
-    const dto = {
+    const dto: UpdateCustomerRequestDtd = {
       description: description.value,
       priority: editableRequest.value.priority,
       status: editableRequest.value.status,
-      //assigneeId: editableRequest.value?.processItem.assignee.id,
       estimatedScope: estimatedScope.value,
       chargeable: editableRequest.value.chargeable,
       scopeUnit: editableRequest.value.scopeUnit,
@@ -341,7 +357,7 @@ async function addComment() {
         </Select>
       </div>
 
-      <UserSelect v-model="editableRequest.processItem.assignee" @update:modelValue="saveRequest"/>
+      <UserSelect v-model="assignee" @update:modelValue="updateAssignee"/>
 
       <div>
         <label class="text-sm font-semibold">Geschätzte Zeit</label>
