@@ -43,6 +43,7 @@ import {createProject} from "@/services/projectService.ts";
 import type {UpdateCustomerRequestDtd} from "@/documentTypes/dtds/UpdateCustomerRequestDtd.ts";
 import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
 import {ProjectStatusLabel} from "@/documentTypes/types/ProjectStatus.ts";
+import AttachmentList from "@/components/AttachmentList.vue";
 
 const requestStore = useRequestStore()
 const alertStore = useAlertStore()
@@ -239,6 +240,13 @@ async function addComment() {
             <AccordionTrigger>Beschreibung</AccordionTrigger>
             <AccordionContent>
               <Textarea v-model="description" class="mt-2 min-h-[200px] resize-none"/>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="attachment">
+            <AccordionTrigger>Anhänge</AccordionTrigger>
+            <AccordionContent>
+              <AttachmentList :attachments="editableRequest.processItem.attachments" :processItemId="editableRequest.processItem.id" />
             </AccordionContent>
           </AccordionItem>
 

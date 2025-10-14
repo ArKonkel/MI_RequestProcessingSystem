@@ -40,6 +40,7 @@ import {createProjectDependency, updateProject} from "@/services/projectService.
 import ProjectSelect from "@/components/ProjectSelect.vue";
 import type {CreateDependencyDtd} from "@/documentTypes/dtds/CreateDependencyDtd.ts";
 import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
+import AttachmentList from "@/components/AttachmentList.vue";
 
 const projectStore = useProjectStore()
 const alertStore = useAlertStore()
@@ -305,6 +306,13 @@ function openRequest(reqId: number) {
             <AccordionTrigger>Beschreibung</AccordionTrigger>
             <AccordionContent>
               <Textarea v-model="description" class="mt-2 min-h-[200px] resize-none"/>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="attachment">
+            <AccordionTrigger>Anhänge</AccordionTrigger>
+            <AccordionContent>
+              <AttachmentList :attachments="editableProject.processItem.attachments" :processItemId="editableProject.processItem.id" />
             </AccordionContent>
           </AccordionItem>
 
