@@ -5,6 +5,10 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment.Commen
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment.CommentRepository;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment.CommentService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequest;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.file.File;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.file.FileDto;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.file.FileMapper;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.file.FileService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotFoundException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.*;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.Project;
@@ -15,7 +19,9 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
@@ -32,6 +38,10 @@ public class ProcessItemImpl implements ProcessItemService, CommentService {
     private final CommentRepository commentRepository;
 
     private final UserService userService;
+
+    private final FileService fileService;
+
+    private final FileMapper fileMapper;
 
     /**
      * Assigns a process item to a user or unassigns it if the userId is -1.
@@ -80,6 +90,24 @@ public class ProcessItemImpl implements ProcessItemService, CommentService {
     public ProcessItem getProcessItemById(Long id) {
 
         return processItemRepository.findById(id).orElseThrow(() -> new NotFoundException("Process item with id " + id + " not found"));
+    }
+
+
+    @Override
+    public FileDto addAttachment(Long processItemId, MultipartFile multipartFile) throws IOException {
+        log.info("Adding attachment to process item {}", processItemId);
+
+        ProcessItem processItem = processItemRepository.findById(processItemId)
+                .orElseThrow(() -> new NotFoundException("ProcessItem not found"));
+
+        File file = fileService.upload(multipartFile);
+
+        file.setProcessItem(processItem);
+        processItem.getAttachments().add(file);
+
+        processItemRepository.save(processItem);
+
+        return fileMapper.toDto(file);
     }
 
     @Override

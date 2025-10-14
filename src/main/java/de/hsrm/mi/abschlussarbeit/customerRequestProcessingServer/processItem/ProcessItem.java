@@ -1,6 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment.Comment;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.file.File;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.Task;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
 import jakarta.persistence.*;
@@ -38,6 +39,9 @@ public abstract class ProcessItem {
     @OrderBy("timeStamp DESC")
     @OneToMany(mappedBy = "processItem", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "processItem")
+    private List<File> attachments = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "user_id")
