@@ -361,25 +361,24 @@ async function addComment() {
 
       <div>
         <label class="text-sm font-semibold">Geschätzte Zeit</label>
-        <Input type="number" v-model="estimatedScope" placeholder="Schätzung in Minuten"/>
-      </div>
 
-      <div>
-        <label class="text-sm font-semibold">Einheit</label>
-        <Select v-model="editableRequest.scopeUnit" @update:modelValue="saveRequest">
-          <SelectTrigger>
-            <SelectValue placeholder="Zeiteinheit"/>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem
-              v-for="[value, timeUnitLabel] in Object.entries(TimeUnitLabel)"
-              :key="value"
-              :value="value"
-            >
-              {{ timeUnitLabel }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
+        <div class="flex space-x-2">
+          <Input type="number" v-model="estimatedScope" placeholder="Schätzung in Minuten"/>
+          <Select v-model="editableRequest.scopeUnit" @update:modelValue="saveRequest">
+            <SelectTrigger>
+              <SelectValue placeholder="Zeiteinheit"/>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem
+                v-for="[value, timeUnitLabel] in Object.entries(TimeUnitLabel)"
+                :key="value"
+                :value="value"
+              >
+                {{ timeUnitLabel }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div>
