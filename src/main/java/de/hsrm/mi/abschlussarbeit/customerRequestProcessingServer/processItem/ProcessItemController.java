@@ -46,6 +46,7 @@ public class ProcessItemController {
     public ResponseEntity<FileDto> uploadAttachment(
             @PathVariable Long id,
             @RequestParam("file") MultipartFile file) throws IOException {
+        log.info("REST request to upload attachment to process item {}", id);
 
         FileDto dto = processItemService.addAttachment(id, file);
         return ResponseEntity.ok(dto);

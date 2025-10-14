@@ -17,7 +17,7 @@ export async function uploadAttachment(processItemId: number, file: File): Promi
   formData.append('file', file);
 
   const response = await axios.post(
-    `/api/process-items/${processItemId}/attachments`,
+    `/api/processItems/${processItemId}/attachments`,
     formData,
     {
       headers: {

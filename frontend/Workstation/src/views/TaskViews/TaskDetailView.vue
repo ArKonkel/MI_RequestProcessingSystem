@@ -317,7 +317,7 @@ async function updateAssignee() {
           <AccordionItem value="attachment">
             <AccordionTrigger>Anhänge</AccordionTrigger>
             <AccordionContent>
-              <AttachmentList :attachments="editableTask.processItem.attachments" />
+              <AttachmentList :attachments="editableTask.processItem.attachments" :processItemId="editableTask.processItem.id" />
             </AccordionContent>
           </AccordionItem>
 

@@ -9,25 +9,42 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from '@/components/ui/tooltip'
+import {ref} from "vue";
+import {uploadAttachment} from "@/services/processItemService.ts";
+import {useAlertStore} from "@/stores/useAlertStore.ts";
+import {useFileDialog} from "@vueuse/core";
+
+const alertStore = useAlertStore()
 
 const props = defineProps<{
-  attachments: FileDtd[]
+  attachments: FileDtd[],
+  processItemId: number
 }>()
+
+const {files, open, onChange} = useFileDialog({
+  accept: '*/*'
+})
+
+
+onChange(async (fileList) => {
+  if (fileList && fileList.length > 0) {
+    const file = fileList[0]
+    try {
+      const uploadedFile = await uploadAttachment(props.processItemId, file)
+      alertStore.show("Datei erfolgreich hochgeladen", "success")
+    } catch (error) {
+      alertStore.show('Fehler beim hochladen der Datei', 'error')
+    }
+  }
+})
 
 function handleDownload(file: FileDtd) {
   downloadFile(file.id)
 }
-
-function handleUpload()
-
 </script>
 
 <template>
-  <div class="flex space-x-2 space-y-2 items-center" >
-    <p v-if="!attachments || attachments.length === 0" class="text-sm text-gray-500">
-      Keine Anhänge vorhanden.
-    </p>
-
+  <div class="flex space-x-2 space-y-2 items-center">
     <Card
       v-for="file in attachments"
       :key="file.url"
@@ -53,7 +70,7 @@ function handleUpload()
     </Card>
 
     <div>
-      <Button class="cursor-pointer min-w-10 min-h-10">+</Button>
+      <Button class="cursor-pointer min-w-10 min-h-10" @click="open">+</Button>
     </div>
   </div>
 </template>
