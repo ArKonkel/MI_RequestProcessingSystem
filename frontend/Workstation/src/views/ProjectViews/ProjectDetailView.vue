@@ -28,7 +28,7 @@ import UserSelect from "@/components/UserSelect.vue";
 import CommentsAccordion from "@/components/CommentsAccordion.vue";
 import {Input} from "@/components/ui/input";
 import type {CommentCreateDtd} from "@/documentTypes/dtds/CommentCreateDtd.ts";
-import {addCommentToProcessItem} from "@/services/processItemService.ts";
+import {addCommentToProcessItem, assignProcessItemToUser} from "@/services/processItemService.ts";
 import type {TaskCreateDtd} from "@/documentTypes/dtds/TaskCreateDtd.ts";
 import {createTask} from "@/services/taskService.ts";
 import {
@@ -39,6 +39,7 @@ import type {ProjectUpdateDtd} from "@/documentTypes/dtds/ProjectUpdateDtd.ts";
 import {createProjectDependency, updateProject} from "@/services/projectService.ts";
 import ProjectSelect from "@/components/ProjectSelect.vue";
 import type {CreateDependencyDtd} from "@/documentTypes/dtds/CreateDependencyDtd.ts";
+import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
 
 const projectStore = useProjectStore()
 const alertStore = useAlertStore()
@@ -53,6 +54,8 @@ const ignoreNextUpdate = ref(false)
 const commentText = ref('')
 const addingTask = ref(false)
 const newTaskTitle = ref('')
+
+const assignee = ref<UserDtd | null>(null)
 
 const addingDependency = ref(false)
 const selectedDependency = ref<ProjectDependencyType | null>(null)
@@ -70,6 +73,7 @@ watch(
       editableProject.value = {...newProj}
       ignoreNextUpdate.value = true
       description.value = newProj.processItem.description
+      assignee.value = newProj.processItem.assignee
 
       if (newProj.startDate) {
         const [yearStart, monthStart, dayStart] = newProj.startDate!.split('-').map(Number)
@@ -118,7 +122,6 @@ async function saveProject() {
     const dto: ProjectUpdateDtd = {
       description: description.value,
       status: editableProject.value.status,
-      assigneeId: editableProject.value.processItem.assignee?.id,
       startDate: startDateValue.value ? startDateValue.value.toString() : undefined,
       endDate: endDateValue.value ? endDateValue.value.toString() : undefined,
     }
@@ -204,6 +207,20 @@ function cancelDependency() {
   addingDependency.value = false
   selectedDependency.value = null
 }
+
+async function updateAssignee() {
+  if (!editableProject.value) return
+
+  const id = assignee.value?.id ?? -1
+
+  try {
+    await assignProcessItemToUser(editableProject.value.processItem.id, id)
+  } catch (err: any) {
+    const msg = err.response?.data?.message || err.response?.data || err.message || String(err)
+    alertStore.show(`Fehler bei der Zuweisung): ${msg}`, 'error')
+  }
+}
+
 
 // navigation zu request
 function openRequest(reqId: number) {
@@ -402,7 +419,7 @@ function openRequest(reqId: number) {
         </Select>
       </div>
 
-      <UserSelect v-model="editableProject.processItem.assignee" @update:modelValue="saveProject"/>
+      <UserSelect v-model="assignee" @update:modelValue="updateAssignee"/>
     </div>
   </div>
 </template>

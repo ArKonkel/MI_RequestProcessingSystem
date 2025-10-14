@@ -7,7 +7,6 @@ import java.time.LocalDate;
 public record ProjectUpdateDto(
         String title,
         String description,
-        Long assigneeId,
         ProjectStatus status,
         LocalDate startDate,
         @Future

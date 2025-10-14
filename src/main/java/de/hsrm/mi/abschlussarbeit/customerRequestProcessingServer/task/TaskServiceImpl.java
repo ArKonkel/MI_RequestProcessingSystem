@@ -12,7 +12,6 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.N
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.TargetType;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.Project;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.ProjectService;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -32,8 +31,6 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
 
     private final TaskMapper taskMapper;
-
-    private final UserService userService;
 
     private final ProjectService projectService;
 
@@ -164,10 +161,6 @@ public class TaskServiceImpl implements TaskService {
         }
         if (updateDto.getDescription() != null) {
             task.setDescription(updateDto.getDescription());
-        }
-        if (updateDto.getAssigneeId() != null) {
-            User assignee = userService.getUserById(updateDto.getAssigneeId());
-            task.setAssignee(assignee);
         }
 
         Task savedTask = taskRepository.save(task);

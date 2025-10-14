@@ -14,7 +14,6 @@ import java.util.List;
 public class UpdateTaskDto {
     private String title;
     private String description;
-    private Long assigneeId;
     private BigDecimal estimatedTime;
     private TimeUnit estimationUnit;
     private Long workingTimeInMinutes;

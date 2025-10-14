@@ -28,7 +28,7 @@ import type {TaskDtd} from '@/documentTypes/dtds/TaskDtd.ts'
 import {useDebounceFn} from '@vueuse/core'
 import CommentsAccordion from '@/components/CommentsAccordion.vue'
 import type {CommentCreateDtd} from '@/documentTypes/dtds/CommentCreateDtd.ts'
-import {addCommentToProcessItem} from '@/services/processItemService.ts'
+import {addCommentToProcessItem, assignProcessItemToUser} from '@/services/processItemService.ts'
 import {TimeUnitLabel} from '@/documentTypes/types/TimeUnit.ts'
 import {updateTask} from '@/services/taskService.ts'
 import UserSelect from '@/components/UserSelect.vue'
@@ -42,6 +42,7 @@ import {Calendar} from '@/components/ui/calendar'
 import type {UpdateTaskDtd} from '@/documentTypes/dtds/UpdateTaskDtd.ts'
 import ExpertiseSelect from '@/components/ExpertiseSelect.vue'
 import {useRouter} from 'vue-router'
+import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
 
 const taskStore = useTaskStore()
 const alertStore = useAlertStore()
@@ -55,6 +56,8 @@ const estimatedTime = ref(0)
 const workingTimeInMinutes = ref(0)
 const dueDateValue = ref<DateValue>()
 const showAddExpertise = ref(false)
+
+const assignee = ref<UserDtd | null>(null)
 
 const ignoreNextUpdate = ref(false)
 
@@ -74,6 +77,7 @@ watch(
       acceptanceCriteria.value = newTask.acceptanceCriteria
       estimatedTime.value = newTask.estimatedTime
       workingTimeInMinutes.value = newTask.workingTimeInMinutes ?? 0
+      assignee.value = newTask.processItem.assignee
 
       if (newTask.dueDate) {
         const [year, month, day] = newTask.dueDate!.split('-').map(Number)
@@ -123,7 +127,6 @@ async function saveTask() {
       description: description.value,
       priority: editableTask.value.priority,
       status: editableTask.value.status,
-      assigneeId: editableTask.value.processItem.assignee?.id,
       estimatedTime: estimatedTime.value,
       acceptanceCriteria: acceptanceCriteria.value,
       workingTimeInMinutes: workingTimeInMinutes.value,
@@ -189,6 +192,19 @@ function moveToCapacityPlanning() {
     })
   } else {
     alert('Task Id fehlt')
+  }
+}
+
+async function updateAssignee() {
+  if (!editableTask.value) return
+
+  const id = assignee.value?.id ?? -1
+
+  try {
+    await assignProcessItemToUser(editableTask.value.processItem.id, id)
+  } catch (err: any) {
+    const msg = err.response?.data?.message || err.response?.data || err.message || String(err)
+    alertStore.show(`Fehler bei der Zuweisung): ${msg}`, 'error')
   }
 }
 </script>
@@ -318,7 +334,7 @@ function moveToCapacityPlanning() {
         </Select>
       </div>
 
-      <UserSelect v-model="editableTask.processItem.assignee" @update:modelValue="saveTask"/>
+      <UserSelect v-model="assignee" @update:modelValue="updateAssignee"/>
 
       <div>
         <label class="text-sm font-semibold">Geschätzte Zeit</label>

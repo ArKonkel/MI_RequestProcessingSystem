@@ -5,7 +5,6 @@ import type { TimeUnit } from '@/documentTypes/types/TimeUnit.ts'
 export interface UpdateTaskDtd {
   title?: string
   description?: string
-  assigneeId?: number
   estimatedTime?: number
   estimationUnit?: TimeUnit
   workingTimeInMinutes?: number
