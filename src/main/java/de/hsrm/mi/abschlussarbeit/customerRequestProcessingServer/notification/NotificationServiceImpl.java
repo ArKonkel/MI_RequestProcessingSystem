@@ -21,6 +21,9 @@ public class NotificationServiceImpl implements NotificationService {
 
         } else if (event.type() == UserNotificationType.COMMENT_MENTIONING) {
             messagingTemplate.convertAndSend(Topic.IN_COMMENT_MENTIONED.getPath(), event);
+
+        } else if (event.type() == UserNotificationType.INCOMING_REQUEST) {
+            messagingTemplate.convertAndSend(Topic.INCOMING_REQUEST.getPath(), event);
         }
     }
 

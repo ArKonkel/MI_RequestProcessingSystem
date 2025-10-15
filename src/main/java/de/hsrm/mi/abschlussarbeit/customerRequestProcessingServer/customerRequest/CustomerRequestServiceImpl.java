@@ -8,16 +8,14 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.ou
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.SendMailRequest;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.mail.EmailAddress;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.mail.MailService;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.ChangeNotificationEvent;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.ChangeType;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationService;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.TargetType;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -52,6 +50,10 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
 
         notificationService.sendChangeNotification(
                 new ChangeNotificationEvent(savedRequest.getId(), ChangeType.CREATED, TargetType.CUSTOMER_REQUEST));
+
+        notificationService.sendUserNotification(new UserNotificationEvent(UserNotificationType.INCOMING_REQUEST, savedRequest.getId(), savedRequest.getTitle(),
+                List.of(), "New CustomerRequest arrived.", Instant.now(), TargetType.CUSTOMER_REQUEST)
+        );
 
         return requestMapper.toDto(savedRequest);
     }

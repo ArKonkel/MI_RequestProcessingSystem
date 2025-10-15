@@ -35,7 +35,7 @@ public class CustomerRequestController {
         return ResponseEntity.ok(requests);
     }
 
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
     @GetMapping("/customer/{customerId}")
     public ResponseEntity<List<CustomerRequestDto>> getRequestOfCustomer(@PathVariable Long customerId) {
         log.info("REST request to get all requests from customer {}", customerId);
@@ -54,7 +54,7 @@ public class CustomerRequestController {
     }
 
 
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
     @PostMapping
     ResponseEntity<CustomerRequestDto> createRequest(@Valid @RequestBody CustomerRequestCreateDto requestDto) {
         log.info("REST request to create request {}", requestDto);

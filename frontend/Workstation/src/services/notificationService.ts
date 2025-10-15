@@ -3,10 +3,12 @@ import type {UserNotificationEvent} from "@/documentTypes/dtds/UserNotificationE
 import {useAlertStore} from "@/stores/useAlertStore.ts";
 import {useUserStore} from "@/stores/userStore.ts";
 import {TargetType} from "@/documentTypes/types/TargetType.ts";
+import {Role} from "@/documentTypes/types/Role.ts";
 
 const wsurl = `/api/stompbroker`
 const DEST_ASSIGNED = '/topic/processItem-assigned'
 const DEST_COMMENT_MENTIONING = '/topic/in-comment-mentioned'
+const DEST_INCOMING_REQUEST = '/topic/incoming-request'
 
 let stompClient: Client | null = null
 
@@ -53,6 +55,22 @@ export async function startListeningToNotifications() {
         const link = determineLink(payload)
         if (payload.userIdsToNotify.includes(userStore.user?.id)) {
           alertStore.show(`In Kommentar erwähnt:  ${payload.targetType} - ${payload.processItemId}: ${payload.processItemTitle}`, 'info', 8000, link)
+        }
+      })
+
+      stompClient.subscribe(DEST_INCOMING_REQUEST, (message) => {
+        const payload: UserNotificationEvent = JSON.parse(message.body)
+
+        if (!userStore.user) {
+          alertStore.show("Nicht eingeloggt", 'error')
+          return
+        }
+
+        const link = determineLink(payload)
+        const isSpecificRole = userStore.user.roles.some(role => role.name == Role.ADMIN || role.name == Role.CUSTOMER_REQUEST_REVISER)
+
+        if (isSpecificRole) {
+          alertStore.show(`Neue Anfrage eingegangen:  ${payload.targetType} - ${payload.processItemId}: ${payload.processItemTitle}`, 'info', 8000, link)
         }
       })
 
