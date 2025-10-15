@@ -78,10 +78,8 @@ async function submit() {
   }
 
   try {
-    console.log(requestForm)
 
     const response = await submitRequest(requestForm)
-    console.log('Request created')
 
 
     alertStore.show('Anfrage erfolgreich erstellt', 'success')

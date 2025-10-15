@@ -1,0 +1,5 @@
+export enum TargetType {
+  CUSTOMER_REQUEST = 'CUSTOMER_REQUEST',
+  TASK = 'TASK',
+  PROJECT = 'PROJECT',
+}
