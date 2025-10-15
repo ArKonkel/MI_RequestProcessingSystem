@@ -1,8 +1,10 @@
 import { defineStore } from 'pinia'
 import type { RequestDtd } from '@/documentTypes/dtds/RequestDtd.ts'
 import { reactive, ref, computed } from 'vue'
-import { getRequests } from '@/services/customerRequestService.ts'
+import {getCustomerRequest, getRequests} from '@/services/customerRequestService.ts'
 import { Client } from '@stomp/stompjs'
+import type {ChangeNotificationEvent} from "@/documentTypes/dtds/ChangeNotificationEvent.ts";
+import {ChangeType} from "@/documentTypes/types/ChangeType.ts";
 
 export const useRequestStore = defineStore('requestStore', () => {
   const wsurl = `/api/stompbroker`
@@ -35,6 +37,35 @@ export const useRequestStore = defineStore('requestStore', () => {
     }
   }
 
+  async function updateRequest(id: number) {
+    try {
+      const updatedRequest = await getCustomerRequest(id)
+
+      requestData.requests = requestData.requests.map(request =>
+        request.processItem.id === id ? updatedRequest : request
+      )
+
+    } catch (error) {
+      console.error(`Fehler beim Laden des Requests mit id ${id}`, error)
+    }
+  }
+
+  async function addNewRequest(id: number) {
+    try {
+      const newRequest = await getCustomerRequest(id)
+
+      const exists = requestData.requests.some(
+        request => request.processItem.id === newRequest.processItem.id
+      )
+
+      if (!exists) {
+        requestData.requests.push(newRequest)
+      }
+    } catch (error) {
+      console.error(`Fehler beim Laden des Requests mit id ${id}`, error)
+    }
+  }
+
   async function startLiveUpdate() {
     if (!stompClient) {
       stompClient = new Client({ brokerURL: wsurl })
@@ -51,8 +82,15 @@ export const useRequestStore = defineStore('requestStore', () => {
         }
 
         stompClient.subscribe(DEST, (message) => {
-          console.log('Received message: ' + message.body)
-          fetchRequests() // Reload bei Updates
+          const payload: ChangeNotificationEvent = JSON.parse(message.body)
+
+          if (payload.changeType == ChangeType.UPDATED) {
+            updateRequest(payload.processItemId)
+          } else if (payload.changeType == ChangeType.CREATED) {
+            addNewRequest(payload.processItemId)
+          } else {
+            fetchRequests()
+          }
         })
 
         stompClient.onDisconnect = () => {
