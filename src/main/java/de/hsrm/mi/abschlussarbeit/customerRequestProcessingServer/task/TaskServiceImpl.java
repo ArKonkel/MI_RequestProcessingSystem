@@ -37,6 +37,7 @@ public class TaskServiceImpl implements TaskService {
     private final CustomerRequestService customerRequestService;
 
     @Override
+    @Transactional(readOnly = true) //Needed because fetching blob
     public Task getTaskById(Long id) {
         log.info("Getting task with id {}", id);
 
@@ -44,6 +45,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional(readOnly = true) //Needed because fetching blob
     public TaskDto getTaskDtoById(Long id) {
         log.info("Getting task dto with id {}", id);
         Task task = getTaskById(id);

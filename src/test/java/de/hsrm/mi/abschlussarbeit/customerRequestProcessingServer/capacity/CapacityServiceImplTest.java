@@ -135,6 +135,23 @@ class CapacityServiceImplTest {
     }
 
     @Test
+    void findBestMatches_ShouldThrowNoCapacityUntilDueDateException() {
+        // GIVEN
+        String taskTitle = "Customizing the Software";
+        BigDecimal estimatedTime = BigDecimal.TWO;
+        LocalDate dueDate = LocalDate.parse("2100-09-12");
+        Long taskId = 1L;
+        Task task = createTask(taskId, taskTitle, estimatedTime, TimeUnit.HOUR, dueDate);
+
+        // WHEN + THEN
+        when(taskService.getTaskById(taskId)).thenReturn(task);
+        assertThrows(
+                NoCapacityUntilDueDateException.class,
+                () -> resourceCapacityService.findBestMatches(taskId)
+        );
+    }
+
+    @Test
     void findBestMatches_ShouldThrowTaskNotReadyForResourcePlanningException_DueDateInPast() {
         // GIVEN
         String taskTitle = "Customizing the Software";
@@ -408,7 +425,7 @@ class CapacityServiceImplTest {
 
 
     @Test
-    void testCalculateFreeCapacity_throwNoCapacityUntilDueDateException() {
+    void testCalculateFreeCapacity_shouldReturnEmptyList() {
         // GIVEN
         Long employeeId = 1L;
         BigDecimal employeeWorkingHoursPerDay = BigDecimal.valueOf(8); // 8h working day
@@ -429,14 +446,14 @@ class CapacityServiceImplTest {
         );
 
         // Already given entries:
-        // Day 1: One Meeting = 6h: 2h free
-        CalendarEntry entry1 = createEntry(10L, firstDay, 6 * 60L);
+        // Day 1: One Meeting = 8h: 0h free
+        CalendarEntry entry1 = createEntry(10L, firstDay, 8 * 60L);
 
         // Day 2: 8h-Meeting: 0h free
         CalendarEntry entry2 = createEntry(30L, firstDay.plusDays(1), 8 * 60L);
 
-        //Day 3: 7h-Meeting: 1h free
-        CalendarEntry entry3 = createEntry(30L, firstDay.plusDays(2), 7 * 60L);
+        //Day 3: 8h-Meeting: 0h free
+        CalendarEntry entry3 = createEntry(30L, firstDay.plusDays(2), 8 * 60L);
 
         Calendar calendar = new Calendar();
         calendar.setId(99L);
@@ -454,11 +471,11 @@ class CapacityServiceImplTest {
         Mockito.when(calendarService.getCalendarOfEmployee(employeeId, firstDay, lastDayToCheck))
                 .thenReturn(calendar);
 
-        //Excepted: Throws Exception, because in the given range is no capacity for the task
-        assertThrows(
-                NoCapacityUntilDueDateException.class,
-                () -> resourceCapacityService.calculateFreeCapacity(task, employeeId, firstDay, dueDate)
-        );
+        List<CalculatedCapacityCalendarEntryVO> result =
+                resourceCapacityService.calculateFreeCapacity(task, employeeId, firstDay, lastDayToCheck);
+
+        //Excepted: empty result because no capacities
+        assertEquals(0, result.size());
 
     }
 

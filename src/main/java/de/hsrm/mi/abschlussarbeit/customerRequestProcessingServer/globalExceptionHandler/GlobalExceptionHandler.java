@@ -1,5 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler;
 
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity.NoCapacityUntilDueDateException;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity.TaskNotReadyForCapacityPlanningException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.BlockedByDependencyException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.InvalidDependencyException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserAlreadyExistsException;
@@ -40,4 +42,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleUserAlreadyExists(UserAlreadyExistsException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
+
+    @ExceptionHandler(NoCapacityUntilDueDateException.class)
+    public ResponseEntity<String> handleNoCapacityUntilDueDate(NoCapacityUntilDueDateException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    @ExceptionHandler(TaskNotReadyForCapacityPlanningException.class)
+    public ResponseEntity<String> handleTaskNotReadyForCapacityPlanning(TaskNotReadyForCapacityPlanningException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+
 }

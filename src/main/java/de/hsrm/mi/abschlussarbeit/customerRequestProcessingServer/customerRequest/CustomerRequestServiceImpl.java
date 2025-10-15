@@ -70,6 +70,7 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
 
 
     @Override
+    @Transactional(readOnly = true)
     public List<CustomerRequestDto> getRequestsByCustomerId(Long customerId) {
         log.info("Getting all requests for customer {}", customerId);
 
@@ -85,6 +86,7 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
 
 
     @Override
+    @Transactional(readOnly = true)
     public CustomerRequestDto getRequestDtoById(Long id) {
         log.info("Getting request with id {}", id);
 
@@ -139,6 +141,7 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CustomerRequest getRequestById(Long id) {
         log.info("Getting customer request with id {}", id);
 

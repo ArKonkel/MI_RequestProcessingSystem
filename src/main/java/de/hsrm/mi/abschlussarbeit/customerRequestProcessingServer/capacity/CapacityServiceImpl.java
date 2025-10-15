@@ -71,7 +71,14 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
                     LocalDate.now(),
                     task.getDueDate()
             );
-            capacitiesByEmployee.put(employee, capacities);
+
+            if (!capacities.isEmpty()) {
+                capacitiesByEmployee.put(employee, capacities);
+            }
+        }
+
+        if (capacitiesByEmployee.isEmpty()) {
+            throw new NoCapacityUntilDueDateException("No capacity for task " + task.getId() + " until due date");
         }
 
         // determine employees who can complete the task earliest
@@ -192,10 +199,6 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
                 //don't check next days, when no task time left to schedule
                 break;
             }
-        }
-
-        if (remainingTaskTimeInMinutes > 0) {
-            throw new NoCapacityUntilDueDateException("No capacity for task " + task.getId() + " until due date");
         }
 
         return calculatedSlots;

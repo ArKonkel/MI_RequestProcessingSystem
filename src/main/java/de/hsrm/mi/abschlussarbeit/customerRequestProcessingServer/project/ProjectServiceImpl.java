@@ -36,6 +36,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @Transactional(readOnly = true) //Needed because fetching blob
     public ProjectDto getProjectDtoById(Long projectId) {
         log.info("Getting project dto with id {}", projectId);
 
@@ -43,7 +44,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    @Transactional(readOnly = true)//Needed because fetching blob
+    @Transactional(readOnly = true)
     public List<ProjectDto> getAllDtoProjects() {
         log.info("Getting all dto projects");
 

@@ -52,7 +52,8 @@ onMounted(async () => {
     await loadCalendars() // initial Kalender laden
     calculateBestMatchPoints()
   } catch (err: any) {
-    console.error(err)
+    router.back()
+    alertStore.show(err.response?.data || 'Unbekannter Fehler', 'error')
   }
 })
 

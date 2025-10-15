@@ -71,26 +71,19 @@ class TaskServiceWithoutMapperTest {
         UpdateTaskDto updateDto = UpdateTaskDto.builder()
                 .title("New Title")
                 .description("New Description")
-                .assigneeId(42L)
                 .estimatedTime(BigDecimal.valueOf(8))
                 .estimationUnit(TimeUnit.HOUR)
-                .workingTimeInMinutes(480L)
                 .dueDate(LocalDate.of(2025, 12, 31))
                 .status(TaskStatus.IN_PROGRESS)
                 .priority(Priority.HIGH)
                 .acceptanceCriteria("Updated criteria")
                 .build();
 
-        User assignee = new User();
-        assignee.setId(42L);
-        assignee.setName("Gandalf");
-
         when(taskRepository.findById(1L)).thenReturn(Optional.of(existingTask));
-        when(userService.getUserById(42L)).thenReturn(assignee);
         when(taskRepository.save(any(Task.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         TaskDto expectedDto = new TaskDto(
-                new ProcessItemDto(1L, "New Title", "New Description", null, new UserDto(42L, "Gandalf"),  List.of()),
+                new ProcessItemDto(1L, "New Title", "New Description", null, new UserDto(42L, "Gandalf"), List.of(),  List.of()),
                 BigDecimal.valueOf(8),
                 TimeUnit.HOUR,
                 480L,
@@ -114,10 +107,8 @@ class TaskServiceWithoutMapperTest {
         assertNotNull(result);
         assertEquals("New Title", existingTask.getTitle());
         assertEquals("New Description", existingTask.getDescription());
-        assertEquals(assignee, existingTask.getAssignee());
         assertEquals(BigDecimal.valueOf(8), existingTask.getEstimatedTime());
         assertEquals(TimeUnit.HOUR, existingTask.getEstimationUnit());
-        assertEquals(480L, existingTask.getWorkingTimeInMinutes());
         assertEquals(LocalDate.of(2025, 12, 31), existingTask.getDueDate());
         assertEquals(TaskStatus.IN_PROGRESS, existingTask.getStatus());
         assertEquals(Priority.HIGH, existingTask.getPriority());
@@ -125,7 +116,6 @@ class TaskServiceWithoutMapperTest {
         assertEquals(expectedDto, result);
 
         verify(taskRepository).findById(1L);
-        verify(userService).getUserById(42L);
         verify(taskRepository).save(existingTask);
         verify(taskMapper).toDto(existingTask);
     }
@@ -142,10 +132,8 @@ class TaskServiceWithoutMapperTest {
         UpdateTaskDto updateDto = UpdateTaskDto.builder()
                 .title("New Title")
                 .description("New Description")
-                .assigneeId(42L)
                 .estimatedTime(BigDecimal.valueOf(8))
                 .estimationUnit(TimeUnit.HOUR)
-                .workingTimeInMinutes(480L)
                 .dueDate(LocalDate.of(2025, 12, 31))
                 .status(TaskStatus.IN_PROGRESS)
                 .priority(Priority.HIGH)
@@ -175,10 +163,8 @@ class TaskServiceWithoutMapperTest {
         UpdateTaskDto updateDto = UpdateTaskDto.builder()
                 .title("New Title")
                 .description("New Description")
-                .assigneeId(42L)
                 .estimatedTime(BigDecimal.valueOf(8))
                 .estimationUnit(TimeUnit.HOUR)
-                .workingTimeInMinutes(480L)
                 .dueDate(LocalDate.of(2025, 12, 31))
                 .status(TaskStatus.IN_PROGRESS)
                 .priority(Priority.HIGH)
