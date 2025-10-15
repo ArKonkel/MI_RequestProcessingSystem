@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import {ref, watch} from 'vue'
+import { ref, watch } from 'vue'
 
-import {useTaskStore} from '@/stores/taskStore.ts'
-import {useAlertStore} from '@/stores/useAlertStore.ts'
+import { useTaskStore } from '@/stores/taskStore.ts'
+import { useAlertStore } from '@/stores/useAlertStore.ts'
 
-import {Badge} from '@/components/ui/badge'
-import {Input} from '@/components/ui/input'
-import {Textarea} from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Accordion,
   AccordionContent,
@@ -20,20 +20,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {ScrollArea} from '@/components/ui/scroll-area'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
-import {PriorityLabel} from '@/documentTypes/types/Priority.ts'
-import {TaskStatusLabel} from '@/documentTypes/types/TaskStatus.ts'
-import type {TaskDtd} from '@/documentTypes/dtds/TaskDtd.ts'
-import {useDebounceFn} from '@vueuse/core'
+import { PriorityLabel } from '@/documentTypes/types/Priority.ts'
+import { TaskStatusLabel } from '@/documentTypes/types/TaskStatus.ts'
+import type { TaskDtd } from '@/documentTypes/dtds/TaskDtd.ts'
+import { useDebounceFn } from '@vueuse/core'
 import CommentsAccordion from '@/components/CommentsAccordion.vue'
-import type {CommentCreateDtd} from '@/documentTypes/dtds/CommentCreateDtd.ts'
-import {addCommentToProcessItem, assignProcessItemToUser} from '@/services/processItemService.ts'
-import {TimeUnitLabel} from '@/documentTypes/types/TimeUnit.ts'
-import {addWorkingTime, updateTask} from '@/services/taskService.ts'
+import type { CommentCreateDtd } from '@/documentTypes/dtds/CommentCreateDtd.ts'
+import { addCommentToProcessItem, assignProcessItemToUser } from '@/services/processItemService.ts'
+import { TimeUnitLabel } from '@/documentTypes/types/TimeUnit.ts'
+import { addWorkingTime, updateTask } from '@/services/taskService.ts'
 import UserSelect from '@/components/UserSelect.vue'
-import type {DateValue} from '@internationalized/date'
-import {CalendarDate, DateFormatter, getLocalTimeZone} from '@internationalized/date'
+import type { DateValue } from '@internationalized/date'
+import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
 import {
   Dialog,
   DialogContent,
@@ -41,17 +41,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import {CalendarIcon} from 'lucide-vue-next'
+import { CalendarIcon } from 'lucide-vue-next'
 
-import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover'
-import {Button} from '@/components/ui/button'
-import {Calendar} from '@/components/ui/calendar'
-import type {UpdateTaskDtd} from '@/documentTypes/dtds/UpdateTaskDtd.ts'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
+import type { UpdateTaskDtd } from '@/documentTypes/dtds/UpdateTaskDtd.ts'
 import ExpertiseSelect from '@/components/ExpertiseSelect.vue'
-import {useRouter} from 'vue-router'
-import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
-import {WorkingTimeUnit, WorkingTimeUnitlabel} from "@/documentTypes/types/WorkingTimeUnit.ts";
-import AttachmentList from "@/components/AttachmentList.vue";
+import { useRouter } from 'vue-router'
+import type { UserDtd } from '@/documentTypes/dtds/UserDtd.ts'
+import { WorkingTimeUnit, WorkingTimeUnitlabel } from '@/documentTypes/types/WorkingTimeUnit.ts'
+import AttachmentList from '@/components/AttachmentList.vue'
 
 const taskStore = useTaskStore()
 const alertStore = useAlertStore()
@@ -84,7 +84,7 @@ watch(
   () => taskStore.selectedTask,
   (newTask) => {
     if (newTask) {
-      editableTask.value = {...newTask}
+      editableTask.value = { ...newTask }
       ignoreNextUpdate.value = true
       description.value = newTask.processItem.description
       acceptanceCriteria.value = newTask.acceptanceCriteria
@@ -107,7 +107,7 @@ watch(
       dueDateValue.value = undefined
     }
   },
-  {immediate: true, deep: true},
+  { immediate: true, deep: true },
 )
 
 const debouncedSave = useDebounceFn(async () => {
@@ -150,7 +150,6 @@ async function submitWorkingTime() {
 async function saveTask() {
   if (!editableTask.value) return
   try {
-
     const dto: UpdateTaskDtd = {
       description: description.value,
       priority: editableTask.value.priority,
@@ -216,7 +215,7 @@ function moveToCapacityPlanning() {
   if (editableTask.value?.processItem.id) {
     router.push({
       name: 'capacityPlanningView',
-      params: {taskId: editableTask.value.processItem.id},
+      params: { taskId: editableTask.value.processItem.id },
     })
   } else {
     alert('Task Id fehlt')
@@ -254,26 +253,26 @@ async function updateAssignee() {
           </div>
 
           <div v-if="showAddExpertise" class="flex pt-3 space-x-2">
-            <ExpertiseSelect v-model="expertiseIdToAdd"/>
+            <ExpertiseSelect v-model="expertiseIdToAdd" />
             <Button @click="addExpertise">Hinzufügen</Button>
             <Button variant="secondary" @click="switchShowExpertise">Abbrechen</Button>
           </div>
           <div class="flex gap-6 mt-4 text-sm">
             <div v-if="editableTask.requestId">
-              <span class="font-semibold">Anfrage</span><br/>
+              <span class="font-semibold">Anfrage</span><br />
               <RouterLink :to="`/requests/${editableTask.requestId}`">
                 {{ editableTask.requestId }} - {{ editableTask.requestTitle }}
               </RouterLink>
             </div>
 
             <div v-if="editableTask.projectId">
-              <span class="font-semibold">Projekt</span><br/>
+              <span class="font-semibold">Projekt</span><br />
               <RouterLink :to="`/projects/${editableTask.projectId}`">
                 {{ editableTask.projectId }} - {{ editableTask.projectTitle }}
               </RouterLink>
             </div>
             <div>
-              <span class="font-semibold">Geplant bis</span><br/>
+              <span class="font-semibold">Geplant bis</span><br />
               <Popover>
                 <PopoverTrigger as-child>
                   <Button
@@ -283,7 +282,7 @@ async function updateAssignee() {
                       !dueDateValue ? 'text-muted-foreground' : '',
                     ]"
                   >
-                    <CalendarIcon class="mr-2 h-4 w-4"/>
+                    <CalendarIcon class="mr-2 h-4 w-4" />
                     {{
                       dueDateValue
                         ? dataFormatter.format(dueDateValue.toDate(getLocalTimeZone()))
@@ -292,7 +291,7 @@ async function updateAssignee() {
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent class="w-auto p-0">
-                  <Calendar v-model="dueDateValue" initial-focus @update:modelValue="saveTask"/>
+                  <Calendar v-model="dueDateValue" initial-focus @update:modelValue="saveTask" />
                 </PopoverContent>
               </Popover>
             </div>
@@ -303,21 +302,24 @@ async function updateAssignee() {
           <AccordionItem value="desc">
             <AccordionTrigger>Beschreibung</AccordionTrigger>
             <AccordionContent>
-              <Textarea v-model="description" class="mt-2 min-h-[200px] resize-none"/>
+              <Textarea v-model="description" class="mt-2 min-h-[200px] resize-none" />
             </AccordionContent>
           </AccordionItem>
 
           <AccordionItem value="acceptance">
             <AccordionTrigger>Akzeptanzkriterien</AccordionTrigger>
             <AccordionContent>
-              <Textarea v-model="acceptanceCriteria" class="mt-2 min-h-[130px] resize-none"/>
+              <Textarea v-model="acceptanceCriteria" class="mt-2 min-h-[130px] resize-none" />
             </AccordionContent>
           </AccordionItem>
 
           <AccordionItem value="attachment">
             <AccordionTrigger>Anhänge</AccordionTrigger>
             <AccordionContent>
-              <AttachmentList :attachments="editableTask.processItem.attachments" :processItemId="editableTask.processItem.id" />
+              <AttachmentList
+                :attachments="editableTask.processItem.attachments"
+                :processItemId="editableTask.processItem.id"
+              />
             </AccordionContent>
           </AccordionItem>
 
@@ -337,7 +339,7 @@ async function updateAssignee() {
         <label class="text-sm font-semibold">Priorität</label>
         <Select v-model="editableTask.priority" @update:modelValue="saveTask">
           <SelectTrigger>
-            <SelectValue placeholder="Select..."/>
+            <SelectValue placeholder="Select..." />
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -355,7 +357,7 @@ async function updateAssignee() {
         <label class="text-sm font-semibold">Status</label>
         <Select v-model="editableTask.status" @update:modelValue="saveTask">
           <SelectTrigger>
-            <SelectValue placeholder="Offen"/>
+            <SelectValue placeholder="Offen" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -369,17 +371,17 @@ async function updateAssignee() {
         </Select>
       </div>
 
-      <UserSelect v-model="assignee" @update:modelValue="updateAssignee"/>
+      <UserSelect v-model="assignee" @update:modelValue="updateAssignee" />
 
       <div>
         <label class="text-sm font-semibold">Geschätzte Zeit</label>
 
         <div class="flex space-x-2 border-b border-gray-300 pb-2 mb-2">
-          <Input type="number" v-model="estimatedTime" placeholder="Schätzung in Minuten"/>
+          <Input type="number" v-model="estimatedTime" placeholder="Schätzung in Minuten" />
 
           <Select v-model="editableTask.estimationUnit" @update:modelValue="saveTask">
             <SelectTrigger>
-              <SelectValue placeholder="Zeiteinheit"/>
+              <SelectValue placeholder="Zeiteinheit" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem
@@ -394,15 +396,10 @@ async function updateAssignee() {
         </div>
       </div>
 
-
       <div>
         <label class="text-sm font-semibold">Aufgewandte Zeit (min)</label>
         <div class="flex space-x-2">
-          <Input
-            type="number"
-            v-model="workingTimeInMinutes"
-            disabled
-          />
+          <Input type="number" v-model="workingTimeInMinutes" disabled />
 
           <Dialog v-model:open="showWorkingTimeDialog">
             <DialogTrigger as-child>
@@ -422,7 +419,7 @@ async function updateAssignee() {
                 />
                 <Select v-model="unit" class="w-full">
                   <SelectTrigger>
-                    <SelectValue placeholder="Einheit wählen"/>
+                    <SelectValue placeholder="Einheit wählen" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem
@@ -435,7 +432,8 @@ async function updateAssignee() {
                   </SelectContent>
                 </Select>
                 <div class="flex justify-end space-x-2">
-                  <Button variant="secondary" @click="showWorkingTimeDialog = false">Abbrechen
+                  <Button variant="secondary" @click="showWorkingTimeDialog = false"
+                    >Abbrechen
                   </Button>
                   <Button @click="submitWorkingTime">Hinzufügen</Button>
                 </div>

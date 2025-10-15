@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import {ref, watch} from 'vue'
-import {Input} from '@/components/ui/input'
-import {ScrollArea} from '@/components/ui/scroll-area'
-import type {ProjectDtd} from '@/documentTypes/dtds/ProjectDtd'
-import {getAllProjects} from "@/services/projectService.ts";
-import {onClickOutside} from "@vueuse/core";
+import { ref, watch } from 'vue'
+import { Input } from '@/components/ui/input'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import type { ProjectDtd } from '@/documentTypes/dtds/ProjectDtd'
+import { getAllProjects } from '@/services/projectService.ts'
+import { onClickOutside } from '@vueuse/core'
 
 const props = defineProps<{ modelValue: ProjectDtd | null }>()
 const emit = defineEmits<{
@@ -47,7 +47,6 @@ function selectProject(project: ProjectDtd) {
 onClickOutside(dropdownRef, () => {
   dropdownOpen.value = false
 })
-
 </script>
 
 <template>
@@ -77,4 +76,3 @@ onClickOutside(dropdownRef, () => {
     </div>
   </div>
 </template>
-

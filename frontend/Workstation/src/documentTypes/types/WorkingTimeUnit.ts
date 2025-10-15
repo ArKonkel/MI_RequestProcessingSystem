@@ -1,8 +1,7 @@
-
 export enum WorkingTimeUnit {
-  MINUTES = 'MINUTES', HOURS = 'HOURS',
+  MINUTES = 'MINUTES',
+  HOURS = 'HOURS',
 }
-
 
 export const WorkingTimeUnitlabel: Record<WorkingTimeUnit, string> = {
   [WorkingTimeUnit.MINUTES]: 'Minuten',

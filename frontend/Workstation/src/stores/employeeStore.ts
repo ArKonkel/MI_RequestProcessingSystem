@@ -1,10 +1,9 @@
 import { defineStore } from 'pinia'
 import { reactive, ref, computed } from 'vue'
-import type {EmployeeDtd} from "@/documentTypes/dtds/EmployeeDtd.ts";
-import {getAllEmployees} from "@/services/employeeService.ts";
+import type { EmployeeDtd } from '@/documentTypes/dtds/EmployeeDtd.ts'
+import { getAllEmployees } from '@/services/employeeService.ts'
 
 export const useEmployeeStore = defineStore('employeeStore', () => {
-
   const employeesData = reactive({
     employees: [] as EmployeeDtd[],
   })
@@ -23,7 +22,6 @@ export const useEmployeeStore = defineStore('employeeStore', () => {
       if (!selectedEmployeeId.value && employeesData.employees.length > 0) {
         selectedEmployeeId.value = employeesData.employees[0].id
       }
-
     } catch (error) {
       console.error('Fehler beim Laden der employees:', error)
     }

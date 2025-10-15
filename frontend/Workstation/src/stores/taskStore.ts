@@ -1,10 +1,10 @@
-import {defineStore} from 'pinia'
-import type {TaskDtd} from '@/documentTypes/dtds/TaskDtd.ts'
-import {computed, reactive, ref} from 'vue'
-import {getAllTasks, getTask} from '@/services/taskService.ts'
-import {Client} from '@stomp/stompjs'
-import type {ChangeNotificationEvent} from "@/documentTypes/dtds/ChangeNotificationEvent.ts";
-import {ChangeType} from "@/documentTypes/types/ChangeType.ts";
+import { defineStore } from 'pinia'
+import type { TaskDtd } from '@/documentTypes/dtds/TaskDtd.ts'
+import { computed, reactive, ref } from 'vue'
+import { getAllTasks, getTask } from '@/services/taskService.ts'
+import { Client } from '@stomp/stompjs'
+import type { ChangeNotificationEvent } from '@/documentTypes/dtds/ChangeNotificationEvent.ts'
+import { ChangeType } from '@/documentTypes/types/ChangeType.ts'
 
 export const useTaskStore = defineStore('taskStore', () => {
   const wsurl = `/api/stompbroker`
@@ -40,10 +40,9 @@ export const useTaskStore = defineStore('taskStore', () => {
     try {
       const updatedTask = await getTask(id)
 
-      taskData.tasks = taskData.tasks.map(task =>
-        task.processItem.id === id ? updatedTask : task
+      taskData.tasks = taskData.tasks.map((task) =>
+        task.processItem.id === id ? updatedTask : task,
       )
-
     } catch (error) {
       console.error(`Fehler beim Laden des Tasks mit id ${id}`, error)
     }
@@ -53,9 +52,7 @@ export const useTaskStore = defineStore('taskStore', () => {
     try {
       const newTask = await getTask(id)
 
-      const exists = taskData.tasks.some(
-        task => task.processItem.id === newTask.processItem.id
-      )
+      const exists = taskData.tasks.some((task) => task.processItem.id === newTask.processItem.id)
 
       if (!exists) {
         taskData.tasks.push(newTask)
@@ -67,7 +64,7 @@ export const useTaskStore = defineStore('taskStore', () => {
 
   async function startLiveUpdate() {
     if (!stompClient) {
-      stompClient = new Client({brokerURL: wsurl})
+      stompClient = new Client({ brokerURL: wsurl })
       stompClient.onWebSocketError = (event) => {
         throw new Error('WebSocket Error: ' + event)
       }

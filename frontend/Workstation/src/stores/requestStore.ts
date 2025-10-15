@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
 import type { RequestDtd } from '@/documentTypes/dtds/RequestDtd.ts'
 import { reactive, ref, computed } from 'vue'
-import {getCustomerRequest, getRequests} from '@/services/customerRequestService.ts'
+import { getCustomerRequest, getRequests } from '@/services/customerRequestService.ts'
 import { Client } from '@stomp/stompjs'
-import type {ChangeNotificationEvent} from "@/documentTypes/dtds/ChangeNotificationEvent.ts";
-import {ChangeType} from "@/documentTypes/types/ChangeType.ts";
+import type { ChangeNotificationEvent } from '@/documentTypes/dtds/ChangeNotificationEvent.ts'
+import { ChangeType } from '@/documentTypes/types/ChangeType.ts'
 
 export const useRequestStore = defineStore('requestStore', () => {
   const wsurl = `/api/stompbroker`
@@ -41,10 +41,9 @@ export const useRequestStore = defineStore('requestStore', () => {
     try {
       const updatedRequest = await getCustomerRequest(id)
 
-      requestData.requests = requestData.requests.map(request =>
-        request.processItem.id === id ? updatedRequest : request
+      requestData.requests = requestData.requests.map((request) =>
+        request.processItem.id === id ? updatedRequest : request,
       )
-
     } catch (error) {
       console.error(`Fehler beim Laden des Requests mit id ${id}`, error)
     }
@@ -55,7 +54,7 @@ export const useRequestStore = defineStore('requestStore', () => {
       const newRequest = await getCustomerRequest(id)
 
       const exists = requestData.requests.some(
-        request => request.processItem.id === newRequest.processItem.id
+        (request) => request.processItem.id === newRequest.processItem.id,
       )
 
       if (!exists) {

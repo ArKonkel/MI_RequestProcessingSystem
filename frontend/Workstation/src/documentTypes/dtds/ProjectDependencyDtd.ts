@@ -1,4 +1,4 @@
-import type {ProjectDependencyType} from "@/documentTypes/types/ProjectDependencyType.ts";
+import type { ProjectDependencyType } from '@/documentTypes/types/ProjectDependencyType.ts'
 
 export interface ProjectDependencyDtd {
   sourceProjectId: number

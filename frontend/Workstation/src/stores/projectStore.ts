@@ -1,11 +1,11 @@
-import {defineStore} from 'pinia'
-import {reactive, ref, computed} from 'vue'
-import {Client} from '@stomp/stompjs'
-import type {ProjectDtd} from "@/documentTypes/dtds/ProjectDtd.ts";
-import {getAllProjects, getProject} from "@/services/projectService.ts";
-import {getTask} from "@/services/taskService.ts";
-import type {ChangeNotificationEvent} from "@/documentTypes/dtds/ChangeNotificationEvent.ts";
-import {ChangeType} from "@/documentTypes/types/ChangeType.ts";
+import { defineStore } from 'pinia'
+import { reactive, ref, computed } from 'vue'
+import { Client } from '@stomp/stompjs'
+import type { ProjectDtd } from '@/documentTypes/dtds/ProjectDtd.ts'
+import { getAllProjects, getProject } from '@/services/projectService.ts'
+import { getTask } from '@/services/taskService.ts'
+import type { ChangeNotificationEvent } from '@/documentTypes/dtds/ChangeNotificationEvent.ts'
+import { ChangeType } from '@/documentTypes/types/ChangeType.ts'
 
 export const useProjectStore = defineStore('projectStore', () => {
   const wsurl = `/api/stompbroker`
@@ -21,7 +21,9 @@ export const useProjectStore = defineStore('projectStore', () => {
 
   const selectedProjects = computed(
     () =>
-      projectsData.projects.find((project) => project.processItem.id === selectedProjectsId.value) ?? null,
+      projectsData.projects.find(
+        (project) => project.processItem.id === selectedProjectsId.value,
+      ) ?? null,
   )
 
   async function fetchProjects() {
@@ -42,10 +44,9 @@ export const useProjectStore = defineStore('projectStore', () => {
     try {
       const updatedProject = await getProject(id)
 
-      projectsData.projects = projectsData.projects.map(project =>
-        project.processItem.id === id ? updatedProject : project
+      projectsData.projects = projectsData.projects.map((project) =>
+        project.processItem.id === id ? updatedProject : project,
       )
-
     } catch (error) {
       console.error(`Fehler beim Laden des Projekts mit id ${id}`, error)
     }
@@ -56,7 +57,7 @@ export const useProjectStore = defineStore('projectStore', () => {
       const newProject = await getProject(id)
 
       const exists = projectsData.projects.some(
-        project => project.processItem.id === newProject.processItem.id
+        (project) => project.processItem.id === newProject.processItem.id,
       )
 
       if (!exists) {
@@ -69,7 +70,7 @@ export const useProjectStore = defineStore('projectStore', () => {
 
   async function startLiveUpdate() {
     if (!stompClient) {
-      stompClient = new Client({brokerURL: wsurl})
+      stompClient = new Client({ brokerURL: wsurl })
       stompClient.onWebSocketError = (event) => {
         throw new Error('WebSocket Error: ' + event)
       }

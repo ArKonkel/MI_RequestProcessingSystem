@@ -1,37 +1,35 @@
-import {createRouter, createWebHistory} from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import axios from 'axios' // 💡 Axios importieren
 
 import TaskView from '@/views/TaskViews/TaskView.vue'
-import TaskCapacityPlanningView
-  from '@/views/CapacityPlanningViews/TaskCapacityPlanningView.vue'
+import TaskCapacityPlanningView from '@/views/CapacityPlanningViews/TaskCapacityPlanningView.vue'
 import RequestView from '@/views/CustomerRequestViews/RequestView.vue'
 import RequestDetailView from '@/views/CustomerRequestViews/RequestDetailView.vue'
 import TaskDetailView from '@/views/TaskViews/TaskDetailView.vue'
-import ProjectDetailView from "@/views/ProjectViews/ProjectDetailView.vue";
-import ProjectView from "@/views/ProjectViews/ProjectView.vue";
-import EmployeeView from "@/views/CapacityPlanningViews/EmployeeView.vue";
-import EmployeeDetailView from "@/views/CapacityPlanningViews/EmployeeDetailView.vue";
-import LoginView from "@/views/AuthenticationViews/LoginView.vue";
+import ProjectDetailView from '@/views/ProjectViews/ProjectDetailView.vue'
+import ProjectView from '@/views/ProjectViews/ProjectView.vue'
+import EmployeeView from '@/views/CapacityPlanningViews/EmployeeView.vue'
+import EmployeeDetailView from '@/views/CapacityPlanningViews/EmployeeDetailView.vue'
+import LoginView from '@/views/AuthenticationViews/LoginView.vue'
 
-const securityEnabled = import.meta.env.VITE_SECURITY_ENABLED === 'true';
+const securityEnabled = import.meta.env.VITE_SECURITY_ENABLED === 'true'
 
 if (securityEnabled) {
-
-// 💡 AXIOS REQUEST INTERCEPTOR --> Adds to every requests the Authorization header with the JWT token
+  // 💡 AXIOS REQUEST INTERCEPTOR --> Adds to every requests the Authorization header with the JWT token
   axios.interceptors.request.use(
     (config) => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token')
 
       if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`;
+        config.headers['Authorization'] = `Bearer ${token}`
       }
 
-      return config;
+      return config
     },
     (error) => {
-      return Promise.reject(error);
-    }
-  );
+      return Promise.reject(error)
+    },
+  )
 }
 // ------------------------------------
 
@@ -41,7 +39,7 @@ const router = createRouter({
     {
       path: '/login',
       name: 'Login',
-      component: LoginView
+      component: LoginView,
     },
     {
       path: '/',
@@ -105,7 +103,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   if (!securityEnabled) {
-    return next();
+    return next()
   }
 
   const token = localStorage.getItem('token') // JWT

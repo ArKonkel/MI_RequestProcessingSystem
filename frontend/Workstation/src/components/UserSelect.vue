@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import {onMounted, ref, watch} from 'vue'
-import {Input} from '@/components/ui/input'
-import {ScrollArea} from '@/components/ui/scroll-area'
-import {getAllUser} from '@/services/userService'
-import type {UserDtd} from '@/documentTypes/dtds/UserDtd'
-import {onClickOutside} from "@vueuse/core";
+import { onMounted, ref, watch } from 'vue'
+import { Input } from '@/components/ui/input'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { getAllUser } from '@/services/userService'
+import type { UserDtd } from '@/documentTypes/dtds/UserDtd'
+import { onClickOutside } from '@vueuse/core'
 
 const props = defineProps<{ modelValue: UserDtd | null }>()
 const emit = defineEmits<{
@@ -76,10 +76,7 @@ onClickOutside(dropdownRef, () => {
       class="absolute z-50 mt-1 w-full max-h-60 overflow-auto border rounded bg-white shadow-lg"
     >
       <ScrollArea class="max-h-60">
-        <div
-          class="p-2 hover:bg-blue-100 cursor-pointer text-gray-400"
-          @click="unassignUser"
-        >
+        <div class="p-2 hover:bg-blue-100 cursor-pointer text-gray-400" @click="unassignUser">
           Nicht zugewiesen
         </div>
 

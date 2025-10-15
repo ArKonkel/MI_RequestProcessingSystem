@@ -31,7 +31,6 @@ function selectEmployee(employee: EmployeeDtd) {
   employeeStore.setSelectedEmployee(employee.id)
   router.push({ name: 'employeeDetailView', params: { employeeId: employee.id } })
 }
-
 </script>
 
 <template>
@@ -50,16 +49,12 @@ function selectEmployee(employee: EmployeeDtd) {
       >
         <CardHeader>
           <div class="flex w-full justify-between mb-2">
-            <Badge variant="outline" class="text-xs">
-              Id: {{ employee.id }}
-            </Badge>
+            <Badge variant="outline" class="text-xs"> Id: {{ employee.id }} </Badge>
             <Badge variant="secondary" class="text-xs">
               {{ employee.workingHoursPerDay }} Std./Tag
             </Badge>
           </div>
-          <CardTitle>
-            {{ employee.firstName }} {{ employee.lastName }}
-          </CardTitle>
+          <CardTitle> {{ employee.firstName }} {{ employee.lastName }} </CardTitle>
           <p class="text-sm text-muted-foreground">
             {{ employee.email }}
           </p>
@@ -69,9 +64,7 @@ function selectEmployee(employee: EmployeeDtd) {
           <p class="text-xs text-muted-foreground">
             Abteilung: {{ employee.departmentId ?? 'Keine' }}
           </p>
-          <Badge variant="secondary" class="text-xs">
-            User-Id: {{ employee.userId ?? '—' }}
-          </Badge>
+          <Badge variant="secondary" class="text-xs"> User-Id: {{ employee.userId ?? '—' }} </Badge>
         </CardFooter>
       </Card>
     </div>

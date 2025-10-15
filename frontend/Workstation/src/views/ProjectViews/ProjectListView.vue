@@ -98,12 +98,8 @@ function selectProject(project: ProjectDtd) {
               {{ project.incomingDependencies.length }} Abhängigkeiten
             </Badge>
           </div>
-          <CardTitle>
-            {{ project.processItem.id }} - {{ project.processItem.title }}
-          </CardTitle>
-          <p class="text-sm text-muted-foreground">
-            Request: {{ project.requestTitle }}
-          </p>
+          <CardTitle> {{ project.processItem.id }} - {{ project.processItem.title }} </CardTitle>
+          <p class="text-sm text-muted-foreground">Request: {{ project.requestTitle }}</p>
         </CardHeader>
 
         <CardContent class="space-y-2">

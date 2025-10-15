@@ -1,37 +1,31 @@
 <script setup lang="ts">
-import type {FileDtd} from "@/documentTypes/dtds/FileDtd.ts";
-import {Card, CardContent, CardFooter, CardHeader, CardTitle} from '@/components/ui/card'
-import {Button} from "@/components/ui/button";
-import {downloadFile} from "@/services/fileService.ts";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger
-} from '@/components/ui/tooltip'
-import {ref} from "vue";
-import {uploadAttachment} from "@/services/processItemService.ts";
-import {useAlertStore} from "@/stores/useAlertStore.ts";
-import {useFileDialog} from "@vueuse/core";
+import type { FileDtd } from '@/documentTypes/dtds/FileDtd.ts'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { downloadFile } from '@/services/fileService.ts'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { ref } from 'vue'
+import { uploadAttachment } from '@/services/processItemService.ts'
+import { useAlertStore } from '@/stores/useAlertStore.ts'
+import { useFileDialog } from '@vueuse/core'
 
 const alertStore = useAlertStore()
 
 const props = defineProps<{
-  attachments: FileDtd[],
+  attachments: FileDtd[]
   processItemId: number
 }>()
 
-const {files, open, onChange} = useFileDialog({
-  accept: '*/*'
+const { files, open, onChange } = useFileDialog({
+  accept: '*/*',
 })
-
 
 onChange(async (fileList) => {
   if (fileList && fileList.length > 0) {
     const file = fileList[0]
     try {
       const uploadedFile = await uploadAttachment(props.processItemId, file)
-      alertStore.show("Datei erfolgreich hochgeladen", "success")
+      alertStore.show('Datei erfolgreich hochgeladen', 'success')
     } catch (error) {
       alertStore.show('Fehler beim hochladen der Datei', 'error')
     }
@@ -55,11 +49,11 @@ function handleDownload(file: FileDtd) {
         <Tooltip>
           <TooltipTrigger class="cursor-pointer">
             <CardHeader>
-              <CardTitle class="text-sm font-medium truncate ">{{ file.name }}</CardTitle>
+              <CardTitle class="text-sm font-medium truncate">{{ file.name }}</CardTitle>
             </CardHeader>
             <CardContent class="text-left">
-              <p class="text-xs text-gray-600"> {{ file.contentType }}</p>
-              <p class="text-xs text-gray-600"> {{ (file.size / 1024).toFixed(2) }} KB</p>
+              <p class="text-xs text-gray-600">{{ file.contentType }}</p>
+              <p class="text-xs text-gray-600">{{ (file.size / 1024).toFixed(2) }} KB</p>
             </CardContent>
           </TooltipTrigger>
           <TooltipContent>

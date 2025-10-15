@@ -1,46 +1,52 @@
 <script setup lang="ts">
-import {ref, watch} from 'vue'
-import {useProjectStore} from '@/stores/projectStore.ts'
-import {useAlertStore} from '@/stores/useAlertStore.ts'
-import {useDebounceFn} from '@vueuse/core'
-import {ScrollArea} from '@/components/ui/scroll-area'
-import {Badge} from '@/components/ui/badge'
-import {Textarea} from '@/components/ui/textarea'
-import {Label} from '@/components/ui/label'
+import { ref, watch } from 'vue'
+import { useProjectStore } from '@/stores/projectStore.ts'
+import { useAlertStore } from '@/stores/useAlertStore.ts'
+import { useDebounceFn } from '@vueuse/core'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Badge } from '@/components/ui/badge'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion'
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select'
-import {Button} from '@/components/ui/button'
-import {Popover, PopoverTrigger, PopoverContent} from '@/components/ui/popover'
-import {Calendar} from '@/components/ui/calendar'
-import {CalendarIcon} from 'lucide-vue-next'
-import type {DateValue} from '@internationalized/date'
-import {getLocalTimeZone, parseDate, DateFormatter, CalendarDate} from '@internationalized/date'
-import {useRouter} from 'vue-router'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
+import { Calendar } from '@/components/ui/calendar'
+import { CalendarIcon } from 'lucide-vue-next'
+import type { DateValue } from '@internationalized/date'
+import { getLocalTimeZone, parseDate, DateFormatter, CalendarDate } from '@internationalized/date'
+import { useRouter } from 'vue-router'
 
-import type {ProjectDtd} from '@/documentTypes/dtds/ProjectDtd.ts'
-import {ProjectStatusLabel} from '@/documentTypes/types/ProjectStatus.ts'
-import UserSelect from "@/components/UserSelect.vue";
-import CommentsAccordion from "@/components/CommentsAccordion.vue";
-import {Input} from "@/components/ui/input";
-import type {CommentCreateDtd} from "@/documentTypes/dtds/CommentCreateDtd.ts";
-import {addCommentToProcessItem, assignProcessItemToUser} from "@/services/processItemService.ts";
-import type {TaskCreateDtd} from "@/documentTypes/dtds/TaskCreateDtd.ts";
-import {createTask} from "@/services/taskService.ts";
+import type { ProjectDtd } from '@/documentTypes/dtds/ProjectDtd.ts'
+import { ProjectStatusLabel } from '@/documentTypes/types/ProjectStatus.ts'
+import UserSelect from '@/components/UserSelect.vue'
+import CommentsAccordion from '@/components/CommentsAccordion.vue'
+import { Input } from '@/components/ui/input'
+import type { CommentCreateDtd } from '@/documentTypes/dtds/CommentCreateDtd.ts'
+import { addCommentToProcessItem, assignProcessItemToUser } from '@/services/processItemService.ts'
+import type { TaskCreateDtd } from '@/documentTypes/dtds/TaskCreateDtd.ts'
+import { createTask } from '@/services/taskService.ts'
 import {
   ProjectDependencyType,
-  ProjectDependencyTypeLabel
-} from "@/documentTypes/types/ProjectDependencyType.ts";
-import type {ProjectUpdateDtd} from "@/documentTypes/dtds/ProjectUpdateDtd.ts";
-import {createProjectDependency, updateProject} from "@/services/projectService.ts";
-import ProjectSelect from "@/components/ProjectSelect.vue";
-import type {CreateDependencyDtd} from "@/documentTypes/dtds/CreateDependencyDtd.ts";
-import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
-import AttachmentList from "@/components/AttachmentList.vue";
+  ProjectDependencyTypeLabel,
+} from '@/documentTypes/types/ProjectDependencyType.ts'
+import type { ProjectUpdateDtd } from '@/documentTypes/dtds/ProjectUpdateDtd.ts'
+import { createProjectDependency, updateProject } from '@/services/projectService.ts'
+import ProjectSelect from '@/components/ProjectSelect.vue'
+import type { CreateDependencyDtd } from '@/documentTypes/dtds/CreateDependencyDtd.ts'
+import type { UserDtd } from '@/documentTypes/dtds/UserDtd.ts'
+import AttachmentList from '@/components/AttachmentList.vue'
 
 const projectStore = useProjectStore()
 const alertStore = useAlertStore()
@@ -71,7 +77,7 @@ watch(
   () => projectStore.selectedProjects,
   (newProj) => {
     if (newProj) {
-      editableProject.value = {...newProj}
+      editableProject.value = { ...newProj }
       ignoreNextUpdate.value = true
       description.value = newProj.processItem.description
       assignee.value = newProj.processItem.assignee
@@ -96,7 +102,7 @@ watch(
       endDateValue.value = undefined
     }
   },
-  {immediate: true},
+  { immediate: true },
 )
 
 // debounce save
@@ -184,7 +190,7 @@ async function addDependencyToProject() {
     const createDto: CreateDependencyDtd = {
       sourceProjectId: editableProject.value?.processItem.id,
       targetProjectId: selectedDependencyProject.value?.processItem.id,
-      type: selectedDependency.value
+      type: selectedDependency.value,
     }
 
     await createProjectDependency(createDto)
@@ -193,7 +199,6 @@ async function addDependencyToProject() {
     editableProject.value = null
     selectedDependencyProject.value = null
     selectedDependency.value = null
-
   } catch (err: any) {
     console.error(err)
     alertStore.show(err.response?.data || 'Fehler beim Erstellen der Aufgabe', 'error')
@@ -222,10 +227,9 @@ async function updateAssignee() {
   }
 }
 
-
 // navigation zu request
 function openRequest(reqId: number) {
-  router.push({name: 'requestDetailView', params: {requestId: reqId}})
+  router.push({ name: 'requestDetailView', params: { requestId: reqId } })
 }
 </script>
 
@@ -241,14 +245,14 @@ function openRequest(reqId: number) {
 
           <div class="flex gap-6 mt-4 text-sm">
             <div v-if="editableProject.requestId">
-              <span class="font-semibold">Anfrage</span><br/>
+              <span class="font-semibold">Anfrage</span><br />
               <RouterLink :to="`/requests/${editableProject.requestId}`">
                 {{ editableProject.requestId }} - {{ editableProject.requestTitle }}
               </RouterLink>
             </div>
             <!-- End -->
             <div>
-              <span class="font-semibold">Start: </span><br/>
+              <span class="font-semibold">Start: </span><br />
               <Popover>
                 <PopoverTrigger as-child>
                   <Button
@@ -258,7 +262,7 @@ function openRequest(reqId: number) {
                       !startDateValue ? 'text-muted-foreground' : '',
                     ]"
                   >
-                    <CalendarIcon class="mr-2 h-4 w-4"/>
+                    <CalendarIcon class="mr-2 h-4 w-4" />
                     {{
                       startDateValue
                         ? dataFormatter.format(startDateValue.toDate(getLocalTimeZone()))
@@ -267,15 +271,18 @@ function openRequest(reqId: number) {
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent class="w-auto p-0">
-                  <Calendar v-model="startDateValue" initial-focus
-                            @update:modelValue="saveProject"/>
+                  <Calendar
+                    v-model="startDateValue"
+                    initial-focus
+                    @update:modelValue="saveProject"
+                  />
                 </PopoverContent>
               </Popover>
             </div>
 
             <!-- End -->
             <div>
-              <span class="font-semibold">Ende: </span><br/>
+              <span class="font-semibold">Ende: </span><br />
               <Popover>
                 <PopoverTrigger as-child>
                   <Button
@@ -285,7 +292,7 @@ function openRequest(reqId: number) {
                       !endDateValue ? 'text-muted-foreground' : '',
                     ]"
                   >
-                    <CalendarIcon class="mr-2 h-4 w-4"/>
+                    <CalendarIcon class="mr-2 h-4 w-4" />
                     {{
                       endDateValue
                         ? dataFormatter.format(endDateValue.toDate(getLocalTimeZone()))
@@ -294,7 +301,7 @@ function openRequest(reqId: number) {
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent class="w-auto p-0">
-                  <Calendar v-model="endDateValue" initial-focus @update:modelValue="saveProject"/>
+                  <Calendar v-model="endDateValue" initial-focus @update:modelValue="saveProject" />
                 </PopoverContent>
               </Popover>
             </div>
@@ -305,14 +312,17 @@ function openRequest(reqId: number) {
           <AccordionItem value="desc">
             <AccordionTrigger>Beschreibung</AccordionTrigger>
             <AccordionContent>
-              <Textarea v-model="description" class="mt-2 min-h-[200px] resize-none"/>
+              <Textarea v-model="description" class="mt-2 min-h-[200px] resize-none" />
             </AccordionContent>
           </AccordionItem>
 
           <AccordionItem value="attachment">
             <AccordionTrigger>Anhänge</AccordionTrigger>
             <AccordionContent>
-              <AttachmentList :attachments="editableProject.processItem.attachments" :processItemId="editableProject.processItem.id" />
+              <AttachmentList
+                :attachments="editableProject.processItem.attachments"
+                :processItemId="editableProject.processItem.id"
+              />
             </AccordionContent>
           </AccordionItem>
 
@@ -322,7 +332,8 @@ function openRequest(reqId: number) {
               <div v-for="task in editableProject.tasks" :key="task.processItem.id">
                 <RouterLink :to="`/tasks/${task.processItem.id}`" class="block">
                   <div
-                    class="flex items-center justify-between border p-2 rounded cursor-pointer hover:bg-accent/20">
+                    class="flex items-center justify-between border p-2 rounded cursor-pointer hover:bg-accent/20"
+                  >
                     <div class="flex items-center gap-2">
                       <span>{{ task.processItem.id }}</span>
                       <span class="font-semibold">{{ task.processItem.title }}</span>
@@ -333,7 +344,11 @@ function openRequest(reqId: number) {
               </div>
 
               <div v-if="addingTask" class="flex gap-2 items-center">
-                <Input v-model="newTaskTitle" placeholder="Titel der neuen Aufgabe" class="flex-1"/>
+                <Input
+                  v-model="newTaskTitle"
+                  placeholder="Titel der neuen Aufgabe"
+                  class="flex-1"
+                />
                 <Button @click="addTaskToProject">Erstellen</Button>
                 <Button variant="ghost" @click="cancelTask">Abbrechen</Button>
               </div>
@@ -354,9 +369,7 @@ function openRequest(reqId: number) {
                   {{ dep.sourceProjectId }} - {{ dep.sourceProjectTitle }}
                 </div>
 
-                <div v-if="editableProject.incomingDependencies.length == 0">
-                  -
-                </div>
+                <div v-if="editableProject.incomingDependencies.length == 0">-</div>
               </div>
 
               <div class="space-y-4">
@@ -365,15 +378,12 @@ function openRequest(reqId: number) {
                   <span class="font-semibold"> {{ ProjectDependencyTypeLabel[dep.type] }}: </span>
                   {{ dep.targetProjectId }} - {{ dep.targetProjectTitle }}
                 </div>
-                <div v-if="editableProject.outgoingDependencies.length == 0">
-                  -
-                </div>
-
+                <div v-if="editableProject.outgoingDependencies.length == 0">-</div>
 
                 <div v-if="addingDependency" class="flex gap-2 items-center">
                   <Select v-model="selectedDependency">
                     <SelectTrigger>
-                      <SelectValue placeholder="Select..."/>
+                      <SelectValue placeholder="Select..." />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem
@@ -386,7 +396,7 @@ function openRequest(reqId: number) {
                     </SelectContent>
                   </Select>
 
-                  <ProjectSelect v-model="selectedDependencyProject"/>
+                  <ProjectSelect v-model="selectedDependencyProject" />
 
                   <Button @click="addDependencyToProject">Erstellen</Button>
                   <Button variant="ghost" @click="cancelDependency">Abbrechen</Button>
@@ -413,7 +423,7 @@ function openRequest(reqId: number) {
         <label class="text-sm font-semibold">Status</label>
         <Select v-model="editableProject.status" @update:modelValue="saveProject">
           <SelectTrigger>
-            <SelectValue placeholder="Status wählen"/>
+            <SelectValue placeholder="Status wählen" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -427,7 +437,7 @@ function openRequest(reqId: number) {
         </Select>
       </div>
 
-      <UserSelect v-model="assignee" @update:modelValue="updateAssignee"/>
+      <UserSelect v-model="assignee" @update:modelValue="updateAssignee" />
     </div>
   </div>
 </template>

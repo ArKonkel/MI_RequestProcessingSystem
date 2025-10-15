@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { getAllExpertise } from '@/services/expertiseService'
 import type { ExpertiseDtd } from '@/documentTypes/dtds/ExpertiseDtd'
-import {onClickOutside} from "@vueuse/core";
+import { onClickOutside } from '@vueuse/core'
 
 const props = defineProps<{ modelValue: number | null }>()
 const emit = defineEmits<{
@@ -16,7 +16,6 @@ const filteredExpertises = ref<ExpertiseDtd[]>([])
 const search = ref('')
 const dropdownOpen = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
-
 
 watch(
   () => props.modelValue,

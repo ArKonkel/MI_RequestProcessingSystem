@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {Calendar, User, Inbox, Search, Settings, Mail, ClipboardList} from 'lucide-vue-next'
+import { Calendar, User, Inbox, Search, Settings, Mail, ClipboardList } from 'lucide-vue-next'
 
 import {
   Sidebar,
@@ -13,8 +13,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import {Button} from "@/components/ui/button";
-import {useRouter} from "vue-router";
+import { Button } from '@/components/ui/button'
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
@@ -43,12 +43,11 @@ const items = [
 
 function handleLogout() {
   // Delete tokens
-  localStorage.removeItem('token');
-  sessionStorage.removeItem('token');
+  localStorage.removeItem('token')
+  sessionStorage.removeItem('token')
 
-  router.push('/login');
+  router.push('/login')
 }
-
 </script>
 
 <template>
@@ -61,7 +60,7 @@ function handleLogout() {
             <SidebarMenuItem v-for="item in items" :key="item.title">
               <SidebarMenuButton asChild>
                 <a :href="item.url">
-                  <component :is="item.icon"/>
+                  <component :is="item.icon" />
                   <span>{{ item.title }}</span>
                 </a>
               </SidebarMenuButton>

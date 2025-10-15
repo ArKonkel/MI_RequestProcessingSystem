@@ -13,4 +13,3 @@ export async function assignTaskToEmployee(
 ): Promise<void> {
   await axios.post(`/api/capacity/assign/${taskId}`, selectedMatch)
 }
-
