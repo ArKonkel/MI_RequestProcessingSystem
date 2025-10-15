@@ -42,7 +42,11 @@ async function handleLogin(e) {
     localStorage.setItem('token', token) //Set localstorage, so the token is saved in the browser
 
     await userStore.setUser(username.value)
-    window.location.href = '/'
+
+    const userFromStorage = localStorage.getItem('user') //only switch when user setted
+    if (userFromStorage) {
+      window.location.href = '/'
+    }
   } catch (err) {
     console.error(err)
     errorMsg.value = 'Login fehlgeschlagen.'

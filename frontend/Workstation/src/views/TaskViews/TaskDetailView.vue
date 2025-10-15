@@ -197,12 +197,12 @@ function switchShowExpertise() {
 async function addComment() {
   if (!editableTask.value || !commentText.value) return
 
-  if (userStore.userData.user === null){
+  if (userStore.user === null){
     console.log("user is null")
     return
   }
 
-  const authorId = userStore.userData.user?.id
+  const authorId = userStore.user?.id
 
   const commentCreateDtd: CommentCreateDtd = {
     text: commentText.value,

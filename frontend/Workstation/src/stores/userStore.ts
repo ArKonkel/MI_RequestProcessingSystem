@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia'
-import {reactive} from 'vue'
+import {ref} from 'vue'
 import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
 import {getUserByName} from "@/services/userService.ts";
 import {useAlertStore} from "@/stores/useAlertStore.ts";
@@ -9,24 +9,31 @@ export const useUserStore = defineStore('userStore', () => {
 
   const alertStore = useAlertStore()
 
-  const userData = reactive({
-    user: null as UserDtd | null,
-  })
+  const user = ref<UserDtd | null>(null);
+
+  //when initializing store, try to load user from local storage
+  if (localStorage.getItem('user')) {
+    user.value = JSON.parse(localStorage.getItem('user')!)
+  }
 
   async function setUser(name: string) {
     try {
-      userData.user = await getUserByName(name)
+      console.log("Trying to load user with name: " + name)
+      user.value = await getUserByName(name)
+
+      localStorage.setItem('user', JSON.stringify(user.value)) //save user to local storage to have it even after reload
     } catch (error) {
-      alertStore.show('Fehler beim hochladen der Datei', 'error')
+      alertStore.show('Fehler beim Laden des Users', 'error')
     }
   }
 
   function removeUser() {
-    userData.user = null;
+    user.value = null;
+    localStorage.removeItem('user')
   }
 
   function setDefaultUser() {
-    userData.user = {
+    user.value = {
       id: 1,
       name: 'TestUser',
       roles: [{name: Role.ADMIN}],
@@ -34,7 +41,7 @@ export const useUserStore = defineStore('userStore', () => {
   }
 
   return {
-    userData,
+    user,
     setUser,
     removeUser,
     setDefaultUser

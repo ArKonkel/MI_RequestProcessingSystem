@@ -198,12 +198,12 @@ async function saveRequest() {
 async function addComment() {
   if (!editableRequest.value || !commentText.value) return
 
-  if (userStore.userData.user === null){
+  if (userStore.user === null){
     console.log("user is null")
     return
   }
 
-  const authorId = userStore.userData.user?.id
+  const authorId = userStore.user?.id
 
   const commentCreateDtd: CommentCreateDtd = {
     text: commentText.value,

@@ -106,7 +106,8 @@ public class SecurityConfig {
                         .requestMatchers("/calendars/**").hasAnyRole("ADMIN", "PROJECT_PLANNER", "CAPACITY_PLANNER", "TASK_REVISER")
                         .requestMatchers("/employees/**").hasAnyRole("ADMIN", "TASK_REVISER", "CAPACITY_PLANNER")
                         .requestMatchers("/actuator/**").hasRole("ADMIN")
-                        .requestMatchers("/comments/**").authenticated()
+                        .requestMatchers("/processItems/**").authenticated()
+                        .requestMatchers("/users/**").authenticated()
                         //.anyRequest().authenticated()
                         .anyRequest().denyAll()
                 );
