@@ -4,5 +4,5 @@ import java.time.Instant;
 import java.util.List;
 
 public record UserNotificationEvent(UserNotificationType type, Long processItemId, String processItemTitle, List<Long> userIdsToNotify, String text,
-                                    Instant timeStamp) {
+                                    Instant timeStamp, TargetType targetType) {
 }

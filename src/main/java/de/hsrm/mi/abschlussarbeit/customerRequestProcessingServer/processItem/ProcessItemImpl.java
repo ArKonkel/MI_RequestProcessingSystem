@@ -69,20 +69,13 @@ public class ProcessItemImpl implements ProcessItemService, CommentService {
 
         processItemRepository.save(processItem);
 
-        TargetType targetType = null;
-        switch (processItem) {
-            case Task task -> targetType = TargetType.TASK;
-            case CustomerRequest customerRequest -> targetType = TargetType.CUSTOMER_REQUEST;
-            case Project project -> targetType = TargetType.PROJECT;
-            default -> {
-            }
-        }
+        TargetType targetType = determineTargetType(processItem);
 
         notificationService.sendChangeNotification(new ChangeNotificationEvent(processItem.getId(), ChangeType.UPDATED, targetType));
 
         if (user != null) {
             notificationService.sendUserNotification(new UserNotificationEvent(UserNotificationType.ASSIGNED, processItem.getId(), processItem.getTitle(),
-                    List.of(user.getId()), "", Instant.now()));
+                    List.of(user.getId()), "", Instant.now(), targetType));
         }
     }
 
@@ -136,7 +129,7 @@ public class ProcessItemImpl implements ProcessItemService, CommentService {
 
         if (!users.isEmpty())
             notificationService.sendUserNotification(new UserNotificationEvent(UserNotificationType.COMMENT_MENTIONING, processItem.getId(), processItem.getTitle(),
-                    usersIds, savedComment.getText(), savedComment.getTimeStamp()));
+                    usersIds, savedComment.getText(), savedComment.getTimeStamp(), targetType));
     }
 
     /**

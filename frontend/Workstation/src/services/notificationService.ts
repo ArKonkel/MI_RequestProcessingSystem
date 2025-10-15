@@ -2,6 +2,7 @@ import {Client} from "@stomp/stompjs";
 import type {UserNotificationEvent} from "@/documentTypes/dtds/UserNotificationEvent.ts";
 import {useAlertStore} from "@/stores/useAlertStore.ts";
 import {useUserStore} from "@/stores/userStore.ts";
+import {TargetType} from "@/documentTypes/types/TargetType.ts";
 
 const wsurl = `/api/stompbroker`
 const DEST_ASSIGNED = '/topic/processItem-assigned'
@@ -35,9 +36,9 @@ export async function startListeningToNotifications() {
           return
         }
 
-        //TODO klicken auf den Link in der Benachrichtigung, um zu der entsprechenden Seite zu gelangen
+        const link = determineLink(payload)
         if (payload.userIdsToNotify.includes(userStore.user?.id)) {
-          alertStore.show("Du hast eine neue Zuweisung.")
+          alertStore.show(`Zuweisung erhalten: ${payload.targetType} - ${payload.processItemId}: ${payload.processItemTitle}`, 'info', 8000, link)
         }
       })
 
@@ -49,9 +50,9 @@ export async function startListeningToNotifications() {
           return
         }
 
-        //TODO klicken auf den Link in der Benachrichtigung, um zu der entsprechenden Seite zu gelangen.
+        const link = determineLink(payload)
         if (payload.userIdsToNotify.includes(userStore.user?.id)) {
-          alertStore.show("Du wurdest in einem Kommentar erwähnt.", 'info', 8000)
+          alertStore.show(`In Kommentar erwähnt:  ${payload.targetType} - ${payload.processItemId}: ${payload.processItemTitle}`, 'info', 8000, link)
         }
       })
 
@@ -62,4 +63,19 @@ export async function startListeningToNotifications() {
 
     stompClient.activate()
   }
+}
+
+
+function determineLink(userNotification: UserNotificationEvent) {
+  let link = '/'
+
+  if (userNotification.targetType == TargetType.TASK) {
+    link = `/tasks/${userNotification.processItemId}`
+  } else if (userNotification.targetType == TargetType.PROJECT) {
+    link = `/projects/${userNotification.processItemId}`
+  } else if (userNotification.targetType == TargetType.CUSTOMER_REQUEST) {
+    link = `/requests/${userNotification.processItemId}`
+  }
+
+  return link
 }

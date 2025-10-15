@@ -3,24 +3,38 @@ import { ref } from 'vue'
 
 type AlertVariant = 'error' | 'success' | 'info' | 'warning'
 
+export interface AlertNotification {
+  id: number
+  message: string
+  variant: AlertVariant
+  link?: string
+  duration: number
+}
+
 export const useAlertStore = defineStore('alertStore', () => {
-  const durationTime = 5000
+  const notifications = ref<AlertNotification[]>([])
+  const defaultDuration = 5000
 
-  const message = ref('')
-  const visible = ref(false)
-  const duration = ref(durationTime)
-  const variant = ref<AlertVariant>('info')
+  function show(
+    msg: string,
+    type: AlertVariant = 'info',
+    time?: number,
+    link?: string
+  ) {
+    const id = Date.now()
+    const duration = time || defaultDuration
+    const notification: AlertNotification = { id, message: msg, variant: type, link, duration }
 
-  function show(msg: string, type: AlertVariant = 'info', time?: number) {
-    message.value = msg
-    variant.value = type
-    duration.value = time || durationTime
-    visible.value = true
+    notifications.value.push(notification)
 
     setTimeout(() => {
-      visible.value = false
-    }, duration.value)
+      remove(id)
+    }, duration)
   }
 
-  return { message, visible, duration, variant, show }
+  function remove(id: number) {
+    notifications.value = notifications.value.filter(n => n.id !== id)
+  }
+
+  return { notifications, show, remove }
 })
