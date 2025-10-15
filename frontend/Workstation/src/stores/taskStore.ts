@@ -82,7 +82,6 @@ export const useTaskStore = defineStore('taskStore', () => {
 
         stompClient.subscribe(DEST, (message) => {
           const payload: ChangeNotificationEvent = JSON.parse(message.body)
-          console.log('Received event:', payload);
 
           if (payload.changeType == ChangeType.UPDATED) {
             updateTask(payload.processItemId)

@@ -1,8 +1,11 @@
-import { defineStore } from 'pinia'
-import { reactive, ref, computed } from 'vue'
-import { Client } from '@stomp/stompjs'
+import {defineStore} from 'pinia'
+import {reactive, ref, computed} from 'vue'
+import {Client} from '@stomp/stompjs'
 import type {ProjectDtd} from "@/documentTypes/dtds/ProjectDtd.ts";
-import {getAllProjects} from "@/services/projectService.ts";
+import {getAllProjects, getProject} from "@/services/projectService.ts";
+import {getTask} from "@/services/taskService.ts";
+import type {ChangeNotificationEvent} from "@/documentTypes/dtds/ChangeNotificationEvent.ts";
+import {ChangeType} from "@/documentTypes/types/ChangeType.ts";
 
 export const useProjectStore = defineStore('projectStore', () => {
   const wsurl = `/api/stompbroker`
@@ -35,9 +38,38 @@ export const useProjectStore = defineStore('projectStore', () => {
     }
   }
 
+  async function updateProject(id: number) {
+    try {
+      const updatedProject = await getProject(id)
+
+      projectsData.projects = projectsData.projects.map(project =>
+        project.processItem.id === id ? updatedProject : project
+      )
+
+    } catch (error) {
+      console.error(`Fehler beim Laden des Projekts mit id ${id}`, error)
+    }
+  }
+
+  async function addNewProject(id: number) {
+    try {
+      const newProject = await getProject(id)
+
+      const exists = projectsData.projects.some(
+        project => project.processItem.id === newProject.processItem.id
+      )
+
+      if (!exists) {
+        projectsData.projects.push(newProject)
+      }
+    } catch (error) {
+      console.error(`Fehler beim Laden des Projekts mit id ${id}`, error)
+    }
+  }
+
   async function startLiveUpdate() {
     if (!stompClient) {
-      stompClient = new Client({ brokerURL: wsurl })
+      stompClient = new Client({brokerURL: wsurl})
       stompClient.onWebSocketError = (event) => {
         throw new Error('WebSocket Error: ' + event)
       }
@@ -51,8 +83,15 @@ export const useProjectStore = defineStore('projectStore', () => {
         }
 
         stompClient.subscribe(DEST, (message) => {
-          console.log('Received message: ' + message.body)
-          fetchProjects() // Reload bei Updates
+          const payload: ChangeNotificationEvent = JSON.parse(message.body)
+
+          if (payload.changeType == ChangeType.UPDATED) {
+            updateProject(payload.processItemId)
+          } else if (payload.changeType == ChangeType.CREATED) {
+            addNewProject(payload.processItemId)
+          } else {
+            fetchProjects()
+          }
         })
 
         stompClient.onDisconnect = () => {

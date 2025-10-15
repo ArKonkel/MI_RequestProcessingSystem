@@ -4,6 +4,11 @@ import type {ProjectUpdateDtd} from "@/documentTypes/dtds/ProjectUpdateDtd.ts";
 import type {ProjectCreateDtd} from "@/documentTypes/dtds/ProjectCreateDtd.ts";
 import type {CreateDependencyDtd} from "@/documentTypes/dtds/CreateDependencyDtd.ts";
 
+export async function getProject(projectId: number): Promise<ProjectDtd> {
+  const response = await axios.get(`/api/projects/${projectId}`)
+  return response.data
+}
+
 export async function getAllProjects(): Promise<ProjectDtd[]> {
   const response = await axios.get('/api/projects')
   return response.data;

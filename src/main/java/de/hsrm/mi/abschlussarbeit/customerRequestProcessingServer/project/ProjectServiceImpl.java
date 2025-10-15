@@ -37,8 +37,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectDto getProjectDtoById(Long projectId) {
-        //TODO implement me
-        return null;
+        log.info("Getting project dto with id {}", projectId);
+
+        return projectMapper.toDto(getProjectById(projectId));
     }
 
     @Override
