@@ -44,7 +44,9 @@ import type { UpdateCustomerRequestDtd } from '@/documentTypes/dtds/UpdateCustom
 import type { UserDtd } from '@/documentTypes/dtds/UserDtd.ts'
 import { ProjectStatusLabel } from '@/documentTypes/types/ProjectStatus.ts'
 import AttachmentList from '@/components/AttachmentList.vue'
+import {useUserStore} from "@/stores/userStore.ts";
 
+const userStore = useUserStore()
 const requestStore = useRequestStore()
 const alertStore = useAlertStore()
 
@@ -196,10 +198,16 @@ async function saveRequest() {
 async function addComment() {
   if (!editableRequest.value || !commentText.value) return
 
+  if (userStore.userData.user === null){
+    console.log("user is null")
+    return
+  }
+
+  const authorId = userStore.userData.user?.id
+
   const commentCreateDtd: CommentCreateDtd = {
     text: commentText.value,
-    //TODO add authorId from logged in user
-    authorId: 1,
+    authorId: authorId,
   }
 
   try {

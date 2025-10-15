@@ -47,7 +47,9 @@ import ProjectSelect from '@/components/ProjectSelect.vue'
 import type { CreateDependencyDtd } from '@/documentTypes/dtds/CreateDependencyDtd.ts'
 import type { UserDtd } from '@/documentTypes/dtds/UserDtd.ts'
 import AttachmentList from '@/components/AttachmentList.vue'
+import {useUserStore} from "@/stores/userStore.ts";
 
+const userStore = useUserStore()
 const projectStore = useProjectStore()
 const alertStore = useAlertStore()
 const router = useRouter()
@@ -142,9 +144,17 @@ async function saveProject() {
 
 async function addComment() {
   if (!editableProject.value || !commentText.value) return
+
+  if (userStore.userData.user === null){
+    console.log("user is null")
+    return
+  }
+
+  const authorId = userStore.userData.user?.id
+
   const commentCreateDtd: CommentCreateDtd = {
     text: commentText.value,
-    authorId: 1, // TODO: aktueller User
+    authorId: authorId,
   }
   try {
     await addCommentToProcessItem(editableProject.value.processItem.id, commentCreateDtd)

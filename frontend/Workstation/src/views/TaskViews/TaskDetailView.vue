@@ -52,7 +52,9 @@ import { useRouter } from 'vue-router'
 import type { UserDtd } from '@/documentTypes/dtds/UserDtd.ts'
 import { WorkingTimeUnit, WorkingTimeUnitlabel } from '@/documentTypes/types/WorkingTimeUnit.ts'
 import AttachmentList from '@/components/AttachmentList.vue'
+import {useUserStore} from "@/stores/userStore.ts";
 
+const userStore = useUserStore()
 const taskStore = useTaskStore()
 const alertStore = useAlertStore()
 const router = useRouter()
@@ -195,10 +197,16 @@ function switchShowExpertise() {
 async function addComment() {
   if (!editableTask.value || !commentText.value) return
 
+  if (userStore.userData.user === null){
+    console.log("user is null")
+    return
+  }
+
+  const authorId = userStore.userData.user?.id
+
   const commentCreateDtd: CommentCreateDtd = {
     text: commentText.value,
-    //TODO add authorId from logged in user
-    authorId: 1,
+    authorId: authorId,
   }
 
   try {

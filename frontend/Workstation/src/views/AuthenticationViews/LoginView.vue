@@ -4,6 +4,9 @@ import axios from 'axios'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import {useUserStore} from "@/stores/userStore.js";
+
+const userStore = useUserStore()
 
 const username = ref('')
 const password = ref('')
@@ -16,6 +19,8 @@ async function handleLogin(e) {
   errorMsg.value = ''
   if (!securityEnabled) {
     console.log('Security is disabled. Login not needed.')
+
+    userStore.setDefaultUser() //set Default user
     return
   }
 
@@ -36,6 +41,7 @@ async function handleLogin(e) {
 
     localStorage.setItem('token', token) //Set localstorage, so the token is saved in the browser
 
+    await userStore.setUser(username.value)
     window.location.href = '/'
   } catch (err) {
     console.error(err)

@@ -34,6 +34,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public UserDto getUserByName(String name) {
+        log.info("Get user with name {}", name);
+
+        User user = userRepository.findByName(name).orElseThrow(() -> new NotFoundException("User with name " + name + " not found"));
+
+        return userMapper.toDto(user);
+    }
+
+    @Override
     public void addUser(User user) {
         log.info("Add user {}", user);
 

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,5 +24,14 @@ public class UserController {
         List<UserDto> users = userService.getAllUsers();
 
         return ResponseEntity.ok().body(users);
+    }
+
+    @GetMapping("/{name}")
+    public ResponseEntity<UserDto> getUserByName(@PathVariable String name) {
+        log.info("REST request to get user with name {}", name);
+
+        UserDto userDto = userService.getUserByName(name);
+
+        return ResponseEntity.ok().body(userDto);
     }
 }

@@ -36,14 +36,6 @@ const request = computed<RequestDtd>(() => requestStore.requestData.selectedRequ
 const alertStore = useAlertStore()
 
 const commentText = ref("")
-const comments = ref([
-  {
-    id: 1,
-    author: "Lorem Ipsum",
-    date: "2025-01-01T16:20:00",
-    text: "consetetur sadipscing elitr..."
-  }
-])
 
 async function addComment() {
   if (!commentText.value)
