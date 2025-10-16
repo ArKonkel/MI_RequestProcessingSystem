@@ -301,7 +301,6 @@ async function addComment() {
             <AccordionContent class="flex flex-col gap-2">
               <!-- Projects -->
               <div v-for="project in editableRequest.projects" :key="project.processItem.id">
-                <RouterLink :to="`/projects/${project.processItem.id}`" class="block">
                   <div
                     class="flex items-center justify-between border p-2 rounded cursor-pointer hover:bg-accent/20"
                   >
@@ -312,7 +311,6 @@ async function addComment() {
 
                     <Badge variant="secondary">{{ ProjectStatusLabel[project.status] }}</Badge>
                   </div>
-                </RouterLink>
               </div>
 
               <div v-if="addingProject" class="flex gap-2 items-center">

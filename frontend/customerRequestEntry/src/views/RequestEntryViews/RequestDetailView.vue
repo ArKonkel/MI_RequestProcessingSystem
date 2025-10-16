@@ -21,6 +21,8 @@ import {addCommentToRequest} from "@/services/commentService.ts";
 import type {CommentCreateDtd} from "@/documentTypes/dtds/CommentCreateDtd.ts";
 import {useAlertStore} from "@/stores/useAlertStore.ts";
 import {useUserStore} from "@/stores/userStore.ts";
+import {TaskStatusLabel} from "@/documentTypes/types/TaskStatus.ts";
+import {ProjectStatusLabel} from "@/documentTypes/types/ProjectStatus.ts";
 
 const requestStore = useRequestStore()
 const request = computed<RequestDtd>(() => requestStore.requestData.selectedRequest!);
@@ -33,7 +35,7 @@ const commentText = ref("")
 async function addComment() {
   if (!request.value || !commentText.value) return
 
-  if (userStore.user === null){
+  if (userStore.user === null) {
     console.log("user is null")
     return
   }
@@ -110,6 +112,43 @@ async function addComment() {
             readonly
             style="pointer-events: none;"
           />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="linked-tasks">
+            <AccordionTrigger>Verknüpfte Aufgaben</AccordionTrigger>
+            <AccordionContent class="flex flex-col gap-2">
+              <!-- Tasks -->
+              <div v-for="task in request.tasks" :key="task.processItem.id">
+                <div
+                  class="flex items-center justify-between border p-2 rounded"
+                >
+                  <div class="flex items-center gap-2">
+                    <span>{{ task.processItem.id }}</span>
+                    <span class="font-semibold">{{ task.processItem.title }}</span>
+                  </div>
+                  <Badge variant="secondary">{{ TaskStatusLabel[task.status] }}</Badge>
+                </div>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="linked-projects" v-if="request.projects.length > 0">
+            <AccordionTrigger>Verknüpfte Projekte</AccordionTrigger>
+            <AccordionContent class="flex flex-col gap-2">
+              <!-- Projects -->
+              <div v-for="project in request.projects" :key="project.processItem.id">
+                  <div
+                    class="flex items-center justify-between border p-2 rounded"
+                  >
+                    <div class="flex items-center gap-2">
+                      <span>{{ project.processItem.id }}</span>
+                      <span class="font-semibold">{{ project.processItem.title }}</span>
+                    </div>
+
+                    <Badge variant="secondary">{{ ProjectStatusLabel[project.status] }}</Badge>
+                  </div>
+              </div>
             </AccordionContent>
           </AccordionItem>
 
