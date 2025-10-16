@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { ref, watch, computed, onMounted } from 'vue'
-import { addDays, format, getYear } from 'date-fns'
-import { de } from 'date-fns/locale'
-import { useEmployeeStore } from '@/stores/employeeStore.ts'
-import { useAlertStore } from '@/stores/useAlertStore.ts'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { getEmployeeCalendar, initCalendarOfEmployee } from '@/services/calendarService.ts'
-import type { CalendarDtd } from '@/documentTypes/dtds/CalendarDtd.ts'
-import type { EmployeeDtd } from '@/documentTypes/dtds/EmployeeDtd.ts'
-import { ExpertiseLevel, ExpertiseLevelLabel } from '@/documentTypes/types/ExpertiseLevel.ts'
+import {ref, watch, computed, onMounted} from 'vue'
+import {addDays, format, getYear} from 'date-fns'
+import {de} from 'date-fns/locale'
+import {useEmployeeStore} from '@/stores/employeeStore.ts'
+import {useAlertStore} from '@/stores/useAlertStore.ts'
+import {ScrollArea} from '@/components/ui/scroll-area'
+import {Input} from '@/components/ui/input'
+import {Label} from '@/components/ui/label'
+import {Badge} from '@/components/ui/badge'
+import {Button} from '@/components/ui/button'
+import {getEmployeeCalendar, initCalendarOfEmployee} from '@/services/calendarService.ts'
+import type {CalendarDtd} from '@/documentTypes/dtds/CalendarDtd.ts'
+import type {EmployeeDtd} from '@/documentTypes/dtds/EmployeeDtd.ts'
+import {ExpertiseLevel, ExpertiseLevelLabel} from '@/documentTypes/types/ExpertiseLevel.ts'
 import {
   Select,
   SelectContent,
@@ -21,12 +21,14 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import ExpertiseSelect from '@/components/ExpertiseSelect.vue'
-import { addExpertiseToEmployee, updateEmployee } from '@/services/employeeService.ts'
-import type { EmployeeUpdateDtd } from '@/documentTypes/dtds/EmployeeUpdateDtd.ts'
+import {addExpertiseToEmployee, updateEmployee} from '@/services/employeeService.ts'
+import type {EmployeeUpdateDtd} from '@/documentTypes/dtds/EmployeeUpdateDtd.ts'
+import {useRouter} from "vue-router";
 //import { updateEmployee } from '@/services/employeeService.ts'
 
 const employeeStore = useEmployeeStore()
 const alertStore = useAlertStore()
+const router = useRouter()
 
 const editableEmployee = ref<EmployeeDtd | null>(null)
 const calendar = ref<CalendarDtd | null>(null)
@@ -41,7 +43,7 @@ watch(
   () => employeeStore.selectedEmployees,
   async (newEmp) => {
     if (newEmp) {
-      editableEmployee.value = { ...newEmp }
+      editableEmployee.value = {...newEmp}
       ignoreNextUpdate.value = true
       await loadCalendar()
     } else {
@@ -49,7 +51,7 @@ watch(
       calendar.value = null
     }
   },
-  { immediate: true },
+  {immediate: true},
 )
 
 async function addExpertise() {
@@ -88,7 +90,7 @@ const days = computed(() => {
     if (dayOfWeek !== 0 && dayOfWeek !== 6) {
       result.push({
         date: format(current, 'yyyy-MM-dd'),
-        label: format(current, 'EE', { locale: de }).toUpperCase().substring(0, 2),
+        label: format(current, 'EE', {locale: de}).toUpperCase().substring(0, 2),
       })
     }
     current = addDays(current, 1)
@@ -104,6 +106,8 @@ async function loadCalendar() {
       format(startDate.value, 'yyyy-MM-dd'),
       format(addDays(startDate.value, visibleDays), 'yyyy-MM-dd'),
     )
+
+    console.log(calendar.value)
   } catch (err: any) {
     console.error(err)
     alertStore.show('Fehler beim Laden des Kalenders', 'error')
@@ -160,6 +164,13 @@ async function saveEmployee() {
     alertStore.show('Fehler beim Speichern des Mitarbeiters', 'error')
   }
 }
+
+function routeToTask(taskId: number | undefined | null = null) {
+
+  if (taskId) {
+    router.push(`/tasks/${taskId}`)
+  }
+}
 </script>
 
 <template>
@@ -181,15 +192,15 @@ async function saveEmployee() {
         <div class="grid grid-cols-2 gap-4">
           <div>
             <Label class="mb-1">Vorname</Label>
-            <Input v-model="editableEmployee.firstName" class="max-w-80" />
+            <Input v-model="editableEmployee.firstName" class="max-w-80"/>
           </div>
           <div>
             <Label class="mb-1">Nachname</Label>
-            <Input v-model="editableEmployee.lastName" class="max-w-80" />
+            <Input v-model="editableEmployee.lastName" class="max-w-80"/>
           </div>
           <div class="col-span-1">
             <Label class="mb-1">E-Mail</Label>
-            <Input v-model="editableEmployee.email" class="max-w-80" />
+            <Input v-model="editableEmployee.email" class="max-w-80"/>
           </div>
           <div>
             <Label class="mb-1">Arbeitszeit (h/Tag)</Label>
@@ -232,7 +243,7 @@ async function saveEmployee() {
           <div class="flex justify-between gap-2 items-center">
             <Select v-model="selectedExpertiseLevel">
               <SelectTrigger class="min-w-50">
-                <SelectValue placeholder="Select..." />
+                <SelectValue placeholder="Select..."/>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem
@@ -245,7 +256,7 @@ async function saveEmployee() {
               </SelectContent>
             </Select>
 
-            <ExpertiseSelect v-model="expertiseIdToAdd" />
+            <ExpertiseSelect v-model="expertiseIdToAdd"/>
 
             <Button @click="addExpertise">Erstellen</Button>
             <Button variant="ghost" @click="cancelExpertise">Abbrechen</Button>
@@ -273,7 +284,7 @@ async function saveEmployee() {
                 class="p-2 text-center border-b border-r last:border-r-0 bg-secondary/20 text-sm font-medium"
               >
                 <span class="font-bold">{{ day.label }}</span>
-                <br />
+                <br/>
                 <span class="text-xs text-muted-foreground">{{ day.date.substring(5) }}</span>
               </div>
 
@@ -282,15 +293,16 @@ async function saveEmployee() {
                   class="p-2 border-r last:border-r-0 border-b align-top min-h-[100px] hover:bg-accent/10 transition-colors"
                 >
                   <div
-                    v-for="entry in calendar.entries.filter((e) => e.date === day.date)"
+                    v-for="entry in calendar.entries.filter((entry) => entry.date === day.date)"
                     :key="entry.title"
                     class="bg-blue-400/50 text-xs rounded-sm px-2 py-1 border shadow-sm mb-1 truncate cursor-pointer hover:bg-sky-200 transition-colors"
+                    @click.prevent="routeToTask(entry.taskId)"
                   >
                     <strong :title="entry.title">{{ entry.title }}</strong>
                     <div class="text-[10px]">{{ entry.durationInMinutes / 60 }}h</div>
                   </div>
                   <div
-                    v-if="!calendar.entries.some((e) => e.date === day.date)"
+                    v-if="!calendar.entries.some((entry) => entry.date === day.date)"
                     class="text-muted-foreground text-xs text-center italic mt-4"
                   >
                     Frei

@@ -4,4 +4,5 @@ export interface CalendarEntryDtd {
   description: string
   date: string
   durationInMinutes: number
+  taskId?: number
 }
