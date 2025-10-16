@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import axios from 'axios'
 import { Input } from '@/components/ui/input'
