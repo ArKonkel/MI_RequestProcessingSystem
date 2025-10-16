@@ -13,6 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
+import LoggedInCard from "@/components/LoggedInCard.vue";
 
 const items = [
   {
@@ -42,5 +43,8 @@ const items = [
         </SidebarGroupContent>
       </SidebarGroup>
     </SidebarContent>
+    <SidebarFooter class="border-t">
+      <LoggedInCard />
+    </SidebarFooter>
   </Sidebar>
 </template>
