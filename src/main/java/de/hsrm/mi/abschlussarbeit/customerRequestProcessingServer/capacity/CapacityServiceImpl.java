@@ -95,6 +95,12 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
             results.add(result);
         }
 
+        //Add sorting
+        results.sort(
+                Comparator.comparing(CalculatedCapacitiesOfMatchVO::expertisePoints).reversed()
+                        .thenComparing(CalculatedCapacitiesOfMatchVO::canCompleteTaskEarliest, Comparator.reverseOrder())
+        );
+
         return new MatchingEmployeeCapacitiesVO(task.getId(), results);
     }
 
