@@ -111,6 +111,7 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/**").hasRole("ADMIN")
                         .requestMatchers("/processItems/**").authenticated()
                         .requestMatchers("/users/**").authenticated()
+                        .requestMatchers("/files/**").authenticated()
                         //.anyRequest().authenticated()
                         .anyRequest().denyAll()
                 );

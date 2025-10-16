@@ -23,6 +23,7 @@ import {useAlertStore} from "@/stores/useAlertStore.ts";
 import {useUserStore} from "@/stores/userStore.ts";
 import {TaskStatusLabel} from "@/documentTypes/types/TaskStatus.ts";
 import {ProjectStatusLabel} from "@/documentTypes/types/ProjectStatus.ts";
+import AttachmentList from "@/components/AttachmentList.vue";
 
 const requestStore = useRequestStore()
 const request = computed<RequestDtd>(() => requestStore.requestData.selectedRequest!);
@@ -152,12 +153,18 @@ async function addComment() {
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="attachments">
+
+          <AccordionItem value="attachment">
             <AccordionTrigger>Anhänge</AccordionTrigger>
             <AccordionContent>
-              <Button variant="outline">Datei hochladen</Button>
+              <AttachmentList
+                :attachments="request.processItem.attachments"
+                :processItemId="request.processItem.id"
+              />
             </AccordionContent>
           </AccordionItem>
+
+
           <AccordionItem value="comments">
             <AccordionTrigger>Kommentare</AccordionTrigger>
             <AccordionContent>
