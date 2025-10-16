@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -35,7 +34,6 @@ public class CustomerRequestController {
         return ResponseEntity.ok(requests);
     }
 
-    @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
     @GetMapping("/customer/{customerId}")
     public ResponseEntity<List<CustomerRequestDto>> getRequestOfCustomer(@PathVariable Long customerId) {
         log.info("REST request to get all requests from customer {}", customerId);
@@ -53,8 +51,6 @@ public class CustomerRequestController {
         return ResponseEntity.ok(requestDto);
     }
 
-
-    @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
     @PostMapping
     ResponseEntity<CustomerRequestDto> createRequest(@Valid @RequestBody CustomerRequestCreateDto requestDto) {
         log.info("REST request to create request {}", requestDto);

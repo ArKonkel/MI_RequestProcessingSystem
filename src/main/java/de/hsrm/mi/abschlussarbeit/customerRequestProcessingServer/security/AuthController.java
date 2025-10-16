@@ -1,5 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.security;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -20,10 +21,10 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterDto dto) {
+    @PostMapping("/register/customer")
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterDto dto) {
         log.info("REST request to register: {}", dto);
-        authService.register(dto);
+        authService.registerAsCustomer(dto);
 
         return ResponseEntity.ok("registered");
     }

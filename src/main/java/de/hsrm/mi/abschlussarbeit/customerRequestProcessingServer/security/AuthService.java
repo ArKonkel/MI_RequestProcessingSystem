@@ -5,7 +5,7 @@ import java.nio.file.AccessDeniedException;
 
 public interface AuthService {
 
-    void register(RegisterDto registerDto);
+    void registerAsCustomer(RegisterDto registerDto);
 
     String login(LoginDto loginDto) throws AccessDeniedException;
 }

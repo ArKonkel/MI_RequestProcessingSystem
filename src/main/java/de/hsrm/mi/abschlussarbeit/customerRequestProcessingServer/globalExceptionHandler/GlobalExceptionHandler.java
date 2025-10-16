@@ -4,6 +4,7 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity.NoCap
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity.TaskNotReadyForCapacityPlanningException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.BlockedByDependencyException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.InvalidDependencyException;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.security.CustomerNotInSystemException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,5 +54,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 
-
+    @ExceptionHandler(CustomerNotInSystemException.class)
+    public ResponseEntity<String> handleCustomerNotInSystem(CustomerNotInSystemException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
 }

@@ -7,6 +7,8 @@ import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customer.Customer;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customer.CustomerService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.role.Role;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.role.RoleService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
@@ -34,6 +36,8 @@ public class AuthServiceImpl implements AuthService {
     private final RoleService roleService;
     private final AuthenticationManager authenticationManager;
 
+    private final CustomerService customerService;
+
     private final String jwtSecret;
     private final int jwtExpirationSeconds;
 
@@ -41,26 +45,47 @@ public class AuthServiceImpl implements AuthService {
             UserService userService,
             RoleService roleService,
             AuthenticationManager authenticationManager,
+            CustomerService customerService,
             @Value("${app.jwtSecret}") String jwtSecret,
             @Value("${app.jwtExpirationSeconds}") int jwtExpirationSeconds
     ) {
         this.userService = userService;
         this.roleService = roleService;
         this.authenticationManager = authenticationManager;
+        this.customerService = customerService;
         this.jwtSecret = jwtSecret;
         this.jwtExpirationSeconds = jwtExpirationSeconds;
     }
 
+
+    /**
+     * Registers a new customer account based on the provided registration data.
+     * This method assigns the "CUSTOMER" role to the new user, links the user to an
+     * already existing customer in the system, and saves the user in the database.
+     * An exception is thrown if the customer linked to the provided email does not exist.
+     *
+     * @param registerDto an object containing the registration details, including username, email, and password
+     * @throws CustomerNotInSystemException if no customer is found in the system with the given email
+     */
     @Override
-    public void register(RegisterDto registerDto) {
-        //TODO make custom role
-        Role role = roleService.getRoleByName("ADMIN");
+    public void registerAsCustomer(RegisterDto registerDto) {
+        log.info("Registering user {}", registerDto.getUsername());
+
+        Role role = roleService.getRoleByName("CUSTOMER");
+
+        Customer customer = customerService.getCustomerByEmail(registerDto.getEmail()).orElseThrow(
+                () -> new CustomerNotInSystemException("Customer with email " + registerDto.getEmail() + " does not exist in the system"));
+
 
         var user = new User();
         user.setName(registerDto.getUsername());
 //        user.setPassword(passwordEncoder.encode(req.getPassword()));
-        user.setPassword(registerDto.getPassword());
+
+        //Decoder should be used. But because of test data {noop} is before it
+        String unsecurePw = "{noop}" + registerDto.getPassword(); //NOT FOR Production
+        user.setPassword(unsecurePw);
         user.getRoles().add(role);
+        user.setCustomer(customer);
 
         userService.addUser(user);
     }
@@ -96,7 +121,7 @@ public class AuthServiceImpl implements AuthService {
      * The token includes claims for the username, roles, issue time, and expiration time.
      *
      * @param username the username for which the token is being generated
-     * @param roles the list of roles associated with the user
+     * @param roles    the list of roles associated with the user
      * @return a signed JSON Web Token (JWT) as a string
      * @throws JOSEException if there is an error during token signing
      */

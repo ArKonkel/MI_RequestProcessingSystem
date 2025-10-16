@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -99,6 +100,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/stompbroker/**").permitAll() //for websockets
+                        .requestMatchers(HttpMethod.POST, "/requests").hasAnyRole("CUSTOMER", "ADMIN")
+                        .requestMatchers("/requests/customer/**").hasAnyRole("CUSTOMER", "ADMIN")
                         .requestMatchers("/requests/**").hasAnyRole("ADMIN", "CUSTOMER_REQUEST_REVISER", "PROJECT_PLANNER", "CAPACITY_PLANNER")
                         .requestMatchers("/tasks/**").hasAnyRole("ADMIN", "TASK_REVISER", "PROJECT_PLANNER", "CAPACITY_PLANNER")
                         .requestMatchers("/projects/**").hasAnyRole("ADMIN", "PROJECT_PLANNER")

@@ -52,6 +52,11 @@ INSERT INTO employee(id, email, first_name, last_name, department_id, working_ho
 VALUES (1, 'Max.Mustermann@mail.de', 'Max', 'Mustermann', null, 8, 1),
        (2, 'Sabine.Mustermann@mail.de', 'Sabine', 'Musterfrau', 1, 8, 2);
 
+--------------------------------- CUSTOMER ------------------------------------------------
+
+INSERT INTO customer(id, first_name, last_name, address, email)
+VALUES (1, 'WeinfestAG', 'Biedemeyer', 'In den Dorfwiesen 18', 'biedemeyer@gmx.de');
+
 --------------------------------- ROLE ------------------------------------------------
 
 --INSERT INTO role (id, name, description)
@@ -75,12 +80,17 @@ INSERT INTO users (id, name, password, employee_id)
 VALUES (1, 'Max Mustermann', '{noop}Gandalf', 1), -- {noop} is necessary for testing because pw encoding
        (2, 'Sabine Musterfrau', '{noop}Gandalf', 2);
 
+--INSERT INTO users(id, name, password, customer_id)
+--VALUES (3, 'WeinfestAG', '{noop}Gandalf', 1);
+
+SELECT setval('users_seq', (SELECT MAX(id) FROM users));
 --------------------------------- USER_ROLES ------------------------------------------------
 
 INSERT INTO user_roles (user_id, role_id)
 VALUES (1, 1),
        (2, 3),
        (2, 5);
+       --(3, 2);
 --------------------------------- EMPLOYEE_EXPERTISE ------------------------------------------------
 INSERT INTO employee_expertise(id, employee_id, expertise_id, level)
 VALUES (1, 1, 7, 'EXPERT'),
@@ -91,11 +101,6 @@ VALUES (1, 1, 7, 'EXPERT'),
        (6, 2, 7, 'INTERMEDIATE');
 
 SELECT setval('employee_expertise_seq', (SELECT MAX(id) FROM employee_expertise));
-
---------------------------------- CUSTOMER ------------------------------------------------
-
-INSERT INTO customer(id, first_name, last_name, address, email)
-VALUES (1, 'WeinfestAG', 'Biedemeyer', 'In den Dorfwiesen 18', 'biedemeyer@gmx.de');
 
 --------------------------------- Baseobject - PROCESS_ITEM ------------------------------------------------
 

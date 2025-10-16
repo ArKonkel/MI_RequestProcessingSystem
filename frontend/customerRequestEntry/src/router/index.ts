@@ -3,6 +3,7 @@ import RequestCreationView from '@/views/RequestEntryViews/RequestCreationView.v
 import SentRequestView from "@/views/RequestEntryViews/SentRequestView.vue";
 import axios from "axios";
 import LoginView from "@/views/AuthenticationViews/LoginView.vue";
+import RegisterView from "@/views/AuthenticationViews/RegisterView.vue";
 
 const securityEnabled = import.meta.env.VITE_SECURITY_ENABLED === 'true'
 
@@ -27,7 +28,11 @@ if (securityEnabled) {
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-
+    {
+      path: '/register',
+      name: 'Register',
+      component: RegisterView,
+    },
     {
       path: '/login',
       name: 'Login',
@@ -56,7 +61,7 @@ router.beforeEach((to, from, next) => {
   }
 
   const token = localStorage.getItem('token') // JWT
-  const publicPages = ['/login']
+  const publicPages = ['/login', '/register']
   const authRequired = !publicPages.includes(to.path) // check if route is public page
 
   if (authRequired && !token) {

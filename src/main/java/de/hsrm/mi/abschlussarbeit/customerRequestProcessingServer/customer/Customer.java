@@ -1,6 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customer;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequest;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -26,9 +27,13 @@ public class Customer {
     private String lastName;
 
     @NotBlank
+    @Column(unique = true)
     private String email;
 
     private String address;
+
+    @OneToOne(mappedBy = "customer")
+    private User user;
 
     @OneToMany(mappedBy = "customer")
     private Set<CustomerRequest> requests;

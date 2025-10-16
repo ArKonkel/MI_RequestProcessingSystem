@@ -1,10 +1,11 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.role.Role;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment.Comment;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customer.Customer;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.Employee;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItem;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.role.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,7 +24,8 @@ import java.util.Set;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_seq")
+    @SequenceGenerator(name = "users_seq", sequenceName = "users_seq", allocationSize = 1)
     private Long id;
 
     @Column(unique = true, nullable = false)
@@ -35,6 +37,10 @@ public class User {
     @OneToOne
     @JoinColumn(name = "employee_id")
     private Employee employee;
+
+    @OneToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -49,4 +55,11 @@ public class User {
 
     @OneToMany(mappedBy = "assignee")
     private Set<ProcessItem> processItems;
+
+    @PrePersist
+    private void onCreate() {
+        if (employee != null && customer != null) {
+            throw new IllegalStateException("A user can only belong to one of Customer or Employee");
+        }
+    }
 }
