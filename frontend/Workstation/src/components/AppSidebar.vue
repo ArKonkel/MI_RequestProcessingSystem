@@ -16,11 +16,10 @@ import {
 import {Button} from '@/components/ui/button'
 import {useRouter} from 'vue-router'
 import {useUserStore} from "@/stores/userStore.ts";
-const securityEnabled = import.meta.env.VITE_SECURITY_ENABLED === 'true'
+import LoggedInCard from "@/components/LoggedInCard.vue";
 
-const router = useRouter()
 
-const userStore = useUserStore()
+
 
 const items = [
   {
@@ -45,18 +44,7 @@ const items = [
   },
 ]
 
-function handleTestLogin() {
-  userStore.setDefaultUser()
-}
 
-function handleLogout() {
-  // Delete tokens
-  localStorage.removeItem('token')
-  sessionStorage.removeItem('token')
-
-  userStore.removeUser()
-  router.push('/login')
-}
 </script>
 
 <template>
@@ -74,13 +62,12 @@ function handleLogout() {
                 </a>
               </SidebarMenuButton>
             </SidebarMenuItem>
-            <SidebarMenuItem>
-              <Button @click="handleLogout" class="cursor-pointer w-full mt-4">Logout</Button>
-              <Button v-if="!securityEnabled" variant="secondary" @click="handleTestLogin" class="cursor-pointer w-full mt-4">Login</Button>
-            </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroupContent>
       </SidebarGroup>
     </SidebarContent>
+    <SidebarFooter class="border-t">
+      <LoggedInCard />
+    </SidebarFooter>
   </Sidebar>
 </template>
