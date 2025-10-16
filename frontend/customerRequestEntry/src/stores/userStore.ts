@@ -37,6 +37,13 @@ export const useUserStore = defineStore('userStore', () => {
       id: 1,
       name: 'TestUser',
       roles: [{name: Role.ADMIN}],
+      customer: {
+        id: -1,
+        address: '',
+        email: 'test@email.de',
+        lastName: 'TestLastname',
+        firstName: 'TestFirstname',
+      }
     };
   }
 

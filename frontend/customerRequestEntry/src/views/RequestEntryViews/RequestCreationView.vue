@@ -26,10 +26,12 @@ import {
 import {useRequestStore} from "@/stores/requestStore.ts";
 import type {RequestDtd} from "@/documentTypes/dtds/RequestDtd.ts";
 import {useRouter} from "vue-router";
+import {useUserStore} from "@/stores/userStore.ts";
 
 const alertStore = useAlertStore()
 const requestStore = useRequestStore()
 const router = useRouter()
+const userStore = useUserStore()
 
 const requestForm = reactive<RequestCreateDtd>({
   processItem: {
@@ -68,8 +70,11 @@ function validate(): boolean {
 
 //Buttons
 async function submit() {
-  //TODO change to customerId from login
-  requestForm.customerId = 1
+  if (userStore.user === null) {
+    return
+  }
+
+  requestForm.customerId = userStore.user?.customer.id
   requestForm.toRecipients = recipientStrings.value.map(email => ({address: email}))
 
   //dont submit if validation fails

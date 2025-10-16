@@ -3,7 +3,6 @@ import {computed, ref} from "vue"
 
 import {Badge} from "@/components/ui/badge"
 import {Button} from "@/components/ui/button"
-import {Input} from "@/components/ui/input"
 import {
   Accordion,
   AccordionContent,
@@ -11,14 +10,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import {Textarea} from "@/components/ui/textarea";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select"
-
 
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {useRequestStore} from "@/stores/requestStore.ts";
@@ -29,34 +20,39 @@ import {RequestStatusLabel} from "@/documentTypes/types/RequestStatus.ts";
 import {addCommentToRequest} from "@/services/commentService.ts";
 import type {CommentCreateDtd} from "@/documentTypes/dtds/CommentCreateDtd.ts";
 import {useAlertStore} from "@/stores/useAlertStore.ts";
+import {useUserStore} from "@/stores/userStore.ts";
 
 const requestStore = useRequestStore()
 const request = computed<RequestDtd>(() => requestStore.requestData.selectedRequest!);
 
 const alertStore = useAlertStore()
+const userStore = useUserStore()
 
 const commentText = ref("")
 
 async function addComment() {
-  if (!commentText.value)
+  if (!request.value || !commentText.value) return
+
+  if (userStore.user === null){
+    console.log("user is null")
     return
+  }
+
+  const authorId = userStore.user?.id
 
   const commentCreateDtd: CommentCreateDtd = {
     text: commentText.value,
-    //TODO make author from user
-    authorId: 1
-  };
+    authorId: authorId,
+  }
 
   try {
     await addCommentToRequest(request.value.processItem.id, commentCreateDtd)
+
     alertStore.show('Kommentar erfolgreich erstellt', 'success')
-    commentText.value = ""
-  } catch (error: any) {
-    console.error(error)
-
-    alertStore.show(error.response?.data || 'Unbekannter Fehler', 'error')
+    commentText.value = ''
+  } catch (err) {
+    alertStore.show('Fehler beim Kommentieren', 'error')
   }
-
 }
 </script>
 

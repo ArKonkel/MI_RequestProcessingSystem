@@ -1,8 +1,10 @@
 import {defineStore} from "pinia";
 import type {RequestDtd} from "@/documentTypes/dtds/RequestDtd.ts";
-import {reactive} from "vue";
+import {reactive, watch} from "vue";
 import {getRequestsFromCustomer} from "@/services/requestService.ts";
 import {Client} from "@stomp/stompjs";
+import type {CustomerDtd} from "@/documentTypes/dtds/CustomerDtd.ts";
+import {useUserStore} from "@/stores/userStore.ts";
 
 export const useRequestStore = defineStore('requestStore', () => {
 
@@ -10,17 +12,30 @@ export const useRequestStore = defineStore('requestStore', () => {
   const wsurl = `/api/stompbroker`;
   const DEST = '/topic/customer-request'
 
+  const userStore = useUserStore()
+
   let stompClient: Client | null = null;
 
   const requestData = reactive({
     requests: [] as RequestDtd[],
     selectedRequest: null as RequestDtd | null,
+    customer: null as CustomerDtd | null,
   })
 
+  watch(() => userStore.user?.customer, (newCustomer) => {
+    requestData.customer = newCustomer ?? null
+    if (requestData.customer) {
+      fetchRequestsFromCustomer()
+    }
+  }, { immediate: true })
+
   async function fetchRequestsFromCustomer() {
+    if (!requestData.customer) {
+      return
+    }
+
     try {
-      //TODO add customer from login
-      requestData.requests = await getRequestsFromCustomer(1)
+      requestData.requests = await getRequestsFromCustomer(requestData.customer?.id)
 
       if (requestData.selectedRequest) {
         const updatedRequest = requestData.requests

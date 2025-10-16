@@ -27,6 +27,7 @@ async function handleRegister(event: Event) {
       password: password.value,
     } as RegisterDtd)
 
+    alertStore.show("Erfolgreich registriert", 'success')
     router.push('/login')
   } catch (error: any) {
     alertStore.show(error.response?.data || 'Unbekannter Fehler', 'error')
