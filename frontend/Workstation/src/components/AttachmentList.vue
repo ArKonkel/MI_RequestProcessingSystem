@@ -2,10 +2,9 @@
 import type { FileDtd } from '@/documentTypes/dtds/FileDtd.ts'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { downloadFile } from '@/services/fileService.ts'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { ref } from 'vue'
-import { uploadAttachment } from '@/services/processItemService.ts'
+import {downloadAttachment, uploadAttachment} from '@/services/processItemService.ts'
 import { useAlertStore } from '@/stores/useAlertStore.ts'
 import { useFileDialog } from '@vueuse/core'
 
@@ -33,7 +32,7 @@ onChange(async (fileList) => {
 })
 
 function handleDownload(file: FileDtd) {
-  downloadFile(file.id)
+  downloadAttachment(file.id)
 }
 </script>
 

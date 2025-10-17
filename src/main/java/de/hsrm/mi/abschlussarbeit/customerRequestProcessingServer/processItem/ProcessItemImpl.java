@@ -87,6 +87,7 @@ public class ProcessItemImpl implements ProcessItemService, CommentService {
 
 
     @Override
+    @Transactional
     public FileDto addAttachment(Long processItemId, MultipartFile multipartFile) throws IOException {
         log.info("Adding attachment to process item {}", processItemId);
 

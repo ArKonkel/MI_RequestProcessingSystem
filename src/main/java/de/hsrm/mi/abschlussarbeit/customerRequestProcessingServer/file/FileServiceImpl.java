@@ -4,21 +4,19 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptio
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
 
 @Slf4j
 @Service
 @AllArgsConstructor
-public class FileServiceImpl implements FileService{
+public class FileServiceImpl implements FileService {
 
     private final FileRepository fileRepository;
-
-    private final FileMapper fileMapper;
 
     @Override
     public File getFileById(String id) {
@@ -28,6 +26,7 @@ public class FileServiceImpl implements FileService{
     }
 
     @Override
+    @Transactional
     public File upload(MultipartFile multipartFile) throws IOException {
         log.info("Uploading file {}", multipartFile.getOriginalFilename());
 
@@ -38,12 +37,5 @@ public class FileServiceImpl implements FileService{
         file.setData(multipartFile.getBytes());
 
         return fileRepository.save(file);
-    }
-
-    @Override
-    public List<FileDto> getAllFiles() {
-        log.info("Getting all file dtos");
-
-        return fileRepository.findAll().stream().map(fileMapper::toDto).toList();
     }
 }

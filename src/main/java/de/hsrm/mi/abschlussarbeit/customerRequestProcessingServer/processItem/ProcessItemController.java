@@ -2,9 +2,15 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment.CommentCreateDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment.CommentService;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.file.File;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.file.FileDto;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.file.FileService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +27,8 @@ public class ProcessItemController {
 
     private final CommentService commentService;
 
+    private final FileService fileService;
+
 
     @PostMapping("/{processItemId}/assign/{userId}")
     public ResponseEntity<Void> assignProcessItemToUser(
@@ -31,6 +39,20 @@ public class ProcessItemController {
         processItemService.assignProcessItemToUser(processItemId, userId);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/files/{fileId}")
+    public ResponseEntity<Resource> downloadAttachment(@PathVariable String fileId) {
+        log.info("REST request to download file with id {}", fileId);
+
+        File file = fileService.getFileById(fileId);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(file.getContentType()))
+                //change inline to attachment if you want to view it inside the browser
+                //.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + file.getName() + "\"")
+                .body(new ByteArrayResource(file.getData()));
     }
 
     @PostMapping("/{processItemId}/comments")
