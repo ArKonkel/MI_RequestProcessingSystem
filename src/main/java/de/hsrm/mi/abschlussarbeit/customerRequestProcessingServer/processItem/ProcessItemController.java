@@ -3,7 +3,6 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment.CommentCreateDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment.CommentService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.file.File;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.file.FileDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.file.FileService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +40,17 @@ public class ProcessItemController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/files/{fileId}")
+    @PostMapping("/{processItemId}/comments")
+    public ResponseEntity<Void> addCommentToProcessItem(@PathVariable Long processItemId, @RequestBody CommentCreateDto comment) {
+        log.info("REST request to add comment {} to process item {}", comment.text(), processItemId);
+
+        commentService.addCommentToProcessItem(processItemId, comment);
+
+        return ResponseEntity.ok().build();
+    }
+
+
+    @GetMapping("/attachments/{fileId}")
     public ResponseEntity<Resource> downloadAttachment(@PathVariable String fileId) {
         log.info("REST request to download file with id {}", fileId);
 
@@ -55,22 +64,14 @@ public class ProcessItemController {
                 .body(new ByteArrayResource(file.getData()));
     }
 
-    @PostMapping("/{processItemId}/comments")
-    public ResponseEntity<Void> addCommentToProcessItem(@PathVariable Long processItemId, @RequestBody CommentCreateDto comment) {
-        log.info("REST request to add comment {} to process item {}", comment.text(), processItemId);
-
-        commentService.addCommentToProcessItem(processItemId, comment);
-
-        return ResponseEntity.ok().build();
-    }
-
     @PostMapping("/{id}/attachments")
-    public ResponseEntity<FileDto> uploadAttachment(
+    public ResponseEntity<Void> uploadAttachment(
             @PathVariable Long id,
             @RequestParam("file") MultipartFile file) throws IOException {
         log.info("REST request to upload attachment to process item {}", id);
 
-        FileDto dto = processItemService.addAttachment(id, file);
-        return ResponseEntity.ok(dto);
+        processItemService.addAttachment(id, file);
+
+        return ResponseEntity.ok().build();
     }
 }

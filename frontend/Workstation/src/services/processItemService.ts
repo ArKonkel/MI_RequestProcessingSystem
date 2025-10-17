@@ -18,7 +18,7 @@ export async function assignProcessItemToUser(
   return response.data
 }
 
-export async function uploadAttachment(processItemId: number, file: File): Promise<FileDtd> {
+export async function uploadAttachment(processItemId: number, file: File): Promise<void> {
   const formData = new FormData()
   formData.append('file', file)
 
@@ -32,7 +32,7 @@ export async function uploadAttachment(processItemId: number, file: File): Promi
 }
 
 export async function downloadAttachment(fileId: string): Promise<void> {
-  const response = await axios.get(`/api/processItems/files/${fileId}`, {
+  const response = await axios.get(`/api/processItems/attachments/${fileId}`, {
     responseType: 'blob',
   })
 

@@ -6,8 +6,6 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment.Commen
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.comment.CommentService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequest;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.file.File;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.file.FileDto;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.file.FileMapper;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.file.FileService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotFoundException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.*;
@@ -40,8 +38,6 @@ public class ProcessItemImpl implements ProcessItemService, CommentService {
     private final UserService userService;
 
     private final FileService fileService;
-
-    private final FileMapper fileMapper;
 
     /**
      * Assigns a process item to a user or unassigns it if the userId is -1.
@@ -88,7 +84,7 @@ public class ProcessItemImpl implements ProcessItemService, CommentService {
 
     @Override
     @Transactional
-    public FileDto addAttachment(Long processItemId, MultipartFile multipartFile) throws IOException {
+    public void addAttachment(Long processItemId, MultipartFile multipartFile) throws IOException {
         log.info("Adding attachment to process item {}", processItemId);
 
         ProcessItem processItem = processItemRepository.findById(processItemId)
@@ -103,8 +99,6 @@ public class ProcessItemImpl implements ProcessItemService, CommentService {
 
         TargetType targetType = determineTargetType(processItem);
         notificationService.sendChangeNotification(new ChangeNotificationEvent(processItem.getId(), ChangeType.UPDATED, targetType));
-
-        return fileMapper.toDto(file);
     }
 
     @Override
