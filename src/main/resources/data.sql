@@ -162,17 +162,17 @@ VALUES
     (17, 'MEDIUM', 'NO', 2, 'HOUR', 'SUGGESTION_FOR_IMPROVEMENT', 1, 'WAITING_FOR_PROCESSING');
 
 --------------------------------- TASK ------------------------------------------------
-INSERT INTO task (id, estimated_time, estimation_unit, due_date, priority, status, request_id, working_time_in_minutes)
+INSERT INTO task (id, estimated_time, estimation_unit, due_date, priority, status, request_id, working_time_in_minutes, is_already_planned)
 VALUES
-    (1, 2, 'HOUR', '2025-11-05', 'HIGH', 'OPEN', 6, 0),
-    (2, 4, 'HOUR', '2025-10-20', 'MEDIUM', 'OPEN', 6, 0),
-    (3, 1, 'HOUR', '2025-09-30', 'HIGH', 'OPEN', 7, 0),
-    (4, 3, 'HOUR', '2025-10-15', 'LOW', 'OPEN', 7, 0),
-    (5, 5, 'HOUR', '2025-12-01', 'MEDIUM', 'OPEN', 8, 0),
-    (18, 4, 'HOUR', '2025-10-20', 'MEDIUM', 'OPEN', 14, 0),
-    (19, 6, 'HOUR', '2025-10-22', 'HIGH', 'OPEN', 14, 0),
-    (20, 3, 'HOUR', '2025-10-25', 'HIGH', 'OPEN', 15, 0),
-    (21, 2, 'HOUR', '2025-11-01', 'LOW', 'OPEN', 17, 0);
+    (1, 2, 'HOUR', '2025-11-05', 'HIGH', 'OPEN', 6, 0, false),
+    (2, 4, 'HOUR', '2025-10-20', 'MEDIUM', 'OPEN', 6, 0, false),
+    (3, 1, 'HOUR', '2025-09-30', 'HIGH', 'OPEN', 7, 0, false),
+    (4, 3, 'HOUR', '2025-10-15', 'LOW', 'OPEN', 7, 0, false),
+    (5, 5, 'HOUR', '2025-12-01', 'MEDIUM', 'OPEN', 8, 0, false),
+    (18, 4, 'HOUR', '2025-10-20', 'MEDIUM', 'OPEN', 14, 0, false),
+    (19, 6, 'HOUR', '2025-10-22', 'HIGH', 'OPEN', 14, 0, false),
+    (20, 3, 'HOUR', '2025-10-25', 'HIGH', 'OPEN', 15, 0, false),
+    (21, 2, 'HOUR', '2025-11-01', 'LOW', 'OPEN', 17, 0, false);
 
 --------------------------------- TASK_EXPERTISE ------------------------------------------------
 INSERT INTO task_expertise (task_id, expertise_id)

@@ -204,6 +204,16 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
+    @Override
+    @Transactional
+    public void setIsAlreadyPlanned(Long taskId, Boolean isAlreadyPlanned) {
+        log.info("Setting isAlreadyPlanned to {} for task {}", isAlreadyPlanned, taskId);
+
+        Task task = getTaskById(taskId);
+        task.setIsAlreadyPlanned(isAlreadyPlanned);
+        taskRepository.save(task);
+    }
+
     /**
      * Calculates the working time in minutes for a given working time and unit.
      *

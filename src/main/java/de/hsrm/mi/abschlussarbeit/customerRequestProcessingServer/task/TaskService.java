@@ -17,4 +17,5 @@ public interface TaskService {
 
     void addWorkingTime(Long taskId, BigDecimal workingTime, WorkingTimeUnit unit);
 
+    void setIsAlreadyPlanned(Long taskId, Boolean isAlreadyPlanned);
 }

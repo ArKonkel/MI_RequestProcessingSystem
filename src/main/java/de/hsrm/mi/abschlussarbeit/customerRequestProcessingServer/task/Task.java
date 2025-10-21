@@ -41,6 +41,8 @@ public class Task extends ProcessItem {
 
     private String acceptanceCriteria;
 
+    private Boolean isAlreadyPlanned = false;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     private Priority priority = Priority.MEDIUM;

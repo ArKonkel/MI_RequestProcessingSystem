@@ -146,6 +146,17 @@ public class CalendarServiceImpl implements CalendarService {
 
     }
 
+    @Override
+    @Transactional
+    public void removeCalendarEntriesOfTask(Long taskId) {
+        log.info("Removing calendar entries of task {}", taskId);
+
+        Task task = taskService.getTaskById(taskId);
+        List<CalendarEntry> calendarEntries = task.getCalendarEntry();
+
+        calendarEntryRepository.deleteAll(calendarEntries);
+    }
+
     /**
      * Parses the outlook calendar events into calendar entries.
      *

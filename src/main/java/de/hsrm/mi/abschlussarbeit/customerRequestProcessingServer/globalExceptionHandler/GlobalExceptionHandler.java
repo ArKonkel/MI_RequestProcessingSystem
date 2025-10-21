@@ -1,6 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity.NoCapacityUntilDueDateException;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity.TaskAlreadyPlannedException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity.TaskNotReadyForCapacityPlanningException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.BlockedByDependencyException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.InvalidDependencyException;
@@ -57,5 +58,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CustomerNotInSystemException.class)
     public ResponseEntity<String> handleCustomerNotInSystem(CustomerNotInSystemException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
+    @ExceptionHandler(TaskAlreadyPlannedException.class)
+    public ResponseEntity<String> handleTaskAlreadyPlanned(TaskAlreadyPlannedException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 }

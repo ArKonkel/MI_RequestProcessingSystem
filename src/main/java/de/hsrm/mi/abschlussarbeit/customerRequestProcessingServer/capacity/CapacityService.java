@@ -8,4 +8,6 @@ public interface CapacityService {
 
     void assignMatchToEmployee(Long taskId, CalculatedCapacitiesOfMatchDto selectedMatch);
 
+    void deleteCapacities(Long taskId);
+
 }

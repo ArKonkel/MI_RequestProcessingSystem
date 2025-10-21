@@ -6,7 +6,10 @@ import { getAllUser } from '@/services/userService'
 import type { UserDtd } from '@/documentTypes/dtds/UserDtd'
 import { onClickOutside } from '@vueuse/core'
 
-const props = defineProps<{ modelValue: UserDtd | null }>()
+const props = withDefaults(defineProps<{ modelValue: UserDtd | null, disabled?: boolean }>(), {
+  disabled: false,
+})
+
 const emit = defineEmits<{
   (emit: 'update:modelValue', value: UserDtd | null): void
 }>()
@@ -68,6 +71,7 @@ onClickOutside(dropdownRef, () => {
       @focus="loadUsers"
       @click.stop="loadUsers"
       autocomplete="off"
+      :disabled="disabled"
     />
 
     <div

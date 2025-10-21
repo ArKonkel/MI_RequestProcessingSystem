@@ -22,5 +22,6 @@ public record TaskDto(
         Long requestId,
         String requestTitle,
         Long projectId,
-        String projectTitle
+        String projectTitle,
+        boolean isAlreadyPlanned
 ) {}

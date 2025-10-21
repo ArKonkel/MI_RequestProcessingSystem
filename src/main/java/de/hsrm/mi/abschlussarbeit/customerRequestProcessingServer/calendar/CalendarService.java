@@ -15,4 +15,6 @@ public interface CalendarService {
     void createCalendarEntriesForTask(Long taskId,Long calendarId, List<CalculatedCapacityCalendarEntryVO> calendarEntries);
 
     void initCalendarOfEmployeeOfYear(Long employeeId, Year year);
+
+    void removeCalendarEntriesOfTask(Long taskId);
 }

@@ -19,4 +19,5 @@ export interface TaskDtd {
   requestTitle: string | null
   projectId: number | null
   projectTitle: string | null
+  isAlreadyPlanned: boolean
 }

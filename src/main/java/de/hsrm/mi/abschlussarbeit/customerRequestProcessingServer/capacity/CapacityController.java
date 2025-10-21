@@ -31,4 +31,13 @@ public class CapacityController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/{taskId}")
+    public ResponseEntity<Void> deleteCapacities(@PathVariable Long taskId) {
+        log.info("REST request to delete capacities for task {}", taskId);
+
+        capacityService.deleteCapacities(taskId);
+
+        return ResponseEntity.ok().build();
+    }
+
 }

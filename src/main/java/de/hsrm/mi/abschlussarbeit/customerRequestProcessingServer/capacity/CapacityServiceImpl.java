@@ -57,6 +57,10 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
 
         checkIfTaskReadyForCapacityPlanning(task);
 
+        if (task.getIsAlreadyPlanned()) {
+            throw new TaskAlreadyPlannedException("Task " + taskId + " is already planned");
+        }
+
         List<CalculatedCapacitiesOfMatchVO> results = new ArrayList<>();
 
         // find best matching employees by expertise
@@ -121,6 +125,16 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
 
         processItemService.assignProcessItemToUser(taskId, employee.getUser().getId());
         calendarService.createCalendarEntriesForTask(taskId, employee.getCalendar().getId(), vo.calculatedCalendarCapacities());
+        taskService.setIsAlreadyPlanned(taskId, true);
+    }
+
+    @Override
+    @Transactional
+    public void deleteCapacities(Long taskId) {
+        log.info("Deleting capacities for task {}", taskId);
+
+        taskService.setIsAlreadyPlanned(taskId, false);
+        calendarService.removeCalendarEntriesOfTask(taskId);
     }
 
     private void checkIfTaskReadyForCapacityPlanning(Task task) {

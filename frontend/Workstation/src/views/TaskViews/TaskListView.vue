@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
-import { useTaskStore } from '@/stores/taskStore.ts'
-import { useRoute, useRouter } from 'vue-router'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import type { TaskDtd } from '@/documentTypes/dtds/TaskDtd.ts'
-import { getPriorityColor, PriorityLabel } from '@/documentTypes/types/Priority.ts'
-import { TaskStatus, TaskStatusLabel } from '@/documentTypes/types/TaskStatus.ts'
+import {computed, onMounted, ref, watch} from 'vue'
+import {useTaskStore} from '@/stores/taskStore.ts'
+import {useRoute, useRouter} from 'vue-router'
+import {ScrollArea} from '@/components/ui/scroll-area'
+import {Card, CardContent, CardFooter, CardHeader, CardTitle} from '@/components/ui/card'
+import {Badge} from '@/components/ui/badge'
+import type {TaskDtd} from '@/documentTypes/dtds/TaskDtd.ts'
+import {getPriorityColor, PriorityLabel} from '@/documentTypes/types/Priority.ts'
+import {TaskStatus, TaskStatusLabel} from '@/documentTypes/types/TaskStatus.ts'
 import {
   Select,
   SelectContent,
@@ -15,6 +15,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+
+import {BookCheck} from "lucide-vue-next"
 
 const taskStore = useTaskStore()
 const router = useRouter()
@@ -34,7 +36,7 @@ watch(
       taskStore.setSelectedTask(Number(taskId))
     }
   },
-  { immediate: true },
+  {immediate: true},
 )
 
 // Gefilterte Tasks nach Status
@@ -55,7 +57,7 @@ function formatDate(date: string | null) {
 
 function selectTask(task: TaskDtd) {
   taskStore.setSelectedTask(task.processItem.id)
-  router.push({ name: 'taskDetailView', params: { taskId: task.processItem.id } })
+  router.push({name: 'taskDetailView', params: {taskId: task.processItem.id}})
 }
 </script>
 
@@ -63,7 +65,7 @@ function selectTask(task: TaskDtd) {
   <div class="flex-1 mb-4 w-60 justify-end">
     <Select v-model="selectedStatus">
       <SelectTrigger>
-        <SelectValue placeholder="Alle Status" />
+        <SelectValue placeholder="Alle Status"/>
       </SelectTrigger>
       <SelectContent>
         <SelectItem :value="null">Alle Status</SelectItem>
@@ -109,15 +111,20 @@ function selectTask(task: TaskDtd) {
         <CardFooter class="flex flex-col items-start gap-2">
           <p class="text-sm text-muted-foreground">Fällig: {{ formatDate(task.dueDate) }}</p>
 
-          <div class="flex flex-wrap gap-2">
-            <Badge
-              v-for="expertise in task.expertise"
-              :key="expertise.id"
-              variant="outline"
-              class="text-xs"
-            >
-              {{ expertise.name }}
-            </Badge>
+          <div class="w-full flex justify-between" >
+            <div class="flex flex-wrap gap-2">
+              <Badge
+                v-for="expertise in task.expertise"
+                :key="expertise.id"
+                variant="outline"
+                class="text-xs"
+              >
+                {{ expertise.name }}
+              </Badge>
+            </div>
+            <div v-if="task.isAlreadyPlanned" class=" justify-end">
+              <BookCheck class="stroke-1"/>
+            </div>
           </div>
         </CardFooter>
       </Card>
