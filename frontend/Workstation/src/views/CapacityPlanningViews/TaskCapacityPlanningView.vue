@@ -215,8 +215,8 @@ async function assignEmployee() {
 
     <!-- Navigation -->
     <div class="flex justify-between mb-2">
-      <Button @click="prevDay">← Tag zurück</Button>
-      <Button @click="nextDay">Tag vor →</Button>
+      <Button class="cursor-pointer" @click="prevDay">← Tag zurück</Button>
+      <Button class="cursor-pointer" @click="nextDay">Tag vor →</Button>
     </div>
 
     <!-- Kalender -->
@@ -321,7 +321,7 @@ async function assignEmployee() {
 
     <!-- Buttons -->
     <div class="flex justify-end">
-      <Button @click="assignEmployee">Zuweisen</Button>
+      <Button class="cursor-pointer" @click="assignEmployee">Zuweisen</Button>
     </div>
   </div>
 </template>

@@ -2,7 +2,7 @@
 import {computed, ref} from "vue"
 
 import {Badge} from "@/components/ui/badge"
-import {Button} from "@/components/ui/button"
+import CommentsAccordion from '@/components/CommentsAccordion.vue'
 import {
   Accordion,
   AccordionContent,
@@ -164,31 +164,11 @@ async function addComment() {
             </AccordionContent>
           </AccordionItem>
 
-
-          <AccordionItem value="comments">
-            <AccordionTrigger>Kommentare</AccordionTrigger>
-            <AccordionContent>
-              <div class="space-y-4">
-                <Textarea v-model="commentText"
-                          placeholder="Verfasse dein Kommentar"
-                          class="resize-none"
-                          @keydown.enter.prevent="addComment"/>
-                <div class="flex justify-end">
-                  <Button @click="addComment">Senden</Button>
-                </div>
-                <div v-for="comment in request.processItem.comments" :key="comment.id"
-                     class="border-t pt-2 text-sm">
-                  <div class="font-semibold">{{ comment.author.name }}</div>
-                  <div class="text-xs text-muted-foreground">
-                    {{ new Date(comment.timeStamp).toLocaleString("de-DE") }}
-                  </div>
-                  <div class="mt-2">
-                    <p class="text-lg">{{ comment.text }}</p>
-                  </div>
-                </div>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
+          <CommentsAccordion
+            v-model="commentText"
+            :comments="request.processItem.comments"
+            @submit="addComment"
+          />
 
         </Accordion>
       </div>

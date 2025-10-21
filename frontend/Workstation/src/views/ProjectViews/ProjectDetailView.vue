@@ -266,6 +266,7 @@ function openRequest(reqId: number) {
               <Popover>
                 <PopoverTrigger as-child>
                   <Button
+                    class="cursor-pointer"
                     variant="outline"
                     :class="[
                       'w-[150px] justify-start',
@@ -296,6 +297,7 @@ function openRequest(reqId: number) {
               <Popover>
                 <PopoverTrigger as-child>
                   <Button
+                    class="cursor-pointer"
                     variant="outline"
                     :class="[
                       'w-[150px] justify-start',
@@ -359,12 +361,12 @@ function openRequest(reqId: number) {
                   placeholder="Titel der neuen Aufgabe"
                   class="flex-1"
                 />
-                <Button @click="addTaskToProject">Erstellen</Button>
-                <Button variant="ghost" @click="cancelTask">Abbrechen</Button>
+                <Button class="cursor-pointer" @click="addTaskToProject">Erstellen</Button>
+                <Button class="cursor-pointer" variant="ghost" @click="cancelTask">Abbrechen</Button>
               </div>
 
               <div class="flex justify-end">
-                <Button @click="showAddingTask">+</Button>
+                <Button class="cursor-pointer" @click="showAddingTask">+</Button>
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -408,12 +410,12 @@ function openRequest(reqId: number) {
 
                   <ProjectSelect v-model="selectedDependencyProject" />
 
-                  <Button @click="addDependencyToProject">Erstellen</Button>
-                  <Button variant="ghost" @click="cancelDependency">Abbrechen</Button>
+                  <Button class="cursor-pointer" @click="addDependencyToProject">Erstellen</Button>
+                  <Button class="cursor-pointer" variant="ghost" @click="cancelDependency">Abbrechen</Button>
                 </div>
               </div>
               <div class="flex justify-end">
-                <Button @click="showAddingDependency">+</Button>
+                <Button class="cursor-pointer" @click="showAddingDependency">+</Button>
               </div>
             </AccordionContent>
           </AccordionItem>

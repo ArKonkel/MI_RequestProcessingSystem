@@ -47,7 +47,7 @@ function formatDate(ts: string | number | Date) {
           @keydown.enter.prevent="submitComment"
         />
         <div class="flex justify-end">
-          <Button @click="submitComment">Senden</Button>
+          <Button class="cursor-pointer" @click="submitComment">Senden</Button>
         </div>
         <div v-for="comment in comments" :key="comment.id" class="border-t pt-2 text-sm">
           <div class="font-semibold">{{ comment.author.name }}</div>

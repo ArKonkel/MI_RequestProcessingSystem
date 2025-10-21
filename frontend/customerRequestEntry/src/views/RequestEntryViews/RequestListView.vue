@@ -44,7 +44,7 @@ function goToCreateRequest() {
 <template>
   <div class="flex items-center justify-end space-x-4 m-4">
     <span class="text-gray-700">Anfrage erstellen</span>
-    <Button @click="goToCreateRequest">
+    <Button class="cursor-pointer" @click="goToCreateRequest">
       <Plus />
     </Button>
   </div>

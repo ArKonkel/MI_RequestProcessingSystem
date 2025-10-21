@@ -258,13 +258,13 @@ async function updateAssignee() {
             <Badge v-for="expertise in editableTask.expertise" :key="expertise.id">
               {{ expertise.name }}
             </Badge>
-            <Button @click="toggleExpertise">+</Button>
+            <Button class="cursor-pointer" @click="toggleExpertise">+</Button>
           </div>
 
           <div v-if="showAddExpertise" class="flex pt-3 space-x-2">
             <ExpertiseSelect v-model="expertiseIdToAdd" />
-            <Button @click="addExpertise">Hinzufügen</Button>
-            <Button variant="secondary" @click="toggleExpertise">Abbrechen</Button>
+            <Button class="cursor-pointer" @click="addExpertise">Hinzufügen</Button>
+            <Button class="cursor-pointer" variant="secondary" @click="toggleExpertise">Abbrechen</Button>
           </div>
           <div class="flex gap-6 mt-4 text-sm">
             <div v-if="editableTask.requestId">
@@ -286,6 +286,7 @@ async function updateAssignee() {
                 <PopoverTrigger as-child>
                   <Button
                     variant="outline"
+                    class="cursor-pointer"
                     :class="[
                       'w-[150px] justify-start',
                       !dueDateValue ? 'text-muted-foreground' : '',
@@ -339,7 +340,7 @@ async function updateAssignee() {
           />
         </Accordion>
       </div>
-      <Button @click="moveToCapacityPlanning">Zur Planung</Button>
+      <Button class="cursor-pointer" @click="moveToCapacityPlanning">Zur Planung</Button>
     </ScrollArea>
 
     <!-- right sidebar -->
@@ -412,7 +413,7 @@ async function updateAssignee() {
 
           <Dialog v-model:open="showWorkingTimeDialog">
             <DialogTrigger as-child>
-              <Button>+</Button>
+              <Button class="cursor-pointer">+</Button>
             </DialogTrigger>
 
             <DialogContent>
@@ -441,10 +442,10 @@ async function updateAssignee() {
                   </SelectContent>
                 </Select>
                 <div class="flex justify-end space-x-2">
-                  <Button variant="secondary" @click="showWorkingTimeDialog = false"
+                  <Button class="cursor-pointer" variant="secondary" @click="showWorkingTimeDialog = false"
                     >Abbrechen
                   </Button>
-                  <Button @click="submitWorkingTime">Hinzufügen</Button>
+                  <Button class="cursor-pointer" @click="submitWorkingTime">Hinzufügen</Button>
                 </div>
               </div>
             </DialogContent>

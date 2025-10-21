@@ -182,8 +182,8 @@ function resetFrom() {
     <div class="flex items-end justify-between gap-4">
       <div></div>
       <div class="flex gap-2">
-        <Button variant="ghost" type="button" @click="resetFrom">Reset</Button>
-        <Button type="submit">Anfrage erstellen</Button>
+        <Button class="cursor-pointer" variant="ghost" type="button" @click="resetFrom">Reset</Button>
+        <Button class="cursor-pointer" type="submit">Anfrage erstellen</Button>
       </div>
     </div>
   </form>

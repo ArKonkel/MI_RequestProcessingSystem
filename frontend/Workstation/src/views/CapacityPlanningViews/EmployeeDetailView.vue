@@ -213,7 +213,7 @@ function routeToTask(taskId: number | undefined | null = null) {
         </div>
 
         <div class="flex justify-end">
-          <Button @click="saveEmployee">Manuell speichern</Button>
+          <Button class="cursor-pointer" @click="saveEmployee">Manuell speichern</Button>
         </div>
 
         <h3 class="text-lg font-semibold mt-6 mb-2">Expertisen</h3>
@@ -258,12 +258,12 @@ function routeToTask(taskId: number | undefined | null = null) {
 
             <ExpertiseSelect v-model="expertiseIdToAdd"/>
 
-            <Button @click="addExpertise">Erstellen</Button>
-            <Button variant="ghost" @click="cancelExpertise">Abbrechen</Button>
+            <Button class="cursor-pointer" @click="addExpertise">Erstellen</Button>
+            <Button class="cursor-pointer" variant="ghost" @click="cancelExpertise">Abbrechen</Button>
           </div>
         </div>
         <div class="flex justify-end">
-          <Button @click="toggleAddExpertise">+</Button>
+          <Button class="cursor-pointer" @click="toggleAddExpertise">+</Button>
         </div>
 
         <!-- Calendar -->
@@ -271,8 +271,8 @@ function routeToTask(taskId: number | undefined | null = null) {
           <div class="flex justify-between items-center">
             <h3 class="text-lg font-semibold">Kalender</h3>
             <div class="flex gap-2">
-              <Button size="sm" @click="prevDay">← Tag zurück</Button>
-              <Button size="sm" @click="nextDay">Tag vor →</Button>
+              <Button class="cursor-pointer" size="sm" @click="prevDay">← Tag zurück</Button>
+              <Button class="cursor-pointer" size="sm" @click="nextDay">Tag vor →</Button>
             </div>
           </div>
 
@@ -315,8 +315,8 @@ function routeToTask(taskId: number | undefined | null = null) {
         </div>
       </div>
       <div class="flex gap-4 justify-end">
-        <Button variant="secondary" @click="importOutlookCalendar">Outlook importieren</Button>
-        <Button variant="secondary" @click="loadCalendar">Kalender neu laden</Button>
+        <Button class="cursor-pointer" variant="secondary" @click="importOutlookCalendar">Outlook importieren</Button>
+        <Button class="cursor-pointer" variant="secondary" @click="loadCalendar">Kalender neu laden</Button>
       </div>
     </ScrollArea>
   </div>
