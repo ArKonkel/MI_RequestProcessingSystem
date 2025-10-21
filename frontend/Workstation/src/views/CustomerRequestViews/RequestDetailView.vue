@@ -45,6 +45,10 @@ import type { UserDtd } from '@/documentTypes/dtds/UserDtd.ts'
 import { ProjectStatusLabel } from '@/documentTypes/types/ProjectStatus.ts'
 import AttachmentList from '@/components/AttachmentList.vue'
 import {useUserStore} from "@/stores/userStore.ts";
+import {
+  IsProjectClassification,
+  IsProjectClassificationLabel
+} from "@/documentTypes/types/IsProjectClassification.ts";
 
 const userStore = useUserStore()
 const requestStore = useRequestStore()
@@ -184,6 +188,7 @@ async function saveRequest() {
       estimatedScope: estimatedScope.value,
       chargeable: editableRequest.value.chargeable,
       scopeUnit: editableRequest.value.scopeUnit,
+      classifiedAsProject: editableRequest.value.classifiedAsProject,
     }
 
     await updateCustomerRequest(editableRequest.value.processItem.id, dto)
@@ -296,7 +301,7 @@ async function addComment() {
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="linked-projects">
+          <AccordionItem v-if="editableRequest.classifiedAsProject == IsProjectClassification.YES"  value="linked-projects">
             <AccordionTrigger>Verknüpfte Projekte</AccordionTrigger>
             <AccordionContent class="flex flex-col gap-2">
               <!-- Projects -->
@@ -372,6 +377,24 @@ async function addComment() {
               :value="value"
             >
               {{ requestStatusLabel }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
+        <label class="text-sm font-semibold">Als Projekt eingestuft:</label>
+        <Select v-model="editableRequest.classifiedAsProject" @update:modelValue="saveRequest">
+          <SelectTrigger>
+            <SelectValue placeholder="Offen" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem
+              v-for="[value, isProjectClassificationLabel] in Object.entries(IsProjectClassificationLabel)"
+              :key="value"
+              :value="value"
+            >
+              {{ isProjectClassificationLabel }}
             </SelectItem>
           </SelectContent>
         </Select>

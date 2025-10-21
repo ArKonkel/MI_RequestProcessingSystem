@@ -1,6 +1,7 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customer.CustomerService;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotAllowedException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotFoundException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.ItemBody;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.Message;
@@ -134,6 +135,14 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
 
         if (updateDto.getDescription() != null) {
             request.setDescription(updateDto.getDescription());
+        }
+
+        if (updateDto.getClassifiedAsProject() != null) {
+            if (request.getClassifiedAsProject().equals(IsProjectClassification.YES) && !request.getProjects().isEmpty()) {
+                throw new NotAllowedException("Customer Request has already attached Projects. No change allowed.");
+            }
+
+            request.setClassifiedAsProject(updateDto.getClassifiedAsProject());
         }
 
         CustomerRequest savedRequest = customerRequestRepository.save(request);

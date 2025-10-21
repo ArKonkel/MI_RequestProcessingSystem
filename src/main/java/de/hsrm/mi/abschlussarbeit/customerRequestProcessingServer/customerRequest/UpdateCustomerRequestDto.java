@@ -16,6 +16,7 @@ public class UpdateCustomerRequestDto {
     private BigDecimal estimatedScope;
     private TimeUnit scopeUnit;
     private CustomerRequestStatus status;
+    private IsProjectClassification classifiedAsProject;
     private Chargeable chargeable;
     private Category category;
 }

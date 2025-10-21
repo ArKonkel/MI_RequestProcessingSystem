@@ -21,6 +21,7 @@ public class CustomerRequestDto {
     Chargeable chargeable;
     Category category;
     CustomerDto customer;
+    IsProjectClassification classifiedAsProject;
     List<TaskDto> tasks;
     List<ProjectDto> projects;
 }

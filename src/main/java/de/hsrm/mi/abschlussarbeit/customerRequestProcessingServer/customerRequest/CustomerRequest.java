@@ -33,6 +33,9 @@ public class CustomerRequest extends ProcessItem {
     @Enumerated(EnumType.STRING)
     private TimeUnit scopeUnit = TimeUnit.HOUR;
 
+    @Enumerated(EnumType.STRING)
+    private IsProjectClassification classifiedAsProject = IsProjectClassification.NOT_DETERMINED;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     private CustomerRequestStatus status = CustomerRequestStatus.RECEIVED;

@@ -7,6 +7,7 @@ import type { Chargeable } from '@/documentTypes/types/Chargeable.ts'
 import type { TimeUnit } from '@/documentTypes/types/TimeUnit.ts'
 import type { TaskDtd } from '@/documentTypes/dtds/TaskDtd.ts'
 import type { ProjectDtd } from '@/documentTypes/dtds/ProjectDtd.ts'
+import type {IsProjectClassification} from "@/documentTypes/types/IsProjectClassification.ts";
 
 export interface RequestDtd {
   processItem: ProcessItemDtd
@@ -17,6 +18,7 @@ export interface RequestDtd {
   chargeable: Chargeable
   category: Category
   customer: CustomerDtd
+  classifiedAsProject: IsProjectClassification
   tasks: TaskDtd[]
   projects: ProjectDtd[]
 }

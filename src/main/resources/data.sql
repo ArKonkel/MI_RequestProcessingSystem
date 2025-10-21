@@ -151,15 +151,15 @@ VALUES
 (23, 'Dashboard-Verbesserung Projekt', 'Umsetzung der vorgeschlagenen UI-Optimierungen.', '2025-10-10');
 
 --------------------------------- CUSTOMER REQUEST ------------------------------------------------
-INSERT INTO customer_request (id, priority, chargeable, estimated_scope, scope_unit, category, customer_id, status)
+INSERT INTO customer_request (id, priority, chargeable, estimated_scope, scope_unit, category, customer_id, status, classified_as_project)
 VALUES
-    (6, 'LOW', 'NOT_DETERMINED', 0, 'HOUR', 'TRAINING_REQUEST', 1, 'RECEIVED'),
-    (7, 'MEDIUM', 'NOT_DETERMINED', 0, 'HOUR', 'SUGGESTION_FOR_IMPROVEMENT', 1, 'WAITING_FOR_PROCESSING'),
-    (8, 'HIGH', 'NOT_DETERMINED', 0, 'HOUR', 'BUG_REPORT', 1, 'RECEIVED'),
-    (14, 'HIGH', 'YES', 16, 'HOUR', 'OTHER', 2, 'IN_PROCESS'),
-    (15, 'HIGH', 'NOT_DETERMINED', 4, 'HOUR', 'BUG_REPORT', 3, 'RECEIVED'),
-    (16, 'LOW', 'YES', 8, 'HOUR', 'TRAINING_REQUEST', 4, 'RECEIVED'),
-    (17, 'MEDIUM', 'NO', 2, 'HOUR', 'SUGGESTION_FOR_IMPROVEMENT', 1, 'WAITING_FOR_PROCESSING');
+    (6, 'LOW', 'NOT_DETERMINED', 0, 'HOUR', 'TRAINING_REQUEST', 1, 'RECEIVED', 'NOT_DETERMINED'),
+    (7, 'MEDIUM', 'NOT_DETERMINED', 0, 'HOUR', 'SUGGESTION_FOR_IMPROVEMENT', 1, 'WAITING_FOR_PROCESSING', 'NOT_DETERMINED'),
+    (8, 'HIGH', 'NOT_DETERMINED', 0, 'HOUR', 'BUG_REPORT', 1, 'RECEIVED', 'NOT_DETERMINED'),
+    (14, 'HIGH', 'YES', 16, 'HOUR', 'OTHER', 2, 'IN_PROCESS', 'NOT_DETERMINED'),
+    (15, 'HIGH', 'NOT_DETERMINED', 4, 'HOUR', 'BUG_REPORT', 3, 'RECEIVED', 'NOT_DETERMINED'),
+    (16, 'LOW', 'YES', 8, 'HOUR', 'TRAINING_REQUEST', 4, 'RECEIVED', 'NOT_DETERMINED'),
+    (17, 'MEDIUM', 'NO', 2, 'HOUR', 'SUGGESTION_FOR_IMPROVEMENT', 1, 'WAITING_FOR_PROCESSING', 'NOT_DETERMINED');
 
 --------------------------------- TASK ------------------------------------------------
 INSERT INTO task (id, estimated_time, estimation_unit, due_date, priority, status, request_id, working_time_in_minutes, is_already_planned)

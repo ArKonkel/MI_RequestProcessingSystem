@@ -2,6 +2,8 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequest;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequestService;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.IsProjectClassification;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotAllowedException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotFoundException;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.ChangeNotificationEvent;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.ChangeType;
@@ -134,6 +136,10 @@ public class ProjectServiceImpl implements ProjectService {
 
         if (createDto.requestId() != null) {
             CustomerRequest customerRequest = customerRequestService.getRequestById(createDto.requestId());
+            if (customerRequest.getClassifiedAsProject() != null && !customerRequest.getClassifiedAsProject().equals(IsProjectClassification.YES)) {
+                throw new NotAllowedException("CustomerRequest is not classified as Project.");
+            }
+
             projectToCreate.setRequest(customerRequest);
         }
 
