@@ -18,7 +18,7 @@ export const useTaskStore = defineStore('taskStore', () => {
 
   const selectedTaskId = ref<number | null>(null)
 
-  const selectedTask = computed(
+  let selectedTask = computed(
     () => taskData.tasks.find((task) => task.processItem.id === selectedTaskId.value) ?? null,
   )
 
@@ -43,6 +43,8 @@ export const useTaskStore = defineStore('taskStore', () => {
       taskData.tasks = taskData.tasks.map((task) =>
         task.processItem.id === id ? updatedTask : task,
       )
+
+      selectedTask = computed(() => taskData.tasks.find((task) => task.processItem.id === selectedTaskId.value) ?? null)
     } catch (error) {
       console.error(`Fehler beim Laden des Tasks mit id ${id}`, error)
     }
@@ -72,7 +74,7 @@ export const useTaskStore = defineStore('taskStore', () => {
         throw new Error('Stompclient with Message: ' + frameElement)
       }
       stompClient.onConnect = () => {
-        console.log('Stomp client connected')
+        console.log('Task Stomp client connected')
         if (stompClient == null) {
           throw new Error('Stomp client connection failed')
         }

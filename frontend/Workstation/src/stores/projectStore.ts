@@ -78,7 +78,7 @@ export const useProjectStore = defineStore('projectStore', () => {
         throw new Error('Stompclient with Message: ' + frameElement)
       }
       stompClient.onConnect = () => {
-        console.log('Stomp client connected')
+        console.log('Project Stomp client connected')
         if (stompClient == null) {
           throw new Error('Stomp client connection failed')
         }

@@ -97,6 +97,7 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
     }
 
     @Override
+    @Transactional
     public CustomerRequestDto updateCustomerRequest(Long id, UpdateCustomerRequestDto updateDto) {
         log.info("Updating request with id {}, {}", id, updateDto);
 

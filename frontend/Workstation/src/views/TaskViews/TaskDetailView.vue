@@ -164,6 +164,7 @@ async function saveTask() {
     }
     await updateTask(editableTask.value.processItem.id, dto)
   } catch (err: any) {
+    editableTask.value = { ...taskStore.selectedTask } as TaskDtd
     const msg = err.response?.data?.message || err.response?.data || err.message || String(err)
     alertStore.show('Fehler beim Speichern: ' + msg, 'error')
   }

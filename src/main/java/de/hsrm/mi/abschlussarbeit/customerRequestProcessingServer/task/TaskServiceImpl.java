@@ -106,6 +106,7 @@ public class TaskServiceImpl implements TaskService {
         return taskMapper.toDto(savedTask);
     }
 
+    @Transactional
     public TaskDto updateTask(Long taskId, UpdateTaskDto updateDto) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found"));
@@ -177,6 +178,7 @@ public class TaskServiceImpl implements TaskService {
      * @param unit        of working time.
      */
     @Override
+    @Transactional
     public void addWorkingTime(Long taskId, BigDecimal workingTime, WorkingTimeUnit unit) {
         log.info("Adding {} {} to task {}", workingTime, unit, taskId);
 

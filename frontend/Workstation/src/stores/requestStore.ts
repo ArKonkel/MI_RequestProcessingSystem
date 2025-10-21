@@ -75,7 +75,7 @@ export const useRequestStore = defineStore('requestStore', () => {
         throw new Error('Stompclient with Message: ' + frameElement)
       }
       stompClient.onConnect = () => {
-        console.log('Stomp client connected')
+        console.log('Request Stomp client connected')
         if (stompClient == null) {
           throw new Error('Stomp client connection failed')
         }

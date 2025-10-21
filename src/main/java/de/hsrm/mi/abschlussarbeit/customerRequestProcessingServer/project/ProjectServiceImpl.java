@@ -59,6 +59,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @Transactional
     public ProjectDto updateProject(Long projectId, ProjectUpdateDto updateDto) {
         log.info("Updating project {} with {}", projectId, updateDto);
 
@@ -90,6 +91,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @Transactional
     public void updateProjectStatus(Long projectId, ProjectStatus newStatus) {
         log.info("Updating project {} to status {}", projectId, newStatus);
 
