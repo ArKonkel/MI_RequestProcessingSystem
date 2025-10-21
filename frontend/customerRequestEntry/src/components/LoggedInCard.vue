@@ -55,7 +55,6 @@ function handleLogout() {
     </CardHeader>
 
     <CardFooter>
-      <div class="text-sm break-words" v-if="userStore.user?.customer">Kunde: {{userStore.user?.customer.firstName}}</div>
       <Button
         v-if="!securityEnabled"
         variant="secondary"
