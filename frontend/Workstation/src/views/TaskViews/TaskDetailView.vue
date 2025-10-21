@@ -182,9 +182,11 @@ function addExpertise() {
 
   saveTask()
   expertiseIdToAdd.value = null
+
+  toggleExpertise()
 }
 
-function switchShowExpertise() {
+function toggleExpertise() {
   if (showAddExpertise.value) {
     expertiseIdToAdd.value = null
     showAddExpertise.value = false
@@ -256,13 +258,13 @@ async function updateAssignee() {
             <Badge v-for="expertise in editableTask.expertise" :key="expertise.id">
               {{ expertise.name }}
             </Badge>
-            <Button @click="switchShowExpertise">+</Button>
+            <Button @click="toggleExpertise">+</Button>
           </div>
 
           <div v-if="showAddExpertise" class="flex pt-3 space-x-2">
             <ExpertiseSelect v-model="expertiseIdToAdd" />
             <Button @click="addExpertise">Hinzufügen</Button>
-            <Button variant="secondary" @click="switchShowExpertise">Abbrechen</Button>
+            <Button variant="secondary" @click="toggleExpertise">Abbrechen</Button>
           </div>
           <div class="flex gap-6 mt-4 text-sm">
             <div v-if="editableTask.requestId">
