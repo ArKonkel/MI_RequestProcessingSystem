@@ -143,6 +143,10 @@ public class TaskServiceImpl implements TaskService {
                 throw new NotAllowedException("Task status cannot be changed if customer request is not ready for processing");
             }
 
+            if (updateDto.getStatus() == TaskStatus.CLOSED && task.getWorkingTimeInMinutes() <= 0) {
+                throw new NotAllowedException("Task cannot be closed if working time is 0 or less");
+            }
+
             task.setStatus(updateDto.getStatus());
         }
 
