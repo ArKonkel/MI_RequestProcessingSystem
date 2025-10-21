@@ -126,7 +126,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
     private void checkIfTaskReadyForCapacityPlanning(Task task) {
         List<String> errors = new ArrayList<>();
 
-        if (task.getEstimatedTime().equals(BigDecimal.ZERO)) {
+        if (task.getEstimatedTime().compareTo(BigDecimal.ZERO) == 0) {
             errors.add("No estimated time set");
         }
         if (task.getDueDate().isBefore(LocalDate.now())) {
