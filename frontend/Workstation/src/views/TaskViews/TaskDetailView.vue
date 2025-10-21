@@ -162,7 +162,6 @@ async function saveTask() {
       dueDate: dueDateValue.value ? dueDateValue.value.toString() : undefined,
       expertiseIds: expertiseIdToAdd.value ? [expertiseIdToAdd.value] : undefined,
     }
-    console.log(dto)
     await updateTask(editableTask.value.processItem.id, dto)
   } catch (err: any) {
     const msg = err.response?.data?.message || err.response?.data || err.message || String(err)

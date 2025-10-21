@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public List<UserDto> getAllUsers() {
         log.info("Get all users dto");
 
-        return userRepository.findAll().stream().map(userMapper::toDto).toList();
+        return userRepository.findAllByEmployeeNotNull().stream().map(userMapper::toDto).toList();
     }
 
     @Override
