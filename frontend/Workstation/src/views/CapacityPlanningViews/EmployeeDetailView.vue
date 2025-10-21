@@ -39,6 +39,8 @@ const addingExpertise = ref(false)
 const selectedExpertiseLevel = ref<ExpertiseLevel | null>(null)
 const expertiseIdToAdd = ref<number | null>(null)
 
+const showSaveButton = ref(false)
+
 watch(
   () => employeeStore.selectedEmployees,
   async (newEmp) => {
@@ -52,6 +54,34 @@ watch(
     }
   },
   {immediate: true},
+)
+
+
+watch(
+  () =>
+    editableEmployee.value
+      ? {
+        firstName: editableEmployee.value.firstName,
+        lastName: editableEmployee.value.lastName,
+        email: editableEmployee.value.email,
+        workingHoursPerDay: editableEmployee.value.workingHoursPerDay,
+      }
+      : null,
+  (newVal, oldVal) => {
+    if (!newVal || !oldVal) return
+
+    const selectedEmp = employeeStore.selectedEmployees
+    if (!selectedEmp) return
+
+    const hasChanged =
+      newVal.firstName !== selectedEmp.firstName ||
+      newVal.lastName !== selectedEmp.lastName ||
+      newVal.email !== selectedEmp.email ||
+      newVal.workingHoursPerDay !== selectedEmp.workingHoursPerDay
+
+    showSaveButton.value = hasChanged
+  },
+  { deep: true }
 )
 
 async function addExpertise() {
@@ -212,8 +242,8 @@ function routeToTask(taskId: number | undefined | null = null) {
           </div>
         </div>
 
-        <div class="flex justify-end">
-          <Button class="cursor-pointer" @click="saveEmployee">Manuell speichern</Button>
+        <div v-if="showSaveButton" class="flex justify-end">
+          <Button class="cursor-pointer" @click="saveEmployee">Speichern</Button>
         </div>
 
         <h3 class="text-lg font-semibold mt-6 mb-2">Expertisen</h3>
