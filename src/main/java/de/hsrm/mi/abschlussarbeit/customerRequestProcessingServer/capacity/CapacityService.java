@@ -10,4 +10,5 @@ public interface CapacityService {
 
     void deleteCapacities(Long taskId);
 
+    MatchingEmployeeCapacitiesDto calculateFreeCapacities(Long taskId, Long employeeId);
 }

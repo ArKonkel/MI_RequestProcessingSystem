@@ -11,6 +11,11 @@ export async function getMatchingEmployees(taskId: number): Promise<MatchingEmpl
   return response.data
 }
 
+export async function calculateFreeCapacity(taskId: number, employeeId: number): Promise<MatchingEmployeeCapacitiesDtd> {
+  const response = await axios.get<MatchingEmployeeCapacitiesDtd>(`/api/capacity/${taskId}/${employeeId}`)
+  return response.data
+}
+
 export async function assignTaskToEmployee(
   taskId: number,
   selectedMatch: CalculatedCapacitiesOfMatchDto,

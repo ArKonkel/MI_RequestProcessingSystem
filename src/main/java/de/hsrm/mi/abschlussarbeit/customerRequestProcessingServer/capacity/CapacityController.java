@@ -22,6 +22,15 @@ public class CapacityController {
         return ResponseEntity.ok(matches);
     }
 
+    @GetMapping("/{taskId}/{employeeId}")
+    public ResponseEntity<MatchingEmployeeCapacitiesDto> calculateFreeCapacities(@PathVariable Long taskId, @PathVariable Long employeeId) {
+        log.info("REST request to get free capacities for task {} and employee {}", taskId, employeeId);
+
+        MatchingEmployeeCapacitiesDto match = capacityService.calculateFreeCapacities(taskId, employeeId);
+
+        return ResponseEntity.ok(match);
+    }
+
     @PostMapping("/assign/{taskId}")
     public ResponseEntity<Void> assignTaskToEmployee(@RequestBody CalculatedCapacitiesOfMatchDto selectedMatch, @PathVariable Long taskId) {
         log.info("REST request to assign assign employee {} to task {}", selectedMatch.getEmployee().id(), taskId);

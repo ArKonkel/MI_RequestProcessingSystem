@@ -30,6 +30,7 @@ public interface CustomerRequestMapper {
     @Mapping(target = "scopeUnit", ignore = true)
     @Mapping(target = "customer", ignore = true)
     @Mapping(target = "attachments", ignore = true)
+    @Mapping(target = "classifiedAsProject", ignore = true)
     @Mapping(target = "title", source = "processItem.title")
     @Mapping(target = "description", source = "processItem.description")
     CustomerRequest toEntity(CustomerRequestCreateDto requestDto);

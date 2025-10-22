@@ -9,6 +9,7 @@ public record UserDto(
         Long id,
         String name,
         List<RoleDto> roles,
-        CustomerDto customer
+        CustomerDto customer,
+        Long employeeId
 ) {
 }

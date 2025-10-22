@@ -14,7 +14,7 @@ import type { CalculatedCapacitiesOfMatchDto } from '@/documentTypes/dtds/Calcul
 import type { MatchingEmployeeCapacitiesDtd } from '@/documentTypes/dtds/MatchingEmployeeCapacitiesDtd.ts'
 import type { CalendarDtd } from '@/documentTypes/dtds/CalendarDtd.ts'
 
-import { assignTaskToEmployee, getMatchingEmployees } from '@/services/capacityService.ts'
+import { assignTaskToEmployee, getMatchingEmployees, calculateFreeCapacity, } from '@/services/capacityService.ts'
 import { getEmployeeCalendar } from '@/services/calendarService.ts'
 import type { EmployeeDtd } from '@/documentTypes/dtds/EmployeeDtd.ts'
 import type { ExpertiseDtd } from '@/documentTypes/dtds/ExpertiseDtd.ts'
@@ -23,6 +23,8 @@ import type { CalculatedCapacityCalendarEntryDtd } from '@/documentTypes/dtds/Ca
 import type { TaskDtd } from '@/documentTypes/dtds/TaskDtd.ts'
 import { getTask } from '@/services/taskService.ts'
 import { useAlertStore } from '@/stores/useAlertStore.ts'
+import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
+import UserSelect from "@/components/UserSelect.vue";
 
 const route = useRoute()
 const router = useRouter()
@@ -30,6 +32,7 @@ const alertStore = useAlertStore()
 const taskId = Number(route.params.taskId)
 const matchResults = ref<MatchingEmployeeCapacitiesDtd | null>(null)
 const task = ref<TaskDtd | null>(null)
+const selectedUser = ref<UserDtd | null>(null)
 
 const visibleDays = 8
 const startDate = ref(new Date())
@@ -184,6 +187,26 @@ async function assignEmployee() {
     alertStore.show(error.response?.data || 'Unbekannter Fehler', 'error')
   }
 }
+
+async function addCapacityOfSelectedEmployee() {
+  if (!selectedUser.value) return
+  if (!selectedUser.value.employeeId){
+    console.error("No employeeId set")
+    return
+  }
+
+  try {
+    const freeCapacityOfEmployee: MatchingEmployeeCapacitiesDtd =  await calculateFreeCapacity(taskId, selectedUser.value?.employeeId)
+
+    matchResults.value?.matchCalculationResult.push(
+      ...freeCapacityOfEmployee.matchCalculationResult
+    )
+    await loadCalendars()
+
+  } catch (error: any) {
+    alertStore.show(error.response?.data || 'Hinzufügen fehlgeschlagen.', 'error')
+  }
+}
 </script>
 
 <template>
@@ -320,7 +343,11 @@ async function assignEmployee() {
     </div>
 
     <!-- Buttons -->
-    <div class="flex justify-end">
+    <div class="flex justify-between">
+      <div class="flex space-x-2">
+        <UserSelect v-model="selectedUser"  placeholder="Auswählen" label="" not-selected-text="Keinen"/>
+        <Button @click="addCapacityOfSelectedEmployee">+</Button>
+      </div>
       <Button class="cursor-pointer" @click="assignEmployee">Zuweisen</Button>
     </div>
   </div>

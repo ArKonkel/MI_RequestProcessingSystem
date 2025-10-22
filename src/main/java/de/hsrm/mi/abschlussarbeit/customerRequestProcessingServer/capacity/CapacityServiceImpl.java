@@ -137,6 +137,19 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
         calendarService.removeCalendarEntriesOfTask(taskId);
     }
 
+    @Override
+    public MatchingEmployeeCapacitiesDto calculateFreeCapacities(Long taskId, Long employeeId) {
+        Task task = taskService.getTaskById(taskId);
+        Employee employee = employeeService.getEmployeeById(employeeId);
+
+        List<CalculatedCapacityCalendarEntryVO> freeCapacities = calculateFreeCapacity(task, employeeId, LocalDate.now(), task.getDueDate());
+
+        CalculatedCapacitiesOfMatchVO match = new CalculatedCapacitiesOfMatchVO(employee, 0L, false, freeCapacities);
+        MatchingEmployeeCapacitiesVO matchingEmployeeCapacitiesVO = new MatchingEmployeeCapacitiesVO(taskId, List.of(match));
+
+        return capacityMapper.toDto(matchingEmployeeCapacitiesVO);
+    }
+
     private void checkIfTaskReadyForCapacityPlanning(Task task) {
         List<String> errors = new ArrayList<>();
 

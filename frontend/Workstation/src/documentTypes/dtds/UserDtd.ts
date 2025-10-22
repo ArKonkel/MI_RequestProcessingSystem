@@ -4,4 +4,5 @@ export interface UserDtd {
   id: number
   name: string
   roles: RoleDtd[]
+  employeeId?: number
 }

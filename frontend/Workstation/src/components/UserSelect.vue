@@ -1,13 +1,22 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
-import { Input } from '@/components/ui/input'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { getAllUser } from '@/services/userService'
-import type { UserDtd } from '@/documentTypes/dtds/UserDtd'
-import { onClickOutside } from '@vueuse/core'
+import {onMounted, ref, watch} from 'vue'
+import {Input} from '@/components/ui/input'
+import {ScrollArea} from '@/components/ui/scroll-area'
+import {getAllUser} from '@/services/userService'
+import type {UserDtd} from '@/documentTypes/dtds/UserDtd'
+import {onClickOutside} from '@vueuse/core'
 
-const props = withDefaults(defineProps<{ modelValue: UserDtd | null, disabled?: boolean }>(), {
+const props = withDefaults(defineProps<{
+  modelValue: UserDtd | null,
+  disabled?: boolean,
+  label?: string,
+  notSelectedText?: string
+  placeholder?: string
+}>(), {
   disabled: false,
+  label: 'Zugewiesene Person',
+  notSelectedText: 'Nicht zugewiesen',
+  placeholder: 'Keine Person zugewiesen'
 })
 
 const emit = defineEmits<{
@@ -63,11 +72,11 @@ onClickOutside(dropdownRef, () => {
 </script>
 
 <template>
-  <label class="text-sm font-semibold">Zugewiesene Person</label>
+  <label class="text-sm font-semibold">{{ label }}</label>
   <div class="relative w-full">
     <Input
       v-model="search"
-      placeholder="Keine Person zugewiesen"
+      :placeholder="placeholder"
       @focus="loadUsers"
       @click.stop="loadUsers"
       autocomplete="off"
@@ -81,7 +90,7 @@ onClickOutside(dropdownRef, () => {
     >
       <ScrollArea class="max-h-60">
         <div class="p-2 hover:bg-blue-100 cursor-pointer text-gray-400" @click="unassignUser">
-          Nicht zugewiesen
+          {{ notSelectedText }}
         </div>
 
         <div v-for="user in filteredUsers" :key="user.id">
