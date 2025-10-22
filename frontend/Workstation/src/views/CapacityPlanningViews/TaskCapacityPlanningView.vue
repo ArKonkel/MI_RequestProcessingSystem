@@ -346,7 +346,7 @@ async function addCapacityOfSelectedEmployee() {
     <div class="flex justify-between">
       <div class="flex space-x-2">
         <UserSelect v-model="selectedUser"  placeholder="Auswählen" label="" not-selected-text="Keinen"/>
-        <Button @click="addCapacityOfSelectedEmployee">+</Button>
+        <Button class="cursor-pointer" @click="addCapacityOfSelectedEmployee">+</Button>
       </div>
       <Button class="cursor-pointer" @click="assignEmployee">Zuweisen</Button>
     </div>
