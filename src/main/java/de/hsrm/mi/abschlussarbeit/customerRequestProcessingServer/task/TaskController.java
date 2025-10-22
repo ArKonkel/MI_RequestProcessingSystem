@@ -37,7 +37,7 @@ public class TaskController {
         return ResponseEntity.ok(task);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'PROJECT_PLANNER', 'TASK_REVISER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PROJECT_PLANNER', 'TASK_REVISER', 'CUSTOMER_REQUEST_REVISER')")
     @PatchMapping("/{taskId}")
     ResponseEntity<TaskDto> updateTask(@PathVariable Long taskId, @RequestBody UpdateTaskDto dto) {
         log.info("REST request to update task {}", taskId);

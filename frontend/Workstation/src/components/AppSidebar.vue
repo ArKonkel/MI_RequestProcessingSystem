@@ -34,7 +34,7 @@ const items: SidebarItem[] = [
     title: 'Requests',
     url: '/requests',
     icon: Inbox,
-    allowedRoles: [Role.ADMIN, Role.CAPACITY_PLANNER, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER],
+    allowedRoles: [Role.ADMIN, Role.CAPACITY_PLANNER, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER, Role.TASK_REVISER],
   },
   {
     title: 'Tasks',
