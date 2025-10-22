@@ -334,7 +334,7 @@ async function addComment() {
 
               <!-- Show Add Button -->
               <div class="flex justify-end">
-                <Button v-if="hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER])" @click="showAddingProject">+</Button>
+                <Button v-if="hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER])" @click="showAddingProject">+</Button>
               </div>
             </AccordionContent>
           </AccordionItem>

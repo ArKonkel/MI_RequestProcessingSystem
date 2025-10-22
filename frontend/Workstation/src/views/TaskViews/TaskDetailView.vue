@@ -394,7 +394,7 @@ async function submitRepeatPlanning() {
       <div>
         <label class="text-sm font-semibold">Priorität</label>
         <Select v-model="editableTask.priority" @update:modelValue="saveTask">
-          <SelectTrigger>
+          <SelectTrigger :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER, Role.TASK_REVISER])">
             <SelectValue placeholder="Select..."/>
           </SelectTrigger>
           <SelectContent>
@@ -412,7 +412,7 @@ async function submitRepeatPlanning() {
       <div>
         <label class="text-sm font-semibold">Status</label>
         <Select v-model="editableTask.status" @update:modelValue="saveTask">
-          <SelectTrigger>
+          <SelectTrigger :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER, Role.TASK_REVISER])">
             <SelectValue placeholder="Offen"/>
           </SelectTrigger>
           <SelectContent>
@@ -437,10 +437,10 @@ async function submitRepeatPlanning() {
         <label class="text-sm font-semibold">Geschätzte Zeit</label>
 
         <div class="flex space-x-2 border-b border-gray-300 pb-2 mb-2">
-          <Input type="number" v-model="estimatedTime" placeholder="Schätzung in Minuten"/>
+          <Input :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER, Role.TASK_REVISER])" type="number" v-model="estimatedTime" placeholder="Schätzung in Minuten"/>
 
           <Select v-model="editableTask.estimationUnit" @update:modelValue="saveTask">
-            <SelectTrigger>
+            <SelectTrigger :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER, Role.TASK_REVISER])">
               <SelectValue placeholder="Zeiteinheit"/>
             </SelectTrigger>
             <SelectContent>
