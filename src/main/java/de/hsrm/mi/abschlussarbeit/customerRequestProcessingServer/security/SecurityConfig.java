@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -100,6 +99,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/stompbroker/**").permitAll() //for websockets
+                        /*
                         .requestMatchers(HttpMethod.POST, "/requests").hasAnyRole("CUSTOMER", "ADMIN")
                         .requestMatchers("/requests/customer/**").hasAnyRole("CUSTOMER", "ADMIN")
                         .requestMatchers("/requests/**").hasAnyRole("ADMIN", "CUSTOMER_REQUEST_REVISER", "PROJECT_PLANNER", "CAPACITY_PLANNER")
@@ -108,11 +108,12 @@ public class SecurityConfig {
                         .requestMatchers("/capacity/**").hasAnyRole("ADMIN", "CAPACITY_PLANNER")
                         .requestMatchers("/calendars/**").hasAnyRole("ADMIN", "PROJECT_PLANNER", "CAPACITY_PLANNER", "TASK_REVISER")
                         .requestMatchers("/employees/**").hasAnyRole("ADMIN", "TASK_REVISER", "CAPACITY_PLANNER")
-                        .requestMatchers("/actuator/**").hasRole("ADMIN")
                         .requestMatchers("/processItems/**").authenticated()
+                       */
+                        .requestMatchers("/actuator/**").hasRole("ADMIN")
                         .requestMatchers("/users/**").authenticated()
-                        //.anyRequest().authenticated()
-                        .anyRequest().denyAll()
+                        .anyRequest().authenticated()
+                        //.anyRequest().denyAll()
                 );
         return http.build();
     }

@@ -40,10 +40,20 @@ export const useUserStore = defineStore('userStore', () => {
     };
   }
 
+  function hasAnyRole(roles: Role[]): boolean {
+    return user.value?.roles?.some(role => roles.includes(role.name)) ?? false
+  }
+
+  function hasRole(role: Role): boolean {
+    return user.value?.roles?.some(r => r.name === role) ?? false
+  }
+
   return {
     user,
     setUser,
     removeUser,
-    setDefaultUser
+    setDefaultUser,
+    hasRole,
+    hasAnyRole
   }
 })

@@ -1,3 +1,5 @@
+import type {Role} from "@/documentTypes/types/Role.ts";
+
 export interface RoleDtd {
-  name: string
+  name: Role
 }

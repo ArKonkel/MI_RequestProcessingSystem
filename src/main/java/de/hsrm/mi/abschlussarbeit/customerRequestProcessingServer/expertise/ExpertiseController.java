@@ -3,6 +3,7 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.expertise;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +14,7 @@ import java.util.List;
 @Slf4j
 @AllArgsConstructor
 @RequestMapping("/expertise")
+@PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER_REQUEST_REVISER', 'CAPACITY_PLANNER', 'TASK_REVISER', 'PROJECT_PLANNER')")
 public class ExpertiseController {
 
     private final ExpertiseService expertiseService;

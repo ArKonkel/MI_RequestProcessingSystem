@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {Calendar, User, Inbox, Search, Settings, Mail, ClipboardList} from 'lucide-vue-next'
+import {Calendar, ClipboardList, Inbox, User} from 'lucide-vue-next'
 
 import {
   Sidebar,
@@ -8,44 +8,55 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import {Button} from '@/components/ui/button'
-import {useRoute, useRouter} from 'vue-router'
+import {useRoute} from 'vue-router'
 import {useUserStore} from "@/stores/userStore.ts";
 import LoggedInCard from "@/components/LoggedInCard.vue";
+import {Role} from "@/documentTypes/types/Role.ts";
 
 
 const route = useRoute()
+const userStore = useUserStore()
+const { hasAnyRole } = userStore
 
-const items = [
+interface SidebarItem {
+  title: string
+  url: string
+  icon: any
+  allowedRoles: Role[]
+}
+
+const items: SidebarItem[] = [
   {
     title: 'Requests',
     url: '/requests',
     icon: Inbox,
+    allowedRoles: [Role.ADMIN, Role.CUSTOMER, Role.CUSTOMER_REQUEST_REVISER],
   },
   {
     title: 'Tasks',
     url: '/tasks',
     icon: ClipboardList,
+    allowedRoles: [Role.ADMIN, Role.TASK_REVISER, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER],
   },
   {
     title: 'Projects',
     url: '/projects',
     icon: Calendar,
+    allowedRoles: [Role.ADMIN, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER],
   },
   {
     title: 'Employees',
     url: '/employees',
     icon: User,
+    allowedRoles: [Role.ADMIN, Role.CAPACITY_PLANNER],
   },
 ]
-
-
 </script>
+
 
 <template>
   <Sidebar>
@@ -58,7 +69,7 @@ const items = [
               v-for="item in items"
               :key="item.title"
             >
-              <SidebarMenuButton asChild>
+              <SidebarMenuButton v-if="hasAnyRole(item.allowedRoles)" asChild >
                 <router-link
                   :to="item.url"
                   class="flex items-center gap-2 rounded-md px-3 py-2 transition-colors"

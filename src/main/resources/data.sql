@@ -78,15 +78,15 @@ INSERT INTO users (id, name, password, employee_id)
 VALUES
     (1, 'Max Mustermann', '{noop}Gandalf', 1),
     (2, 'Sabine Musterfrau', '{noop}Gandalf', 2),
-    (3, 'Thomas Schneider', '{noop}Test123', 3),
-    (4, 'Lisa Berger', '{noop}Test123', 4),
-    (5, 'Julia Fischer', '{noop}Test123', 5);
+    (3, 'Thomas Schneider', '{noop}Gandalf', 3),
+    (4, 'Lisa Berger', '{noop}Gandalf', 4),
+    (5, 'Julia Fischer', '{noop}Gandalf', 5);
 
 INSERT INTO users(id, name, password, customer_id)
 VALUES
-    (6, 'WeinfestAG', '{noop}Kunde1', 1),
-    (7, 'BaumAG', '{noop}Kunde2', 2),
-    (8, 'Autohaus Krause', '{noop}Kunde3', 3);
+    (6, 'WeinfestAG', '{noop}Gandalf', 1),
+    (7, 'BaumAG', '{noop}Gandalf', 2),
+    (8, 'Autohaus Krause', '{noop}Gandalf', 3);
 
 SELECT setval('users_seq', (SELECT MAX(id) FROM users));
 
@@ -95,7 +95,6 @@ INSERT INTO user_roles (user_id, role_id)
 VALUES
     (1, 1),
     (2, 3),
-    (2, 5),
     (3, 4),
     (4, 6),
     (5, 5),

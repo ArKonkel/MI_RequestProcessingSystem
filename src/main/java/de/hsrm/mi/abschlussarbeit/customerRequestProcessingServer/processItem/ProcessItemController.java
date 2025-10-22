@@ -11,6 +11,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,6 +21,7 @@ import java.io.IOException;
 @Slf4j
 @AllArgsConstructor
 @RequestMapping("/processItems")
+@PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER', 'CUSTOMER_REQUEST_REVISER', 'CAPACITY_PLANNER', 'TASK_REVISER', 'PROJECT_PLANNER')")
 public class ProcessItemController {
 
     private final ProcessItemService processItemService;
@@ -30,6 +32,7 @@ public class ProcessItemController {
 
 
     @PostMapping("/{processItemId}/assign/{userId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER_REQUEST_REVISER', 'CAPACITY_PLANNER', 'TASK_REVISER', 'PROJECT_PLANNER')")
     public ResponseEntity<Void> assignProcessItemToUser(
             @PathVariable Long processItemId,
             @PathVariable Long userId) {
