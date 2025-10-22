@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -13,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 @RequestMapping("/projects")
+@PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER_REQUEST_REVISER', 'PROJECT_PLANNER')")
 public class ProjectController {
 
     private final ProjectService projectService;
@@ -34,6 +36,7 @@ public class ProjectController {
     }
 
     @PatchMapping("/{projectId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PROJECT_PLANNER')")
     public ResponseEntity<ProjectDto> updateProject(@PathVariable Long projectId, @Valid @RequestBody ProjectUpdateDto updateDto) {
         log.info("REST request to update project {}", projectId);
 
@@ -42,6 +45,7 @@ public class ProjectController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'PROJECT_PLANNER')")
     public ResponseEntity<ProjectDto> createProject(@Valid @RequestBody ProjectCreateDto createDto) {
         log.info("REST request to create a new project");
 
@@ -51,6 +55,7 @@ public class ProjectController {
         return ResponseEntity.created(location).body(createdProject);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'PROJECT_PLANNER')")
     @PostMapping("/dependency")
     public ResponseEntity<Void> createProjectDependency(@Valid @RequestBody CreateDependencyDto dependency) {
         log.info("REST request to create a new dependency");

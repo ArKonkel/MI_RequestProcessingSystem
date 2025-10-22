@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 @RequestMapping("/employees")
-@PreAuthorize("hasAnyRole('ADMIN', 'CAPACITY_PLANNER', 'PROJECT_PLANNER')")
+@PreAuthorize("hasAnyRole('ADMIN', 'CAPACITY_PLANNER')")
 public class EmployeeController {
 
     private final EmployeeService employeeService;
