@@ -1,28 +1,38 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
-import { addDays, format, subDays } from 'date-fns'
-import { de } from 'date-fns/locale'
-import { Star, CircleGauge } from 'lucide-vue-next'
-import { useRoute, useRouter } from 'vue-router'
+import {computed, onMounted, ref, watch} from 'vue'
+import {addDays, format, subDays} from 'date-fns'
+import {de} from 'date-fns/locale'
+import {Star, CircleGauge} from 'lucide-vue-next'
+import {useRoute, useRouter} from 'vue-router'
 
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardHeader, CardTitle } from '@/components/ui/card'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import {Badge} from '@/components/ui/badge'
+import {Button} from '@/components/ui/button'
+import {Card, CardHeader, CardTitle} from '@/components/ui/card'
+import {Avatar, AvatarFallback} from '@/components/ui/avatar'
 
-import type { CalculatedCapacitiesOfMatchDto } from '@/documentTypes/dtds/CalculatedCapacitiesOfMatchDto.ts'
-import type { MatchingEmployeeCapacitiesDtd } from '@/documentTypes/dtds/MatchingEmployeeCapacitiesDtd.ts'
-import type { CalendarDtd } from '@/documentTypes/dtds/CalendarDtd.ts'
+import type {
+  CalculatedCapacitiesOfMatchDto
+} from '@/documentTypes/dtds/CalculatedCapacitiesOfMatchDto.ts'
+import type {
+  MatchingEmployeeCapacitiesDtd
+} from '@/documentTypes/dtds/MatchingEmployeeCapacitiesDtd.ts'
+import type {CalendarDtd} from '@/documentTypes/dtds/CalendarDtd.ts'
 
-import { assignTaskToEmployee, getMatchingEmployees, calculateFreeCapacity, } from '@/services/capacityService.ts'
-import { getEmployeeCalendar } from '@/services/calendarService.ts'
-import type { EmployeeDtd } from '@/documentTypes/dtds/EmployeeDtd.ts'
-import type { ExpertiseDtd } from '@/documentTypes/dtds/ExpertiseDtd.ts'
-import type { EmployeeExpertiseDtd } from '@/documentTypes/dtds/EmployeeExpertiseDtd.ts'
-import type { CalculatedCapacityCalendarEntryDtd } from '@/documentTypes/dtds/CalculatedCapacityCalendarEntryDtd .ts'
-import type { TaskDtd } from '@/documentTypes/dtds/TaskDtd.ts'
-import { getTask } from '@/services/taskService.ts'
-import { useAlertStore } from '@/stores/useAlertStore.ts'
+import {
+  assignTaskToEmployee,
+  getMatchingEmployees,
+  calculateFreeCapacity,
+} from '@/services/capacityService.ts'
+import {getEmployeeCalendar} from '@/services/calendarService.ts'
+import type {EmployeeDtd} from '@/documentTypes/dtds/EmployeeDtd.ts'
+import type {ExpertiseDtd} from '@/documentTypes/dtds/ExpertiseDtd.ts'
+import type {EmployeeExpertiseDtd} from '@/documentTypes/dtds/EmployeeExpertiseDtd.ts'
+import type {
+  CalculatedCapacityCalendarEntryDtd
+} from '@/documentTypes/dtds/CalculatedCapacityCalendarEntryDtd .ts'
+import type {TaskDtd} from '@/documentTypes/dtds/TaskDtd.ts'
+import {getTask} from '@/services/taskService.ts'
+import {useAlertStore} from '@/stores/useAlertStore.ts'
 import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
 import UserSelect from "@/components/UserSelect.vue";
 
@@ -50,13 +60,18 @@ onMounted(async () => {
 
   try {
     matchResults.value = await getMatchingEmployees(taskId)
-    task.value = await getTask(taskId)
+    await loadTask()
 
     await loadCalendars() // initial Kalender laden
     calculateBestMatchPoints()
   } catch (err: any) {
-    router.back()
-    alertStore.show(err.response?.data || 'Unbekannter Fehler', 'error')
+    if (err.response?.data.includes('Task not ready')) {
+      router.back()
+      alertStore.show(err.response?.data || 'Unbekannter Fehler', 'error')
+    } else {
+      alertStore.show('Keine Mitarbeiter mit passender Expertise gefunden.', 'info')
+      await loadTask()
+    }
   }
 })
 
@@ -73,7 +88,7 @@ const days = computed(() => {
     if (dayOfWeek !== 0 && dayOfWeek !== 6) {
       result.push({
         date: format(currentDay, 'yyyy-MM-dd'),
-        label: format(currentDay, 'EE', { locale: de }).toUpperCase().substring(0, 2),
+        label: format(currentDay, 'EE', {locale: de}).toUpperCase().substring(0, 2),
       })
     }
     currentDay = addDays(currentDay, 1)
@@ -83,6 +98,15 @@ const days = computed(() => {
 })
 
 // --- functions
+
+async function loadTask() {
+  try {
+    task.value = await getTask(taskId)
+  } catch (err: any) {
+    router.back()
+    alertStore.show(err.response?.data || 'Unbekannter Fehler', 'error')
+  }
+}
 
 async function loadCalendars() {
   if (!matchResults.value) return
@@ -182,7 +206,7 @@ async function assignEmployee() {
 
     alertStore.show('Aufgabe erfolgreich zugewiesen', 'success')
 
-    await router.push({ name: 'taskDetailView', params: { taskId: task.value?.processItem.id } })
+    await router.push({name: 'taskDetailView', params: {taskId: task.value?.processItem.id}})
   } catch (error: any) {
     alertStore.show(error.response?.data || 'Unbekannter Fehler', 'error')
   }
@@ -190,17 +214,25 @@ async function assignEmployee() {
 
 async function addCapacityOfSelectedEmployee() {
   if (!selectedUser.value) return
-  if (!selectedUser.value.employeeId){
+  if (!selectedUser.value.employeeId) {
     console.error("No employeeId set")
     return
   }
 
   try {
-    const freeCapacityOfEmployee: MatchingEmployeeCapacitiesDtd =  await calculateFreeCapacity(taskId, selectedUser.value?.employeeId)
+    const freeCapacityOfEmployee: MatchingEmployeeCapacitiesDtd = await calculateFreeCapacity(taskId, selectedUser.value?.employeeId)
 
-    matchResults.value?.matchCalculationResult.push(
-      ...freeCapacityOfEmployee.matchCalculationResult
-    )
+    if (!matchResults.value) {
+      matchResults.value = {
+        ...freeCapacityOfEmployee,
+      }
+    } else {
+      matchResults.value?.matchCalculationResult.push(
+        ...freeCapacityOfEmployee.matchCalculationResult
+      )
+    }
+
+
     await loadCalendars()
 
   } catch (error: any) {
@@ -216,21 +248,21 @@ async function addCapacityOfSelectedEmployee() {
       <CardHeader class="flex flex-row justify-between">
         <div>
           <CardTitle class="text-xl"
-            >{{ task?.processItem.id }} -
+          >{{ task?.processItem.id }} -
             {{ task?.processItem.title }}
           </CardTitle>
           <div class="flex gap-2 mt-2">
             <Badge v-for="expertise in task?.expertise" variant="secondary"
-              >{{ expertise.name }}
+            >{{ expertise.name }}
             </Badge>
           </div>
         </div>
         <div class="flex flex-col text-sm text-right">
           <span
-            >Geschätzte Zeit: <strong>{{ task?.estimatedTime }}</strong></span
+          >Geschätzte Zeit: <strong>{{ task?.estimatedTime }}</strong></span
           >
           <span
-            >Geplant bis <strong>{{ task?.dueDate }}</strong></span
+          >Geplant bis <strong>{{ task?.dueDate }}</strong></span
           >
         </div>
       </CardHeader>
@@ -256,7 +288,7 @@ async function addCapacityOfSelectedEmployee() {
             'border-l-2 border-accent-foreground': isFridayToMonday(index),
           }"
         >
-          {{ day.label }}<br />
+          {{ day.label }}<br/>
           <span class="text-xs text-muted-foreground">{{ day.date }}</span>
         </div>
       </div>
@@ -345,7 +377,8 @@ async function addCapacityOfSelectedEmployee() {
     <!-- Buttons -->
     <div class="flex justify-between">
       <div class="flex space-x-2">
-        <UserSelect v-model="selectedUser"  placeholder="Auswählen" label="" not-selected-text="Keinen"/>
+        <UserSelect v-model="selectedUser" placeholder="Auswählen" label=""
+                    not-selected-text="Keinen"/>
         <Button class="cursor-pointer" @click="addCapacityOfSelectedEmployee">+</Button>
       </div>
       <Button class="cursor-pointer" @click="assignEmployee">Zuweisen</Button>

@@ -137,7 +137,6 @@ async function loadCalendar() {
       format(addDays(startDate.value, visibleDays), 'yyyy-MM-dd'),
     )
 
-    console.log(calendar.value)
   } catch (err: any) {
     console.error(err)
     alertStore.show('Fehler beim Laden des Kalenders', 'error')

@@ -156,9 +156,12 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
         if (task.getEstimatedTime().compareTo(BigDecimal.ZERO) == 0) {
             errors.add("No estimated time set");
         }
-        if (task.getDueDate().isBefore(LocalDate.now())) {
+        if (task.getDueDate() == null) {
+            errors.add("Due date not set");
+        } else if (task.getDueDate().isBefore(LocalDate.now())) {
             errors.add("Due date is in the past");
         }
+
         if (task.getExpertise().isEmpty()) {
             errors.add("No expertise set");
         }
