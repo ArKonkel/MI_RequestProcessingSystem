@@ -15,6 +15,7 @@ import {useUserStore} from "@/stores/userStore.ts";
 import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
 import {Role} from "@/documentTypes/types/Role.ts";
 import ForbiddenView from "@/views/AuthenticationViews/ForbiddenView.vue";
+import EmployeeCalendarView from "@/views/CapacityPlanningViews/EmployeeCalendarView.vue";
 
 const securityEnabled = import.meta.env.VITE_SECURITY_ENABLED === 'true'
 
@@ -110,6 +111,12 @@ const router = createRouter({
           meta: {roles: [Role.ADMIN, Role.CAPACITY_PLANNER]},
         },
       ],
+    },
+    {
+      path: '/employeeCalendar/',
+      name: 'EmployeeCalendarView',
+      component: EmployeeCalendarView,
+      meta: {roles: [Role.ADMIN, Role.CAPACITY_PLANNER]},
     },
     {
       path: '/capacityPlanning/:taskId',

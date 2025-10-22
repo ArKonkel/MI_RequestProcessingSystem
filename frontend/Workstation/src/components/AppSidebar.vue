@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {Calendar, ClipboardList, Inbox, User} from 'lucide-vue-next'
+import {Calendar, ClipboardList, Inbox, User, CalendarCog} from 'lucide-vue-next'
 
 import {
   Sidebar,
@@ -20,7 +20,7 @@ import {Role} from "@/documentTypes/types/Role.ts";
 
 const route = useRoute()
 const userStore = useUserStore()
-const { hasAnyRole } = userStore
+const {hasAnyRole} = userStore
 
 interface SidebarItem {
   title: string
@@ -45,7 +45,7 @@ const items: SidebarItem[] = [
   {
     title: 'Projects',
     url: '/projects',
-    icon: Calendar,
+    icon: CalendarCog,
     allowedRoles: [Role.ADMIN, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER],
   },
   {
@@ -54,6 +54,13 @@ const items: SidebarItem[] = [
     icon: User,
     allowedRoles: [Role.ADMIN, Role.CAPACITY_PLANNER],
   },
+  {
+    title: 'EmployeeCalendar',
+    url: '/employeeCalendar',
+    icon: Calendar,
+    allowedRoles: [Role.ADMIN, Role.CAPACITY_PLANNER],
+  },
+
 ]
 </script>
 
@@ -62,14 +69,14 @@ const items: SidebarItem[] = [
   <Sidebar>
     <SidebarContent>
       <SidebarGroup>
-        <SidebarGroupLabel>Application</SidebarGroupLabel>
+        <SidebarGroupLabel>Navigation</SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
             <SidebarMenuItem
               v-for="item in items"
               :key="item.title"
             >
-              <SidebarMenuButton v-if="hasAnyRole(item.allowedRoles)" asChild >
+              <SidebarMenuButton v-if="hasAnyRole(item.allowedRoles)" asChild>
                 <router-link
                   :to="item.url"
                   class="flex items-center gap-2 rounded-md px-3 py-2 transition-colors"
@@ -78,7 +85,7 @@ const items: SidebarItem[] = [
                     'text-gray-600 hover:bg-gray-100': !route.path.startsWith(item.url)
                   }"
                 >
-                  <component :is="item.icon" class="w-5 h-5" />
+                  <component :is="item.icon" class="w-5 h-5"/>
                   <span>{{ item.title }}</span>
                 </router-link>
               </SidebarMenuButton>
@@ -89,7 +96,7 @@ const items: SidebarItem[] = [
     </SidebarContent>
 
     <SidebarFooter class="border-t">
-      <LoggedInCard />
+      <LoggedInCard/>
     </SidebarFooter>
   </Sidebar>
 </template>

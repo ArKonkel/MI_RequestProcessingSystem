@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.Year;
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -25,6 +26,15 @@ public class CalendarController {
         CalendarDto calendar = calendarService.getCalendarDtoOfEmployee(employeeId, from, to);
 
         return ResponseEntity.ok().body(calendar);
+    }
+
+    @GetMapping("/{from}/{to}")
+    public ResponseEntity<List<CalendarDto>> getAllCalendar(@PathVariable LocalDate from, @PathVariable LocalDate to) {
+        log.info("REST request to get all calendars from {} to {}", from, to);
+
+        List<CalendarDto> calendars = calendarService.getAllCalendars(from, to);
+
+        return ResponseEntity.ok().body(calendars);
     }
 
     @PostMapping("/{employeeId}/{year}")

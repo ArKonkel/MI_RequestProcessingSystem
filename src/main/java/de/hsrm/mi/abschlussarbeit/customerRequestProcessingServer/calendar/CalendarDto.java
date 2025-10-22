@@ -5,5 +5,7 @@ import java.util.List;
 public record CalendarDto (
         Long id,
         List<CalendarEntryDto> entries,
-        Long ownerId
+        Long ownerId,
+        String ownerFirstName,
+        String ownerLastName
 ) {}

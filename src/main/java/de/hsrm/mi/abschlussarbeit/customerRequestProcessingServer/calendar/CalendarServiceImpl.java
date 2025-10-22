@@ -36,6 +36,8 @@ public class CalendarServiceImpl implements CalendarService {
 
     @Override
     public CalendarDto getCalendarDtoOfEmployee(Long employeeId, LocalDate from, LocalDate to) {
+        log.info("Getting calendar for employee {} from {} to {}", employeeId, from, to);
+
         Set<CalendarEntry> filteredCalendarEntries = new HashSet<>();
 
         Calendar calendar = calendarRepository.findByOwnerId(employeeId);
@@ -53,6 +55,30 @@ public class CalendarServiceImpl implements CalendarService {
 
         return calendarMapper.toDto(calendar);
     }
+
+    @Override
+    public List<CalendarDto> getAllCalendars(LocalDate from, LocalDate to) {
+        log.info("Getting all calendars for period {} to {}", from, to);
+
+        List<Calendar> calendars = calendarRepository.findAll();
+
+        calendars.forEach(calendar -> {
+            Set<CalendarEntry> filteredCalendarEntries = new HashSet<>();
+
+            calendar.getEntries().forEach(calendarEntry -> {
+                if (!calendarEntry.getDate().isBefore(from) && !calendarEntry.getDate().isAfter(to)) {
+                    filteredCalendarEntries.add(calendarEntry);
+                }
+            });
+
+            calendar.setEntries(filteredCalendarEntries);
+        });
+
+        return calendars.stream()
+                .map(calendarMapper::toDto)
+                .toList();
+    }
+
 
     @Override
     public Calendar getCalendarOfEmployee(Long employeeId, LocalDate from, LocalDate to) {
@@ -106,7 +132,7 @@ public class CalendarServiceImpl implements CalendarService {
      * Initializes the calendar of an employee for a given year.
      *
      * @param employeeId of the employee to initialize the calendar for.
-     * @param year to initialize the calendar for.
+     * @param year       to initialize the calendar for.
      */
     @Override
     @Transactional

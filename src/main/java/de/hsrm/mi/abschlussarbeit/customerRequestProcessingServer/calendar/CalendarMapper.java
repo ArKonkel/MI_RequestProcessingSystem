@@ -10,6 +10,8 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = {CalendarEntryMapper.class})
 public interface CalendarMapper {
 
+    @Mapping(source = "owner.firstName", target = "ownerFirstName")
+    @Mapping(source = "owner.lastName", target = "ownerLastName")
     @Mapping(source = "owner.id", target = "ownerId")
     CalendarDto toDto(Calendar calendar);
 }

@@ -324,17 +324,14 @@ function routeToTask(taskId: number | undefined | null = null) {
                   <div
                     v-for="entry in calendar.entries.filter((entry) => entry.date === day.date)"
                     :key="entry.title"
-                    class="bg-blue-400/50 text-xs rounded-sm px-2 py-1 border shadow-sm mb-1 truncate cursor-pointer hover:bg-sky-200 transition-colors"
+                    :class="{
+                    'bg-blue-400/50 text-xs rounded-sm px-2 py-1 border shadow-sm mb-1 truncate cursor-pointer hover:bg-sky-200 transition-colors': entry.taskId,
+                    'bg-accent text-xs rounded px-2 py-1 border shadow-sm mb-1 truncate': !entry.taskId
+                      }"
                     @click.prevent="routeToTask(entry.taskId)"
                   >
                     <strong :title="entry.title">{{ entry.title }}</strong>
                     <div class="text-[10px]">{{ entry.durationInMinutes / 60 }}h</div>
-                  </div>
-                  <div
-                    v-if="!calendar.entries.some((entry) => entry.date === day.date)"
-                    class="text-muted-foreground text-xs text-center italic mt-4"
-                  >
-                    Frei
                   </div>
                 </div>
               </template>
