@@ -34,13 +34,13 @@ const items: SidebarItem[] = [
     title: 'Requests',
     url: '/requests',
     icon: Inbox,
-    allowedRoles: [Role.ADMIN, Role.CUSTOMER, Role.CUSTOMER_REQUEST_REVISER],
+    allowedRoles: [Role.ADMIN, Role.CAPACITY_PLANNER, Role.CUSTOMER, Role.CUSTOMER_REQUEST_REVISER],
   },
   {
     title: 'Tasks',
     url: '/tasks',
     icon: ClipboardList,
-    allowedRoles: [Role.ADMIN, Role.TASK_REVISER, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER],
+    allowedRoles: [Role.ADMIN, Role.CAPACITY_PLANNER, Role.TASK_REVISER, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER],
   },
   {
     title: 'Projects',

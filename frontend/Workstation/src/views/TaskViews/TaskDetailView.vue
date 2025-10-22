@@ -54,8 +54,10 @@ import {WorkingTimeUnit, WorkingTimeUnitlabel} from '@/documentTypes/types/Worki
 import AttachmentList from '@/components/AttachmentList.vue'
 import {useUserStore} from "@/stores/userStore.ts";
 import {deletePlannedCapacity} from "@/services/capacityService.ts";
+import {Role} from "@/documentTypes/types/Role.ts";
 
 const userStore = useUserStore()
+const { hasRole, hasAnyRole } = userStore
 const taskStore = useTaskStore()
 const alertStore = useAlertStore()
 const router = useRouter()
@@ -296,7 +298,7 @@ async function submitRepeatPlanning() {
             <Badge v-for="expertise in editableTask.expertise" :key="expertise.id">
               {{ expertise.name }}
             </Badge>
-            <Button class="cursor-pointer" @click="toggleExpertise">+</Button>
+            <Button v-if="hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER])" class="cursor-pointer" @click="toggleExpertise">+</Button>
           </div>
 
           <div v-if="showAddExpertise" class="flex pt-3 space-x-2">
@@ -328,6 +330,7 @@ async function submitRepeatPlanning() {
               <Popover>
                 <PopoverTrigger as-child>
                   <Button
+                    :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER])"
                     variant="outline"
                     class="cursor-pointer"
                     :class="[
@@ -383,7 +386,7 @@ async function submitRepeatPlanning() {
           />
         </Accordion>
       </div>
-      <Button class="cursor-pointer" @click="startCapacityPlanning">Zur Planung</Button>
+      <Button v-if="hasAnyRole([Role.ADMIN, Role.CAPACITY_PLANNER])" class="cursor-pointer" @click="startCapacityPlanning">Zur Planung</Button>
     </ScrollArea>
 
     <!-- right sidebar -->
@@ -458,7 +461,7 @@ async function submitRepeatPlanning() {
         <div class="flex space-x-2">
           <Input type="number" v-model="workingTimeInMinutes" disabled/>
 
-          <Dialog v-model:open="showWorkingTimeDialog">
+          <Dialog v-if="hasAnyRole([Role.ADMIN, Role.TASK_REVISER])" v-model:open="showWorkingTimeDialog">
             <DialogTrigger as-child>
               <Button class="cursor-pointer">+</Button>
             </DialogTrigger>

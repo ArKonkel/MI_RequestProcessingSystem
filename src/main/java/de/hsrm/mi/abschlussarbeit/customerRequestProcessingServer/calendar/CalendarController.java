@@ -3,6 +3,7 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ import java.time.Year;
 @AllArgsConstructor
 @Slf4j
 @RequestMapping("/calendars")
+@PreAuthorize("hasAnyRole('ADMIN', 'CAPACITY_PLANNER')")
 public class CalendarController {
 
     private final CalendarService calendarService;

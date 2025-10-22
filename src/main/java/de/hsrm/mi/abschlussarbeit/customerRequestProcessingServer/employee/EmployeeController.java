@@ -3,6 +3,7 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 @RequestMapping("/employees")
+@PreAuthorize("hasAnyRole('ADMIN', 'CAPACITY_PLANNER', 'PROJECT_PLANNER')")
 public class EmployeeController {
 
     private final EmployeeService employeeService;

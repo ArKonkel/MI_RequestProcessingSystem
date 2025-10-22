@@ -3,12 +3,14 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
 @Slf4j
 @RequestMapping("/capacity")
+@PreAuthorize("hasAnyRole('ADMIN', 'CAPACITY_PLANNER')")
 public class CapacityController {
 
     private final CapacityService capacityService;
