@@ -36,6 +36,12 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
 
     private final MailService mailService;
 
+    /**
+     * Creates a new customer request, saves it to the repository, sends notifications, and triggers email actions.
+     *
+     * @param request the data transfer object containing the details of the customer request to be created
+     * @return the data transfer object of the saved customer request
+     */
     @Override
     public CustomerRequestDto createRequest(CustomerRequestCreateDto request) {
         log.info("Creating request {}", request);
@@ -59,6 +65,11 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
         return requestMapper.toDto(savedRequest);
     }
 
+    /**
+     * Retrieves all customer requests, ordered by creation date and ID in descending order.
+     *
+     * @return a list of customer requests as data transfer objects, sorted by creation date and ID in descending order
+     */
     @Override
     @Transactional(readOnly = true) //Needed because fetching blob
     public List<CustomerRequestDto> getAllRequests() {
@@ -72,6 +83,12 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
     }
 
 
+    /**
+     * Retrieves all customer requests for a specific customer, ordered by creation date in descending order.
+     *
+     * @param customerId the ID of the customer whose requests are to be retrieved
+     * @return a list of customer requests as data transfer objects, sorted by creation date in descending order
+     */
     @Override
     @Transactional(readOnly = true)
     public List<CustomerRequestDto> getRequestsByCustomerId(Long customerId) {
@@ -88,6 +105,13 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
     }
 
 
+    /**
+     * Retrieves a customer request by its ID and converts it to a data transfer object.
+     *
+     * @param id the ID of the customer request to retrieve
+     * @return the data transfer object of the retrieved customer request
+     * @throws NotFoundException if no customer request is found with the given ID
+     */
     @Override
     @Transactional(readOnly = true)
     public CustomerRequestDto getRequestDtoById(Long id) {
@@ -97,6 +121,15 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
                 .orElseThrow(() -> new NotFoundException("Request with id " + id + " not found")));
     }
 
+    /**
+     * Updates an existing customer request based on the specified update data.
+     *
+     * @param id the unique identifier of the customer request to update
+     * @param updateDto the data containing the updates to apply to the customer request
+     * @return a DTO representing the updated customer request
+     * @throws NotFoundException if no customer request with the given id is found
+     * @throws NotAllowedException if modifications to the classification as a project are not permitted
+     */
     @Override
     @Transactional
     public CustomerRequestDto updateCustomerRequest(Long id, UpdateCustomerRequestDto updateDto) {
@@ -152,6 +185,13 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
         return requestMapper.toDto(savedRequest);
     }
 
+    /**
+     * Retrieves a customer request by its ID.
+     *
+     * @param id the unique identifier of the customer request to retrieve
+     * @return the customer request associated with the given ID
+     * @throws NotFoundException if no customer request is found with the specified ID
+     */
     @Override
     @Transactional(readOnly = true)
     public CustomerRequest getRequestById(Long id) {
@@ -161,6 +201,15 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
     }
 
 
+    /**
+     * Checks whether the specified customer request is ready for processing.
+     * A request is considered ready for processing if its status is
+     * either WAITING_FOR_PROCESSING or IN_PROCESS.
+     *
+     * @param requestId the unique identifier of the customer request to check
+     * @return true if the request is ready for processing, false otherwise
+     * @throws NoSuchElementException if no customer request is found with the specified ID
+     */
     @Override
     public boolean isRequestReadyForProcessing(Long requestId) {
         CustomerRequest request = customerRequestRepository.findById(requestId).orElseThrow(() ->

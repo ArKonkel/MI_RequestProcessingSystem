@@ -2,13 +2,17 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerReque
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.Priority;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.TimeUnit;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 @Builder
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UpdateCustomerRequestDto {
     private String title;
     private String description;
