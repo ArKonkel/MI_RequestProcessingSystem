@@ -2,13 +2,17 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user;
 
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.Employee;
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@SpringBootTest
 class UserMapperTest {
 
-    private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
+    @Autowired
+    private UserMapper userMapper;
 
     @Test
     void toDto() {

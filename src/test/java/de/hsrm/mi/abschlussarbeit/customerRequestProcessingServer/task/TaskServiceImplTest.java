@@ -83,7 +83,7 @@ class TaskServiceWithoutMapperTest {
         when(taskRepository.save(any(Task.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         TaskDto expectedDto = new TaskDto(
-                new ProcessItemDto(1L, "New Title", "New Description", null, new UserDto(42L, "Gandalf"), List.of(),  List.of()),
+                new ProcessItemDto(1L, "New Title", "New Description", null, new UserDto(42L, "Gandalf", List.of(), null, 1L), List.of(),  List.of()),
                 BigDecimal.valueOf(8),
                 TimeUnit.HOUR,
                 480L,
@@ -95,8 +95,8 @@ class TaskServiceWithoutMapperTest {
                 null,
                 null,
                 1L,
-                null
-
+                null,
+                false
         );
         when(taskMapper.toDto(existingTask)).thenReturn(expectedDto);
 
