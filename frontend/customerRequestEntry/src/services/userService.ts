@@ -5,3 +5,8 @@ export async function getUserByName(name: string): Promise<UserDtd> {
   const response = await axios.get(`/api/users/${name}`)
   return response.data
 }
+
+export async function getAllUser(): Promise<UserDtd[]> {
+  const response = await axios.get('/api/users')
+  return response.data
+}
