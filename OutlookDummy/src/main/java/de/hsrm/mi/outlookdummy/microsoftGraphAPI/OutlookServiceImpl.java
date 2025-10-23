@@ -15,17 +15,17 @@ import java.util.stream.Collectors;
 @Slf4j
 public class OutlookServiceImpl implements MailService, OutlookCalendarService {
 
-    private final String MAX_MAIL;
-    private final String SABINE_MAIL;
-    private final String FREDDY_MAIL;
+    private final String PRINCIPAL_ONE_MAIL;
+    private final String PRINCIPAL_TWO_MAIL;
+    private final String PRINCIPAL_THREE_MAIL;
 
     public OutlookServiceImpl(
-            @Value("${userPrincipalOne}") String maxMail,
-            @Value("${userPrincipalTwo}") String sabineMail,
-            @Value("${userPrincipalThree}") String freddyMail) {
-        this.MAX_MAIL = maxMail;
-        this.SABINE_MAIL = sabineMail;
-        this.FREDDY_MAIL = freddyMail;
+            @Value("${userPrincipalOne}") String principalOne,
+            @Value("${userPrincipalTwo}") String principalTwo,
+            @Value("${userPrincipalThree}") String principalThree) {
+        this.PRINCIPAL_ONE_MAIL = principalOne.toLowerCase();
+        this.PRINCIPAL_TWO_MAIL = principalTwo.toLowerCase();
+        this.PRINCIPAL_THREE_MAIL = principalThree.toLowerCase();
     }
 
     @Override
@@ -65,7 +65,9 @@ public class OutlookServiceImpl implements MailService, OutlookCalendarService {
 
         List<OutlookCalendarEvent> events;
 
-        if (userPrincipalName.equals(MAX_MAIL)) {
+        userPrincipalName = userPrincipalName.toLowerCase();
+
+        if (userPrincipalName.equals(PRINCIPAL_ONE_MAIL)) {
             events = List.of(
                     new OutlookCalendarEvent(
                             "AAMkAGIAAAoZDOFAAA=",
@@ -82,7 +84,7 @@ public class OutlookServiceImpl implements MailService, OutlookCalendarService {
                             new ItemBody("HTML", "<b>Präsentation</b> beim Kunden X.")
                     )
             );
-        } else if (userPrincipalName.equals(SABINE_MAIL)) {
+        } else if (userPrincipalName.equals(PRINCIPAL_TWO_MAIL)) {
             events = List.of(
                     new OutlookCalendarEvent(
                             "AAMkAGIAAAoZDOFCCC=",
@@ -106,7 +108,7 @@ public class OutlookServiceImpl implements MailService, OutlookCalendarService {
                             new ItemBody("Text", "Serverwartung über Nacht.")
                     )
             );
-        } else if (userPrincipalName.equals(FREDDY_MAIL)) {
+        } else if (userPrincipalName.equals(PRINCIPAL_THREE_MAIL)) {
             events = List.of(
                     new OutlookCalendarEvent(
                             "AAMkAGIAAAoZDOFFFF=",
