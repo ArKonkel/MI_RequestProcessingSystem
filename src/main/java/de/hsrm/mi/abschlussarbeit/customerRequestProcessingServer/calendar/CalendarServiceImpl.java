@@ -34,6 +34,16 @@ public class CalendarServiceImpl implements CalendarService {
 
     private final OutlookCalendarService outlookCalendarService;
 
+    /**
+     * Retrieves a CalendarDto object representing the calendar entries of a specific employee
+     * within a specified date range.
+     *
+     * @param employeeId the unique identifier of the employee whose calendar is to be retrieved
+     * @param from the start date of the date range (inclusive)
+     * @param to the end date of the date range (inclusive)
+     * @return a CalendarDto containing the filtered calendar entries of the specified employee within the given date range
+     * @throws NoSuchElementException if the calendar for the specified employee is not found
+     */
     @Override
     public CalendarDto getCalendarDtoOfEmployee(Long employeeId, LocalDate from, LocalDate to) {
         log.info("Getting calendar for employee {} from {} to {}", employeeId, from, to);
@@ -56,6 +66,15 @@ public class CalendarServiceImpl implements CalendarService {
         return calendarMapper.toDto(calendar);
     }
 
+    /**
+     * Retrieves all calendars within the specified date range. Calendars will only include
+     * entries that fall between the given dates, inclusive.
+     *
+     * @param from the start date of the range (inclusive)
+     * @param to the end date of the range (inclusive)
+     * @return a list of {@code CalendarDto} objects containing filtered calendar entries
+     *         within the specified date range
+     */
     @Override
     public List<CalendarDto> getAllCalendars(LocalDate from, LocalDate to) {
         log.info("Getting all calendars for period {} to {}", from, to);
@@ -80,6 +99,15 @@ public class CalendarServiceImpl implements CalendarService {
     }
 
 
+    /**
+     * Retrieves the calendar of a specific employee filtered by the given date range.
+     *
+     * @param employeeId the unique identifier of the employee whose calendar is to be retrieved
+     * @param from the start date of the range within which calendar entries should fall
+     * @param to the end date of the range within which calendar entries should fall
+     * @return the filtered calendar object containing entries within the specified date range
+     * @throws NoSuchElementException if a calendar for the specified employee is not found
+     */
     @Override
     public Calendar getCalendarOfEmployee(Long employeeId, LocalDate from, LocalDate to) {
         Set<CalendarEntry> filteredCalendarEntries = new HashSet<>();
@@ -100,6 +128,16 @@ public class CalendarServiceImpl implements CalendarService {
         return calendar;
     }
 
+    /**
+     * Creates calendar entries for the specified task and calendar.
+     * The method retrieves the calendar and task by their respective IDs,
+     * and populates the calendar with the provided calendar entries.
+     *
+     * @param taskId the ID of the task for which calendar entries are being created
+     * @param calendarId the ID of the calendar where entries will be added
+     * @param calendarEntries a list of calendar entry objects containing the details of each entry to be created
+     * @throws NotFoundException if the calendar with the given ID is not found
+     */
     @Override
     @Transactional
     public void createCalendarEntriesForTask(
@@ -172,6 +210,11 @@ public class CalendarServiceImpl implements CalendarService {
 
     }
 
+    /**
+     * Removes all calendar entries associated with a specified task.
+     *
+     * @param taskId the unique identifier of the task whose calendar entries are to be removed
+     */
     @Override
     @Transactional
     public void removeCalendarEntriesOfTask(Long taskId) {
