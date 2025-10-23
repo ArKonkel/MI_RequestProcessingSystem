@@ -66,7 +66,18 @@ public class OutlookServiceImpl implements MailService, OutlookCalendarService {
         }
     }
 
-
+    /**
+     * Fetches calendar events for a given employee within the specified date-time range.
+     * Communicates with the Outlook Calendar API to retrieve relevant calendar data.
+     *
+     * @param employeeMail the email address of the employee whose calendar events are to be fetched
+     * @param start the start date and time of the range for which to fetch calendar events
+     * @param end the end date and time of the range for which to fetch calendar events
+     * @return an {@link OutlookCalendarViewResponse} object containing the list of calendar events
+     *         for the specified employee and date-time range
+     * @throws IllegalArgumentException if the provided employee email is null or empty
+     * @throws RuntimeException if an error occurs while communicating with the API
+     */
     @Override
     public OutlookCalendarViewResponse fetchCalendarEvents(String employeeMail, OffsetDateTime start, OffsetDateTime end) {
         log.info("Fetching calendar events for employee {} from {} to {}", employeeMail, start, end);
