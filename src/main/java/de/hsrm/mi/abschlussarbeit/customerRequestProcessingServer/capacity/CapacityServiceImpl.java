@@ -128,6 +128,13 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
         taskService.setIsAlreadyPlanned(taskId, true);
     }
 
+    /**
+     * Deletes capacities associated with a specific task.
+     * This method handles the removal of calendar entries related to the task and
+     * updates the task status to indicate it is not already planned.
+     *
+     * @param taskId the unique identifier of the task whose capacities are to be deleted
+     */
     @Override
     @Transactional
     public void deleteCapacities(Long taskId) {
@@ -137,6 +144,15 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
         calendarService.removeCalendarEntriesOfTask(taskId);
     }
 
+    /**
+     * Calculates the free capacities of a specific employee for a given task.
+     * It retrieves the task and employee information, computes the free capacity based on the task's due date,
+     * and maps the result into a DTO.
+     *
+     * @param taskId the unique identifier of the task for which the free capacities are to be calculated
+     * @param employeeId the unique identifier of the employee whose free capacities are to be calculated
+     * @return a DTO containing the matching employee capacities for the specified task and employee
+     */
     @Override
     public MatchingEmployeeCapacitiesDto calculateFreeCapacities(Long taskId, Long employeeId) {
         Task task = taskService.getTaskById(taskId);
@@ -150,6 +166,13 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
         return capacityMapper.toDto(matchingEmployeeCapacitiesVO);
     }
 
+    /**
+     * Checks if the provided task is ready for capacity planning by validating its properties.
+     * If the task is not ready, a {@link TaskNotReadyForCapacityPlanningException} is thrown with the relevant validation errors.
+     *
+     * @param task the {@link Task} object to validate. The task must include an estimated time, a valid due date, and required expertise.
+     *             If any of these conditions are not met, the task will be considered not ready for capacity planning.
+     */
     private void checkIfTaskReadyForCapacityPlanning(Task task) {
         List<String> errors = new ArrayList<>();
 
@@ -240,7 +263,17 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
         return calculatedSlots;
     }
 
-
+    /**
+     * Identifies the employees who are able to complete a task the earliest based on their availability
+     * and capacity. The method analyzes the provided schedules and calculates which employees meet the
+     * criteria of having the earliest available date and the shortest duration for task completion.
+     *
+     * @param employeeWithCalendarEntriesOfTask a map where the key is an Employee and the value
+     *                                          is a list of CalculatedCapacityCalendarEntryVO objects that
+     *                                          represent their scheduled calendar entries for the task
+     * @return a list of employees who are eligible to complete the task the earliest, based on the
+     *         earliest date and the shortest duration among their entries
+     */
     public List<Employee> calculateEmployeesAbleToCompleteTaskEarliest(Map<Employee, List<CalculatedCapacityCalendarEntryVO>> employeeWithCalendarEntriesOfTask) {
         log.info("Calculating employees able to complete task earliest");
 
