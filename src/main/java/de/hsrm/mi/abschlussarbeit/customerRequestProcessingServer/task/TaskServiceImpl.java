@@ -36,6 +36,14 @@ public class TaskServiceImpl implements TaskService {
 
     private final CustomerRequestService customerRequestService;
 
+    /**
+     * Retrieves a Task object by its unique identifier from the repository.
+     * If the Task with the specified ID is not found, a NotFoundException is thrown.
+     *
+     * @param id the unique identifier of the Task to be retrieved
+     * @return the Task object associated with the specified ID
+     * @throws NotFoundException if no Task is found with the specified ID
+     */
     @Override
     @Transactional(readOnly = true) //Needed because fetching blob
     public Task getTaskById(Long id) {
@@ -44,6 +52,12 @@ public class TaskServiceImpl implements TaskService {
         return taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Task with id " + id + " not found."));
     }
 
+    /**
+     * Retrieves a TaskDto by its ID.
+     *
+     * @param id the unique identifier of the task to retrieve
+     * @return the TaskDto object corresponding to the provided ID
+     */
     @Override
     @Transactional(readOnly = true) //Needed because fetching blob
     public TaskDto getTaskDtoById(Long id) {
@@ -53,6 +67,11 @@ public class TaskServiceImpl implements TaskService {
         return taskMapper.toDto(task);
     }
 
+    /**
+     * Retrieves all tasks from the task repository, ordered by creation date in descending order
+     * and then by ID in descending order. The tasks are converted to a DTO format before returning.
+     *
+     */
     @Override
     @Transactional(readOnly = true) //Needed because fetching blob
     public List<TaskDto> getAllTasks() {
@@ -60,6 +79,18 @@ public class TaskServiceImpl implements TaskService {
         return taskRepository.findAllByOrderByCreationDateDescIdDesc().stream().map(taskMapper::toDto).toList();
     }
 
+    /**
+     * Creates a new task based on the provided task creation data.
+     * This method initializes a new task with the specified details including title,
+     * description, due date, and priority. It associates the task with a customer request
+     * or project based on the provided identifiers. After saving the task, appropriate notifications
+     * are triggered to notify relevant systems or entities about the creation or updates.
+     *
+     * @param createDto the data transfer object containing details needed to create the task.
+     *                  It includes attributes such as title, description, due date, priority,
+     *                  requestId, and projectId.
+     * @return a TaskDto representation of the newly created task.
+     */
     @Override
     public TaskDto createTask(TaskCreateDto createDto) {
         Task taskToCreate = new Task();
@@ -106,6 +137,14 @@ public class TaskServiceImpl implements TaskService {
         return taskMapper.toDto(savedTask);
     }
 
+    /**
+     * Updates the task with the given id with the given updateDto.
+     *
+     * @param taskId    of task to update. Must exist.
+     * @param updateDto containing the new values for the task.
+     * @return the updated task.
+     */
+    @Override
     @Transactional
     public TaskDto updateTask(Long taskId, UpdateTaskDto updateDto) {
         Task task = taskRepository.findById(taskId)
@@ -204,6 +243,12 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
+    /**
+     * Updates the "isAlreadyPlanned" field of a task identified by the given task ID.
+     *
+     * @param taskId the ID of the task whose "isAlreadyPlanned" status needs to be updated. Must not be null.
+     * @param isAlreadyPlanned the new value to set for the "isAlreadyPlanned" flag. Must not be null.
+     */
     @Override
     @Transactional
     public void setIsAlreadyPlanned(Long taskId, Boolean isAlreadyPlanned) {
