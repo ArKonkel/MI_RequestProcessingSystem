@@ -19,6 +19,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserMapper userMapper;
 
+    /**
+     * Retrieves a list of all users who are associated with an employee.
+     *
+     * @return a list of User
+     */
     @Override
     public List<UserDto> getAllUsers() {
         log.info("Get all users dto");
@@ -26,6 +31,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userRepository.findAllByEmployeeNotNull().stream().map(userMapper::toDto).toList();
     }
 
+    /**
+     * Retrieves a user by their unique identifier.
+     *
+     * @param id the unique identifier of the user to retrieve
+     * @return the User associated with the given id
+     * @throws NotFoundException if no user is found with the specified id
+     */
     @Override
     public User getUserById(Long id) {
         log.info("Get user with id {}", id);
@@ -33,6 +45,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
     }
 
+    /**
+     * Retrieves a user by their name.
+     *
+     * @param name the name of the user to retrieve
+     * @return the UserDto representation of the user with the specified name
+     * @throws NotFoundException if no user is found with the specified name
+     */
     @Override
     public UserDto getUserByName(String name) {
         log.info("Get user with name {}", name);
@@ -42,6 +61,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userMapper.toDto(user);
     }
 
+    /**
+     * Adds a new user to the system.
+     *
+     * @param user the user to be added
+     * @throws UserAlreadyExistsException if a user with the same name already exists in the system
+     */
     @Override
     public void addUser(User user) {
         log.info("Add user {}", user);
@@ -53,6 +78,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         userRepository.save(user);
     }
 
+    /**
+     * Needed for security.
+     * Loads a user by their username from the user repository and converts it to a UserDetails object.
+     *
+     * @param username the username of the user to be loaded
+     * @return a UserDetails object representing the loaded user
+     * @throws UsernameNotFoundException if no user is found with the specified username
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
