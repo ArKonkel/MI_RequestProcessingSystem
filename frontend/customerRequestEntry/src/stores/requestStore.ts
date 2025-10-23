@@ -22,10 +22,10 @@ export const useRequestStore = defineStore('requestStore', () => {
     customer: null as CustomerDtd | null,
   })
 
-  watch(() => userStore.user?.customer, (newCustomer) => {
+  watch(() => userStore.user?.customer, async (newCustomer) => {
     requestData.customer = newCustomer ?? null
     if (requestData.customer) {
-      fetchRequestsFromCustomer()
+      await fetchRequestsFromCustomer()
     }
   }, { immediate: true })
 
@@ -35,7 +35,10 @@ export const useRequestStore = defineStore('requestStore', () => {
     }
 
     try {
-      requestData.requests = await getRequestsFromCustomer(requestData.customer?.id)
+
+      const incomingRequests = await getRequestsFromCustomer(requestData.customer?.id)
+
+      requestData.requests = [...incomingRequests]
 
       if (requestData.selectedRequest) {
         const updatedRequest = requestData.requests
