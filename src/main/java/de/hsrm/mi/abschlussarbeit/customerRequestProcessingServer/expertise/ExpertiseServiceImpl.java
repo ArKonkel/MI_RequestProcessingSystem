@@ -16,6 +16,11 @@ public class ExpertiseServiceImpl implements ExpertiseService {
 
     private final ExpertiseMapper expertiseMapper;
 
+    /**
+     * Retrieves a list of all expertises from the repository and converts them to their DTO representation.
+     *
+     * @return a list of {@link ExpertiseDto} representing all expertises available in the repository
+     */
     @Override
     public List<ExpertiseDto> getAllExpertises() {
         log.info("Get all expertises");
@@ -23,6 +28,13 @@ public class ExpertiseServiceImpl implements ExpertiseService {
         return expertiseRepository.findAll().stream().map(expertiseMapper::toDto).toList();
     }
 
+    /**
+     * Retrieves an expertise entity by its unique identifier.
+     *
+     * @param id the unique identifier of the expertise to retrieve
+     * @return the expertise entity matching the specified identifier
+     * @throws NotFoundException if no expertise with the given identifier is found
+     */
     @Override
     public Expertise getExpertiseById(Long id) {
         log.info("Get expertise with id {}", id);
