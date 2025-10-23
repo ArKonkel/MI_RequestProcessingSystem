@@ -125,6 +125,10 @@ function handleSelect(ev: CustomEvent) {
 function formatDate(ts: string | number | Date) {
   return new Date(ts).toLocaleString('de-DE')
 }
+
+function formatComment(commentText: string) {
+  return commentText.replace(/@\d+\s*/g, "");
+}
 </script>
 
 <template>
@@ -191,7 +195,7 @@ function formatDate(ts: string | number | Date) {
             {{ formatDate(comment.timeStamp) }}
           </div>
           <div class="mt-2">
-            <p class="text-lg">{{ comment.text }}</p>
+            <p class="text-lg">{{ formatComment(comment.text) }}</p>
           </div>
         </div>
       </div>
