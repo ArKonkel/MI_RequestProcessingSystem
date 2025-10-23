@@ -23,9 +23,13 @@ public class OutlookServiceImpl implements MailService, OutlookCalendarService {
     private String outlookURL;
 
     /**
-     * Converts a CustomerRequest to a SendMailRequest and sends it to the given email addresses.
+     * Sends an email using the Outlook API from the specified sender to the recipients
+     * listed in the provided mail request.
      *
-     * @param senderMail to send mail from
+     * @param mail the {@link SendMailRequest} object containing the details of the message to be sent,
+     *             including recipients and message content
+     * @param senderMail the email address of the sender from which the message will be sent
+     * @throws IllegalArgumentException if the senderMail is null or empty
      */
     @Override
     public void sendMails(SendMailRequest mail, String senderMail) {
