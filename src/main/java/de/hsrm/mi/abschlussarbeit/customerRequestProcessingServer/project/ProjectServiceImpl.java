@@ -31,12 +31,27 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final NotificationService notificationService;
 
+    /**
+     * Retrieves a project by its unique identifier.
+     *
+     * @param projectId the unique identifier of the project to retrieve
+     * @return the project associated with the given identifier
+     * @throws NotFoundException if no project is found with the specified identifier
+     */
     public Project getProjectById(Long projectId) {
         log.info("Getting project with id {}", projectId);
 
         return projectRepository.findById(projectId).orElseThrow(() -> new NotFoundException("Project with id " + projectId + " not found"));
     }
 
+    /**
+     * Retrieves the DTO representation of a project by its unique identifier.
+     * This method fetches the project from the database and maps it to a DTO.
+     *
+     * @param projectId the unique identifier of the project to retrieve
+     * @return a {@link ProjectDto} object representing the project
+     * @throws NotFoundException if no project is found with the specified identifier
+     */
     @Override
     @Transactional(readOnly = true) //Needed because fetching blob
     public ProjectDto getProjectDtoById(Long projectId) {
@@ -45,6 +60,12 @@ public class ProjectServiceImpl implements ProjectService {
         return projectMapper.toDto(getProjectById(projectId));
     }
 
+    /**
+     * Retrieves all projects from the database, ordered by creation date and ID in descending order,
+     * and maps them to a list of ProjectDto objects.
+     *
+     * @return a list of ProjectDto objects representing all projects
+     */
     @Override
     @Transactional(readOnly = true)
     public List<ProjectDto> getAllDtoProjects() {
@@ -53,6 +74,12 @@ public class ProjectServiceImpl implements ProjectService {
         return projectRepository.findAllByOrderByCreationDateDescIdDesc().stream().map(projectMapper::toDto).toList();
     }
 
+    /**
+     * Determines if the specified project is ready for processing based on its status.
+     *
+     * @param projectId the unique identifier of the project to check
+     * @return true if the project's status is READY or IN_PROGRESS, false otherwise
+     */
     @Override
     public boolean isProjectReadyForProcessing(Long projectId) {
         Project project = getProjectById(projectId);
@@ -60,6 +87,14 @@ public class ProjectServiceImpl implements ProjectService {
         return (project.getStatus().equals(ProjectStatus.READY) || project.getStatus().equals(ProjectStatus.IN_PROGRESS));
     }
 
+    /**
+     * Updates the specified project with new details provided in the ProjectUpdateDto.
+     * The method allows partial updates of the project.
+     *
+     * @param projectId the ID of the project to update
+     * @param updateDto the data transfer object containing updated details for the project
+     * @return a ProjectDto representing the updated project
+     */
     @Override
     @Transactional
     public ProjectDto updateProject(Long projectId, ProjectUpdateDto updateDto) {
@@ -92,6 +127,18 @@ public class ProjectServiceImpl implements ProjectService {
         return projectMapper.toDto(savedProject);
     }
 
+    /**
+     * Updates the status of a project to a specified new status.
+     * This method checks if the project is allowed to transition to the given status
+     * based on its dependencies and current state. If the transition is not allowed,
+     * a {@link BlockedByDependencyException} is thrown.
+     *
+     * @param projectId The ID of the project to be updated.
+     * @param newStatus The new status to which the project should be updated.
+     *                  Allowed values are READY, IN_PROGRESS, and FINISHED.
+     * @throws BlockedByDependencyException If the project cannot be moved to the new status
+     *                                       due to unmet dependencies or invalid transitions.
+     */
     @Override
     @Transactional
     public void updateProjectStatus(Long projectId, ProjectStatus newStatus) {
@@ -114,6 +161,15 @@ public class ProjectServiceImpl implements ProjectService {
         //projectRepository.save(project);
     }
 
+    /**
+     * Creates a new project based on the provided data and persists it to the repository.
+     * Sends notifications for the project creation and, if applicable, updates related customer requests.
+     *
+     * @param createDto the data transfer object containing information for creating the project,
+     *                  such as title, description, status, startDate, endDate, and related customer request ID.
+     * @return the data transfer object representing the created project.
+     * @throws NotAllowedException if the associated customer request is not classified as a project.
+     */
     @Override
     public ProjectDto createProject(ProjectCreateDto createDto) {
         Project projectToCreate = new Project();
@@ -155,6 +211,15 @@ public class ProjectServiceImpl implements ProjectService {
         return projectMapper.toDto(savedProject);
     }
 
+    /**
+     * Creates a dependency between two projects with a specified dependency type.
+     *
+     * @param sourceProjectId the ID of the source project from which the dependency originates
+     * @param targetProjectId the ID of the target project to which the dependency points
+     * @param type the type of dependency to be created
+     * @return the created ProjectDependency object representing the relationship between the two projects
+     * @throws InvalidDependencyException if the source project and the target project are the same
+     */
     @Override
     public ProjectDependency createProjectDependency(Long sourceProjectId, Long targetProjectId, ProjectDependencyType type) {
         log.info("Creating project dependency from {} to {} with type {}", sourceProjectId, targetProjectId, type);
@@ -180,8 +245,10 @@ public class ProjectServiceImpl implements ProjectService {
 
 
     /**
-     * Checks if the project can be moved to READY.
-     * Checks if all Dependencies, that can block the status change to READY.
+     * Determines whether a project can be moved to the "Ready" state based on its dependencies and their statuses.
+     *
+     * @param project the project whose readiness is being evaluated
+     * @return {@code true} if the project can be moved to the "Ready" state, {@code false} otherwise
      */
     private boolean canMoveToReady(Project project) {
         if (project.getIncomingDependencies() == null || project.getIncomingDependencies().isEmpty()) {
