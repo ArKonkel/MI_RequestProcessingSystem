@@ -1,4 +1,4 @@
-import { defaultTriggers } from './list'
+export const defaultTriggers = ['@']
 
 export function getTriggerOffset(
   element: HTMLTextAreaElement,
@@ -61,12 +61,16 @@ export function replaceValue(
   searchValue: string,
   displayValue: string,
 ) {
-  const nextValue = `${
-    prevValue.slice(0, offset) + displayValue
-  } ${prevValue.slice(offset + searchValue.length + 1)}`
-  return nextValue
-}
 
+  // Calculate startposition: Trigger '@' before searchValue
+  const start = offset - searchValue.length - 1
+  const before = prevValue.slice(0, start)
+  const after = prevValue.slice(offset)
+
+  const result = `${before}@${displayValue} ${after}`
+  console.log(result)
+  return result
+}
 // reference: https://github.com/component/textarea-caret-position/blob/master/index.js
 interface CaretCoordinates {
   top: number

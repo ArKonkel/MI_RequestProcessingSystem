@@ -14,7 +14,7 @@ import type {CommentDtd} from '@/documentTypes/dtds/CommentDtd.ts'
 import {AccordionContent, AccordionItem, AccordionTrigger} from '@/components/ui/accordion'
 import {getAllUser} from "@/services/userService.ts";
 import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
-import {getAnchorRect, getSearchValue, getTrigger, getTriggerOffset} from './utils'
+import {getAnchorRect, getSearchValue, getTrigger, getTriggerOffset, replaceValue} from './utils'
 import {computedWithControl} from "@vueuse/core";
 
 const users = ref<UserDtd[]>([])
@@ -120,23 +120,6 @@ function handleSelect(ev: CustomEvent) {
   trigger.value = null
   localCommentText.value = replaceValue(localCommentText.value, offset, searchValue.value, displayValue)
   caretOffset.value = offset - searchValue.value.length - 1 + displayValue.length + 2
-}
-
-function replaceValue(
-  prevValue: string,
-  offset: number,
-  searchValue: string,
-  displayValue: string,
-) {
-
-  // Calculate startposition: Trigger '@' before searchValue
-  const start = offset - searchValue.length - 1
-  const before = prevValue.slice(0, start)
-  const after = prevValue.slice(offset)
-
-  const result = `${before} @${displayValue} ${after}`
-  console.log(result)
-  return result
 }
 
 function formatDate(ts: string | number | Date) {
