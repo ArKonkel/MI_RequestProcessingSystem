@@ -81,7 +81,13 @@ public class ProcessItemImpl implements ProcessItemService, CommentService {
         return processItemRepository.findById(id).orElseThrow(() -> new NotFoundException("Process item with id " + id + " not found"));
     }
 
-
+    /**
+     * Adds an attachment to the specified process item and sends a change notification.
+     *
+     * @param processItemId the ID of the process item to which the attachment will be added
+     * @param multipartFile the file to be uploaded and attached to the process item
+     * @throws IOException if an I/O error occurs during file upload
+     */
     @Override
     @Transactional
     public void addAttachment(Long processItemId, MultipartFile multipartFile) throws IOException {
@@ -101,6 +107,12 @@ public class ProcessItemImpl implements ProcessItemService, CommentService {
         notificationService.sendChangeNotification(new ChangeNotificationEvent(processItem.getId(), ChangeType.UPDATED, targetType));
     }
 
+    /**
+     * Adds a comment to a specific process item and handles related notifications.
+     *
+     * @param processItemId the ID of the process item to which the comment will be added
+     * @param comment the comment details, including the author's ID and the text of the comment
+     */
     @Override
     public void addCommentToProcessItem(Long processItemId, CommentCreateDto comment) {
         log.info("Adding comment {} to process item {}", comment.text(), processItemId);
