@@ -90,6 +90,14 @@ public class AuthServiceImpl implements AuthService {
         userService.addUser(user);
     }
 
+    /**
+     * Authenticates a user based on the provided login details and generates a JSON Web Token (JWT).
+     * If the authentication process fails, an exception is thrown.
+     *
+     * @param dto the login details including username and password
+     * @return a signed JSON Web Token (JWT) as a string for the authenticated user
+     * @throws AccessDeniedException if authentication fails due to incorrect credentials or other issues
+     */
     @Override
     public String login(LoginDto dto) throws AccessDeniedException {
         log.info("Logging in user {}", dto.getUsername());
