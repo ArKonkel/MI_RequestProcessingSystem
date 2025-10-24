@@ -12,11 +12,13 @@ const props = withDefaults(defineProps<{
   label?: string,
   notSelectedText?: string
   placeholder?: string
+  withNotAssignedField?: boolean
 }>(), {
   disabled: false,
   label: 'Zugewiesene Person',
   notSelectedText: 'Nicht zugewiesen',
-  placeholder: 'Keine Person zugewiesen'
+  placeholder: 'Keine Person zugewiesen',
+  withNotAssignedField: false,
 })
 
 const emit = defineEmits<{
@@ -42,6 +44,12 @@ watch(
 
 function unassignUser() {
   emit('update:modelValue', null)
+  search.value = ''
+  dropdownOpen.value = false
+}
+
+function selectNotAssigned() {
+  emit('update:modelValue', {id: -1, name: "Nicht zugewiesen", roles: []} as UserDtd)
   search.value = ''
   dropdownOpen.value = false
 }
@@ -91,6 +99,9 @@ onClickOutside(dropdownRef, () => {
       <ScrollArea class="max-h-60">
         <div class="p-2 hover:bg-blue-100 cursor-pointer text-gray-400" @click="unassignUser">
           {{ notSelectedText }}
+        </div>
+        <div v-if="withNotAssignedField" class="p-2 hover:bg-blue-100 cursor-pointer" @click="selectNotAssigned">
+          Nicht zugewiesen
         </div>
 
         <div v-for="user in filteredUsers" :key="user.id">
