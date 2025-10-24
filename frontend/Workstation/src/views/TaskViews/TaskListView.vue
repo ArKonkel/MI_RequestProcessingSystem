@@ -17,12 +17,15 @@ import {
 } from '@/components/ui/select'
 
 import {BookCheck} from "lucide-vue-next"
+import UserSelect from "@/components/UserSelect.vue";
+import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
 
 const taskStore = useTaskStore()
 const router = useRouter()
 const route = useRoute()
 
 const selectedStatus = ref<TaskStatus | null>(null)
+const selectedUser = ref<UserDtd | null>(null)
 
 onMounted(async () => {
   await taskStore.fetchTasks()
@@ -41,9 +44,23 @@ watch(
 
 // Gefilterte Tasks nach Status
 const filteredTasks = computed(() => {
-  const allTasks = taskStore.taskData?.tasks ?? []
-  if (!selectedStatus.value) return allTasks
-  return allTasks.filter((task) => task.status === selectedStatus.value)
+  let allTasks = taskStore.taskData?.tasks ?? []
+
+  if (selectedUser.value?.id === -1) {
+    allTasks = allTasks.filter((t) => t.processItem.assignee === null)
+  }
+  else if (selectedUser.value) {
+    allTasks = allTasks.filter((t) => {
+      if (t.processItem.assignee === null) return false
+      return t.processItem.assignee.id === selectedUser.value?.id
+    })
+  }
+
+  if (selectedStatus.value) {
+    allTasks = allTasks.filter((t) => t.status === selectedStatus.value)
+  }
+
+  return allTasks
 })
 
 function formatDate(date: string | null) {
@@ -62,7 +79,10 @@ function selectTask(task: TaskDtd) {
 </script>
 
 <template>
-  <div class="flex-1 mb-4 w-60 justify-end">
+  <div class="flex flex-1 mb-4 w-full justify-between space-x-2">
+    <UserSelect v-model="selectedUser" placeholder="Zugewiesen an.." label=""
+                not-selected-text="keine Filterung" with-not-assigned-field/>
+
     <Select v-model="selectedStatus">
       <SelectTrigger>
         <SelectValue placeholder="Alle Status"/>
