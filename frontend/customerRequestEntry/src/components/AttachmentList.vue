@@ -39,7 +39,7 @@ function handleDownload(file: FileDtd) {
   <div class="flex space-x-2 space-y-2 items-center">
     <Card
       v-for="file in attachments"
-      :key="file.url"
+      :key="file.id"
       class="cursor-pointer shadow-sm border min-w-40 max-w-40 max-h-25"
       @click="handleDownload(file)"
     >

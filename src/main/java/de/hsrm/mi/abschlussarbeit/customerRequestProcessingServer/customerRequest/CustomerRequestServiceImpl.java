@@ -10,12 +10,15 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.ou
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.mail.EmailAddress;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.mail.MailService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.*;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItemService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +39,8 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
 
     private final MailService mailService;
 
+    private final ProcessItemService processItemService;
+
     /**
      * Creates a new customer request, saves it to the repository, sends notifications, and triggers email actions.
      *
@@ -43,7 +48,7 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
      * @return the data transfer object of the saved customer request
      */
     @Override
-    public CustomerRequestDto createRequest(CustomerRequestCreateDto request) {
+    public CustomerRequestDto createRequest(CustomerRequestCreateDto request, List<MultipartFile> attachments) throws IOException {
         log.info("Creating request {}", request);
 
         CustomerRequest requestEntity = requestMapper.toEntity(request);
@@ -51,9 +56,18 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
 
         CustomerRequest savedRequest = customerRequestRepository.save(requestEntity);
 
+        //Create attachments
+        if (attachments != null) {
+            for (MultipartFile file : attachments) {
+                processItemService.addAttachment(savedRequest.getId(), file);
+            }
+        }
+
         //Send mails
-        SendMailRequest mailRequest = parseCustomerRequestToMail(savedRequest, request.getToRecipients());
-        mailService.sendMails(mailRequest, savedRequest.getCustomer().getEmail());
+        if (!request.getToRecipients().isEmpty()) {
+            SendMailRequest mailRequest = parseCustomerRequestToMail(savedRequest, request.getToRecipients());
+            mailService.sendMails(mailRequest, savedRequest.getCustomer().getEmail());
+        }
 
         notificationService.sendChangeNotification(
                 new ChangeNotificationEvent(savedRequest.getId(), ChangeType.CREATED, TargetType.CUSTOMER_REQUEST));

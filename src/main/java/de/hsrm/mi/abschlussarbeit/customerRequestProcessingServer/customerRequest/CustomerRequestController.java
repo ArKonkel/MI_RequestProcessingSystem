@@ -1,12 +1,15 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
@@ -59,12 +62,18 @@ public class CustomerRequestController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
-    ResponseEntity<CustomerRequestDto> createRequest(@Valid @RequestBody CustomerRequestCreateDto requestDto) {
-        log.info("REST request to create request {}", requestDto);
+    public ResponseEntity<CustomerRequestDto> createRequest(
+            @RequestPart("request") @Valid String requestJson,
+            @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments //attachments cannot be added to DTO. That's why it is a request part.
+    ) throws IOException {
+        log.info("REST request to create customer request with requestJson {}", requestJson);
 
-        CustomerRequestDto createdRequest = customerRequestService.createRequest(requestDto);
-        URI location = URI.create("/api/requests/" + createdRequest.processItem.getId());
+        CustomerRequestCreateDto requestDto = new ObjectMapper()
+                .readValue(requestJson, CustomerRequestCreateDto.class);
 
+        CustomerRequestDto createdRequest = customerRequestService.createRequest(requestDto, attachments);
+        URI location = URI.create("/api/requests/" + createdRequest.getProcessItem().getId());
         return ResponseEntity.created(location).body(createdRequest);
     }
+
 }

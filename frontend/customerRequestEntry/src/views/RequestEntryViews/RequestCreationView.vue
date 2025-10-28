@@ -27,6 +27,12 @@ import {useRequestStore} from "@/stores/requestStore.ts";
 import type {RequestDtd} from "@/documentTypes/dtds/RequestDtd.ts";
 import {useRouter} from "vue-router";
 import {useUserStore} from "@/stores/userStore.ts";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
+import {useFileDialog} from "@vueuse/core";
+import {Trash} from 'lucide-vue-next'
+
+const maxUploadeMb = 2
 
 const alertStore = useAlertStore()
 const requestStore = useRequestStore()
@@ -41,8 +47,10 @@ const requestForm = reactive<RequestCreateDtd>({
   priority: null,
   category: null,
   customerId: null,
-  toRecipients: []
+  toRecipients: [],
 })
+
+const attachments = ref<File[]>([])
 
 const recipientStrings = ref<string[]>([])
 
@@ -58,6 +66,27 @@ function goToRequests(createdRequest: RequestDtd) {
   router.push('/requests')
   requestStore.setSelectedRequest(createdRequest)
 }
+
+const {files, open, onChange} = useFileDialog({
+  accept: '*/*',
+})
+
+onChange(async (fileList) => {
+  if (fileList && fileList.length > 0) {
+    const file = fileList[0]
+    try {
+      if (file.size > maxUploadeMb * 1024 * 1024) {
+        alertStore.show(`Maximal ${maxUploadeMb} MB pro Datei erlaubt`, 'error')
+        return
+      }
+
+      attachments.value.push(file)
+      alertStore.show('Datei erfolgreich hochgeladen', 'success')
+    } catch (error) {
+      alertStore.show('Fehler beim hochladen der Datei', 'error')
+    }
+  }
+})
 
 function validate(): boolean {
   errors.title = requestForm.processItem.title.trim() ? '' : 'Titel ist erforderlich'
@@ -83,9 +112,7 @@ async function submit() {
   }
 
   try {
-
-    const response = await submitRequest(requestForm)
-
+    const response = await submitRequest(requestForm, attachments.value)
 
     alertStore.show('Anfrage erfolgreich erstellt', 'success')
     resetFrom()
@@ -104,6 +131,7 @@ function resetFrom() {
   requestForm.category = null
   requestForm.toRecipients = []
   recipientStrings.value = []
+  attachments.value = []
   Object.keys(errors).forEach((k) => (errors[k as keyof typeof errors] = '')) //Set all errors to empty string
 }
 </script>
@@ -111,7 +139,7 @@ function resetFrom() {
 <template>
   <form @submit.prevent="submit" class="flex flex-col max-w-3xl mx-auto p-6 gap-6">
     <div class="flex-1">
-      <label class="block text-sm font-medium mb-1">Titel</label>
+      <label class="block text-sm font-medium mb-1">Titel*</label>
       <Input v-model="requestForm.processItem.title" placeholder="Kurzer Titel"/>
       <p v-if="errors.title" class="text-red-600 text-xs mt-1">{{ errors.title }}</p>
     </div>
@@ -129,7 +157,26 @@ function resetFrom() {
 
     <div class="flex flex-col md:flex-row gap-4">
       <div class="flex-1">
-        <label class="block text-sm font-medium mb-1">Priorität</label>
+        <label class="block text-sm font-medium mb-1">Kategorie*</label>
+        <Select v-model="requestForm.category" :value="requestForm.category">
+          <SelectTrigger class="w-full">
+            <SelectValue placeholder="Kategorie wählen"/>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem
+              v-for="[value, categoryLabel] in Object.entries(CategoryLabel)"
+              :key="value"
+              :value="value"
+            >
+              {{ categoryLabel }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+        <p v-if="errors.category" class="text-red-600 text-xs mt-1">{{ errors.category }}</p>
+      </div>
+
+      <div class="flex-1">
+        <label class="block text-sm font-medium mb-1">Priorität*</label>
         <Select v-model="requestForm.priority" :value="requestForm.priority">
           <SelectTrigger class="w-full">
             <SelectValue placeholder="Priorität wählen"/>
@@ -146,24 +193,41 @@ function resetFrom() {
         </Select>
         <p v-if="errors.priority" class="text-red-600 text-xs mt-1">{{ errors.priority }}</p>
       </div>
+    </div>
 
-      <div class="flex-1">
-        <label class="block text-sm font-medium mb-1">Kategorie</label>
-        <Select v-model="requestForm.category" :value="requestForm.category">
-          <SelectTrigger class="w-full">
-            <SelectValue placeholder="Kategorie wählen"/>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem
-              v-for="[value, categoryLabel] in Object.entries(CategoryLabel)"
-              :key="value"
-              :value="value"
-            >
-              {{ categoryLabel }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
-        <p v-if="errors.category" class="text-red-600 text-xs mt-1">{{ errors.category }}</p>
+
+    <div class="flex flex-col">
+      <label class="block text-sm font-medium mb-1">Anhänge</label>
+      <div class="flex space-x-2 space-y-2 items-center">
+        <Card
+          v-for="(file, index) in attachments"
+          :key="file.name"
+          class="relative shadow-sm border w-40 p-0 overflow-hidden"
+        >
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger class="flex flex-col pt-4 pb-4 cursor-default justify-between">
+                <CardHeader>
+                  <Trash
+                    class="absolute top-2 right-2 w-4 h-4 text-gray-500 hover:text-red-500 cursor-pointer"
+                    @click.stop="attachments.splice(index, 1)"
+                  />
+                  <CardTitle class="text-sm font-medium truncate">{{ file.name }}</CardTitle>
+                </CardHeader>
+                <CardContent class="text-left">
+                  <p class="text-xs text-gray-600">{{ (file.size / 1024).toFixed(2) }} KB</p>
+                </CardContent>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{{ file.name }}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </Card>
+
+        <div>
+          <Button class="cursor-pointer min-w-10 min-h-10" type="button" @click="open">+</Button>
+        </div>
       </div>
     </div>
 
@@ -182,7 +246,9 @@ function resetFrom() {
     <div class="flex items-end justify-between gap-4">
       <div></div>
       <div class="flex gap-2">
-        <Button class="cursor-pointer" variant="ghost" type="button" @click="resetFrom">Reset</Button>
+        <Button class="cursor-pointer" variant="ghost" type="button" @click="resetFrom">
+          Zurücksetzen
+        </Button>
         <Button class="cursor-pointer" type="submit">Anfrage erstellen</Button>
       </div>
     </div>
