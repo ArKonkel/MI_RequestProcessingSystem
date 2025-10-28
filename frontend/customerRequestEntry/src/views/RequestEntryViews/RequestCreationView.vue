@@ -15,7 +15,8 @@ import type {RequestCreateDtd} from '@/documentTypes/dtds/RequestCreateDtd.ts'
 import {submitRequest} from '@/services/requestService.ts'
 import {useAlertStore} from '@/stores/useAlertStore.ts'
 import {PriorityLabel} from "@/documentTypes/types/Priority.ts";
-import {CategoryLabel} from "@/documentTypes/types/Category.ts";
+import {Category, CategoryLabel} from "@/documentTypes/types/Category.ts";
+import {Checkbox} from '@/components/ui/checkbox'
 import {
   TagsInput,
   TagsInputInput,
@@ -30,7 +31,7 @@ import {useUserStore} from "@/stores/userStore.ts";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
 import {useFileDialog} from "@vueuse/core";
-import {Trash} from 'lucide-vue-next'
+import {Trash, CircleQuestionMark} from 'lucide-vue-next'
 
 const maxUploadeMb = 2
 
@@ -40,22 +41,30 @@ const router = useRouter()
 const userStore = useUserStore()
 
 const requestForm = reactive<RequestCreateDtd>({
+  contactFirstName: '',
+  contactLastName: '',
+  contactPhoneNumber: '',
   processItem: {
     title: '',
     description: '',
   },
   priority: null,
   category: null,
+  programNumber: '',
+  module: '',
   customerId: null,
   toRecipients: [],
 })
 
 const attachments = ref<File[]>([])
-
 const recipientStrings = ref<string[]>([])
+
+const addRecipients = ref<boolean>( false)
 
 // Validation and errors
 const errors = reactive({
+  firstName: '' as string | null,
+  lastName: '' as string | null,
   title: '' as string | null, //definition and initialization at once
   description: '' as string | null,
   priority: '' as string | null,
@@ -89,10 +98,12 @@ onChange(async (fileList) => {
 })
 
 function validate(): boolean {
-  errors.title = requestForm.processItem.title.trim() ? '' : 'Titel ist erforderlich'
+  errors.firstName = requestForm.contactFirstName.trim() ? '' : 'Bitte geben Sie Ihren Vornamen ein.'
+  errors.lastName = requestForm.contactLastName.trim() ? '' : 'Bitte geben Sie Ihren Nachnamen ein.'
+  errors.title = requestForm.processItem.title.trim() ? '' : 'Bitte geben Sie einen Titel ein.'
   errors.description = requestForm.processItem.description.trim() ? '' : ''
-  errors.priority = requestForm.priority ? '' : 'Priorität wählen'
-  errors.category = requestForm.category ? '' : 'Kategorie wählen'
+  errors.priority = requestForm.priority ? '' : 'Bitte wählen Sie eine Priorität.'
+  errors.category = requestForm.category ? '' : 'Bitte wählen Sie eine Kategorie.'
 
   return !errors.title && !errors.priority && !errors.category
 }
@@ -125,6 +136,10 @@ async function submit() {
 }
 
 function resetFrom() {
+  requestForm.contactFirstName = ''
+  requestForm.contactLastName = ''
+  requestForm.contactPhoneNumber = ''
+  requestForm.programNumber = ''
   requestForm.processItem.title = ''
   requestForm.processItem.description = ''
   requestForm.priority = null
@@ -138,21 +153,52 @@ function resetFrom() {
 
 <template>
   <form @submit.prevent="submit" class="flex flex-col max-w-3xl mx-auto p-6 gap-6">
+
+    <h3 class="text-2xl font-semibold tracking-tight">
+      Kontaktinformationen
+    </h3>
+    <div class="flex flex-col md:flex-row gap-4">
+      <div class="w-full">
+        <label class="block text-sm font-medium mb-1">Vorname*</label>
+        <Input v-model="requestForm.contactFirstName" placeholder="Ihr Vorname"/>
+        <p v-if="errors.firstName" class="text-red-600 text-xs mt-1">{{ errors.firstName }}</p>
+      </div>
+      <div class="w-full">
+        <label class="block text-sm font-medium mb-1">Nachname*</label>
+        <Input v-model="requestForm.contactLastName" placeholder="Ihr Nachname"/>
+        <p v-if="errors.lastName" class="text-red-600 text-xs mt-1">{{ errors.lastName }}</p>
+      </div>
+    </div>
+
+    <div class="flex-1">
+      <div class="flex items-center space-x-2">
+        <label class="block text-sm font-medium mb-1">TelefonNr.</label>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <CircleQuestionMark class="w-3 h-3 mb-2 text-gray-500 hover:text-gray-700 cursor-pointer" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p class="text-xs">Bitte gib deine Telefonnummer an, unter der wir dich für Rückfragen erreichen können.</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+
+      <div class="flex gap-4">
+      <Input v-model="requestForm.contactPhoneNumber" placeholder="TelefonNr." />
+      <Input disabled class="border-none"/>
+      </div>
+    </div>
+
+    <h3 class="text-2xl font-semibold tracking-tight pt-5">
+      Ihre Anfrage
+    </h3>
     <div class="flex-1">
       <label class="block text-sm font-medium mb-1">Titel*</label>
       <Input v-model="requestForm.processItem.title" placeholder="Kurzer Titel"/>
       <p v-if="errors.title" class="text-red-600 text-xs mt-1">{{ errors.title }}</p>
-    </div>
-
-    <div class="flex-1">
-      <label class="block text-sm font-medium mb-1">Empfänger</label>
-      <TagsInput v-model="recipientStrings" placeholder="Emails...">
-        <TagsInputItem v-for="item in recipientStrings" :key="item" :value="item">
-          <TagsInputItemText/>
-          <TagsInputItemDelete/>
-        </TagsInputItem>
-        <TagsInputInput placeholder="Emails..."/>
-      </TagsInput>
     </div>
 
     <div class="flex flex-col md:flex-row gap-4">
@@ -195,6 +241,79 @@ function resetFrom() {
       </div>
     </div>
 
+    <div class="w-full" v-if="requestForm.category == Category.BUG_REPORT">
+
+
+      <div class="flex space-x-2">
+        <label class="block text-sm font-medium mb-1">INTEGRA® ProgrammNr.</label>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <CircleQuestionMark class="w-3 h-3 mb-2 text-gray-500 hover:text-gray-700 cursor-pointer" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p class="text-xs">Bitte gebe an in welchem Programm der Fehler auftaucht.</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+
+      <Input v-model="requestForm.programNumber" placeholder="ProgrammNr."/>
+    </div>
+
+    <div class="w-full" v-if="requestForm.category == Category.TRAINING_REQUEST">
+      <div class="flex space-x-2">
+        <label class="block text-sm font-medium mb-1">INTEGRA® Modul</label>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <CircleQuestionMark class="w-3 h-3 mb-2 text-gray-500 hover:text-gray-700 cursor-pointer" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p class="text-xs">Bitte gebe an in welchem Modul eine Schulung benötigt wird.</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+
+      <Input v-model="requestForm.module" placeholder="Modulbezeichnung"/>
+    </div>
+
+    <div class="flex space-x-2">
+      <Checkbox id="addRecipients" v-model="addRecipients" />
+      <label
+        for="addRecipients"
+        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      >
+        Weitere Empfänger per E-Mail benachrichtigen
+      </label>
+    </div>
+
+    <div v-if="addRecipients" class="flex-1">
+
+      <div class="flex space-x-2">
+        <label class="block text-sm font-medium mb-1">Empfänger</label>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <CircleQuestionMark class="w-3 h-3 mb-2 text-gray-500 hover:text-gray-700 cursor-pointer" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p class="text-xs">Bitte gebe die Emails der Empfänger an, die ebenfalls über die Anfrage benachrichtigt werden sollen..</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+
+
+      <TagsInput v-model="recipientStrings" placeholder="Emails...">
+        <TagsInputItem v-for="item in recipientStrings" :key="item" :value="item">
+          <TagsInputItemText/>
+          <TagsInputItemDelete/>
+        </TagsInputItem>
+        <TagsInputInput placeholder="Emails..."/>
+      </TagsInput>
+    </div>
 
     <div class="flex flex-col">
       <label class="block text-sm font-medium mb-1">Anhänge</label>
@@ -233,7 +352,20 @@ function resetFrom() {
 
     <!-- Beschreibung -->
     <div>
+      <div class="flex space-x-2">
       <label class="block text-sm font-medium mb-1">Beschreibung</label>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <CircleQuestionMark class="w-3 h-3 mb-2 text-gray-500 hover:text-gray-700 cursor-pointer" />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p class="text-xs">Bitte gebe eine möglichst genaue Beschreibung deiner Anfrage an. Jede Information hilft uns Ihre Anfrage schnell zu bearbeiten.</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      </div>
+
       <Textarea
         v-model="requestForm.processItem.description"
         placeholder="Detaillierte Beschreibung"
@@ -241,6 +373,7 @@ function resetFrom() {
       />
       <p v-if="errors.description" class="text-red-600 text-xs mt-1">{{ errors.description }}</p>
     </div>
+
 
     <!-- Buttons-->
     <div class="flex items-end justify-between gap-4">
