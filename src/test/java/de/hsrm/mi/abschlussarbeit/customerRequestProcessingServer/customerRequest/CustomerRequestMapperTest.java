@@ -79,12 +79,17 @@ class CustomerRequestMapperTest {
     void toEntity_fromCreateDto() {
         // GIVEN
         CustomerRequestCreateDto dto = new CustomerRequestCreateDto(
+                "Max",
+                "Mustermann",
+                "+49..",
                 ProcessItemCreateDto.builder()
                         .title("New Feature")
                         .description("description")
                         .build(),
                 Priority.MEDIUM,
                 Category.BUG_REPORT,
+                "",
+                "",
                 1L,
                 List.of(new EmailAddress("test.mail"))
         );
@@ -94,6 +99,9 @@ class CustomerRequestMapperTest {
 
         // THEN
         assertNotNull(entity);
+        assertEquals("Max", entity.getContactFirstName());
+        assertEquals("Mustermann", entity.getContactLastName());
+        assertEquals("+49..", entity.getContactPhoneNumber());
         assertEquals("New Feature", entity.getTitle());
         assertEquals("description", entity.getDescription());
         assertEquals(Priority.MEDIUM, entity.getPriority());

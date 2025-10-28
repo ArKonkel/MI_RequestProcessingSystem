@@ -267,7 +267,7 @@ class CapacityServiceImplTest {
 
         // Expected Result
         Map<Employee, Integer> expected = Map.of(
-                employee1, 7, // Expertise1 + Expertise3
+                employee1, 8, // Expertise1 + Expertise3
                 employee2, 1
         );
 

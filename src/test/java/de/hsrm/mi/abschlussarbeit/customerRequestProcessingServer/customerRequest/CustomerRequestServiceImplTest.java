@@ -19,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -97,13 +98,13 @@ class CustomerRequestServiceImplTest {
     }
 
     @Test
-    void createRequest_shouldSaveSendMailAndNotifications() {
+    void createRequest_shouldSaveSendMailAndNotifications() throws IOException {
         when(requestMapper.toEntity(createDto)).thenReturn(requestEntity);
         when(customerService.getCustomerById(customer.getId())).thenReturn(customer);
         when(customerRequestRepository.save(requestEntity)).thenReturn(requestEntity);
         when(requestMapper.toDto(requestEntity)).thenReturn(requestDto);
 
-        CustomerRequestDto result = service.createRequest(createDto);
+        CustomerRequestDto result = service.createRequest(createDto, List.of());
 
         assertThat(result).isEqualTo(requestDto);
 
