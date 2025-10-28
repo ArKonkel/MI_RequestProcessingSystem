@@ -21,8 +21,8 @@ import {
   TagsInput,
   TagsInputInput,
   TagsInputItem,
-  TagsInputItemText,
-  TagsInputItemDelete
+  TagsInputItemDelete,
+  TagsInputItemText
 } from "@/components/ui/tags-input";
 import {useRequestStore} from "@/stores/requestStore.ts";
 import type {RequestDtd} from "@/documentTypes/dtds/RequestDtd.ts";
@@ -31,7 +31,8 @@ import {useUserStore} from "@/stores/userStore.ts";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
 import {useFileDialog} from "@vueuse/core";
-import {Trash, CircleQuestionMark} from 'lucide-vue-next'
+import {CircleQuestionMark, Trash} from 'lucide-vue-next'
+import Modal from "@/components/Modal.vue";
 
 const maxUploadeMb = 2
 
@@ -39,6 +40,9 @@ const alertStore = useAlertStore()
 const requestStore = useRequestStore()
 const router = useRouter()
 const userStore = useUserStore()
+
+const showSuccessModal = ref<boolean>(false)
+const createdRequest = ref<RequestDtd>()
 
 const requestForm = reactive<RequestCreateDtd>({
   contactFirstName: '',
@@ -123,16 +127,20 @@ async function submit() {
   }
 
   try {
-    const response = await submitRequest(requestForm, attachments.value)
+    createdRequest.value = await submitRequest(requestForm, attachments.value)
+    showSuccessModal.value = true
 
-    alertStore.show('Anfrage erfolgreich erstellt', 'success')
-    resetFrom()
-    goToRequests(response)
 
   } catch (error: any) {
     console.error(error)
     alertStore.show(error.response?.data || 'Unbekannter Fehler', 'error')
   }
+}
+
+function closeModal(){
+  resetFrom()
+  goToRequests(createdRequest.value as RequestDtd)
+  showSuccessModal.value = false
 }
 
 function resetFrom() {
@@ -385,5 +393,14 @@ function resetFrom() {
         <Button class="cursor-pointer" type="submit">Anfrage erstellen</Button>
       </div>
     </div>
+
+    <Modal
+      :show="showSuccessModal"
+      :title="`Vielen Dank für Ihre Anfrage ${requestForm.contactFirstName} ${requestForm.contactLastName}.`"
+      :message="`Wir bearbeiten diese schnellstmöglich.
+      Den aktuellen Stand der erstellten Anfrage ${createdRequest?.processItem.id} können Sie in Ihrer Anfrageübersicht einsehen.
+      Bei Rückmeldungen oder Fragen nutzen Sie bitte die Kommentarfunktion.`"
+      @close="closeModal"
+    />
   </form>
 </template>
