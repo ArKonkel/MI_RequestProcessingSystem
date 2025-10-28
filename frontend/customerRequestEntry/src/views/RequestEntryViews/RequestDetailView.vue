@@ -74,10 +74,18 @@ async function addComment() {
             }}</h2>
           <div>
             <div class="flex justify-between mt-4 text-sm">
-              <div>
-                <span class="font-semibold">Eingegangen am: </span><br/>
-                {{ new Date(request.processItem.creationDate!).toLocaleDateString("de-DE") }}
+              <div class="flex gap-6">
+                <div v-if="request.contactFirstName && request.contactLastName">
+                  <span class="font-semibold">Erstellt von: </span><br/>
+                  {{ request.contactFirstName }} {{ request.contactLastName }}
+                </div>
+
+                <div>
+                  <span class="font-semibold">Eingegangen am: </span><br/>
+                  {{ new Date(request.processItem.creationDate!).toLocaleDateString("de-DE") }}
+                </div>
               </div>
+
 
               <div class="flex gap-4">
                 <!-- Hier werden Priorität und Status nebeneinander rechts -->

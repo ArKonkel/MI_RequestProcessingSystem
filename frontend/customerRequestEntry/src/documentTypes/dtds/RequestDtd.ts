@@ -9,6 +9,8 @@ import type {ProjectDtd} from "@/documentTypes/dtds/ProjectDtd.ts";
 
 export interface RequestDtd {
   processItem: ProcessItemDtd
+  contactFirstName: string,
+  contactLastName: string,
   priority: Priority
   estimatedScope: number
   status: RequestStatus
