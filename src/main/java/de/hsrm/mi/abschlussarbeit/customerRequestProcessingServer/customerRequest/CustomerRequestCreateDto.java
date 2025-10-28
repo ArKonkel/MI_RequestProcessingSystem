@@ -15,9 +15,14 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CustomerRequestCreateDto {
+    private String contactFirstName;
+    private String contactLastName;
+    private String contactPhoneNumber;
     private ProcessItemCreateDto processItem;
     private Priority priority;
     private Category category;
+    private String programNumber;
+    private String module;
     private Long customerId;
     private List<EmailAddress> toRecipients;
 }

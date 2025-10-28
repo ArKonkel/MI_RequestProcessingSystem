@@ -13,6 +13,11 @@ import java.util.List;
 
 @Data
 public class CustomerRequestDto {
+    String contactFirstName;
+    String contactLastName;
+    String contactPhoneNumber;
+    String programNumber;
+    String module;
     ProcessItemDto processItem;
     Priority priority;
     BigDecimal estimatedScope;

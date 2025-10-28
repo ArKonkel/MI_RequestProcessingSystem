@@ -23,6 +23,15 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CustomerRequest extends ProcessItem {
+    private String contactFirstName;
+
+    private String contactLastName;
+
+    private String contactPhoneNumber;
+
+    private String programNumber;
+
+    private String module;
 
     @NotNull
     @Enumerated(EnumType.STRING)
