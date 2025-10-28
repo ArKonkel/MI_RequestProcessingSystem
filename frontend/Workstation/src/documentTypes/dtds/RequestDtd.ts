@@ -10,6 +10,8 @@ import type { ProjectDtd } from '@/documentTypes/dtds/ProjectDtd.ts'
 import type {IsProjectClassification} from "@/documentTypes/types/IsProjectClassification.ts";
 
 export interface RequestDtd {
+  contactFirstName: string,
+  contactLastName: string,
   processItem: ProcessItemDtd
   priority: Priority
   estimatedScope: number
@@ -19,6 +21,8 @@ export interface RequestDtd {
   category: Category
   customer: CustomerDtd
   classifiedAsProject: IsProjectClassification
+  programNumber: string
+  contactPhoneNumber: string
   tasks: TaskDtd[]
   projects: ProjectDtd[]
 }

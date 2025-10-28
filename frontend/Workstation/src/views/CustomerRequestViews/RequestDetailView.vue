@@ -243,6 +243,19 @@ async function addComment() {
               <span class="font-semibold">Kunde: </span><br />
               {{ editableRequest.customer.id }} - {{ editableRequest.customer.firstName }}
             </div>
+            <div v-if="editableRequest.contactFirstName && editableRequest.contactLastName">
+              <span class="font-semibold">Eingesendet von: </span><br />
+              {{ editableRequest.contactFirstName }} {{ editableRequest.contactLastName }}
+            </div>
+            <div v-if="editableRequest.contactPhoneNumber ">
+              <span class="font-semibold">Erreichbar unter: </span><br />
+              {{ editableRequest.contactPhoneNumber }}
+            </div>
+            <div v-if="editableRequest.programNumber">
+              <span class="font-semibold">Fehler tritt auf in: </span><br />
+              {{ editableRequest.programNumber }}
+            </div>
+
             <div>
               <span class="font-semibold">Eingegangen am: </span><br />
               {{ new Date(editableRequest.processItem.creationDate!).toLocaleDateString('de-DE') }}
