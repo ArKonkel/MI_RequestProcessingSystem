@@ -78,6 +78,32 @@ class ProcessItemImplTest {
     }
 
     @Test
+    void assignProcessItemToUser_shouldUnassign() {
+        // GIVEN
+        ProcessItem item = new Task();
+        item.setId(100L);
+        item.setTitle("Test Task");
+
+        // Set an existing assignee first
+        User previousAssignee = new User();
+        previousAssignee.setId(42L);
+        item.setAssignee(previousAssignee);
+
+        // WHEN
+        when(processItemRepository.findById(100L)).thenReturn(Optional.of(item));
+
+        processItemService.assignProcessItemToUser(100L, -1L);
+
+        // THEN
+        // Assignee should be null
+        assertThat(item.getAssignee()).isNull();
+        verify(processItemRepository).save(item);
+
+        // No user notification should be sent
+        verify(notificationService, never()).sendUserNotification(any());
+    }
+
+    @Test
     void addCommentToProcessItem_shouldResolveMentionsAndPublishEvent() {
         // GIVEN
         User author = new User();
@@ -149,5 +175,6 @@ class ProcessItemImplTest {
                                 event.targetType() != null
                 ));
     }
+
 
 }
