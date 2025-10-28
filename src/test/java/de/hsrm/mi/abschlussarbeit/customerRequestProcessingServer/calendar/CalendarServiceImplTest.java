@@ -1,5 +1,6 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar;
 
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity.CalculatedCapacityCalendarEntryVO;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.Employee;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.OutlookCalendarService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.DateTimeTimeZone;
@@ -22,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -257,5 +259,31 @@ class CalendarServiceImplTest {
 
         // every entry is in same calendar
         assertThat(savedEntries).allMatch(entry -> entry.getCalendar() == calendar);
+    }
+
+    @Test
+    void mergeEntriesWithSameDate_shouldSumDurationsByDate() {
+        // GIVEN
+        List<CalculatedCapacityCalendarEntryVO> entries = List.of(
+                new CalculatedCapacityCalendarEntryVO("Task X", LocalDate.of(2025, 10, 28), 60L),
+                new CalculatedCapacityCalendarEntryVO("Task X", LocalDate.of(2025, 10, 28), 30L),
+                new CalculatedCapacityCalendarEntryVO("Task X", LocalDate.of(2025, 10, 29), 120L),
+                new CalculatedCapacityCalendarEntryVO("Task Y", LocalDate.of(2025, 10, 28), 45L)
+        );
+
+        // WHEN
+        List<CalculatedCapacityCalendarEntryVO> merged = calendarService.mergeEntriesWithSameDate(entries);
+
+        // THEN
+        //Should have two entries for 28.10. and 29.10.
+        assertEquals(2, merged.size());
+
+        // Check sum: 28.10. = 60+30+45 = 135, 29.10. = 120
+        Map<LocalDate, Long> expectedDurations = Map.of(
+                LocalDate.of(2025, 10, 28), 135L,
+                LocalDate.of(2025, 10, 29), 120L
+        );
+
+        merged.forEach(e -> assertEquals(expectedDurations.get(e.date()), e.durationInMinutes()));
     }
 }

@@ -3,16 +3,15 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.capacity;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.Calendar;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarEntry;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarService;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.Employee;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeExpertise;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeService;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.ExpertiseLevel;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.*;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.expertise.Expertise;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItemService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.Priority;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.TimeUnit;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.ToMinutesCalculator;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.Task;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskService;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,8 +28,8 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class CapacityServiceImplTest {
@@ -43,10 +42,15 @@ class CapacityServiceImplTest {
     @Mock
     CalendarService calendarService;
 
+    @Mock
+    ProcessItemService processItemService;
+
+    @Mock
+    CapacityMapper capacityMapper;
+
     @Spy
     @InjectMocks
     CapacityServiceImpl resourceCapacityService;
-
 
     @Test
     void findBestMatches_shouldFindMatches() {
@@ -722,6 +726,59 @@ class CapacityServiceImplTest {
         task.setExpertise(expertises);
 
         return task;
+    }
+
+    @Test
+    void assignMatchToEmployee_shouldAssignAndCreateCalendarEntries() {
+        // GIVEN
+        Long taskId = 42L;
+
+        // Employee & User setup
+        User user = new User();
+        user.setId(100L);
+        Employee employee = new Employee();
+        employee.setId(1L);
+        employee.setUser(user);
+
+        // Calendar setup
+        Calendar calendar = new Calendar();
+        calendar.setId(1L);
+        employee.setCalendar(calendar);
+
+        // Capacity entries (tow on same date, will be merged later)
+        List<CalculatedCapacityCalendarEntryDto> entriesDto = List.of(
+                new CalculatedCapacityCalendarEntryDto("Task A", LocalDate.of(2025, 10, 28), 60L),
+                new CalculatedCapacityCalendarEntryDto("Task A", LocalDate.of(2025, 10, 28), 90L),
+                new CalculatedCapacityCalendarEntryDto("Task A", LocalDate.of(2025, 10, 29), 30L)
+        );
+
+        List<CalculatedCapacityCalendarEntryVO> entries = List.of(
+                new CalculatedCapacityCalendarEntryVO("Task A", LocalDate.of(2025, 10, 28), 60L),
+                new CalculatedCapacityCalendarEntryVO("Task A", LocalDate.of(2025, 10, 28), 90L),
+                new CalculatedCapacityCalendarEntryVO("Task A", LocalDate.of(2025, 10, 29), 30L)
+        );
+
+        EmployeeDto employeeDto = new EmployeeDto(employee.getId(), "Max", "Mustermann", null, null, null, 1L, user.getId(), calendar.getId());
+        CalculatedCapacitiesOfMatchDto selectedMatch = new CalculatedCapacitiesOfMatchDto(
+                employeeDto, 80L, true, entriesDto
+        );
+
+        CalculatedCapacitiesOfMatchVO vo = new CalculatedCapacitiesOfMatchVO(
+                employee, 80L, true, entries
+        );
+
+        // WHEN
+        when(capacityMapper.toVo(selectedMatch)).thenReturn(vo);
+        when(employeeService.getEmployeeById(employee.getId())).thenReturn(employee);
+
+        resourceCapacityService.assignMatchToEmployee(taskId, selectedMatch);
+
+        // THEN
+
+        //Check if methods were executed
+        verify(processItemService).assignProcessItemToUser(taskId, user.getId());
+        verify(calendarService).createCalendarEntriesForTask(taskId, calendar.getId(), entries);
+        verify(taskService).setIsAlreadyPlanned(taskId, true);
     }
 
 }

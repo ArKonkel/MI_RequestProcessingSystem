@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -152,7 +153,9 @@ public class CalendarServiceImpl implements CalendarService {
 
         List<CalendarEntry> savedEntries = new ArrayList<>();
 
-        for (CalculatedCapacityCalendarEntryVO dto : calendarEntries) {
+        List<CalculatedCapacityCalendarEntryVO> mergedEntriesWithSameDate = mergeEntriesWithSameDate(calendarEntries);
+
+        for (CalculatedCapacityCalendarEntryVO dto : mergedEntriesWithSameDate) {
             CalendarEntry entry = new CalendarEntry();
             entry.setTitle(dto.title());
             entry.setDate(dto.date());
@@ -224,6 +227,33 @@ public class CalendarServiceImpl implements CalendarService {
         List<CalendarEntry> calendarEntries = task.getCalendarEntry();
 
         calendarEntryRepository.deleteAll(calendarEntries);
+    }
+
+    /**
+     * Merges a list of calendar entries by grouping them based on their date and summing the duration of entries with the same date.
+     *
+     * @param calendarEntries the list of calendar entries to be merged, where each entry contains*/
+    List<CalculatedCapacityCalendarEntryVO> mergeEntriesWithSameDate(List<CalculatedCapacityCalendarEntryVO> calendarEntries) {
+        // First group everything by date in a map
+        Map<LocalDate, List<CalculatedCapacityCalendarEntryVO>> groupedByDate = calendarEntries.stream()
+                .collect(Collectors.groupingBy(CalculatedCapacityCalendarEntryVO::date));
+
+        // sum durationInMinutes of all entries with same date
+        List<CalculatedCapacityCalendarEntryVO> mergedEntries = groupedByDate.entrySet().stream()
+                .map(entry -> {
+                    LocalDate date = entry.getKey();
+                    List<CalculatedCapacityCalendarEntryVO> entries = entry.getValue();
+
+                    String title = entries.getFirst().title(); //same title
+                    Long totalDuration = entries.stream()
+                            .mapToLong(CalculatedCapacityCalendarEntryVO::durationInMinutes)
+                            .sum();
+
+                    return new CalculatedCapacityCalendarEntryVO(title, date, totalDuration);
+                })
+                .toList();
+
+        return mergedEntries;
     }
 
     /**
