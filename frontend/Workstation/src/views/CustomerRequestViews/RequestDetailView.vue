@@ -190,8 +190,13 @@ async function saveRequest() {
       estimatedScope: estimatedScope.value,
       chargeable: editableRequest.value.chargeable,
       scopeUnit: editableRequest.value.scopeUnit,
-      classifiedAsProject: editableRequest.value.classifiedAsProject,
+      classifiedAsProject: editableRequest.value.classifiedAsProject
     }
+
+    if (editableRequest.value.classifiedAsProject == IsProjectClassification.YES && editableRequest.value.projects.length > 0) {
+      dto.classifiedAsProject = undefined
+    }
+    console.log(dto)
 
     await updateCustomerRequest(editableRequest.value.processItem.id, dto)
   } catch (err: any) {
@@ -401,7 +406,9 @@ async function addComment() {
 
       <div>
         <label class="text-sm font-semibold">Als Projekt eingestuft:</label>
-        <Select  v-model="editableRequest.classifiedAsProject" @update:modelValue="saveRequest">
+        <Select
+          :disabled = "editableRequest.classifiedAsProject === IsProjectClassification.YES && editableRequest.projects.length > 0"
+          v-model="editableRequest.classifiedAsProject" @update:modelValue="saveRequest">
           <SelectTrigger :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER])">
             <SelectValue placeholder="Offen" />
           </SelectTrigger>
