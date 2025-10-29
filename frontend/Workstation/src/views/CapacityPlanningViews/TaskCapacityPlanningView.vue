@@ -35,6 +35,7 @@ import {getTask} from '@/services/taskService.ts'
 import {useAlertStore} from '@/stores/useAlertStore.ts'
 import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
 import UserSelect from "@/components/UserSelect.vue";
+import Modal from "@/components/Modal.vue";
 
 const route = useRoute()
 const router = useRouter()
@@ -42,6 +43,8 @@ const alertStore = useAlertStore()
 const taskId = Number(route.params.taskId)
 const matchResults = ref<MatchingEmployeeCapacitiesDtd | null>(null)
 const task = ref<TaskDtd | null>(null)
+
+const showOverbookingModal = ref(false);
 
 const selectedUser = ref<UserDtd | null>(null)
 
@@ -195,22 +198,75 @@ function onDrop(dayDate: string, matchResult: CalculatedCapacitiesOfMatchDto) {
   // triggers rerendering
   matchResult.calculatedCalendarCapacities = [...matchResult.calculatedCalendarCapacities]
 
-  console.log(`Eintrag "${entry.title}" von ${oldDate} nach ${dayDate} verschoben`)
+  //console.log(`Eintrag "${entry.title}" von ${oldDate} nach ${dayDate} verschoben`)
   draggedEntry.value = null
 }
 
-async function assignEmployee() {
-  if (!selectedMatchResult.value) return
+function isOverbooking() {
+  if (!selectedMatchResult.value) return;
+
+  const checkedDates: string[] = [];
+
+  for (const calcEntry of selectedMatchResult.value.calculatedCalendarCapacities) {
+    if (checkedDates.includes(calcEntry.date)) continue; //if date already checked, skip it
+
+    let sumMinutes = 0;
+
+    // sum all calculatedEntries with same date
+    for (const calculatedEntry of selectedMatchResult.value.calculatedCalendarCapacities) {
+      if (calculatedEntry.date === calcEntry.date) sumMinutes += calculatedEntry.durationInMinutes;
+    }
+
+    // sum all calendarEntries with same date
+    if (selectedMatchResult.value.calendar) {
+      for (const calendarEntry of selectedMatchResult.value.calendar.entries) {
+        if (calendarEntry.date === calcEntry.date) sumMinutes += calendarEntry.durationInMinutes;
+      }
+    }
+
+    checkedDates.push(calcEntry.date);
+
+    const employeeWorkingMinutes = selectedMatchResult.value.employee.workingHoursPerDay * 60;
+
+    if (sumMinutes > employeeWorkingMinutes) {
+      return true
+    }
+  }
+  return false
+}
+
+
+async function modalContinue() {
+  showOverbookingModal.value = false;
+  await performAssignment();
+}
+
+function modalAbort() {
+  showOverbookingModal.value = false;
+}
+
+async function performAssignment() {
+  if (!selectedMatchResult.value) return;
 
   try {
-    await assignTaskToEmployee(taskId, selectedMatchResult.value)
-
-    alertStore.show('Aufgabe erfolgreich zugewiesen', 'success')
-
-    await router.push({name: 'taskDetailView', params: {taskId: task.value?.processItem.id}})
+    await assignTaskToEmployee(taskId, selectedMatchResult.value);
+    alertStore.show('Aufgabe erfolgreich zugewiesen', 'success');
+    await router.push({ name: 'taskDetailView', params: { taskId: task.value?.processItem.id } });
   } catch (error: any) {
-    alertStore.show(error.response?.data || 'Unbekannter Fehler', 'error')
+    alertStore.show(error.response?.data || 'Unbekannter Fehler', 'error');
   }
+}
+
+
+async function assignEmployee() {
+  if (!selectedMatchResult.value) return;
+
+  if (isOverbooking()) {
+    showOverbookingModal.value = true;
+    return;
+  }
+
+  await performAssignment();
 }
 
 async function addCapacityOfSelectedEmployee() {
@@ -258,7 +314,6 @@ function sumEntriesForDay(
 
   return sum;
 }
-
 
 function isCurrentDay(date: string): boolean {
   const inputDate = new Date(date);
@@ -431,4 +486,15 @@ function formatDate(date: string | undefined | null): string {
       <Button class="cursor-pointer" @click="assignEmployee">Zuweisen</Button>
     </div>
   </div>
+
+  <Modal
+    title="Achtung: Überbuchung"
+    :show="showOverbookingModal"
+    message="Sie sind dabei einen Mitarbeitenden zu überbuchen. Möchten Sie wirklich fortfahren?"
+    variant="warning"
+    @_continue="modalContinue"
+    @abort="modalAbort"
+  >
+  </Modal>
+
 </template>
