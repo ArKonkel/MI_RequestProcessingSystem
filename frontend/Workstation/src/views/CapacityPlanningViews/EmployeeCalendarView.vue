@@ -1,7 +1,10 @@
 <script setup lang="ts">
 
 import {computed, onMounted, ref, watch} from "vue";
-import {getCalendars, getEmployeeCalendar} from "@/services/calendarService.ts";
+import {
+  getCalendars,
+  initCalendarOfEmployee
+} from "@/services/calendarService.ts";
 import {addDays, format} from "date-fns";
 import {de} from "date-fns/locale";
 import type {CalendarDtd} from "@/documentTypes/dtds/CalendarDtd.ts";
@@ -86,15 +89,39 @@ function routeToTask(taskId: number | undefined | null = null) {
     router.push(`/tasks/${taskId}`)
   }
 }
-</script>
 
+async function importOutlookCalendar() {
+  try {
+    for (const calendar of calendars.value) {
+      await initCalendarOfEmployee(calendar.ownerId, new Date().getFullYear())
+    }
+
+    await loadCalendars()
+    alertStore.show('Kalender erfolgreich importiert.', 'success')
+  } catch (err: any) {
+    console.error(err)
+    alertStore.show('Fehler beim importieren des Outlook Kalenders', 'error')
+  }
+}
+</script>
 
 <template>
   <!-- Navigation -->
-  <div class="flex space-x-2 m-2">
-    <Button class="cursor-pointer" @click="prevDay">← Tag zurück</Button>
-    <Button class="cursor-pointer" @click="nextDay">Tag vor →</Button>
+  <div class="flex justify-between m-2">
+    <div class="flex gap-4 justify-end">
+      <Button class="cursor-pointer" @click="prevDay">← Tag zurück</Button>
+      <Button class="cursor-pointer" @click="nextDay">Tag vor →</Button>
+    </div>
+
+    <div class="flex gap-4 justify-end">
+      <Button class="cursor-pointer" variant="secondary" @click="importOutlookCalendar">Outlook
+        importieren
+      </Button>
+      <Button class="cursor-pointer" variant="secondary" @click="loadCalendars">Kalender neu laden
+      </Button>
+    </div>
   </div>
+
 
   <!-- Kalender -->
   <div class="border rounded-md">

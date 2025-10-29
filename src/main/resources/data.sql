@@ -51,9 +51,9 @@ INSERT INTO employee(id, email, first_name, last_name, department_id, working_ho
 VALUES
     (1, 'max.mustermann@mail.de', 'Max', 'Mustermann', 1, 8, 1),
     (2, 'sabine.mustermann@mail.de', 'Sabine', 'Musterfrau', 1, 8, 2),
-    (3, 'thomas.schneider@firma.de', 'Thomas', 'Schneider', 2, 8, 3),
-    (4, 'lisa.berger@firma.de', 'Lisa', 'Berger', 3, 8, 4),
-    (5, 'julia.fischer@firma.de', 'Julia', 'Fischer', 5, 8, 5);
+    (3, 'thomas.schneider@mail.de', 'Thomas', 'Schneider', 2, 8, 3),
+    (4, 'lisa.berger@mail.de', 'Lisa', 'Berger', 3, 8, 4),
+    (5, 'julia.fischer@mail.de', 'Julia', 'Fischer', 5, 8, 5);
 
 --------------------------------- CUSTOMER ------------------------------------------------
 INSERT INTO customer(id, first_name, last_name, address, email)
