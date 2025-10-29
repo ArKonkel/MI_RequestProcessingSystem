@@ -43,14 +43,16 @@ const cardClass = computed(() => {
         <CardHeader>
           <CardTitle class="text-2xl">{{ props.title }}</CardTitle>
         </CardHeader>
+
         <CardContent class="px-6 py-4 break-words">
-          {{ props.message }}
+          <div v-if="props.message" class="mb-2">{{ props.message }}</div>
+          <slot v-if="$slots.default"></slot>
         </CardContent>
+
         <div class="flex gap-4 justify-end mt-4">
           <Button class="cursor-pointer" @click="abort">Abbrechen</Button>
-          <Button class="cursor-pointer " @click="_continue">Fortfahren</Button>
+          <Button class="cursor-pointer" @click="_continue">Fortfahren</Button>
         </div>
-
       </Card>
     </div>
   </transition>

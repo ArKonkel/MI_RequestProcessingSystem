@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, onMounted, ref, watch} from 'vue'
+import {computed, onMounted, onUnmounted, ref, watch} from 'vue'
 import {addDays, format, parseISO, subDays} from 'date-fns'
 import {de} from 'date-fns/locale'
 import {Star, CircleGauge, Clock} from 'lucide-vue-next'
@@ -56,11 +56,29 @@ const bestMatchPoints = ref<number | null>(null)
 // Drag & Drop State
 const draggedEntry = ref<CalculatedCapacityCalendarEntryDtd | null>(null)
 
+const showContextMenu = ref(false)
+const contextMenuPosition = ref({ x: 0, y: 0 })
+const contextMenuTarget = ref<{
+  day: { date: string; label: string }
+  matchResult: CalculatedCapacitiesOfMatchDto
+  entry?: CalculatedCapacityCalendarEntryDtd
+} | null>(null)
+
+const showSplitModal = ref(false)
+const splitAmount = ref<number | null>(null)
+
+onUnmounted(() => {
+  document.removeEventListener('click', () => (showContextMenu.value = false))
+})
+
 onMounted(async () => {
   if (!taskId) {
     console.error('Kein Task ausgewählt')
     return
   }
+
+  //Eventlistener needed for richtclick.
+  document.addEventListener('click', () => (showContextMenu.value = false))
 
   try {
     matchResults.value = await getMatchingEmployees(taskId)
@@ -331,6 +349,53 @@ function formatDate(date: string | undefined | null): string {
   const parsedDate = parseISO(date);
   return format(parsedDate, 'dd.MM.yyyy');
 }
+
+function handleRightClick(day: { date: string; label: string }, matchResult: CalculatedCapacitiesOfMatchDto, event: MouseEvent, entry?: CalculatedCapacityCalendarEntryDtd) {
+  event.preventDefault()
+  console.log('RIGHTCLICK ENTRY', entry)
+  showContextMenu.value = true
+  contextMenuPosition.value = { x: event.clientX, y: event.clientY }
+  contextMenuTarget.value = { day, matchResult, entry }
+}
+
+function openSplitModal() {
+  showContextMenu.value = false
+  showSplitModal.value = true
+  splitAmount.value = null
+}
+
+async function confirmSplit() {
+  showSplitModal.value = false
+
+  if (!contextMenuTarget.value?.entry || !splitAmount.value) return
+
+  const original = contextMenuTarget.value.entry
+  const splitMinutes = splitAmount.value * 60
+
+
+  if (splitMinutes >= original.durationInMinutes) {
+    alertStore.show('Der Wert zur Aufteilung ist zu groß.', 'error')
+    return
+  }
+
+  // subtract original entry
+  original.durationInMinutes -= splitMinutes
+
+  // crete new entry
+  const newEntry = {
+    ...original,
+    title: original.title,
+    durationInMinutes: splitMinutes,
+  }
+
+  contextMenuTarget.value.matchResult.calculatedCalendarCapacities.push(newEntry)
+
+  // Trigger re-render
+  contextMenuTarget.value.matchResult.calculatedCalendarCapacities = [
+    ...contextMenuTarget.value.matchResult.calculatedCalendarCapacities,
+  ]
+}
+
 </script>
 
 <template>
@@ -458,6 +523,7 @@ function formatDate(date: string | undefined | null): string {
             class="bg-blue-300 text-xs rounded px-2 py-1 border shadow-sm mb-1 cursor-grab w-full truncate"
             draggable="true"
             @dragstart="onDragStart(entry)"
+            @contextmenu.prevent="handleRightClick(day, matchResult, $event, entry)"
           >
             <strong :title="entry.title">{{ entry.title }}</strong>
             <div class="text-[10px]">{{ entry.durationInMinutes / 60 }}h</div>
@@ -496,5 +562,36 @@ function formatDate(date: string | undefined | null): string {
     @abort="modalAbort"
   >
   </Modal>
+
+  <Modal
+    title="Eintrag aufteilen"
+    :show="showSplitModal"
+    :message="`Wie viele Stunden sollen von ${contextMenuTarget?.entry!.durationInMinutes! / 60}h aufgeteilt werden?`"
+    variant="info"
+    @_continue="confirmSplit"
+    @abort="() => showSplitModal = false"
+  >
+    <div class="p-4">
+      <label class="block mb-2 text-sm font-medium">Stunden aufteilen:</label>
+      <input
+        type="number"
+        v-model.number="splitAmount"
+        class="border bg-white rounded px-2 py-1 w-full"
+      />
+    </div>
+  </Modal>
+
+  <div
+    v-if="showContextMenu"
+    class="absolute z-50 bg-white border rounded shadow-md p-1"
+    :style="{ top: contextMenuPosition.y + 'px', left: contextMenuPosition.x + 'px' }"
+  >
+    <button
+      class="block px-3 py-1 text-sm hover:bg-gray-100 w-full text-left"
+      @click="openSplitModal"
+    >
+      Aufteilen
+    </button>
+  </div>
 
 </template>
