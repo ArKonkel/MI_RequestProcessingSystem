@@ -109,6 +109,17 @@ function formatDate(date: string | undefined | null): string {
   const parsedDate = parseISO(date);
   return format(parsedDate, 'dd.MM.yyyy');
 }
+
+function isCurrentDay(date: string): boolean {
+  const inputDate = new Date(date);
+  const now = new Date();
+
+  return (
+    inputDate.getFullYear() === now.getFullYear() &&
+    inputDate.getMonth() === now.getMonth() &&
+    inputDate.getDate() === now.getDate()
+  );
+}
 </script>
 
 <template>
@@ -140,6 +151,7 @@ function formatDate(date: string | undefined | null): string {
         :class="{
             'border-l': index !== 0,
             'border-l-2 border-accent-foreground': isFridayToMonday(index),
+            'bg-gray-200': isCurrentDay(day.date),
           }"
       >
         {{ day.label }}<br/>
@@ -171,6 +183,7 @@ function formatDate(date: string | undefined | null): string {
         :class="{
             'border-l': index !== 0,
             'border-l-2 border-accent-foreground': isFridayToMonday(index),
+            'bg-gray-100': isCurrentDay(day.date),
           }"
       >
         <!-- calendar entries -->

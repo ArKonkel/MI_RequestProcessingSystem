@@ -241,6 +241,17 @@ async function addCapacityOfSelectedEmployee() {
   }
 }
 
+function isCurrentDay(date: string): boolean {
+  const inputDate = new Date(date);
+  const now = new Date();
+
+  return (
+    inputDate.getFullYear() === now.getFullYear() &&
+    inputDate.getMonth() === now.getMonth() &&
+    inputDate.getDate() === now.getDate()
+  );
+}
+
 function formatDate(date: string | undefined | null): string {
   if (!date) return '';
   const parsedDate = parseISO(date);
@@ -265,7 +276,7 @@ function formatDate(date: string | undefined | null): string {
           </div>
         </div>
         <div class="flex flex-col text-sm text-right">
-          <span>Geschätzte Zeit: <strong>{{ task?.estimatedTime }}</strong></span>
+          <span>Geschätzte Zeit: <strong>{{ task?.estimatedTime }}h</strong></span>
           <span>Geplant bis: <strong>{{ formatDate(task?.dueDate) }}</strong></span>
         </div>
       </CardHeader>
@@ -289,6 +300,7 @@ function formatDate(date: string | undefined | null): string {
           :class="{
             'border-l': index !== 0,
             'border-l-2 border-accent-foreground': isFridayToMonday(index),
+            'bg-gray-200': isCurrentDay(day.date),
           }"
         >
           {{ day.label }}<br/>
@@ -346,6 +358,7 @@ function formatDate(date: string | undefined | null): string {
           :class="{
             'border-l': index !== 0,
             'border-l-2 border-accent-foreground': isFridayToMonday(index),
+            'bg-gray-100': isCurrentDay(day.date),
           }"
           @dragover.prevent
           @drop="onDrop(day.date, matchResult)"
