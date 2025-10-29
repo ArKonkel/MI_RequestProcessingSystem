@@ -2,7 +2,7 @@
 import {computed, onMounted, ref, watch} from 'vue'
 import {addDays, format, parseISO, subDays} from 'date-fns'
 import {de} from 'date-fns/locale'
-import {Star, CircleGauge} from 'lucide-vue-next'
+import {Star, CircleGauge, Clock} from 'lucide-vue-next'
 import {useRoute, useRouter} from 'vue-router'
 
 import {Badge} from '@/components/ui/badge'
@@ -241,6 +241,25 @@ async function addCapacityOfSelectedEmployee() {
   }
 }
 
+function sumEntriesForDay(
+  matchResult: CalculatedCapacitiesOfMatchDto,
+  date: string
+): number {
+  let sum = 0;
+
+  for (const calculatedEntry of matchResult.calculatedCalendarCapacities) {
+    if (calculatedEntry.date === date) sum += calculatedEntry.durationInMinutes;
+  }
+  if (matchResult.calendar) {
+    for (const calendarEntry of matchResult.calendar.entries) {
+      if (calendarEntry.date === date) sum += calendarEntry.durationInMinutes;
+    }
+  }
+
+  return sum;
+}
+
+
 function isCurrentDay(date: string): boolean {
   const inputDate = new Date(date);
   const now = new Date();
@@ -313,7 +332,7 @@ function formatDate(date: string | undefined | null): string {
         v-for="matchResult in matchResults?.matchCalculationResult"
         :key="matchResult.employee.id"
         class="grid grid-cols-[200px_repeat(8,1fr)] cursor-pointer border-b"
-        :class="selectedMatchResult === matchResult ? 'border-2 border-accent-foreground' : ''"
+        :class="selectedMatchResult === matchResult ? 'border-2 border-b-2 border-accent-foreground' : ''"
         @click="selectMatchResult(matchResult)"
       >
         <!-- Person -->
@@ -359,17 +378,29 @@ function formatDate(date: string | undefined | null): string {
             'border-l': index !== 0,
             'border-l-2 border-accent-foreground': isFridayToMonday(index),
             'bg-gray-100': isCurrentDay(day.date),
+            'bg-green-200': (sumEntriesForDay(matchResult, day.date) < matchResult.employee.workingHoursPerDay * 60),
+            'bg-yellow-200': (sumEntriesForDay(matchResult, day.date) === matchResult.employee.workingHoursPerDay * 60),
+            'bg-red-300': (sumEntriesForDay(matchResult, day.date) > matchResult.employee.workingHoursPerDay * 60)
           }"
           @dragover.prevent
           @drop="onDrop(day.date, matchResult)"
         >
+
+          <div class="flex items-center justify-end text-xs pb-1">
+            {{
+              matchResult.employee.workingHoursPerDay - (sumEntriesForDay(matchResult, day.date) / 60)
+            }}h
+            <div class="pl-1">
+            <Clock class="w-3 h-3"/>
+            </div>
+          </div>
           <!-- calculated entries -->
           <div
             v-for="entry in matchResult.calculatedCalendarCapacities.filter(
-              (e) => e.date === day.date,
+              (entry) => entry.date === day.date,
             )"
             :key="entry.title"
-            class="bg-blue-400/50 text-xs rounded px-2 py-1 border shadow-sm mb-1 cursor-grab w-full truncate"
+            class="bg-blue-300 text-xs rounded px-2 py-1 border shadow-sm mb-1 cursor-grab w-full truncate"
             draggable="true"
             @dragstart="onDragStart(entry)"
           >
