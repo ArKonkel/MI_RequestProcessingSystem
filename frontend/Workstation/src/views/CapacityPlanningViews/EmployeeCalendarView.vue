@@ -5,7 +5,7 @@ import {
   getCalendars,
   initCalendarOfEmployee
 } from "@/services/calendarService.ts";
-import {addDays, format} from "date-fns";
+import {addDays, format, parseISO} from "date-fns";
 import {de} from "date-fns/locale";
 import type {CalendarDtd} from "@/documentTypes/dtds/CalendarDtd.ts";
 import {useAlertStore} from '@/stores/useAlertStore.ts'
@@ -103,6 +103,12 @@ async function importOutlookCalendar() {
     alertStore.show('Fehler beim importieren des Outlook Kalenders', 'error')
   }
 }
+
+function formatDate(date: string | undefined | null): string {
+  if (!date) return '';
+  const parsedDate = parseISO(date);
+  return format(parsedDate, 'dd.MM.yyyy');
+}
 </script>
 
 <template>
@@ -137,7 +143,7 @@ async function importOutlookCalendar() {
           }"
       >
         {{ day.label }}<br/>
-        <span class="text-xs text-muted-foreground">{{ day.date }}</span>
+        <span class="text-xs text-muted-foreground">{{ formatDate(day.date) }}</span>
       </div>
     </div>
 

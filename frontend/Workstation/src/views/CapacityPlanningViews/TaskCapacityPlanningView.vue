@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, onMounted, ref, watch} from 'vue'
-import {addDays, format, subDays} from 'date-fns'
+import {addDays, format, parseISO, subDays} from 'date-fns'
 import {de} from 'date-fns/locale'
 import {Star, CircleGauge} from 'lucide-vue-next'
 import {useRoute, useRouter} from 'vue-router'
@@ -42,6 +42,7 @@ const alertStore = useAlertStore()
 const taskId = Number(route.params.taskId)
 const matchResults = ref<MatchingEmployeeCapacitiesDtd | null>(null)
 const task = ref<TaskDtd | null>(null)
+
 const selectedUser = ref<UserDtd | null>(null)
 
 const visibleDays = 8
@@ -239,6 +240,12 @@ async function addCapacityOfSelectedEmployee() {
     alertStore.show(error.response?.data || 'Hinzufügen fehlgeschlagen.', 'error')
   }
 }
+
+function formatDate(date: string | undefined | null): string {
+  if (!date) return '';
+  const parsedDate = parseISO(date);
+  return format(parsedDate, 'dd.MM.yyyy');
+}
 </script>
 
 <template>
@@ -258,12 +265,8 @@ async function addCapacityOfSelectedEmployee() {
           </div>
         </div>
         <div class="flex flex-col text-sm text-right">
-          <span
-          >Geschätzte Zeit: <strong>{{ task?.estimatedTime }}</strong></span
-          >
-          <span
-          >Geplant bis <strong>{{ task?.dueDate }}</strong></span
-          >
+          <span>Geschätzte Zeit: <strong>{{ task?.estimatedTime }}</strong></span>
+          <span>Geplant bis: <strong>{{ formatDate(task?.dueDate) }}</strong></span>
         </div>
       </CardHeader>
     </Card>
@@ -289,7 +292,7 @@ async function addCapacityOfSelectedEmployee() {
           }"
         >
           {{ day.label }}<br/>
-          <span class="text-xs text-muted-foreground">{{ day.date }}</span>
+          <span class="text-xs text-muted-foreground">{{ formatDate(day.date) }}</span>
         </div>
       </div>
 
@@ -377,7 +380,7 @@ async function addCapacityOfSelectedEmployee() {
     <!-- Buttons -->
     <div class="flex justify-between">
       <div class="flex space-x-2">
-        <UserSelect v-model="selectedUser" placeholder="Weiteren hinzufügen" label=""
+        <UserSelect v-model="selectedUser" placeholder="Weitere hinzufügen" label=""
                     not-selected-text="Keinen"/>
         <Button class="cursor-pointer" @click="addCapacityOfSelectedEmployee">+</Button>
       </div>

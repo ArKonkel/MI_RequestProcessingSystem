@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ref, watch, computed, onMounted} from 'vue'
-import {addDays, format, getYear} from 'date-fns'
+import {addDays, format, getYear, parseISO} from 'date-fns'
 import {de} from 'date-fns/locale'
 import {useEmployeeStore} from '@/stores/employeeStore.ts'
 import {useAlertStore} from '@/stores/useAlertStore.ts'
@@ -200,6 +200,12 @@ function routeToTask(taskId: number | undefined | null = null) {
     router.push(`/tasks/${taskId}`)
   }
 }
+
+function formatDate(date: string | undefined | null): string {
+  if (!date) return '';
+  const parsedDate = parseISO(date);
+  return format(parsedDate, 'dd.MM.yyyy');
+}
 </script>
 
 <template>
@@ -314,7 +320,7 @@ function routeToTask(taskId: number | undefined | null = null) {
               >
                 <span class="font-bold">{{ day.label }}</span>
                 <br/>
-                <span class="text-xs text-muted-foreground">{{ day.date.substring(5) }}</span>
+                <span class="text-xs text-muted-foreground">{{ formatDate(day.date) }}</span>
               </div>
 
               <template v-for="day in days" :key="day.date">
