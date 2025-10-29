@@ -31,31 +31,31 @@ interface SidebarItem {
 
 const items: SidebarItem[] = [
   {
-    title: 'Requests',
+    title: 'Kundenanfragen',
     url: '/requests',
     icon: Inbox,
     allowedRoles: [Role.ADMIN, Role.CAPACITY_PLANNER, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER, Role.TASK_REVISER],
   },
   {
-    title: 'Tasks',
+    title: 'Aufgaben',
     url: '/tasks',
     icon: ClipboardList,
     allowedRoles: [Role.ADMIN, Role.CAPACITY_PLANNER, Role.TASK_REVISER, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER],
   },
   {
-    title: 'Projects',
+    title: 'Projekte',
     url: '/projects',
     icon: CalendarCog,
     allowedRoles: [Role.ADMIN, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER],
   },
   {
-    title: 'Employees',
+    title: 'Mitarbeitende',
     url: '/employees',
     icon: User,
     allowedRoles: [Role.ADMIN, Role.CAPACITY_PLANNER],
   },
   {
-    title: 'EmployeeCalendar',
+    title: 'Kalender',
     url: '/employeeCalendar',
     icon: Calendar,
     allowedRoles: [Role.ADMIN, Role.CAPACITY_PLANNER],
