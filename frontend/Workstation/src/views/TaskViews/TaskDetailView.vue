@@ -55,6 +55,7 @@ import AttachmentList from '@/components/AttachmentList.vue'
 import {useUserStore} from "@/stores/userStore.ts";
 import {deletePlannedCapacity} from "@/services/capacityService.ts";
 import {Role} from "@/documentTypes/types/Role.ts";
+import Modal from "@/components/Modal.vue";
 
 const userStore = useUserStore()
 const { hasRole, hasAnyRole } = userStore
@@ -504,26 +505,15 @@ async function submitRepeatPlanning() {
         </div>
 
 
-        <Dialog v-if="editableTask.processItem.assignee" v-model:open="showAlreadyPlannedDialog">
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                  <span> Diese Aufgabe ist bereits für  {{ editableTask.processItem.assignee.name }} verplant. Soll die Planung erneut durchgeführt werden?
-                    Die bereits vorhandene Planung wird in diesem Fall gelöscht.</span>
-              </DialogTitle>
-            </DialogHeader>
-            <div class="space-y-4">
-
-              <div class="flex justify-end space-x-2">
-                <Button class="cursor-pointer" variant="secondary"
-                        @click="showAlreadyPlannedDialog = false"
-                >Abbrechen
-                </Button>
-                <Button class="cursor-pointer" @click="submitRepeatPlanning">Ja</Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <Modal
+          title="Aufgabe bereits verplant."
+          variant="warning"
+          :show="showAlreadyPlannedDialog"
+          :message="`Diese Aufgabe ist bereits für  ${ editableTask.processItem.assignee.name } verplant. Soll die Planung erneut durchgeführt werden?
+                    Die bereits vorhandene Planung wird in diesem Fall gelöscht.`"
+          @_continue="submitRepeatPlanning"
+          @abort="showAlreadyPlannedDialog = false"
+         />
       </div>
     </div>
   </div>
