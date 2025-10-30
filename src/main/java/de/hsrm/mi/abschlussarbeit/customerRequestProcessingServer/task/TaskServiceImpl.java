@@ -15,8 +15,11 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.Projec
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -36,6 +39,8 @@ public class TaskServiceImpl implements TaskService {
     private final ProjectService projectService;
 
     private final CustomerRequestService customerRequestService;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * Retrieves a Task object by its unique identifier from the repository.
@@ -123,7 +128,9 @@ public class TaskServiceImpl implements TaskService {
 
         Task savedTask = taskRepository.save(taskToCreate);
 
-        notificationService.sendChangeNotification(new ChangeNotificationEvent(savedTask.getId(), ChangeType.CREATED, TargetType.TASK));
+        eventPublisher.publishEvent(
+                new ChangeNotificationEvent(savedTask.getId(), ChangeType.UPDATED, TargetType.TASK)
+        );
 
         //Also send notification to Customer-Requests because it was created
         if (savedTask.getRequest() != null) {
@@ -216,7 +223,9 @@ public class TaskServiceImpl implements TaskService {
 
         Task savedTask = taskRepository.save(task);
 
-        notificationService.sendChangeNotification(new ChangeNotificationEvent(savedTask.getId(), ChangeType.UPDATED, TargetType.TASK));
+        eventPublisher.publishEvent(
+                new ChangeNotificationEvent(task.getId(), ChangeType.UPDATED, TargetType.TASK)
+        );
 
         return taskMapper.toDto(savedTask);
     }
@@ -244,7 +253,10 @@ public class TaskServiceImpl implements TaskService {
         try {
             taskRepository.save(task);
 
-            notificationService.sendChangeNotification(new ChangeNotificationEvent(task.getId(), ChangeType.UPDATED, TargetType.TASK));
+            //Only publish event when its really saved. otherwise it is not saved yet, but is getting published
+            eventPublisher.publishEvent(
+                    new ChangeNotificationEvent(task.getId(), ChangeType.UPDATED, TargetType.TASK)
+            );
         } catch (Exception e) {
 
             throw new SaveException("Error while saving task " + taskId + " with message" + e);
@@ -286,7 +298,7 @@ public class TaskServiceImpl implements TaskService {
         log.info("Adding blocking task {} to task {}", blockedByTaskId, taskId);
 
         if (Objects.equals(taskId, blockedByTaskId)) {
-            throw new IllegalArgumentException("Task cannot be blocked by itself");
+            throw new NotAllowedException("Task cannot be blocked by itself");
         }
 
         if (!taskRepository.existsById(taskId) || !taskRepository.existsById(blockedByTaskId)) {
@@ -294,21 +306,43 @@ public class TaskServiceImpl implements TaskService {
         }
 
         Task task = getTaskById(taskId);
-        task.setStatus(TaskStatus.BLOCKED);
-
         Task blockedByTask = getTaskById(blockedByTaskId);
+
+        if(task.getBlockedBy().contains(blockedByTask)) {
+            throw new NotAllowedException("Task " + taskId + " is already blocked by task " + blockedByTaskId);
+        }
+
+        if(blockedByTask.getBlocks().contains(task)) {
+            throw new NotAllowedException("Task " + blockedByTaskId + " is already blocked by task " + taskId);
+        }
 
         task.getBlockedBy().add(blockedByTask);
         blockedByTask.getBlocks().add(task);
+        task.setStatus(TaskStatus.BLOCKED);
+
 
         try {
             taskRepository.saveAll(List.of(task, blockedByTask));
 
-            notificationService.sendChangeNotification(new ChangeNotificationEvent(task.getId(), ChangeType.UPDATED, TargetType.TASK));
+            //Only publish event when its really saved. otherwise it is not saved yet, but is getting published
+            eventPublisher.publishEvent(
+                    new ChangeNotificationEvent(task.getId(), ChangeType.UPDATED, TargetType.TASK)
+            );
         } catch (Exception e) {
 
             throw new SaveException("Error while saving task " + taskId + " with message" + e);
         }
+    }
+
+    /**
+     * Handles the task change event after the transaction has been successfully committed.
+     * Sends a change notification using the notification service.
+     *
+     * @param event the event containing details about the change notification
+     */
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    protected void onTaskChange(ChangeNotificationEvent event) {
+        notificationService.sendChangeNotification(event);
     }
 
     /**

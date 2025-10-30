@@ -30,7 +30,7 @@ import CommentsAccordion from '@/components/CommentsAccordion.vue'
 import type {CommentCreateDtd} from '@/documentTypes/dtds/CommentCreateDtd.ts'
 import {addCommentToProcessItem, assignProcessItemToUser} from '@/services/processItemService.ts'
 import {TimeUnitLabel} from '@/documentTypes/types/TimeUnit.ts'
-import {addWorkingTime, updateTask} from '@/services/taskService.ts'
+import {addBlockingTask, addWorkingTime, updateTask} from '@/services/taskService.ts'
 import UserSelect from '@/components/UserSelect.vue'
 import type {DateValue} from '@internationalized/date'
 import {CalendarDate, DateFormatter, getLocalTimeZone} from '@internationalized/date'
@@ -56,9 +56,10 @@ import {useUserStore} from "@/stores/userStore.ts";
 import {deletePlannedCapacity} from "@/services/capacityService.ts";
 import {Role} from "@/documentTypes/types/Role.ts";
 import Modal from "@/components/Modal.vue";
+import TaskSelect from "@/components/TaskSelect.vue";
 
 const userStore = useUserStore()
-const { hasRole, hasAnyRole } = userStore
+const {hasAnyRole} = userStore
 const taskStore = useTaskStore()
 const alertStore = useAlertStore()
 const router = useRouter()
@@ -71,7 +72,8 @@ const estimatedTime = ref(0)
 const workingTimeInMinutes = ref(0)
 const dueDateValue = ref<DateValue>()
 const showAddExpertise = ref(false)
-
+const addingBlockedByTask = ref(false)
+const selectedBlockedByTask = ref<TaskDtd | null>(null)
 const assignee = ref<UserDtd | null>(null)
 
 const ignoreNextUpdate = ref(false)
@@ -274,7 +276,25 @@ async function submitRepeatPlanning() {
     moveToCapacityPlanning()
   } catch (err: any) {
     const msg = err.response?.data?.message || err.response?.data || err.message || String(err)
-    alertStore.show(`Fehler): ${msg}`, 'error')
+    alertStore.show(`${msg}`, 'error')
+  }
+}
+
+function toggleAddBlockedByTask() {
+  selectedBlockedByTask.value = null
+  addingBlockedByTask.value = !addingBlockedByTask.value;
+}
+
+async function addBlockedByTask() {
+  if (!editableTask.value || !selectedBlockedByTask.value) return
+
+  try {
+    await addBlockingTask(editableTask.value.processItem.id, selectedBlockedByTask.value.processItem.id)
+    alertStore.show(`Blockierung erfolgreich erstellt`, 'success')
+    toggleAddBlockedByTask()
+  } catch (err: any) {
+    const msg = err.response?.data?.message || err.response?.data || err.message || String(err)
+    alertStore.show(`${msg}`, 'error')
   }
 }
 </script>
@@ -299,7 +319,9 @@ async function submitRepeatPlanning() {
             <Badge v-for="expertise in editableTask.expertise" :key="expertise.id">
               {{ expertise.name }}
             </Badge>
-            <Button v-if="hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER])" class="cursor-pointer" @click="toggleExpertise">+</Button>
+            <Button v-if="hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER])"
+                    class="cursor-pointer" @click="toggleExpertise">+
+            </Button>
           </div>
 
           <div v-if="showAddExpertise" class="flex pt-3 space-x-2">
@@ -370,6 +392,57 @@ async function submitRepeatPlanning() {
             </AccordionContent>
           </AccordionItem>
 
+          <AccordionItem value="blockingTasks">
+            <AccordionTrigger>Blockierende Aufgaben</AccordionTrigger>
+            <AccordionContent class="flex flex-col gap-2">
+              <div v-if="editableTask.blockedBy.length > 0" class="text-xs">Ist blockiert von:</div>
+              <div v-for="task in editableTask.blockedBy" :key="task.id">
+                <RouterLink :to="`/tasks/${task.id}`" class="block">
+                  <div
+                    class="flex items-center justify-between border p-2 rounded cursor-pointer hover:bg-accent/20"
+                  >
+                    <div class="flex items-center gap-2">
+                      <span>{{ task.id }}</span>
+                      <span class="font-semibold">{{ task.title }}</span>
+                    </div>
+                    <Badge variant="secondary">{{ task.status }}</Badge>
+                  </div>
+                </RouterLink>
+              </div>
+
+              <div v-if="editableTask.blocks.length > 0" class="text-xs">Diese Aufgabe blockiert:
+              </div>
+              <div v-for="task in editableTask.blocks" :key="task.id">
+                <RouterLink :to="`/tasks/${task.id}`" class="block">
+                  <div
+                    class="flex items-center justify-between border p-2 rounded cursor-pointer hover:bg-accent/20"
+                  >
+                    <div class="flex items-center gap-2">
+                      <span>{{ task.id }}</span>
+                      <span class="font-semibold">{{ task.title }}</span>
+                    </div>
+                    <Badge variant="secondary">{{ task.status }}</Badge>
+                  </div>
+                </RouterLink>
+              </div>
+
+              <div v-if="addingBlockedByTask" class="flex gap-2 items-center pt-2">
+                <TaskSelect v-model="selectedBlockedByTask"/>
+
+                <Button class="cursor-pointer" @click="addBlockedByTask">Erstellen</Button>
+                <Button class="cursor-pointer" variant="ghost" @click="toggleAddBlockedByTask">
+                  Abbrechen
+                </Button>
+              </div>
+
+              <div class="flex justify-end">
+                <Button v-if="hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER])"
+                        class="cursor-pointer" @click="toggleAddBlockedByTask">+
+                </Button>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+
           <AccordionItem value="attachment">
             <AccordionTrigger>Anhänge</AccordionTrigger>
             <AccordionContent>
@@ -387,7 +460,9 @@ async function submitRepeatPlanning() {
           />
         </Accordion>
       </div>
-      <Button v-if="hasAnyRole([Role.ADMIN, Role.CAPACITY_PLANNER])" class="cursor-pointer" @click="startCapacityPlanning">Zur Planung</Button>
+      <Button v-if="hasAnyRole([Role.ADMIN, Role.CAPACITY_PLANNER])" class="cursor-pointer"
+              @click="startCapacityPlanning">Zur Planung
+      </Button>
     </ScrollArea>
 
     <!-- right sidebar -->
@@ -395,7 +470,8 @@ async function submitRepeatPlanning() {
       <div>
         <label class="text-sm font-semibold">Priorität</label>
         <Select v-model="editableTask.priority" @update:modelValue="saveTask">
-          <SelectTrigger :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER, Role.TASK_REVISER, Role.CUSTOMER_REQUEST_REVISER])">
+          <SelectTrigger
+            :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER, Role.TASK_REVISER, Role.CUSTOMER_REQUEST_REVISER])">
             <SelectValue placeholder="Select..."/>
           </SelectTrigger>
           <SelectContent>
@@ -413,7 +489,8 @@ async function submitRepeatPlanning() {
       <div>
         <label class="text-sm font-semibold">Status</label>
         <Select v-model="editableTask.status" @update:modelValue="saveTask">
-          <SelectTrigger :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER, Role.TASK_REVISER, Role.CUSTOMER_REQUEST_REVISER])">
+          <SelectTrigger
+            :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER, Role.TASK_REVISER, Role.CUSTOMER_REQUEST_REVISER])">
             <SelectValue placeholder="Offen"/>
           </SelectTrigger>
           <SelectContent>
@@ -438,10 +515,13 @@ async function submitRepeatPlanning() {
         <label class="text-sm font-semibold">Geschätzte Zeit</label>
 
         <div class="flex space-x-2 border-b border-gray-300 pb-2 mb-2">
-          <Input :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER, Role.TASK_REVISER])" type="number" v-model="estimatedTime" placeholder="Schätzung in Minuten"/>
+          <Input
+            :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER, Role.TASK_REVISER])"
+            type="number" v-model="estimatedTime" placeholder="Schätzung in Minuten"/>
 
           <Select v-model="editableTask.estimationUnit" @update:modelValue="saveTask">
-            <SelectTrigger :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER, Role.TASK_REVISER, Role.CUSTOMER_REQUEST_REVISER])">
+            <SelectTrigger
+              :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER, Role.TASK_REVISER, Role.CUSTOMER_REQUEST_REVISER])">
               <SelectValue placeholder="Zeiteinheit"/>
             </SelectTrigger>
             <SelectContent>
@@ -462,7 +542,8 @@ async function submitRepeatPlanning() {
         <div class="flex space-x-2">
           <Input type="number" v-model="workingTimeInMinutes" disabled/>
 
-          <Dialog v-if="hasAnyRole([Role.ADMIN, Role.TASK_REVISER])" v-model:open="showWorkingTimeDialog">
+          <Dialog v-if="hasAnyRole([Role.ADMIN, Role.TASK_REVISER])"
+                  v-model:open="showWorkingTimeDialog">
             <DialogTrigger as-child>
               <Button class="cursor-pointer">+</Button>
             </DialogTrigger>
@@ -509,11 +590,11 @@ async function submitRepeatPlanning() {
           title="Aufgabe bereits verplant."
           variant="warning"
           :show="showAlreadyPlannedDialog"
-          :message="`Diese Aufgabe ist bereits für  ${ editableTask.processItem.assignee.name } verplant. Soll die Planung erneut durchgeführt werden?
+          :message="`Diese Aufgabe ist bereits für  ${ editableTask.processItem.assignee?.name } verplant. Soll die Planung erneut durchgeführt werden?
                     Die bereits vorhandene Planung wird in diesem Fall gelöscht.`"
           @_continue="submitRepeatPlanning"
           @abort="showAlreadyPlannedDialog = false"
-         />
+        />
       </div>
     </div>
   </div>

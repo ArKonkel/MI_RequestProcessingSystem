@@ -42,3 +42,7 @@ export async function addWorkingTime(
 
   return response.data
 }
+
+export async function addBlockingTask(taskId: number, blockedByTaskId: number): Promise<void> {
+  await axios.post(`/api/tasks/${taskId}/${blockedByTaskId}`)
+}

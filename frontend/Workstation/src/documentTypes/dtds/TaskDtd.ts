@@ -3,6 +3,7 @@ import type { ExpertiseDtd } from '@/documentTypes/dtds/ExpertiseDtd.ts'
 import type { TaskStatus } from '@/documentTypes/types/TaskStatus.ts'
 import type { Priority } from '@/documentTypes/types/Priority.ts'
 import type { TimeUnit } from '@/documentTypes/types/TimeUnit.ts'
+import type {TaskReferenceDtd} from "@/documentTypes/dtds/TaskReferenceDtd.ts";
 
 export interface TaskDtd {
   processItem: ProcessItemDtd
@@ -20,4 +21,6 @@ export interface TaskDtd {
   projectId: number | null
   projectTitle: string | null
   isAlreadyPlanned: boolean
+  blockedBy: TaskReferenceDtd[]
+  blocks: TaskReferenceDtd[]
 }

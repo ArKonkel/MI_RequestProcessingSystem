@@ -59,7 +59,6 @@ onClickOutside(dropdownRef, () => {
       autocomplete="off"
     />
 
-    <!-- add to class "absolute" for more responsiveness -->
     <div
       v-if="dropdownOpen"
       ref="dropdownRef"

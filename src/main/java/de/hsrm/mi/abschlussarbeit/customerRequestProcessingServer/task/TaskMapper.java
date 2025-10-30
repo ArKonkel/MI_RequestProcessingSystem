@@ -14,6 +14,7 @@ public interface TaskMapper {
 
     @Mapping(target = "id", source = "id")
     @Mapping(target = "title", source = "title")
+    @Mapping(target = "status", source = "status")
     TaskReferenceDto toReferenceDto(Task task); //Needed to map the blocks and blockedBy fields
 
     @Mapping(target = "processItem", source = ".")
