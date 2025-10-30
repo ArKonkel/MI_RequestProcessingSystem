@@ -20,10 +20,7 @@ import java.time.LocalDateTime;
 import java.time.Year;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -66,7 +63,7 @@ class CalendarServiceImplTest {
         calendar = new Calendar();
         calendar.setId(1L);
         calendar.setOwner(employee);
-        calendar.setEntries(new HashSet<>());
+        calendar.setEntries(new ArrayList<>());
     }
 
     @Test

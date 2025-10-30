@@ -322,7 +322,7 @@ class CapacityServiceImplTest {
 
         Calendar calendar = new Calendar();
         calendar.setId(99L);
-        calendar.setEntries(Set.of(entry1, entry2, entry3));
+        calendar.setEntries(List.of(entry1, entry2, entry3));
 
         Employee employee = new Employee();
         employee.setId(employeeId);
@@ -387,7 +387,7 @@ class CapacityServiceImplTest {
 
         Calendar calendar = new Calendar();
         calendar.setId(99L);
-        calendar.setEntries(Set.of(entry1, entry2, entry3));
+        calendar.setEntries(List.of(entry1, entry2, entry3));
 
         Employee employee = new Employee();
         employee.setId(employeeId);
@@ -461,7 +461,7 @@ class CapacityServiceImplTest {
 
         Calendar calendar = new Calendar();
         calendar.setId(99L);
-        calendar.setEntries(Set.of(entry1, entry2, entry3));
+        calendar.setEntries(List.of(entry1, entry2, entry3));
 
         Employee employee = new Employee();
         employee.setId(employeeId);
@@ -515,7 +515,7 @@ class CapacityServiceImplTest {
 
         Calendar calendar = new Calendar();
         calendar.setId(99L);
-        calendar.setEntries(Set.of(entry1, entry2, entry3));
+        calendar.setEntries(List.of(entry1, entry2, entry3));
 
         Employee employee = new Employee();
         employee.setId(employeeId);

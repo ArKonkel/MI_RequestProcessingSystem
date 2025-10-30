@@ -5,9 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Set;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 class CalendarMapperTest {
@@ -34,7 +35,7 @@ class CalendarMapperTest {
         Calendar calendar = new Calendar();
         calendar.setId(100L);
         calendar.setOwner(employee);
-        calendar.setEntries(Set.of(entry1, entry2));
+        calendar.setEntries(List.of(entry1, entry2));
 
         // WHEN
         CalendarDto dto = calendarMapper.toDto(calendar);
