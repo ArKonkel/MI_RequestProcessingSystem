@@ -6,4 +6,5 @@ export interface CalendarDtd {
   ownerId: number,
   ownerFirstName: string,
   ownerLastName: string,
+  ownerWorkingHoursPerDay: number
 }

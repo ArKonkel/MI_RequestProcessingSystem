@@ -12,6 +12,7 @@ import {useAlertStore} from '@/stores/useAlertStore.ts'
 import {Button} from "@/components/ui/button";
 import {Avatar} from "@/components/ui/avatar";
 import {useRouter} from "vue-router";
+import {Clock} from "lucide-vue-next";
 
 const alertStore = useAlertStore()
 const router = useRouter()
@@ -120,6 +121,19 @@ function isCurrentDay(date: string): boolean {
     inputDate.getDate() === now.getDate()
   );
 }
+
+function sumEntriesForDay(
+  calender: CalendarDtd,
+  date:  { date: string, label: string }
+): number {
+  let sum = 0;
+
+  for (const entry of calender.entries) {
+    if (entry.date === date.date) sum += entry.durationInMinutes;
+  }
+
+  return sum;
+}
 </script>
 
 <template>
@@ -184,14 +198,26 @@ function isCurrentDay(date: string): boolean {
             'border-l': index !== 0,
             'border-l-2 border-accent-foreground': isFridayToMonday(index),
             'bg-gray-100': isCurrentDay(day.date),
+            'bg-green-200': (sumEntriesForDay(calendar, day) < calendar.ownerWorkingHoursPerDay * 60),
+            'bg-yellow-200': (sumEntriesForDay(calendar, day) === calendar.ownerWorkingHoursPerDay * 60),
+            'bg-red-300': (sumEntriesForDay(calendar, day) > calendar.ownerWorkingHoursPerDay * 60)
           }"
       >
+
+        <div class="flex items-center justify-end text-xs pb-1">
+          {{
+            (calendar.ownerWorkingHoursPerDay - (sumEntriesForDay(calendar, day) / 60))
+          }}h
+          <div class="pl-1">
+            <Clock class="w-3 h-3"/>
+          </div>
+        </div>
         <!-- calendar entries -->
         <div
           v-for="entry in calendar.entries.filter((e) => e.date === day.date) || []"
           :key="entry.title"
           :class="{
-          'bg-blue-400/50 text-xs rounded-sm px-2 py-1 border shadow-sm mb-1 truncate cursor-pointer hover:bg-sky-200 transition-colors': entry.taskId,
+          'bg-blue-300 text-xs rounded-sm px-2 py-1 border shadow-sm mb-1 truncate cursor-pointer hover:bg-sky-200 transition-colors': entry.taskId,
           'bg-accent text-xs rounded px-2 py-1 border shadow-sm mb-1 truncate': !entry.taskId
             }"
           @click.prevent="routeToTask(entry.taskId)"

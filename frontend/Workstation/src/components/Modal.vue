@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, defineEmits, computed } from 'vue'
+import { defineProps, computed } from 'vue'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
