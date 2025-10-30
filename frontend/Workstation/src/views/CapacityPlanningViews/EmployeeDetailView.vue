@@ -24,6 +24,7 @@ import ExpertiseSelect from '@/components/ExpertiseSelect.vue'
 import {addExpertiseToEmployee, updateEmployee} from '@/services/employeeService.ts'
 import type {EmployeeUpdateDtd} from '@/documentTypes/dtds/EmployeeUpdateDtd.ts'
 import {useRouter} from "vue-router";
+import {Clock} from "lucide-vue-next";
 //import { updateEmployee } from '@/services/employeeService.ts'
 
 const employeeStore = useEmployeeStore()
@@ -206,6 +207,37 @@ function formatDate(date: string | undefined | null): string {
   const parsedDate = parseISO(date);
   return format(parsedDate, 'dd.MM.yyyy');
 }
+
+function sumEntriesForDay(
+  calender: CalendarDtd,
+  date:  { date: string, label: string }
+): number {
+  let sum = 0;
+
+  for (const entry of calender.entries) {
+    if (entry.date === date.date) sum += entry.durationInMinutes;
+  }
+
+  return sum;
+}
+
+function isFridayToMonday(index: number) {
+  if (index === 0) return false
+  const prevDate = new Date(days.value[index - 1].date)
+  const currDate = new Date(days.value[index].date)
+  return prevDate.getDay() === 5 && currDate.getDay() === 1
+}
+
+function isCurrentDay(date: string): boolean {
+  const inputDate = new Date(date);
+  const now = new Date();
+
+  return (
+    inputDate.getFullYear() === now.getFullYear() &&
+    inputDate.getMonth() === now.getMonth() &&
+    inputDate.getDate() === now.getDate()
+  );
+}
 </script>
 
 <template>
@@ -314,24 +346,48 @@ function formatDate(date: string | undefined | null): string {
           <div v-if="calendar" class="border rounded-lg overflow-x-auto shadow-sm">
             <div class="min-w-[1000px] grid grid-cols-8">
               <div
-                v-for="day in days"
+                v-for="(day, index) in days"
                 :key="day.date"
-                class="p-2 text-center border-b border-r last:border-r-0 bg-secondary/20 text-sm font-medium"
+                class="p-2 text-center text-sm font-medium"
+                :class="{
+                  'border-l': index !== 0,
+                  'border-l-2 border-accent-foreground': isFridayToMonday(index),
+                  'bg-gray-200': isCurrentDay(day.date),
+                   }"
               >
                 <span class="font-bold">{{ day.label }}</span>
                 <br/>
                 <span class="text-xs text-muted-foreground">{{ formatDate(day.date) }}</span>
               </div>
 
-              <template v-for="day in days" :key="day.date">
+
+              <div v-for="(day, index) in days" :key="day.date">
                 <div
-                  class="p-2 border-r last:border-r-0 border-b align-top min-h-[100px] hover:bg-accent/10 transition-colors"
-                >
+                  class="p-2 h-full align-top min-h-[100px] transition-colors"
+                  :class="{
+                  'border-l': index !== 0,
+                  'border-l-2 border-accent-foreground': isFridayToMonday(index),
+                  'bg-gray-100': isCurrentDay(day.date),
+                  'bg-green-200': (sumEntriesForDay(calendar, day) < calendar.ownerWorkingHoursPerDay * 60),
+                  'bg-yellow-200': (sumEntriesForDay(calendar, day) === calendar.ownerWorkingHoursPerDay * 60),
+                  'bg-red-300': (sumEntriesForDay(calendar, day) > calendar.ownerWorkingHoursPerDay * 60)
+                   }"
+                  >
+
+                  <div class="flex items-center justify-end text-xs pb-1">
+                    {{
+                      (calendar.ownerWorkingHoursPerDay - (sumEntriesForDay(calendar, day) / 60))
+                    }}h
+                    <div class="pl-1">
+                      <Clock class="w-3 h-3"/>
+                    </div>
+                  </div>
+                  <!-- calendar entries -->
                   <div
                     v-for="entry in calendar.entries.filter((entry) => entry.date === day.date)"
                     :key="entry.title"
                     :class="{
-                    'bg-blue-400/50 text-xs rounded-sm px-2 py-1 border shadow-sm mb-1 truncate cursor-pointer hover:bg-sky-200 transition-colors': entry.taskId,
+                    'bg-blue-300 text-xs rounded-sm px-2 py-1 border shadow-sm mb-1 truncate cursor-pointer hover:bg-sky-200 transition-colors': entry.taskId,
                     'bg-accent text-xs rounded px-2 py-1 border shadow-sm mb-1 truncate': !entry.taskId
                       }"
                     @click.prevent="routeToTask(entry.taskId)"
@@ -340,7 +396,7 @@ function formatDate(date: string | undefined | null): string {
                     <div class="text-[10px]">{{ entry.durationInMinutes / 60 }}h</div>
                   </div>
                 </div>
-              </template>
+              </div>
             </div>
           </div>
           <div v-else class="text-sm text-muted-foreground italic">Kein Kalender verfügbar.</div>
