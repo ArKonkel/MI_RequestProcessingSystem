@@ -76,6 +76,7 @@ public class ProcessItemImpl implements ProcessItemService, CommentService {
     }
 
     @Override
+    @Transactional
     public ProcessItem getProcessItemById(Long id) {
 
         return processItemRepository.findById(id).orElseThrow(() -> new NotFoundException("Process item with id " + id + " not found"));
@@ -114,6 +115,7 @@ public class ProcessItemImpl implements ProcessItemService, CommentService {
      * @param comment the comment details, including the author's ID and the text of the comment
      */
     @Override
+    @Transactional
     public void addCommentToProcessItem(Long processItemId, CommentCreateDto comment) {
         log.info("Adding comment {} to process item {}", comment.text(), processItemId);
 

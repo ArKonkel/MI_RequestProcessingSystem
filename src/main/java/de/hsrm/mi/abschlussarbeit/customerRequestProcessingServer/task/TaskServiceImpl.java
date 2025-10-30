@@ -15,11 +15,8 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.Projec
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -39,8 +36,6 @@ public class TaskServiceImpl implements TaskService {
     private final ProjectService projectService;
 
     private final CustomerRequestService customerRequestService;
-
-    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * Retrieves a Task object by its unique identifier from the repository.
@@ -97,6 +92,7 @@ public class TaskServiceImpl implements TaskService {
      * @return a TaskDto representation of the newly created task.
      */
     @Override
+    @Transactional
     public TaskDto createTask(TaskCreateDto createDto) {
         Task taskToCreate = new Task();
 
@@ -128,9 +124,7 @@ public class TaskServiceImpl implements TaskService {
 
         Task savedTask = taskRepository.save(taskToCreate);
 
-        eventPublisher.publishEvent(
-                new ChangeNotificationEvent(savedTask.getId(), ChangeType.UPDATED, TargetType.TASK)
-        );
+        notificationService.sendChangeNotification(new ChangeNotificationEvent(savedTask.getId(), ChangeType.CREATED, TargetType.TASK));
 
         //Also send notification to Customer-Requests because it was created
         if (savedTask.getRequest() != null) {
@@ -223,7 +217,7 @@ public class TaskServiceImpl implements TaskService {
 
         Task savedTask = taskRepository.save(task);
 
-        eventPublisher.publishEvent(
+        notificationService.sendChangeNotification(
                 new ChangeNotificationEvent(task.getId(), ChangeType.UPDATED, TargetType.TASK)
         );
 
@@ -254,7 +248,7 @@ public class TaskServiceImpl implements TaskService {
             taskRepository.save(task);
 
             //Only publish event when its really saved. otherwise it is not saved yet, but is getting published
-            eventPublisher.publishEvent(
+            notificationService.sendChangeNotification(
                     new ChangeNotificationEvent(task.getId(), ChangeType.UPDATED, TargetType.TASK)
             );
         } catch (Exception e) {
@@ -325,24 +319,13 @@ public class TaskServiceImpl implements TaskService {
             taskRepository.saveAll(List.of(task, blockedByTask));
 
             //Only publish event when its really saved. otherwise it is not saved yet, but is getting published
-            eventPublisher.publishEvent(
+            notificationService.sendChangeNotification(
                     new ChangeNotificationEvent(task.getId(), ChangeType.UPDATED, TargetType.TASK)
             );
         } catch (Exception e) {
 
             throw new SaveException("Error while saving task " + taskId + " with message" + e);
         }
-    }
-
-    /**
-     * Handles the task change event after the transaction has been successfully committed.
-     * Sends a change notification using the notification service.
-     *
-     * @param event the event containing details about the change notification
-     */
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    protected void onTaskChange(ChangeNotificationEvent event) {
-        notificationService.sendChangeNotification(event);
     }
 
     /**

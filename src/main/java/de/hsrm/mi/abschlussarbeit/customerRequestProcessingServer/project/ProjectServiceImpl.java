@@ -38,6 +38,7 @@ public class ProjectServiceImpl implements ProjectService {
      * @return the project associated with the given identifier
      * @throws NotFoundException if no project is found with the specified identifier
      */
+    @Transactional
     public Project getProjectById(Long projectId) {
         log.info("Getting project with id {}", projectId);
 
@@ -81,6 +82,7 @@ public class ProjectServiceImpl implements ProjectService {
      * @return true if the project's status is READY or IN_PROGRESS, false otherwise
      */
     @Override
+    @Transactional
     public boolean isProjectReadyForProcessing(Long projectId) {
         Project project = getProjectById(projectId);
 
@@ -171,6 +173,7 @@ public class ProjectServiceImpl implements ProjectService {
      * @throws NotAllowedException if the associated customer request is not classified as a project.
      */
     @Override
+    @Transactional
     public ProjectDto createProject(ProjectCreateDto createDto) {
         Project projectToCreate = new Project();
 
@@ -221,6 +224,7 @@ public class ProjectServiceImpl implements ProjectService {
      * @throws InvalidDependencyException if the source project and the target project are the same
      */
     @Override
+    @Transactional
     public ProjectDependency createProjectDependency(Long sourceProjectId, Long targetProjectId, ProjectDependencyType type) {
         log.info("Creating project dependency from {} to {} with type {}", sourceProjectId, targetProjectId, type);
 

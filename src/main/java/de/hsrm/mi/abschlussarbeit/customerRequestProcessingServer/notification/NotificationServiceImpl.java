@@ -2,8 +2,11 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 @Service
 @Slf4j
@@ -12,18 +15,70 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final SimpMessagingTemplate messagingTemplate;
 
+    private final ApplicationEventPublisher publisher;
+
+
     /**
-     * Sends a user notification based on the specified event.
-     * The method determines the type of the notification and sends
-     * it to the appropriate messaging topic.
+     * Handles a change notification event after the transaction has been committed.
      *
-     * @param event the user notification event containing information
-     *              about the type of notification, the target process item,
-     *              and any additional details for creating the notification
+     * @param event the change notification event containing details about the change,
+     *              including process item ID, change type, and target type
+     */
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void onChange(ChangeNotificationEvent event) {
+        performChangeNotification(event);
+    }
+
+    /**
+     * Handles a user notification event after the transaction has been committed.
+     *
+     * @param event the user notification event containing details such as the notification type,
+     *              process item ID, title, list of user IDs to notify, notification text, timestamp, and target type
+     */
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void onUserNotification(UserNotificationEvent event) {
+        performUserNotification(event);
+    }
+
+    /**
+     * Sends a user notification event by publishing it through the application event publisher.
+     *
+     * @param event the user notification event containing details such as notification type,
+     *              process item ID, title, list of user IDs to notify, notification text,
+     *              timestamp, and target type
      */
     @Override
     public void sendUserNotification(UserNotificationEvent event) {
-        log.info("Sending notification event {}", event);
+        log.info("Publish notification event {}", event);
+
+        publisher.publishEvent(event);
+    }
+
+    /**
+     * Sends a change notification event by publishing it through the application event publisher.
+     *
+     * @param event the change notification event containing details such as process item ID,
+     *              change type, and target type
+     */
+    @Override
+    public void sendChangeNotification(ChangeNotificationEvent event) {
+        log.info("Publish change message event {}", event);
+
+        publisher.publishEvent(event);
+    }
+
+
+    /**
+     * Handles a user notification event by routing it to the appropriate messaging topic
+     * based on the type of the notification. The type of the notification determines
+     * which topic the event should be sent to for broadcasting updates.
+     *
+     * @param event the user notification event containing details such as the notification type,
+     *              process item ID, process item title, list of user IDs to notify, notification text,
+     *              timestamp, and target type
+     */
+    private void performUserNotification(UserNotificationEvent event){
+        log.info("Perform user notification event {}", event);
 
         if (event.type() == UserNotificationType.ASSIGNED) {
             messagingTemplate.convertAndSend(Topic.PROCESS_ITEM_ASSIGNED.getPath(), event);
@@ -34,20 +89,19 @@ public class NotificationServiceImpl implements NotificationService {
         } else if (event.type() == UserNotificationType.INCOMING_REQUEST) {
             messagingTemplate.convertAndSend(Topic.INCOMING_REQUEST.getPath(), event);
         }
+
     }
 
     /**
-     * Sends a change notification based on the provided event. The method identifies
-     * the target type of the change and broadcasts the event to the corresponding
-     * messaging topic.
+     * Handles a change notification event by routing it to the appropriate messaging topic
+     * based on the target type of the event. The target type determines which topic the
+     * event should be sent to for broadcasting updates.
      *
-     * @param event the change notification event containing details about the type
-     *              of change, the target entity of the change, and additional
-     *              information to notify relevant subscribers
+     * @param event the change notification event containing details such as the process
+     *              item ID, change type, and target type
      */
-    @Override
-    public void sendChangeNotification(ChangeNotificationEvent event) {
-        log.info("Sending change message event {}", event);
+    private void performChangeNotification(ChangeNotificationEvent event){
+        log.info("Perform change message event {}", event);
 
         if (event.targetType() == TargetType.CUSTOMER_REQUEST) {
             messagingTemplate.convertAndSend(Topic.CUSTOMER_REQUEST_CHANGED.getPath(), event);

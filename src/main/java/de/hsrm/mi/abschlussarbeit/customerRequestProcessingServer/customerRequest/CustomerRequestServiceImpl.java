@@ -48,6 +48,7 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
      * @return the data transfer object of the saved customer request
      */
     @Override
+    @Transactional
     public CustomerRequestDto createRequest(CustomerRequestCreateDto request, List<MultipartFile> attachments) throws IOException {
         log.info("Creating request {}", request);
 
