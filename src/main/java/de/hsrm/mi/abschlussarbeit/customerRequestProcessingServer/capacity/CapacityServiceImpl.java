@@ -215,7 +215,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
                 .longValue();
 
         Calendar calendar = calendarService.getCalendarOfEmployee(employeeId, from, to);
-        Set<CalendarEntry> calendarEntries = calendar.getEntries();
+        List<CalendarEntry> calendarEntries = calendar.getEntries();
 
         long remainingTaskTimeInMinutes = ToMinutesCalculator.timeUnitToMinutes(task.getEstimatedTime(), task.getEstimationUnit());
         List<CalculatedCapacityCalendarEntryVO> calculatedSlots = new ArrayList<>();

@@ -8,8 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -23,7 +23,8 @@ public class Calendar {
     private Long id;
 
     @OneToMany(mappedBy = "calendar")
-    private Set<CalendarEntry> entries = new HashSet<>();
+    @OrderBy("id ASC")
+    private List<CalendarEntry> entries = new ArrayList<>();
 
     @OneToOne(mappedBy = "calendar")
     @NotNull

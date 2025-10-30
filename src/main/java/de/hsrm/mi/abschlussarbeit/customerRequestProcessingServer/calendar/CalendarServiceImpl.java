@@ -49,7 +49,7 @@ public class CalendarServiceImpl implements CalendarService {
     public CalendarDto getCalendarDtoOfEmployee(Long employeeId, LocalDate from, LocalDate to) {
         log.info("Getting calendar for employee {} from {} to {}", employeeId, from, to);
 
-        Set<CalendarEntry> filteredCalendarEntries = new HashSet<>();
+        List<CalendarEntry> filteredCalendarEntries = new ArrayList<>();
 
         Calendar calendar = calendarRepository.findByOwnerId(employeeId);
         if (calendar == null) {
@@ -83,7 +83,7 @@ public class CalendarServiceImpl implements CalendarService {
         List<Calendar> calendars = calendarRepository.findAll();
 
         calendars.forEach(calendar -> {
-            Set<CalendarEntry> filteredCalendarEntries = new HashSet<>();
+            List<CalendarEntry> filteredCalendarEntries = new ArrayList<>();
 
             calendar.getEntries().forEach(calendarEntry -> {
                 if (!calendarEntry.getDate().isBefore(from) && !calendarEntry.getDate().isAfter(to)) {
@@ -111,7 +111,7 @@ public class CalendarServiceImpl implements CalendarService {
      */
     @Override
     public Calendar getCalendarOfEmployee(Long employeeId, LocalDate from, LocalDate to) {
-        Set<CalendarEntry> filteredCalendarEntries = new HashSet<>();
+        List<CalendarEntry> filteredCalendarEntries = new ArrayList<>();
 
         Calendar calendar = calendarRepository.findByOwnerId(employeeId);
         if (calendar == null) {
