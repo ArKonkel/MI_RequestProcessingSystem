@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -70,7 +71,6 @@ public class TaskServiceImpl implements TaskService {
     /**
      * Retrieves all tasks from the task repository, ordered by creation date in descending order
      * and then by ID in descending order. The tasks are converted to a DTO format before returning.
-     *
      */
     @Override
     @Transactional(readOnly = true) //Needed because fetching blob
@@ -182,6 +182,14 @@ public class TaskServiceImpl implements TaskService {
                 throw new NotAllowedException("Task status cannot be changed if customer request is not ready for processing");
             }
 
+            if (updateDto.getStatus() == TaskStatus.IN_PROGRESS && !task.getBlockedBy().isEmpty()) {
+                for (Task blockedTask : task.getBlockedBy()) {
+                    if (blockedTask.getStatus() != TaskStatus.CLOSED) {
+                        throw new NotAllowedException("Task is blocked by other tasks, that are not closed yet. Cannot be set to in progress.");
+                    }
+                }
+            }
+
             if (updateDto.getStatus() == TaskStatus.CLOSED && task.getWorkingTimeInMinutes() <= 0) {
                 throw new NotAllowedException("Task cannot be closed if working time is 0 or less");
             }
@@ -246,7 +254,7 @@ public class TaskServiceImpl implements TaskService {
     /**
      * Updates the "isAlreadyPlanned" field of a task identified by the given task ID.
      *
-     * @param taskId the ID of the task whose "isAlreadyPlanned" status needs to be updated. Must not be null.
+     * @param taskId           the ID of the task whose "isAlreadyPlanned" status needs to be updated. Must not be null.
      * @param isAlreadyPlanned the new value to set for the "isAlreadyPlanned" flag. Must not be null.
      */
     @Override
@@ -257,6 +265,50 @@ public class TaskServiceImpl implements TaskService {
         Task task = getTaskById(taskId);
         task.setIsAlreadyPlanned(isAlreadyPlanned);
         taskRepository.save(task);
+    }
+
+    /**
+     * Adds a blocking relationship between two tasks, indicating that one task is blocked by another.
+     *
+     * Updates the statuses and relationships of both tasks and persists the changes.
+     * A notification is sent upon successful completion of the operation.
+     * Throws an exception if the tasks are not found or if the operation cannot be completed.
+     *
+     * @param taskId the ID of the task that will be marked as blocked.
+     * @param blockedByTaskId the ID of the task that will block the given task.
+     * @throws IllegalArgumentException if a task is set to block itself.
+     * @throws NotFoundException if either the task or the blocking task does not exist.
+     * @throws SaveException if an error occurs while saving the task relationships.
+     */
+    @Override
+    @Transactional
+    public void addBlockingTask(Long taskId, Long blockedByTaskId) {
+        log.info("Adding blocking task {} to task {}", blockedByTaskId, taskId);
+
+        if (Objects.equals(taskId, blockedByTaskId)) {
+            throw new IllegalArgumentException("Task cannot be blocked by itself");
+        }
+
+        if (!taskRepository.existsById(taskId) || !taskRepository.existsById(blockedByTaskId)) {
+            throw new NotFoundException("Task with id " + taskId + " not found");
+        }
+
+        Task task = getTaskById(taskId);
+        task.setStatus(TaskStatus.BLOCKED);
+
+        Task blockedByTask = getTaskById(blockedByTaskId);
+
+        task.getBlockedBy().add(blockedByTask);
+        blockedByTask.getBlocks().add(task);
+
+        try {
+            taskRepository.saveAll(List.of(task, blockedByTask));
+
+            notificationService.sendChangeNotification(new ChangeNotificationEvent(task.getId(), ChangeType.UPDATED, TargetType.TASK));
+        } catch (Exception e) {
+
+            throw new SaveException("Error while saving task " + taskId + " with message" + e);
+        }
     }
 
     /**

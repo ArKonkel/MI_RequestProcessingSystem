@@ -12,11 +12,17 @@ import org.mapstruct.Mapping;
 )
 public interface TaskMapper {
 
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "title", source = "title")
+    TaskReferenceDto toReferenceDto(Task task); //Needed to map the blocks and blockedBy fields
+
     @Mapping(target = "processItem", source = ".")
     @Mapping(target = "requestId", source = "request.id")
     @Mapping(target = "requestTitle", source = "request.title")
     @Mapping(target = "projectId", source = "project.id")
     @Mapping(target = "projectTitle", source = "project.title")
+    @Mapping(target = "blockedBy", source = "blockedBy")
+    @Mapping(target = "blocks", source = "blocks")
     TaskDto toDto(Task task);
 
     @Mapping(target = "title", source = "processItem.title")
@@ -30,5 +36,7 @@ public interface TaskMapper {
     @Mapping(target = "comments", ignore = true)
     @Mapping(target = "assignee", ignore = true)
     @Mapping(target = "attachments", ignore = true)
+    @Mapping(target = "blocks", ignore = true)
+    @Mapping(target = "blockedBy", ignore = true)
     Task toEntity(TaskDto taskDto);
 }

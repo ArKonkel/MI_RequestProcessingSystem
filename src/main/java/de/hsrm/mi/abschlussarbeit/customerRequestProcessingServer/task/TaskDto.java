@@ -7,6 +7,7 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.TimeUni
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 public record TaskDto(
@@ -23,5 +24,7 @@ public record TaskDto(
         String requestTitle,
         Long projectId,
         String projectTitle,
-        boolean isAlreadyPlanned
+        boolean isAlreadyPlanned,
+        List<TaskReferenceDto> blockedBy,
+        List<TaskReferenceDto> blocks
 ) {}

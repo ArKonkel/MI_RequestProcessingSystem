@@ -46,6 +46,16 @@ public class TaskController {
         return ResponseEntity.ok(task);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'PROJECT_PLANNER', 'CAPACITY_PLANNER', 'CUSTOMER_REQUEST_REVISER')")
+    @PostMapping("/{taskId}/{blockedByTaskId}")
+    ResponseEntity<Void> addBlockingTask(@PathVariable Long taskId, @PathVariable Long blockedByTaskId) {
+        log.info("REST request to add blocking task {} to task {}", blockedByTaskId, taskId);
+
+        taskService.addBlockingTask(taskId, blockedByTaskId);
+
+        return ResponseEntity.ok().build();
+    }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'TASK_REVISER')")
     @PostMapping("/{taskId}/workingTime")
     ResponseEntity<Void> addWorkingTime(@PathVariable Long taskId, @RequestParam BigDecimal workingTime, @RequestParam WorkingTimeUnit unit) {

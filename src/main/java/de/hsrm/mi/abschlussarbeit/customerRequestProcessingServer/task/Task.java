@@ -43,6 +43,17 @@ public class Task extends ProcessItem {
 
     private Boolean isAlreadyPlanned = false;
 
+    @ManyToMany
+    @JoinTable(
+            name = "task_blocking",
+            joinColumns = @JoinColumn(name = "blocking_task_id"),
+            inverseJoinColumns = @JoinColumn(name = "blocked_task_id")
+    )
+    private List<Task> blocks = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "blocks")
+    private List<Task> blockedBy = new ArrayList<>();
+
     @NotNull
     @Enumerated(EnumType.STRING)
     private Priority priority = Priority.MEDIUM;

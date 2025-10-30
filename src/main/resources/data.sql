@@ -171,7 +171,10 @@ VALUES
     (18, 4, 'HOUR', '2025-10-20', 'MEDIUM', 'OPEN', 14, 0, false),
     (19, 6, 'HOUR', '2025-10-22', 'HIGH', 'OPEN', 14, 0, false),
     (20, 3, 'HOUR', '2025-10-25', 'HIGH', 'OPEN', 15, 0, false),
-    (21, 2, 'HOUR', '2025-11-01', 'LOW', 'OPEN', 17, 0, false);
+    (21, 2, 'HOUR', '2025-11-01', 'LOW', 'BLOCKED', 17, 0, false);
+
+INSERT INTO task_blocking (blocking_task_id, blocked_task_id)
+VALUES (20, 21);
 
 --------------------------------- TASK_EXPERTISE ------------------------------------------------
 INSERT INTO task_expertise (task_id, expertise_id)

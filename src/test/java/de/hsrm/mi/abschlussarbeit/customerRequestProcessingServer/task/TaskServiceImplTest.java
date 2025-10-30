@@ -3,7 +3,9 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequest;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.customerRequest.CustomerRequestService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.globalExceptionHandler.NotAllowedException;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.ChangeType;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.NotificationService;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.notification.TargetType;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItemDto;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.Project;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.project.ProjectService;
@@ -25,6 +27,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -96,7 +99,9 @@ class TaskServiceWithoutMapperTest {
                 null,
                 1L,
                 null,
-                false
+                false,
+                List.of(),
+                List.of()
         );
         when(taskMapper.toDto(existingTask)).thenReturn(expectedDto);
 
@@ -181,4 +186,89 @@ class TaskServiceWithoutMapperTest {
         // THEN
         assertThrows(NotAllowedException.class, () -> taskService.updateTask(1L, updateDto));
     }
+
+    @Test
+    void updateTask_shouldThrowNotAllowedException_whenBlockingTasksAreNotFinished() {
+        // GIVEN
+        Project project = new Project();
+        project.setId(1L);
+
+        existingTask.setProject(project);
+
+        Task blockingTask1 = new Task();
+        blockingTask1.setId(2L);
+        blockingTask1.setStatus(TaskStatus.IN_PROGRESS);
+
+        Task blockingTask2 = new Task();
+        blockingTask2.setId(3L);
+        blockingTask2.setStatus(TaskStatus.CLOSED); //One is finished
+
+        existingTask.setBlockedBy(List.of(blockingTask2, blockingTask1));
+
+        UpdateTaskDto updateDto = UpdateTaskDto.builder()
+                .title("New Title")
+                .description("New Description")
+                .estimatedTime(BigDecimal.valueOf(8))
+                .estimationUnit(TimeUnit.HOUR)
+                .dueDate(LocalDate.of(2025, 12, 31))
+                .status(TaskStatus.IN_PROGRESS)
+                .priority(Priority.HIGH)
+                .acceptanceCriteria("Updated criteria")
+                .build();
+
+        User assignee = new User();
+        assignee.setId(42L);
+
+        // WHEN
+        when(taskRepository.findById(1L)).thenReturn(Optional.of(existingTask));
+        when(projectService.isProjectReadyForProcessing(existingTask.getProject().getId())).thenReturn(true);
+
+        // THEN
+        assertThrows(NotAllowedException.class, () -> taskService.updateTask(1L, updateDto));
+    }
+
+    @Test
+    void addBlockingTask_shouldAddRelationAndSendNotification() {
+        // GIVEN
+        Long taskId = 1L;
+        Long blockingTaskId = 2L;
+
+        Task task = new Task();
+        task.setId(taskId);
+        task.setStatus(TaskStatus.OPEN);
+        task.setBlockedBy(new java.util.ArrayList<>());
+        task.setBlocks(new java.util.ArrayList<>());
+
+        Task blockingTask = new Task();
+        blockingTask.setId(blockingTaskId);
+        blockingTask.setStatus(TaskStatus.OPEN);
+        blockingTask.setBlockedBy(new java.util.ArrayList<>());
+        blockingTask.setBlocks(new java.util.ArrayList<>());
+
+        // WHEN
+        when(taskRepository.existsById(taskId)).thenReturn(true);
+        when(taskRepository.existsById(blockingTaskId)).thenReturn(true);
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
+        when(taskRepository.findById(blockingTaskId)).thenReturn(Optional.of(blockingTask));
+
+        taskService.addBlockingTask(taskId, blockingTaskId);
+
+        // THEN
+        // Task should be blocked
+        assertEquals(TaskStatus.BLOCKED, task.getStatus());
+
+        // Task should reference blocking task
+        assertTrue(task.getBlockedBy().contains(blockingTask) );
+        assertTrue(blockingTask.getBlocks().contains(task));
+
+        // Sent update notification
+        verify(taskRepository).saveAll(List.of(task, blockingTask));
+        verify(notificationService).sendChangeNotification(
+                argThat(event ->
+                        event.processItemId().equals(taskId)
+                                && event.changeType() == ChangeType.UPDATED
+                                && event.targetType() == TargetType.TASK)
+        );
+    }
+
 }
