@@ -196,7 +196,6 @@ async function saveRequest() {
     if (editableRequest.value.classifiedAsProject == IsProjectClassification.YES && editableRequest.value.projects.length > 0) {
       dto.classifiedAsProject = undefined
     }
-    console.log(dto)
 
     await updateCustomerRequest(editableRequest.value.processItem.id, dto)
   } catch (err: any) {

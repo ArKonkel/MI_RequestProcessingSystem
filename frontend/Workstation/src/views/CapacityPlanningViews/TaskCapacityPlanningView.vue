@@ -216,7 +216,6 @@ function onDrop(dayDate: string, matchResult: CalculatedCapacitiesOfMatchDto) {
   // triggers rerendering
   matchResult.calculatedCalendarCapacities = [...matchResult.calculatedCalendarCapacities]
 
-  //console.log(`Eintrag "${entry.title}" von ${oldDate} nach ${dayDate} verschoben`)
   draggedEntry.value = null
 }
 
