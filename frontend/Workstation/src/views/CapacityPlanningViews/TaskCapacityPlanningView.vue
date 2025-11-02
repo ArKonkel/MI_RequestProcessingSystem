@@ -45,6 +45,7 @@ const matchResults = ref<MatchingEmployeeCapacitiesDtd | null>(null)
 const task = ref<TaskDtd | null>(null)
 
 const showOverbookingModal = ref(false);
+const showAfterDueDateModal = ref(false);
 
 const selectedUser = ref<UserDtd | null>(null)
 
@@ -253,13 +254,31 @@ function isOverbooking() {
 }
 
 
-async function modalContinue() {
+async function overBookingModalContinue() {
   showOverbookingModal.value = false;
   await performAssignment();
 }
 
-function modalAbort() {
+function overBookingModalAbort() {
   showOverbookingModal.value = false;
+}
+
+function isBookingAfterDueDate() {
+  if (!task.value) return;
+  if (!selectedMatchResult.value) return;
+
+  return selectedMatchResult.value.calculatedCalendarCapacities
+    .some(calendarCapacity => calendarCapacity.date > task.value!.dueDate!);
+}
+
+async function afterDueDateModalContinue() {
+  showAfterDueDateModal.value = false;
+
+  await performAssignment();
+}
+
+function afterDueDateModalAbort() {
+  showAfterDueDateModal.value = false;
 }
 
 async function performAssignment() {
@@ -280,6 +299,11 @@ async function assignEmployee() {
 
   if (isOverbooking()) {
     showOverbookingModal.value = true;
+    return;
+  }
+
+  if (isBookingAfterDueDate()) {
+    showAfterDueDateModal.value = true;
     return;
   }
 
@@ -395,6 +419,12 @@ async function confirmSplit() {
   ]
 }
 
+function isDueDate(date: string): boolean {
+  if (!task.value) return false
+
+  return task.value.dueDate === date;
+}
+
 </script>
 
 <template>
@@ -439,6 +469,7 @@ async function confirmSplit() {
             'border-l': index !== 0,
             'border-l-2 border-accent-foreground': isFridayToMonday(index),
             'bg-gray-200': isCurrentDay(day.date),
+            'bg-violet-300': isDueDate(day.date)
           }"
         >
           {{ day.label }}<br/>
@@ -552,13 +583,24 @@ async function confirmSplit() {
     </div>
   </div>
 
+
+  <Modal
+    title="Achtung: Fertigstellungsdatum überschritten"
+    :show="showAfterDueDateModal"
+    message="Die Aufgabe wurde nach dem festgelegten Fertigstellungsdatum geplant. Möchten Sie wirklich fortfahren?"
+    variant="warning"
+    @_continue="afterDueDateModalContinue"
+    @abort="afterDueDateModalAbort"
+  >
+  </Modal>
+
   <Modal
     title="Achtung: Überbuchung"
     :show="showOverbookingModal"
     message="Sie sind dabei einen Mitarbeitenden zu überbuchen. Möchten Sie wirklich fortfahren?"
     variant="warning"
-    @_continue="modalContinue"
-    @abort="modalAbort"
+    @_continue="overBookingModalContinue"
+    @abort="overBookingModalAbort"
   >
   </Modal>
 
