@@ -26,5 +26,6 @@ public record TaskDto(
         String projectTitle,
         boolean isAlreadyPlanned,
         List<TaskReferenceDto> blockedBy,
-        List<TaskReferenceDto> blocks
+        List<TaskReferenceDto> blocks,
+        List<LocalDate> calendarEntryDates
 ) {}

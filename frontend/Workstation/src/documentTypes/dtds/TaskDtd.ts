@@ -14,8 +14,8 @@ export interface TaskDtd {
   priority: Priority
   acceptanceCriteria: string
   status: TaskStatus
-  calendarEntryId: number | null
   expertise: ExpertiseDtd[]
+  calendarEntryDates: string[],
   requestId: number | null
   requestTitle: string | null
   projectId: number | null

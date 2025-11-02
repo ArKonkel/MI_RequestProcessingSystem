@@ -57,6 +57,7 @@ import {deletePlannedCapacity} from "@/services/capacityService.ts";
 import {Role} from "@/documentTypes/types/Role.ts";
 import Modal from "@/components/Modal.vue";
 import TaskSelect from "@/components/TaskSelect.vue";
+import {format, parseISO} from "date-fns";
 
 const userStore = useUserStore()
 const {hasAnyRole} = userStore
@@ -297,6 +298,23 @@ async function addBlockedByTask() {
     alertStore.show(`${msg}`, 'error')
   }
 }
+
+function determineFinishDate() {
+  if (!editableTask.value) return
+  if (!editableTask.value.calendarEntryDates || editableTask.value.calendarEntryDates.length === 0) return
+
+  //must be parsed to Date object to determine latest one
+  const maxTimestamp = Math.max(...editableTask.value.calendarEntryDates.map(date => new Date(date).getTime()))
+
+  return new Date(maxTimestamp)
+}
+
+function formatDate(date: string | undefined | null): string {
+  if (!date) return '';
+  const parsedDate = parseISO(date);
+  return format(parsedDate, 'dd.MM.yyyy');
+}
+
 </script>
 
 <template>
@@ -310,9 +328,12 @@ async function addBlockedByTask() {
               {{ editableTask.processItem.id }} - {{ editableTask.processItem.title }}
             </h2>
 
-            <div v-if="editableTask.isAlreadyPlanned" class="flex space-x-2">
-              <p>Geplant</p>
+            <div v-if="editableTask.isAlreadyPlanned" class="flex flex-col items-end space-x-2 text-right">
               <BookCheck class="stroke-1"/>
+              <p>Voraussichtlich fertiggestellt am:</p>
+              <div v-if="editableTask.calendarEntryDates && editableTask.calendarEntryDates.length > 0">
+                {{ formatDate(determineFinishDate()?.toISOString()) }}
+              </div>
             </div>
           </div>
           <div class="flex gap-2 mt-2">

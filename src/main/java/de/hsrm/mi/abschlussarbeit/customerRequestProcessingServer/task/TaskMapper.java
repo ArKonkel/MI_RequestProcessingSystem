@@ -1,8 +1,12 @@
 package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task;
 
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.calendar.CalendarEntry;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItemMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Mapper class for {@link Task} and {@link TaskDto}.
@@ -24,6 +28,7 @@ public interface TaskMapper {
     @Mapping(target = "projectTitle", source = "project.title")
     @Mapping(target = "blockedBy", source = "blockedBy")
     @Mapping(target = "blocks", source = "blocks")
+    @Mapping(target = "calendarEntryDates", source = "calendarEntry")
     TaskDto toDto(Task task);
 
     @Mapping(target = "title", source = "processItem.title")
@@ -40,4 +45,17 @@ public interface TaskMapper {
     @Mapping(target = "blocks", ignore = true)
     @Mapping(target = "blockedBy", ignore = true)
     Task toEntity(TaskDto taskDto);
+
+
+    /**
+     * Maps a list of CalendarEntries to a list of LocalDate objects.
+     */
+    default List<LocalDate> mapCalendarEntryDates(List<CalendarEntry> entries) {
+        if (entries == null) {
+            return List.of();
+        }
+        return entries.stream()
+                .map(CalendarEntry::getDate)
+                .toList();
+    }
 }

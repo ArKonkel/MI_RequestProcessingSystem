@@ -19,6 +19,7 @@ import {
 import {BookCheck} from "lucide-vue-next"
 import UserSelect from "@/components/UserSelect.vue";
 import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
+import {format, parseISO} from "date-fns";
 
 const taskStore = useTaskStore()
 const router = useRouter()
@@ -75,6 +76,22 @@ function formatDate(date: string | null) {
 function selectTask(task: TaskDtd) {
   taskStore.setSelectedTask(task.processItem.id)
   router.push({name: 'taskDetailView', params: {taskId: task.processItem.id}})
+}
+
+function determineFinishDate(taskToDetermine: TaskDtd): Date | undefined{
+  if (!taskToDetermine) return
+  if (!taskToDetermine.calendarEntryDates || taskToDetermine.calendarEntryDates.length === 0) return
+
+  //must be parsed to Date object to determine latest one
+  const maxTimestamp = Math.max(...taskToDetermine.calendarEntryDates.map(date => new Date(date).getTime()))
+
+  return new Date(maxTimestamp)
+}
+
+function formatDate_(date: string | undefined | null): string {
+  if (!date) return '';
+  const parsedDate = parseISO(date);
+  return format(parsedDate, 'dd.MM');
 }
 </script>
 
@@ -142,7 +159,10 @@ function selectTask(task: TaskDtd) {
                 {{ expertise.name }}
               </Badge>
             </div>
-            <div v-if="task.isAlreadyPlanned" class=" justify-end">
+            <div v-if="task.isAlreadyPlanned" class="flex space-x-2 justify-end">
+              <div class="text-sm" v-if="task.calendarEntryDates && task.calendarEntryDates.length > 0">
+                {{ formatDate_(determineFinishDate(task)?.toISOString()) }}
+              </div>
               <BookCheck class="stroke-1"/>
             </div>
           </div>
