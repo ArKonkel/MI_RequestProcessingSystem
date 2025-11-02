@@ -2,12 +2,12 @@
 import {computed, onMounted, onUnmounted, ref, watch} from 'vue'
 import {addDays, format, parseISO, subDays} from 'date-fns'
 import {de} from 'date-fns/locale'
-import {Star, CircleGauge, Clock} from 'lucide-vue-next'
+import {Star, CircleGauge, Clock, BookCheck} from 'lucide-vue-next'
 import {useRoute, useRouter} from 'vue-router'
 
 import {Badge} from '@/components/ui/badge'
 import {Button} from '@/components/ui/button'
-import {Card, CardHeader, CardTitle} from '@/components/ui/card'
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card'
 import {Avatar, AvatarFallback} from '@/components/ui/avatar'
 
 import type {
@@ -36,6 +36,7 @@ import {useAlertStore} from '@/stores/useAlertStore.ts'
 import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
 import UserSelect from "@/components/UserSelect.vue";
 import Modal from "@/components/Modal.vue";
+import type {TaskReferenceDtd} from "@/documentTypes/dtds/TaskReferenceDtd.ts";
 
 const route = useRoute()
 const router = useRouter()
@@ -46,6 +47,7 @@ const task = ref<TaskDtd | null>(null)
 
 const showOverbookingModal = ref(false);
 const showAfterDueDateModal = ref(false);
+const showBlockedTasksModal = ref(false);
 
 const selectedUser = ref<UserDtd | null>(null)
 
@@ -58,7 +60,7 @@ const bestMatchPoints = ref<number | null>(null)
 const draggedEntry = ref<CalculatedCapacityCalendarEntryDtd | null>(null)
 
 const showContextMenu = ref(false)
-const contextMenuPosition = ref({ x: 0, y: 0 })
+const contextMenuPosition = ref({x: 0, y: 0})
 const contextMenuTarget = ref<{
   day: { date: string; label: string }
   matchResult: CalculatedCapacitiesOfMatchDto
@@ -277,6 +279,45 @@ async function afterDueDateModalContinue() {
   await performAssignment();
 }
 
+function isBookingAfterBlockingTaskOrBlockingTaskNotPlanned() {
+  if (!task.value) return;
+  if (!selectedMatchResult.value) return;
+  if (!task.value.blockedBy || task.value.blockedBy.length == 0) return;
+
+  //When one of them is not planned yet
+  if (task.value.blockedBy.some(taskReference => !taskReference.isAlreadyPlanned)) {
+    return true
+  }
+
+  const earliestDateOfSelectedMatch = determineEarliestDate(selectedMatchResult.value.calculatedCalendarCapacities)
+  if (!earliestDateOfSelectedMatch) return
+
+  for (const taskReference of task.value.blockedBy) {
+    const finishDateOfBlockingTask = determineFinishDate(taskReference)
+
+    if (!finishDateOfBlockingTask) continue
+
+    //When one of them is planned, but will be finished after the selected match
+    if (earliestDateOfSelectedMatch < finishDateOfBlockingTask) {
+      return true
+    }
+  }
+
+  return false
+}
+
+async function afterBlockedTasksModalContinue() {
+  showBlockedTasksModal.value = false;
+
+  await performAssignment();
+}
+
+async function afterBlockedTasksModalAbort() {
+  showBlockedTasksModal.value = false;
+
+}
+
+
 function afterDueDateModalAbort() {
   showAfterDueDateModal.value = false;
 }
@@ -287,7 +328,7 @@ async function performAssignment() {
   try {
     await assignTaskToEmployee(taskId, selectedMatchResult.value);
     alertStore.show('Aufgabe erfolgreich zugewiesen', 'success');
-    await router.push({ name: 'taskDetailView', params: { taskId: task.value?.processItem.id } });
+    await router.push({name: 'taskDetailView', params: {taskId: task.value?.processItem.id}});
   } catch (error: any) {
     alertStore.show(error.response?.data || 'Unbekannter Fehler', 'error');
   }
@@ -297,13 +338,18 @@ async function performAssignment() {
 async function assignEmployee() {
   if (!selectedMatchResult.value) return;
 
-  if (isOverbooking()) {
-    showOverbookingModal.value = true;
+  if (isBookingAfterBlockingTaskOrBlockingTaskNotPlanned()){
+    showBlockedTasksModal.value = true;
     return;
   }
 
   if (isBookingAfterDueDate()) {
     showAfterDueDateModal.value = true;
+    return;
+  }
+
+  if (isOverbooking()) {
+    showOverbookingModal.value = true;
     return;
   }
 
@@ -373,12 +419,15 @@ function formatDate(date: string | undefined | null): string {
   return format(parsedDate, 'dd.MM.yyyy');
 }
 
-function handleRightClick(day: { date: string; label: string }, matchResult: CalculatedCapacitiesOfMatchDto, event: MouseEvent, entry?: CalculatedCapacityCalendarEntryDtd) {
+function handleRightClick(day: {
+  date: string;
+  label: string
+}, matchResult: CalculatedCapacitiesOfMatchDto, event: MouseEvent, entry?: CalculatedCapacityCalendarEntryDtd) {
   event.preventDefault()
   console.log('RIGHTCLICK ENTRY', entry)
   showContextMenu.value = true
-  contextMenuPosition.value = { x: event.clientX, y: event.clientY }
-  contextMenuTarget.value = { day, matchResult, entry }
+  contextMenuPosition.value = {x: event.clientX, y: event.clientY}
+  contextMenuTarget.value = {day, matchResult, entry}
 }
 
 function openSplitModal() {
@@ -425,6 +474,24 @@ function isDueDate(date: string): boolean {
   return task.value.dueDate === date;
 }
 
+function determineEarliestDate(calculatedCalendarEntry: CalculatedCapacityCalendarEntryDtd[]): Date | undefined {
+  if (!calculatedCalendarEntry) return
+
+  const minTimestamp = Math.min(...calculatedCalendarEntry.map(entry => new Date(entry.date).getTime()))
+
+  return new Date(minTimestamp)
+}
+
+function determineFinishDate(taskToDetermine: TaskReferenceDtd): Date | undefined {
+  if (!taskToDetermine) return
+  if (!taskToDetermine.calendarEntryDates || taskToDetermine.calendarEntryDates.length === 0) return
+
+  //must be parsed to Date object to determine latest one
+  const maxTimestamp = Math.max(...taskToDetermine.calendarEntryDates.map(date => new Date(date).getTime()))
+
+  return new Date(maxTimestamp)
+}
+
 </script>
 
 <template>
@@ -448,6 +515,37 @@ function isDueDate(date: string): boolean {
           <span>Geplant bis: <strong>{{ formatDate(task?.dueDate) }}</strong></span>
         </div>
       </CardHeader>
+      <CardContent>
+        <div v-if="(task?.blockedBy?.length ?? 0) > 0" class="text-xm">Blockiert von:</div>
+        <div v-for="taskReference in task?.blockedBy" :key="taskReference.id">
+          <RouterLink :to="`/tasks/${taskReference.id}`" class="block">
+            <div
+              class="flex items-center justify-between border p-2 rounded cursor-pointer hover:bg-accent/20"
+            >
+              <div class="flex items-center gap-2">
+                <span>{{ taskReference.id }}</span>
+                <span class="font-semibold">{{ taskReference.title }}</span>
+              </div>
+              <div v-if="taskReference.isAlreadyPlanned" class="flex flex-row space-x-2">
+                <BookCheck class="stroke-1"/>
+                <div class="text-sm"
+                     v-if="taskReference.calendarEntryDates && taskReference.calendarEntryDates.length > 0">
+                  {{ formatDate(determineFinishDate(taskReference)?.toISOString()) }}
+                </div>
+              </div>
+
+              <div class="text-xs" v-if="taskReference.dueDate">
+                <p>Geplant bis:</p>
+                <span>{{ formatDate(taskReference.dueDate) }}</span>
+              </div>
+
+              <Badge variant="secondary">{{ taskReference.status }}</Badge>
+
+            </div>
+          </RouterLink>
+        </div>
+
+      </CardContent>
     </Card>
 
     <!-- Navigation -->
@@ -541,7 +639,7 @@ function isDueDate(date: string): boolean {
               matchResult.employee.workingHoursPerDay - (sumEntriesForDay(matchResult, day.date) / 60)
             }}h
             <div class="pl-1">
-            <Clock class="w-3 h-3"/>
+              <Clock class="w-3 h-3"/>
             </div>
           </div>
           <!-- calculated entries -->
@@ -583,6 +681,16 @@ function isDueDate(date: string): boolean {
     </div>
   </div>
 
+
+  <Modal
+    title="Achtung: Blockierende Aufgaben"
+    :show="showBlockedTasksModal"
+    message="Es bestehen Blockierende Aufgaben die entweder nicht geplant sind oder nicht rechtzeitig vor der Bearbeitung dieser Aufgabe fertig werden. Möchten Sie wirklich fortfahren?"
+    variant="warning"
+    @_continue="afterBlockedTasksModalContinue"
+    @abort="afterBlockedTasksModalAbort"
+  >
+  </Modal>
 
   <Modal
     title="Achtung: Fertigstellungsdatum überschritten"
