@@ -42,7 +42,7 @@ async function handleLogin(event) {
     }
   } catch (err) {
     console.error(err)
-    errorMsg.value = 'Login fehlgeschlagen.'
+    errorMsg.value = 'Benutzername oder Passwort falsch.'
   }
 }
 </script>
