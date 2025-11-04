@@ -559,7 +559,7 @@ function formatDate(date: string | undefined | null): string {
       </div>
 
       <div>
-        <label class="text-sm font-semibold">Aufgewandte Zeit (min)</label>
+        <label class="text-sm font-semibold">Aufgewendete Zeit (min)</label>
         <div class="flex space-x-2">
           <Input type="number" v-model="workingTimeInMinutes" disabled/>
 

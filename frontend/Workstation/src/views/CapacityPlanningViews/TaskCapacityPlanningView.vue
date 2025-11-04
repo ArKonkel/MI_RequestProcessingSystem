@@ -48,6 +48,7 @@ const task = ref<TaskDtd | null>(null)
 const showOverbookingModal = ref(false);
 const showAfterDueDateModal = ref(false);
 const showBlockedTasksModal = ref(false);
+const showBookingInPastModal = ref(false);
 
 const selectedUser = ref<UserDtd | null>(null)
 
@@ -306,6 +307,34 @@ function isBookingAfterBlockingTaskOrBlockingTaskNotPlanned() {
   return false
 }
 
+function isBookingInPast(){
+    if (!task.value) return;
+    if (!selectedMatchResult.value) return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); //Needed so the hours doesnt count
+
+    const earliestDateOfSelectedMatch = determineEarliestDate(selectedMatchResult.value.calculatedCalendarCapacities)
+    if (!earliestDateOfSelectedMatch) return
+    earliestDateOfSelectedMatch.setHours(0, 0, 0, 0);
+
+    if (earliestDateOfSelectedMatch < today) {
+      return true
+    }
+
+    return false
+}
+
+async function afterBookingInPastModalContinue() {
+  showBookingInPastModal.value = false;
+
+  await performAssignment();
+}
+
+async function afterBookingInPastModalAbort() {
+  showBookingInPastModal.value = false;
+}
+
 async function afterBlockedTasksModalContinue() {
   showBlockedTasksModal.value = false;
 
@@ -337,6 +366,11 @@ async function performAssignment() {
 
 async function assignEmployee() {
   if (!selectedMatchResult.value) return;
+
+  if (isBookingInPast()){
+    showBookingInPastModal.value = true;
+    return;
+  }
 
   if (isBookingAfterBlockingTaskOrBlockingTaskNotPlanned()){
     showBlockedTasksModal.value = true;
@@ -680,6 +714,18 @@ function determineFinishDate(taskToDetermine: TaskReferenceDtd): Date | undefine
       <Button class="cursor-pointer" @click="assignEmployee">Zuweisen</Button>
     </div>
   </div>
+
+  <!-- Modals -->
+
+  <Modal
+    title="Achtung: Buchung liegt in der Vergangenheit"
+    :show="showBookingInPastModal"
+    message="Sie versuchen eine Buchung in der Vergangenheit vorzunehmen. Möchten Sie wirklich fortfahren?"
+    variant="warning"
+    @_continue="afterBookingInPastModalContinue"
+    @abort="afterBookingInPastModalAbort"
+  >
+  </Modal>
 
 
   <Modal
