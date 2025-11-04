@@ -519,7 +519,6 @@ function formatDate(date: string | undefined | null): string {
                 Role.PROJECT_PLANNER,
                 Role.CAPACITY_PLANNER,
                 Role.TASK_REVISER,
-                Role.CUSTOMER_REQUEST_REVISER,
               ])
             "
           >
@@ -547,7 +546,6 @@ function formatDate(date: string | undefined | null): string {
                 Role.PROJECT_PLANNER,
                 Role.CAPACITY_PLANNER,
                 Role.TASK_REVISER,
-                Role.CUSTOMER_REQUEST_REVISER,
               ])
             "
           >
@@ -597,7 +595,6 @@ function formatDate(date: string | undefined | null): string {
                   Role.PROJECT_PLANNER,
                   Role.CAPACITY_PLANNER,
                   Role.TASK_REVISER,
-                  Role.CUSTOMER_REQUEST_REVISER,
                 ])
               "
             >
