@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import {useAlertStore} from '@/stores/useAlertStore'
-import {Alert, AlertDescription, AlertTitle} from '@/components/ui/alert'
-import {useRouter} from 'vue-router'
+import { useAlertStore } from '@/stores/useAlertStore'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { useRouter } from 'vue-router'
 
 const alertStore = useAlertStore()
 const router = useRouter()
@@ -48,8 +48,12 @@ function navigate(link?: string) {
         {{ notification.message }}
       </AlertDescription>
       <div class="cursor-pointer flex">
-        <a href="#" v-if="notification.link" class="underline text-sm text-blue-700"
-           @click.prevent="navigate(notification.link)">
+        <a
+          href="#"
+          v-if="notification.link"
+          class="underline text-sm text-blue-700"
+          @click.prevent="navigate(notification.link)"
+        >
           dorthin
         </a>
       </div>

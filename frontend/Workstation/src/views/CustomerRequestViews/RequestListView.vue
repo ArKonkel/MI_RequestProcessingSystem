@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import {computed, onMounted, ref, watch} from 'vue'
-import {useRequestStore} from '@/stores/requestStore.ts'
-import {ScrollArea} from '@/components/ui/scroll-area'
-import {Card, CardContent, CardFooter, CardHeader, CardTitle} from '@/components/ui/card'
-import {Badge} from '@/components/ui/badge'
-import type {RequestDtd} from '@/documentTypes/dtds/RequestDtd.ts'
-import {CategoryLabel} from '@/documentTypes/types/Category.ts'
-import {getPriorityColor, PriorityLabel} from '@/documentTypes/types/Priority.ts'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRequestStore } from '@/stores/requestStore.ts'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import type { RequestDtd } from '@/documentTypes/dtds/RequestDtd.ts'
+import { CategoryLabel } from '@/documentTypes/types/Category.ts'
+import { getPriorityColor, PriorityLabel } from '@/documentTypes/types/Priority.ts'
 import {
   Select,
   SelectContent,
@@ -14,10 +14,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {RequestStatus, RequestStatusLabel} from '@/documentTypes/types/RequestStatus.ts'
-import {useRoute, useRouter} from 'vue-router'
-import UserSelect from "@/components/UserSelect.vue";
-import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
+import { RequestStatus, RequestStatusLabel } from '@/documentTypes/types/RequestStatus.ts'
+import { useRoute, useRouter } from 'vue-router'
+import UserSelect from '@/components/UserSelect.vue'
+import type { UserDtd } from '@/documentTypes/dtds/UserDtd.ts'
 
 const requestStore = useRequestStore()
 const selectedStatus = ref<RequestStatus | null>(null) // Status-Filter
@@ -37,7 +37,7 @@ watch(
       requestStore.setSelectedRequest(Number(requestId))
     }
   },
-  {immediate: true},
+  { immediate: true },
 )
 
 // Computed: gefilterte Requests nach Status und Zugewiesen an
@@ -46,8 +46,7 @@ const filteredRequests = computed(() => {
 
   if (selectedUser.value?.id === -1) {
     allRequests = allRequests.filter((r) => r.processItem.assignee === null)
-  }
-  else if (selectedUser.value) {
+  } else if (selectedUser.value) {
     allRequests = allRequests.filter((r) => {
       if (r.processItem.assignee === null) return false
       return r.processItem.assignee.id === selectedUser.value?.id
@@ -72,18 +71,23 @@ function formatDate(date: string | null) {
 
 function selectRequest(request: RequestDtd) {
   requestStore.setSelectedRequest(request.processItem.id)
-  router.push({name: 'requestDetailView', params: {requestId: request.processItem.id}})
+  router.push({ name: 'requestDetailView', params: { requestId: request.processItem.id } })
 }
 </script>
 
 <template>
   <div class="flex flex-1 mb-4 w-full justify-between space-x-2">
-    <UserSelect v-model="selectedUser" placeholder="Zugewiesen an.." label=""
-                not-selected-text="keine Filterung" with-not-assigned-field/>
+    <UserSelect
+      v-model="selectedUser"
+      placeholder="Zugewiesen an.."
+      label=""
+      not-selected-text="keine Filterung"
+      with-not-assigned-field
+    />
 
     <Select v-model="selectedStatus">
       <SelectTrigger>
-        <SelectValue placeholder="Alle Status"/>
+        <SelectValue placeholder="Alle Status" />
       </SelectTrigger>
       <SelectContent>
         <SelectItem :value="null">Alle Status</SelectItem>

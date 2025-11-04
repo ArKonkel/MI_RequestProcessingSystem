@@ -3,7 +3,7 @@ import type { Category } from '@/documentTypes/types/Category.ts'
 import type { RequestStatus } from '@/documentTypes/types/RequestStatus.ts'
 import type { Chargeable } from '@/documentTypes/types/Chargeable.ts'
 import type { Priority } from '@/documentTypes/types/Priority.ts'
-import type {IsProjectClassification} from "@/documentTypes/types/IsProjectClassification.ts";
+import type { IsProjectClassification } from '@/documentTypes/types/IsProjectClassification.ts'
 
 export interface UpdateCustomerRequestDtd {
   title?: string

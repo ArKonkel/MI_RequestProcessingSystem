@@ -1,5 +1,5 @@
-import type {UserNotificationType} from "@/documentTypes/types/UserNotificationType.ts";
-import type {TargetType} from "@/documentTypes/types/TargetType.ts";
+import type { UserNotificationType } from '@/documentTypes/types/UserNotificationType.ts'
+import type { TargetType } from '@/documentTypes/types/TargetType.ts'
 
 export interface UserNotificationEvent {
   type: UserNotificationType

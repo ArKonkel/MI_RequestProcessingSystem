@@ -47,8 +47,8 @@ import ProjectSelect from '@/components/ProjectSelect.vue'
 import type { CreateDependencyDtd } from '@/documentTypes/dtds/CreateDependencyDtd.ts'
 import type { UserDtd } from '@/documentTypes/dtds/UserDtd.ts'
 import AttachmentList from '@/components/AttachmentList.vue'
-import {useUserStore} from "@/stores/userStore.ts";
-import {Role} from "@/documentTypes/types/Role.ts";
+import { useUserStore } from '@/stores/userStore.ts'
+import { Role } from '@/documentTypes/types/Role.ts'
 
 const userStore = useUserStore()
 const { hasRole, hasAnyRole } = userStore
@@ -147,8 +147,8 @@ async function saveProject() {
 async function addComment() {
   if (!editableProject.value || !commentText.value) return
 
-  if (userStore.user === null){
-    console.log("user is null")
+  if (userStore.user === null) {
+    console.log('user is null')
     return
   }
 
@@ -366,7 +366,9 @@ function openRequest(reqId: number) {
                   class="flex-1"
                 />
                 <Button class="cursor-pointer" @click="addTaskToProject">Erstellen</Button>
-                <Button class="cursor-pointer" variant="ghost" @click="cancelTask">Abbrechen</Button>
+                <Button class="cursor-pointer" variant="ghost" @click="cancelTask"
+                  >Abbrechen</Button
+                >
               </div>
 
               <div v-if="hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER])" class="flex justify-end">
@@ -415,7 +417,9 @@ function openRequest(reqId: number) {
                   <ProjectSelect v-model="selectedDependencyProject" />
 
                   <Button class="cursor-pointer" @click="addDependencyToProject">Erstellen</Button>
-                  <Button class="cursor-pointer" variant="ghost" @click="cancelDependency">Abbrechen</Button>
+                  <Button class="cursor-pointer" variant="ghost" @click="cancelDependency"
+                    >Abbrechen</Button
+                  >
                 </div>
               </div>
               <div v-if="hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER])" class="flex justify-end">
@@ -437,7 +441,11 @@ function openRequest(reqId: number) {
     <div class="w-[200px] space-y-4 p-4 border-l-2 border-accent-200 h-screen">
       <div>
         <label class="text-sm font-semibold">Status</label>
-        <Select :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER])" v-model="editableProject.status" @update:modelValue="saveProject">
+        <Select
+          :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER])"
+          v-model="editableProject.status"
+          @update:modelValue="saveProject"
+        >
           <SelectTrigger>
             <SelectValue placeholder="Status wählen" />
           </SelectTrigger>
@@ -453,7 +461,11 @@ function openRequest(reqId: number) {
         </Select>
       </div>
 
-      <UserSelect v-model="assignee" :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER])" @update:modelValue="updateAssignee" />
+      <UserSelect
+        v-model="assignee"
+        :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER])"
+        @update:modelValue="updateAssignee"
+      />
     </div>
   </div>
 </template>

@@ -3,7 +3,7 @@ import type { ExpertiseDtd } from '@/documentTypes/dtds/ExpertiseDtd.ts'
 import type { TaskStatus } from '@/documentTypes/types/TaskStatus.ts'
 import type { Priority } from '@/documentTypes/types/Priority.ts'
 import type { TimeUnit } from '@/documentTypes/types/TimeUnit.ts'
-import type {TaskReferenceDtd} from "@/documentTypes/dtds/TaskReferenceDtd.ts";
+import type { TaskReferenceDtd } from '@/documentTypes/dtds/TaskReferenceDtd.ts'
 
 export interface TaskDtd {
   processItem: ProcessItemDtd
@@ -15,7 +15,7 @@ export interface TaskDtd {
   acceptanceCriteria: string
   status: TaskStatus
   expertise: ExpertiseDtd[]
-  calendarEntryDates: string[],
+  calendarEntryDates: string[]
   requestId: number | null
   requestTitle: string | null
   projectId: number | null

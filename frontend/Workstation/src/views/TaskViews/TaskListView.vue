@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import {computed, onMounted, ref, watch} from 'vue'
-import {useTaskStore} from '@/stores/taskStore.ts'
-import {useRoute, useRouter} from 'vue-router'
-import {ScrollArea} from '@/components/ui/scroll-area'
-import {Card, CardContent, CardFooter, CardHeader, CardTitle} from '@/components/ui/card'
-import {Badge} from '@/components/ui/badge'
-import type {TaskDtd} from '@/documentTypes/dtds/TaskDtd.ts'
-import {getPriorityColor, PriorityLabel} from '@/documentTypes/types/Priority.ts'
-import {TaskStatus, TaskStatusLabel} from '@/documentTypes/types/TaskStatus.ts'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useTaskStore } from '@/stores/taskStore.ts'
+import { useRoute, useRouter } from 'vue-router'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import type { TaskDtd } from '@/documentTypes/dtds/TaskDtd.ts'
+import { getPriorityColor, PriorityLabel } from '@/documentTypes/types/Priority.ts'
+import { TaskStatus, TaskStatusLabel } from '@/documentTypes/types/TaskStatus.ts'
 import {
   Select,
   SelectContent,
@@ -16,10 +16,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-import {BookCheck} from "lucide-vue-next"
-import UserSelect from "@/components/UserSelect.vue";
-import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
-import {format, parseISO} from "date-fns";
+import { BookCheck } from 'lucide-vue-next'
+import UserSelect from '@/components/UserSelect.vue'
+import type { UserDtd } from '@/documentTypes/dtds/UserDtd.ts'
+import { format, parseISO } from 'date-fns'
 
 const taskStore = useTaskStore()
 const router = useRouter()
@@ -40,7 +40,7 @@ watch(
       taskStore.setSelectedTask(Number(taskId))
     }
   },
-  {immediate: true},
+  { immediate: true },
 )
 
 // Gefilterte Tasks nach Status
@@ -49,8 +49,7 @@ const filteredTasks = computed(() => {
 
   if (selectedUser.value?.id === -1) {
     allTasks = allTasks.filter((t) => t.processItem.assignee === null)
-  }
-  else if (selectedUser.value) {
+  } else if (selectedUser.value) {
     allTasks = allTasks.filter((t) => {
       if (t.processItem.assignee === null) return false
       return t.processItem.assignee.id === selectedUser.value?.id
@@ -75,34 +74,41 @@ function formatDate(date: string | null) {
 
 function selectTask(task: TaskDtd) {
   taskStore.setSelectedTask(task.processItem.id)
-  router.push({name: 'taskDetailView', params: {taskId: task.processItem.id}})
+  router.push({ name: 'taskDetailView', params: { taskId: task.processItem.id } })
 }
 
-function determineFinishDate(taskToDetermine: TaskDtd): Date | undefined{
+function determineFinishDate(taskToDetermine: TaskDtd): Date | undefined {
   if (!taskToDetermine) return
   if (!taskToDetermine.calendarEntryDates || taskToDetermine.calendarEntryDates.length === 0) return
 
   //must be parsed to Date object to determine latest one
-  const maxTimestamp = Math.max(...taskToDetermine.calendarEntryDates.map(date => new Date(date).getTime()))
+  const maxTimestamp = Math.max(
+    ...taskToDetermine.calendarEntryDates.map((date) => new Date(date).getTime()),
+  )
 
   return new Date(maxTimestamp)
 }
 
 function formatDate_(date: string | undefined | null): string {
-  if (!date) return '';
-  const parsedDate = parseISO(date);
-  return format(parsedDate, 'dd.MM');
+  if (!date) return ''
+  const parsedDate = parseISO(date)
+  return format(parsedDate, 'dd.MM')
 }
 </script>
 
 <template>
   <div class="flex flex-1 mb-4 w-full justify-between space-x-2">
-    <UserSelect v-model="selectedUser" placeholder="Zugewiesen an.." label=""
-                not-selected-text="keine Filterung" with-not-assigned-field/>
+    <UserSelect
+      v-model="selectedUser"
+      placeholder="Zugewiesen an.."
+      label=""
+      not-selected-text="keine Filterung"
+      with-not-assigned-field
+    />
 
     <Select v-model="selectedStatus">
       <SelectTrigger>
-        <SelectValue placeholder="Alle Status"/>
+        <SelectValue placeholder="Alle Status" />
       </SelectTrigger>
       <SelectContent>
         <SelectItem :value="null">Alle Status</SelectItem>
@@ -148,7 +154,7 @@ function formatDate_(date: string | undefined | null): string {
         <CardFooter class="flex flex-col items-start gap-2">
           <p class="text-sm text-muted-foreground">Fällig: {{ formatDate(task.dueDate) }}</p>
 
-          <div class="w-full flex justify-between" >
+          <div class="w-full flex justify-between">
             <div class="flex flex-wrap gap-2">
               <Badge
                 v-for="expertise in task.expertise"
@@ -160,10 +166,13 @@ function formatDate_(date: string | undefined | null): string {
               </Badge>
             </div>
             <div v-if="task.isAlreadyPlanned" class="flex space-x-2 justify-end">
-              <div class="text-sm" v-if="task.calendarEntryDates && task.calendarEntryDates.length > 0">
+              <div
+                class="text-sm"
+                v-if="task.calendarEntryDates && task.calendarEntryDates.length > 0"
+              >
                 {{ formatDate_(determineFinishDate(task)?.toISOString()) }}
               </div>
-              <BookCheck class="stroke-1"/>
+              <BookCheck class="stroke-1" />
             </div>
           </div>
         </CardFooter>

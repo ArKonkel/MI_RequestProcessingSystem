@@ -4,8 +4,8 @@ import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import AppSidebar from '@/components/AppSidebar.vue'
 import ErrorAlert from '@/components/ErrorAlert.vue'
 
-import {onMounted} from "vue";
-import {startListeningToNotifications} from "@/services/notificationService.ts";
+import { onMounted } from 'vue'
+import { startListeningToNotifications } from '@/services/notificationService.ts'
 
 onMounted(async () => {
   await startListeningToNotifications()

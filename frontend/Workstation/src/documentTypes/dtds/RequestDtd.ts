@@ -7,11 +7,11 @@ import type { Chargeable } from '@/documentTypes/types/Chargeable.ts'
 import type { TimeUnit } from '@/documentTypes/types/TimeUnit.ts'
 import type { TaskDtd } from '@/documentTypes/dtds/TaskDtd.ts'
 import type { ProjectDtd } from '@/documentTypes/dtds/ProjectDtd.ts'
-import type {IsProjectClassification} from "@/documentTypes/types/IsProjectClassification.ts";
+import type { IsProjectClassification } from '@/documentTypes/types/IsProjectClassification.ts'
 
 export interface RequestDtd {
-  contactFirstName: string,
-  contactLastName: string,
+  contactFirstName: string
+  contactLastName: string
   processItem: ProcessItemDtd
   priority: Priority
   estimatedScope: number

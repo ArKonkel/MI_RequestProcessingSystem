@@ -4,7 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { ref } from 'vue'
-import {downloadAttachment, uploadAttachment} from '@/services/processItemService.ts'
+import { downloadAttachment, uploadAttachment } from '@/services/processItemService.ts'
 import { useAlertStore } from '@/stores/useAlertStore.ts'
 import { useFileDialog } from '@vueuse/core'
 

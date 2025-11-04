@@ -56,4 +56,3 @@ export async function downloadAttachment(fileId: string): Promise<void> {
   link.remove()
   window.URL.revokeObjectURL(url)
 }
-

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {Calendar, ClipboardList, Inbox, User, CalendarCog} from 'lucide-vue-next'
+import { Calendar, ClipboardList, Inbox, User, CalendarCog } from 'lucide-vue-next'
 
 import {
   Sidebar,
@@ -12,15 +12,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import {useRoute} from 'vue-router'
-import {useUserStore} from "@/stores/userStore.ts";
-import LoggedInCard from "@/components/LoggedInCard.vue";
-import {Role} from "@/documentTypes/types/Role.ts";
-
+import { useRoute } from 'vue-router'
+import { useUserStore } from '@/stores/userStore.ts'
+import LoggedInCard from '@/components/LoggedInCard.vue'
+import { Role } from '@/documentTypes/types/Role.ts'
 
 const route = useRoute()
 const userStore = useUserStore()
-const {hasAnyRole} = userStore
+const { hasAnyRole } = userStore
 
 interface SidebarItem {
   title: string
@@ -34,13 +33,25 @@ const items: SidebarItem[] = [
     title: 'Kundenanfragen',
     url: '/requests',
     icon: Inbox,
-    allowedRoles: [Role.ADMIN, Role.CAPACITY_PLANNER, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER, Role.TASK_REVISER],
+    allowedRoles: [
+      Role.ADMIN,
+      Role.CAPACITY_PLANNER,
+      Role.PROJECT_PLANNER,
+      Role.CUSTOMER_REQUEST_REVISER,
+      Role.TASK_REVISER,
+    ],
   },
   {
     title: 'Aufgaben',
     url: '/tasks',
     icon: ClipboardList,
-    allowedRoles: [Role.ADMIN, Role.CAPACITY_PLANNER, Role.TASK_REVISER, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER],
+    allowedRoles: [
+      Role.ADMIN,
+      Role.CAPACITY_PLANNER,
+      Role.TASK_REVISER,
+      Role.PROJECT_PLANNER,
+      Role.CUSTOMER_REQUEST_REVISER,
+    ],
   },
   {
     title: 'Projekte',
@@ -60,10 +71,8 @@ const items: SidebarItem[] = [
     icon: Calendar,
     allowedRoles: [Role.ADMIN, Role.CAPACITY_PLANNER],
   },
-
 ]
 </script>
-
 
 <template>
   <Sidebar>
@@ -72,20 +81,17 @@ const items: SidebarItem[] = [
         <SidebarGroupLabel>Navigation</SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
-            <SidebarMenuItem
-              v-for="item in items"
-              :key="item.title"
-            >
+            <SidebarMenuItem v-for="item in items" :key="item.title">
               <SidebarMenuButton v-if="hasAnyRole(item.allowedRoles)" asChild>
                 <router-link
                   :to="item.url"
                   class="flex items-center gap-2 rounded-md px-3 py-2 transition-colors"
                   :class="{
                     'bg-gray-200 text-gray-900': route.path.startsWith(item.url),
-                    'text-gray-600 hover:bg-gray-100': !route.path.startsWith(item.url)
+                    'text-gray-600 hover:bg-gray-100': !route.path.startsWith(item.url),
                   }"
                 >
-                  <component :is="item.icon" class="w-5 h-5"/>
+                  <component :is="item.icon" class="w-5 h-5" />
                   <span>{{ item.title }}</span>
                 </router-link>
               </SidebarMenuButton>
@@ -96,7 +102,7 @@ const items: SidebarItem[] = [
     </SidebarContent>
 
     <SidebarFooter class="border-t">
-      <LoggedInCard/>
+      <LoggedInCard />
     </SidebarFooter>
   </Sidebar>
 </template>

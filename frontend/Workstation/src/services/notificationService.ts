@@ -1,9 +1,9 @@
-import {Client} from "@stomp/stompjs";
-import type {UserNotificationEvent} from "@/documentTypes/dtds/UserNotificationEvent.ts";
-import {useAlertStore} from "@/stores/useAlertStore.ts";
-import {useUserStore} from "@/stores/userStore.ts";
-import {TargetType} from "@/documentTypes/types/TargetType.ts";
-import {Role} from "@/documentTypes/types/Role.ts";
+import { Client } from '@stomp/stompjs'
+import type { UserNotificationEvent } from '@/documentTypes/dtds/UserNotificationEvent.ts'
+import { useAlertStore } from '@/stores/useAlertStore.ts'
+import { useUserStore } from '@/stores/userStore.ts'
+import { TargetType } from '@/documentTypes/types/TargetType.ts'
+import { Role } from '@/documentTypes/types/Role.ts'
 
 const wsurl = `/api/stompbroker`
 const DEST_ASSIGNED = '/topic/processItem-assigned'
@@ -17,7 +17,7 @@ export async function startListeningToNotifications() {
   const userStore = useUserStore()
 
   if (!stompClient) {
-    stompClient = new Client({brokerURL: wsurl})
+    stompClient = new Client({ brokerURL: wsurl })
     stompClient.onWebSocketError = (event) => {
       throw new Error('WebSocket Error: ' + event)
     }
@@ -34,13 +34,18 @@ export async function startListeningToNotifications() {
         const payload: UserNotificationEvent = JSON.parse(message.body)
 
         if (!userStore.user) {
-          alertStore.show("Nicht eingeloggt", 'error')
+          alertStore.show('Nicht eingeloggt', 'error')
           return
         }
 
         const link = determineLink(payload)
         if (payload.userIdsToNotify.includes(userStore.user?.id)) {
-          alertStore.show(`Zuweisung erhalten: ${payload.targetType} - ${payload.processItemId}: ${payload.processItemTitle}`, 'info', 8000, link)
+          alertStore.show(
+            `Zuweisung erhalten: ${payload.targetType} - ${payload.processItemId}: ${payload.processItemTitle}`,
+            'info',
+            8000,
+            link,
+          )
         }
       })
 
@@ -48,13 +53,18 @@ export async function startListeningToNotifications() {
         const payload: UserNotificationEvent = JSON.parse(message.body)
 
         if (!userStore.user) {
-          alertStore.show("Nicht eingeloggt", 'error')
+          alertStore.show('Nicht eingeloggt', 'error')
           return
         }
 
         const link = determineLink(payload)
         if (payload.userIdsToNotify.includes(userStore.user?.id)) {
-          alertStore.show(`In Kommentar erwähnt:  ${payload.targetType} - ${payload.processItemId}: ${payload.processItemTitle}`, 'info', 8000, link)
+          alertStore.show(
+            `In Kommentar erwähnt:  ${payload.targetType} - ${payload.processItemId}: ${payload.processItemTitle}`,
+            'info',
+            8000,
+            link,
+          )
         }
       })
 
@@ -62,15 +72,22 @@ export async function startListeningToNotifications() {
         const payload: UserNotificationEvent = JSON.parse(message.body)
 
         if (!userStore.user) {
-          alertStore.show("Nicht eingeloggt", 'error')
+          alertStore.show('Nicht eingeloggt', 'error')
           return
         }
 
         const link = determineLink(payload)
-        const isSpecificRole = userStore.user.roles.some(role => role.name == Role.ADMIN || role.name == Role.CUSTOMER_REQUEST_REVISER)
+        const isSpecificRole = userStore.user.roles.some(
+          (role) => role.name == Role.ADMIN || role.name == Role.CUSTOMER_REQUEST_REVISER,
+        )
 
         if (isSpecificRole) {
-          alertStore.show(`Neue Anfrage eingegangen:  ${payload.targetType} - ${payload.processItemId}: ${payload.processItemTitle}`, 'info', 8000, link)
+          alertStore.show(
+            `Neue Anfrage eingegangen:  ${payload.targetType} - ${payload.processItemId}: ${payload.processItemTitle}`,
+            'info',
+            8000,
+            link,
+          )
         }
       })
 
@@ -82,7 +99,6 @@ export async function startListeningToNotifications() {
     stompClient.activate()
   }
 }
-
 
 function determineLink(userNotification: UserNotificationEvent) {
   let link = '/'

@@ -1,43 +1,37 @@
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, ref, watch} from 'vue'
-import {addDays, format, parseISO, subDays} from 'date-fns'
-import {de} from 'date-fns/locale'
-import {Star, CircleGauge, Clock, BookCheck} from 'lucide-vue-next'
-import {useRoute, useRouter} from 'vue-router'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { addDays, format, parseISO, subDays } from 'date-fns'
+import { de } from 'date-fns/locale'
+import { Star, CircleGauge, Clock, BookCheck } from 'lucide-vue-next'
+import { useRoute, useRouter } from 'vue-router'
 
-import {Badge} from '@/components/ui/badge'
-import {Button} from '@/components/ui/button'
-import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card'
-import {Avatar, AvatarFallback} from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 
-import type {
-  CalculatedCapacitiesOfMatchDto
-} from '@/documentTypes/dtds/CalculatedCapacitiesOfMatchDto.ts'
-import type {
-  MatchingEmployeeCapacitiesDtd
-} from '@/documentTypes/dtds/MatchingEmployeeCapacitiesDtd.ts'
-import type {CalendarDtd} from '@/documentTypes/dtds/CalendarDtd.ts'
+import type { CalculatedCapacitiesOfMatchDto } from '@/documentTypes/dtds/CalculatedCapacitiesOfMatchDto.ts'
+import type { MatchingEmployeeCapacitiesDtd } from '@/documentTypes/dtds/MatchingEmployeeCapacitiesDtd.ts'
+import type { CalendarDtd } from '@/documentTypes/dtds/CalendarDtd.ts'
 
 import {
   assignTaskToEmployee,
   getMatchingEmployees,
   calculateFreeCapacity,
 } from '@/services/capacityService.ts'
-import {getEmployeeCalendar} from '@/services/calendarService.ts'
-import type {EmployeeDtd} from '@/documentTypes/dtds/EmployeeDtd.ts'
-import type {ExpertiseDtd} from '@/documentTypes/dtds/ExpertiseDtd.ts'
-import type {EmployeeExpertiseDtd} from '@/documentTypes/dtds/EmployeeExpertiseDtd.ts'
-import type {
-  CalculatedCapacityCalendarEntryDtd
-} from '@/documentTypes/dtds/CalculatedCapacityCalendarEntryDtd .ts'
-import type {TaskDtd} from '@/documentTypes/dtds/TaskDtd.ts'
-import {getTask} from '@/services/taskService.ts'
-import {useAlertStore} from '@/stores/useAlertStore.ts'
-import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
-import UserSelect from "@/components/UserSelect.vue";
-import Modal from "@/components/Modal.vue";
-import type {TaskReferenceDtd} from "@/documentTypes/dtds/TaskReferenceDtd.ts";
-import {TimeUnitLabel} from "@/documentTypes/types/TimeUnit.ts";
+import { getEmployeeCalendar } from '@/services/calendarService.ts'
+import type { EmployeeDtd } from '@/documentTypes/dtds/EmployeeDtd.ts'
+import type { ExpertiseDtd } from '@/documentTypes/dtds/ExpertiseDtd.ts'
+import type { EmployeeExpertiseDtd } from '@/documentTypes/dtds/EmployeeExpertiseDtd.ts'
+import type { CalculatedCapacityCalendarEntryDtd } from '@/documentTypes/dtds/CalculatedCapacityCalendarEntryDtd .ts'
+import type { TaskDtd } from '@/documentTypes/dtds/TaskDtd.ts'
+import { getTask } from '@/services/taskService.ts'
+import { useAlertStore } from '@/stores/useAlertStore.ts'
+import type { UserDtd } from '@/documentTypes/dtds/UserDtd.ts'
+import UserSelect from '@/components/UserSelect.vue'
+import Modal from '@/components/Modal.vue'
+import type { TaskReferenceDtd } from '@/documentTypes/dtds/TaskReferenceDtd.ts'
+import { TimeUnitLabel } from '@/documentTypes/types/TimeUnit.ts'
 
 const route = useRoute()
 const router = useRouter()
@@ -46,15 +40,15 @@ const taskId = Number(route.params.taskId)
 const matchResults = ref<MatchingEmployeeCapacitiesDtd | null>(null)
 const task = ref<TaskDtd | null>(null)
 
-const showOverbookingModal = ref(false);
-const showAfterDueDateModal = ref(false);
-const showBlockedTasksModal = ref(false);
-const showBookingInPastModal = ref(false);
+const showOverbookingModal = ref(false)
+const showAfterDueDateModal = ref(false)
+const showBlockedTasksModal = ref(false)
+const showBookingInPastModal = ref(false)
 
-const overbookingChecked = ref(false);
-const afterDueDateChecked = ref(false);
-const blockedTasksChecked = ref(false);
-const bookingInPastChecked = ref(false);
+const overbookingChecked = ref(false)
+const afterDueDateChecked = ref(false)
+const blockedTasksChecked = ref(false)
+const bookingInPastChecked = ref(false)
 
 const selectedUser = ref<UserDtd | null>(null)
 
@@ -67,7 +61,7 @@ const bestMatchPoints = ref<number | null>(null)
 const draggedEntry = ref<CalculatedCapacityCalendarEntryDtd | null>(null)
 
 const showContextMenu = ref(false)
-const contextMenuPosition = ref({x: 0, y: 0})
+const contextMenuPosition = ref({ x: 0, y: 0 })
 const contextMenuTarget = ref<{
   day: { date: string; label: string }
   matchResult: CalculatedCapacitiesOfMatchDto
@@ -97,7 +91,10 @@ onMounted(async () => {
     await loadCalendars() // initial Kalender laden
     calculateBestMatchPoints()
   } catch (err: any) {
-    if (err.response?.data.includes('Task not ready') || err.response?.data.includes('cannot be completed')){
+    if (
+      err.response?.data.includes('Task not ready') ||
+      err.response?.data.includes('cannot be completed')
+    ) {
       router.back()
       alertStore.show(err.response?.data || 'Unbekannter Fehler', 'error')
     } else {
@@ -120,7 +117,7 @@ const days = computed(() => {
     if (dayOfWeek !== 0 && dayOfWeek !== 6) {
       result.push({
         date: format(currentDay, 'yyyy-MM-dd'),
-        label: format(currentDay, 'EE', {locale: de}).toUpperCase().substring(0, 2),
+        label: format(currentDay, 'EE', { locale: de }).toUpperCase().substring(0, 2),
       })
     }
     currentDay = addDays(currentDay, 1)
@@ -230,30 +227,30 @@ function onDrop(dayDate: string, matchResult: CalculatedCapacitiesOfMatchDto) {
 }
 
 function isOverbooking() {
-  if (!selectedMatchResult.value) return;
+  if (!selectedMatchResult.value) return
 
-  const checkedDates: string[] = [];
+  const checkedDates: string[] = []
 
   for (const calcEntry of selectedMatchResult.value.calculatedCalendarCapacities) {
-    if (checkedDates.includes(calcEntry.date)) continue; //if date already checked, skip it
+    if (checkedDates.includes(calcEntry.date)) continue //if date already checked, skip it
 
-    let sumMinutes = 0;
+    let sumMinutes = 0
 
     // sum all calculatedEntries with same date
     for (const calculatedEntry of selectedMatchResult.value.calculatedCalendarCapacities) {
-      if (calculatedEntry.date === calcEntry.date) sumMinutes += calculatedEntry.durationInMinutes;
+      if (calculatedEntry.date === calcEntry.date) sumMinutes += calculatedEntry.durationInMinutes
     }
 
     // sum all calendarEntries with same date
     if (selectedMatchResult.value.calendar) {
       for (const calendarEntry of selectedMatchResult.value.calendar.entries) {
-        if (calendarEntry.date === calcEntry.date) sumMinutes += calendarEntry.durationInMinutes;
+        if (calendarEntry.date === calcEntry.date) sumMinutes += calendarEntry.durationInMinutes
       }
     }
 
-    checkedDates.push(calcEntry.date);
+    checkedDates.push(calcEntry.date)
 
-    const employeeWorkingMinutes = selectedMatchResult.value.employee.workingHoursPerDay * 60;
+    const employeeWorkingMinutes = selectedMatchResult.value.employee.workingHoursPerDay * 60
 
     if (sumMinutes > employeeWorkingMinutes) {
       return true
@@ -263,24 +260,27 @@ function isOverbooking() {
 }
 
 function isBookingAfterDueDate() {
-  if (!task.value) return;
-  if (!selectedMatchResult.value) return;
+  if (!task.value) return
+  if (!selectedMatchResult.value) return
 
-  return selectedMatchResult.value.calculatedCalendarCapacities
-    .some(calendarCapacity => calendarCapacity.date > task.value!.dueDate!);
+  return selectedMatchResult.value.calculatedCalendarCapacities.some(
+    (calendarCapacity) => calendarCapacity.date > task.value!.dueDate!,
+  )
 }
 
 function isBookingAfterBlockingTaskOrBlockingTaskNotPlanned() {
-  if (!task.value) return;
-  if (!selectedMatchResult.value) return;
-  if (!task.value.blockedBy || task.value.blockedBy.length == 0) return;
+  if (!task.value) return
+  if (!selectedMatchResult.value) return
+  if (!task.value.blockedBy || task.value.blockedBy.length == 0) return
 
   //When one of them is not planned yet
-  if (task.value.blockedBy.some(taskReference => !taskReference.isAlreadyPlanned)) {
+  if (task.value.blockedBy.some((taskReference) => !taskReference.isAlreadyPlanned)) {
     return true
   }
 
-  const earliestDateOfSelectedMatch = determineEarliestDate(selectedMatchResult.value.calculatedCalendarCapacities)
+  const earliestDateOfSelectedMatch = determineEarliestDate(
+    selectedMatchResult.value.calculatedCalendarCapacities,
+  )
   if (!earliestDateOfSelectedMatch) return
 
   for (const taskReference of task.value.blockedBy) {
@@ -298,15 +298,17 @@ function isBookingAfterBlockingTaskOrBlockingTaskNotPlanned() {
 }
 
 function isBookingInPast() {
-  if (!task.value) return;
-  if (!selectedMatchResult.value) return;
+  if (!task.value) return
+  if (!selectedMatchResult.value) return
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0); //Needed so the hours doesnt count
+  const today = new Date()
+  today.setHours(0, 0, 0, 0) //Needed so the hours doesnt count
 
-  const earliestDateOfSelectedMatch = determineEarliestDate(selectedMatchResult.value.calculatedCalendarCapacities)
+  const earliestDateOfSelectedMatch = determineEarliestDate(
+    selectedMatchResult.value.calculatedCalendarCapacities,
+  )
   if (!earliestDateOfSelectedMatch) return
-  earliestDateOfSelectedMatch.setHours(0, 0, 0, 0);
+  earliestDateOfSelectedMatch.setHours(0, 0, 0, 0)
 
   if (earliestDateOfSelectedMatch < today) {
     return true
@@ -316,31 +318,31 @@ function isBookingInPast() {
 }
 
 async function afterDueDateModalContinue() {
-  showAfterDueDateModal.value = false;
+  showAfterDueDateModal.value = false
   afterDueDateChecked.value = true
 
-  await assignEmployee();
+  await assignEmployee()
 }
 
 async function afterBookingInPastModalContinue() {
-  showBookingInPastModal.value = false;
+  showBookingInPastModal.value = false
   bookingInPastChecked.value = true
 
-  await assignEmployee();
+  await assignEmployee()
 }
 
 async function overBookingModalContinue() {
-  showOverbookingModal.value = false;
+  showOverbookingModal.value = false
   overbookingChecked.value = true
 
-  await assignEmployee();
+  await assignEmployee()
 }
 
 async function afterBlockedTasksModalContinue() {
-  showBlockedTasksModal.value = false;
+  showBlockedTasksModal.value = false
   blockedTasksChecked.value = true
 
-  await assignEmployee();
+  await assignEmployee()
 }
 
 function onModalAbort() {
@@ -356,52 +358,55 @@ function onModalAbort() {
 }
 
 async function performAssignment() {
-  if (!selectedMatchResult.value) return;
+  if (!selectedMatchResult.value) return
 
   try {
-    await assignTaskToEmployee(taskId, selectedMatchResult.value);
-    alertStore.show('Aufgabe erfolgreich zugewiesen', 'success');
-    await router.push({name: 'taskDetailView', params: {taskId: task.value?.processItem.id}});
+    await assignTaskToEmployee(taskId, selectedMatchResult.value)
+    alertStore.show('Aufgabe erfolgreich zugewiesen', 'success')
+    await router.push({ name: 'taskDetailView', params: { taskId: task.value?.processItem.id } })
   } catch (error: any) {
-    alertStore.show(error.response?.data || 'Unbekannter Fehler', 'error');
+    alertStore.show(error.response?.data || 'Unbekannter Fehler', 'error')
   }
 }
 
 async function assignEmployee() {
-  if (!selectedMatchResult.value) return;
+  if (!selectedMatchResult.value) return
 
   if (isBookingInPast() && !bookingInPastChecked.value) {
-    showBookingInPastModal.value = true;
-    return;
+    showBookingInPastModal.value = true
+    return
   }
 
   if (isBookingAfterBlockingTaskOrBlockingTaskNotPlanned() && !blockedTasksChecked.value) {
-    showBlockedTasksModal.value = true;
-    return;
+    showBlockedTasksModal.value = true
+    return
   }
 
   if (isBookingAfterDueDate() && !afterDueDateChecked.value) {
-    showAfterDueDateModal.value = true;
-    return;
+    showAfterDueDateModal.value = true
+    return
   }
 
   if (isOverbooking() && !overbookingChecked.value) {
-    showOverbookingModal.value = true;
-    return;
+    showOverbookingModal.value = true
+    return
   }
 
-  await performAssignment();
+  await performAssignment()
 }
 
 async function addCapacityOfSelectedEmployee() {
   if (!selectedUser.value) return
   if (!selectedUser.value.employeeId) {
-    console.error("No employeeId set")
+    console.error('No employeeId set')
     return
   }
 
   try {
-    const freeCapacityOfEmployee: MatchingEmployeeCapacitiesDtd = await calculateFreeCapacity(taskId, selectedUser.value?.employeeId)
+    const freeCapacityOfEmployee: MatchingEmployeeCapacitiesDtd = await calculateFreeCapacity(
+      taskId,
+      selectedUser.value?.employeeId,
+    )
 
     if (!matchResults.value) {
       matchResults.value = {
@@ -409,62 +414,62 @@ async function addCapacityOfSelectedEmployee() {
       }
     } else {
       matchResults.value?.matchCalculationResult.push(
-        ...freeCapacityOfEmployee.matchCalculationResult
+        ...freeCapacityOfEmployee.matchCalculationResult,
       )
     }
 
-
     await loadCalendars()
-
   } catch (error: any) {
     alertStore.show(error.response?.data || 'Hinzufügen fehlgeschlagen.', 'error')
   }
 }
 
-function sumEntriesForDay(
-  matchResult: CalculatedCapacitiesOfMatchDto,
-  date: string
-): number {
-  let sum = 0;
+function sumEntriesForDay(matchResult: CalculatedCapacitiesOfMatchDto, date: string): number {
+  let sum = 0
 
   for (const calculatedEntry of matchResult.calculatedCalendarCapacities) {
-    if (calculatedEntry.date === date) sum += calculatedEntry.durationInMinutes;
+    if (calculatedEntry.date === date) sum += calculatedEntry.durationInMinutes
   }
   if (matchResult.calendar) {
     for (const calendarEntry of matchResult.calendar.entries) {
-      if (calendarEntry.date === date) sum += calendarEntry.durationInMinutes;
+      if (calendarEntry.date === date) sum += calendarEntry.durationInMinutes
     }
   }
 
-  return sum;
+  return sum
 }
 
 function isCurrentDay(date: string): boolean {
-  const inputDate = new Date(date);
-  const now = new Date();
+  const inputDate = new Date(date)
+  const now = new Date()
 
   return (
     inputDate.getFullYear() === now.getFullYear() &&
     inputDate.getMonth() === now.getMonth() &&
     inputDate.getDate() === now.getDate()
-  );
+  )
 }
 
 function formatDate(date: string | undefined | null): string {
-  if (!date) return '';
-  const parsedDate = parseISO(date);
-  return format(parsedDate, 'dd.MM.yyyy');
+  if (!date) return ''
+  const parsedDate = parseISO(date)
+  return format(parsedDate, 'dd.MM.yyyy')
 }
 
-function handleRightClick(day: {
-  date: string;
-  label: string
-}, matchResult: CalculatedCapacitiesOfMatchDto, event: MouseEvent, entry?: CalculatedCapacityCalendarEntryDtd) {
+function handleRightClick(
+  day: {
+    date: string
+    label: string
+  },
+  matchResult: CalculatedCapacitiesOfMatchDto,
+  event: MouseEvent,
+  entry?: CalculatedCapacityCalendarEntryDtd,
+) {
   event.preventDefault()
   console.log('RIGHTCLICK ENTRY', entry)
   showContextMenu.value = true
-  contextMenuPosition.value = {x: event.clientX, y: event.clientY}
-  contextMenuTarget.value = {day, matchResult, entry}
+  contextMenuPosition.value = { x: event.clientX, y: event.clientY }
+  contextMenuTarget.value = { day, matchResult, entry }
 }
 
 function openSplitModal() {
@@ -480,7 +485,6 @@ async function confirmSplit() {
 
   const original = contextMenuTarget.value.entry
   const splitMinutes = splitAmount.value * 60
-
 
   if (splitMinutes >= original.durationInMinutes) {
     alertStore.show('Der Wert zur Aufteilung ist zu groß.', 'error')
@@ -508,13 +512,17 @@ async function confirmSplit() {
 function isDueDate(date: string): boolean {
   if (!task.value) return false
 
-  return task.value.dueDate === date;
+  return task.value.dueDate === date
 }
 
-function determineEarliestDate(calculatedCalendarEntry: CalculatedCapacityCalendarEntryDtd[]): Date | undefined {
+function determineEarliestDate(
+  calculatedCalendarEntry: CalculatedCapacityCalendarEntryDtd[],
+): Date | undefined {
   if (!calculatedCalendarEntry) return
 
-  const minTimestamp = Math.min(...calculatedCalendarEntry.map(entry => new Date(entry.date).getTime()))
+  const minTimestamp = Math.min(
+    ...calculatedCalendarEntry.map((entry) => new Date(entry.date).getTime()),
+  )
 
   return new Date(minTimestamp)
 }
@@ -524,11 +532,12 @@ function determineFinishDate(taskToDetermine: TaskReferenceDtd): Date | undefine
   if (!taskToDetermine.calendarEntryDates || taskToDetermine.calendarEntryDates.length === 0) return
 
   //must be parsed to Date object to determine latest one
-  const maxTimestamp = Math.max(...taskToDetermine.calendarEntryDates.map(date => new Date(date).getTime()))
+  const maxTimestamp = Math.max(
+    ...taskToDetermine.calendarEntryDates.map((date) => new Date(date).getTime()),
+  )
 
   return new Date(maxTimestamp)
 }
-
 </script>
 
 <template>
@@ -538,18 +547,25 @@ function determineFinishDate(taskToDetermine: TaskReferenceDtd): Date | undefine
       <CardHeader class="flex flex-row justify-between">
         <div>
           <CardTitle class="text-xl"
-          >{{ task?.processItem.id }} -
+            >{{ task?.processItem.id }} -
             {{ task?.processItem.title }}
           </CardTitle>
           <div class="flex gap-2 mt-2">
             <Badge v-for="expertise in task?.expertise" variant="secondary"
-            >{{ expertise.name }}
+              >{{ expertise.name }}
             </Badge>
           </div>
         </div>
         <div class="flex flex-col text-sm text-right">
-          <span>Geschätzte Zeit: <strong>{{ task?.estimatedTime }} {{ TimeUnitLabel[task?.estimationUnit!] }}</strong></span>
-          <span>Geplant bis: <strong>{{ formatDate(task?.dueDate) }}</strong></span>
+          <span
+            >Geschätzte Zeit:
+            <strong
+              >{{ task?.estimatedTime }} {{ TimeUnitLabel[task?.estimationUnit!] }}</strong
+            ></span
+          >
+          <span
+            >Geplant bis: <strong>{{ formatDate(task?.dueDate) }}</strong></span
+          >
         </div>
       </CardHeader>
       <CardContent>
@@ -564,9 +580,13 @@ function determineFinishDate(taskToDetermine: TaskReferenceDtd): Date | undefine
                 <span class="font-semibold">{{ taskReference.title }}</span>
               </div>
               <div v-if="taskReference.isAlreadyPlanned" class="flex flex-row space-x-2">
-                <BookCheck class="stroke-1"/>
-                <div class="text-sm"
-                     v-if="taskReference.calendarEntryDates && taskReference.calendarEntryDates.length > 0">
+                <BookCheck class="stroke-1" />
+                <div
+                  class="text-sm"
+                  v-if="
+                    taskReference.calendarEntryDates && taskReference.calendarEntryDates.length > 0
+                  "
+                >
                   {{ formatDate(determineFinishDate(taskReference)?.toISOString()) }}
                 </div>
               </div>
@@ -577,11 +597,9 @@ function determineFinishDate(taskToDetermine: TaskReferenceDtd): Date | undefine
               </div>
 
               <Badge variant="secondary">{{ taskReference.status }}</Badge>
-
             </div>
           </RouterLink>
         </div>
-
       </CardContent>
     </Card>
 
@@ -604,10 +622,10 @@ function determineFinishDate(taskToDetermine: TaskReferenceDtd): Date | undefine
             'border-l': index !== 0,
             'border-l-2 border-accent-foreground': isFridayToMonday(index),
             'bg-gray-200': isCurrentDay(day.date),
-            'bg-violet-300': isDueDate(day.date)
+            'bg-violet-300': isDueDate(day.date),
           }"
         >
-          {{ day.label }}<br/>
+          {{ day.label }}<br />
           <span class="text-xs text-muted-foreground">{{ formatDate(day.date) }}</span>
         </div>
       </div>
@@ -617,7 +635,9 @@ function determineFinishDate(taskToDetermine: TaskReferenceDtd): Date | undefine
         v-for="matchResult in matchResults?.matchCalculationResult"
         :key="matchResult.employee.id"
         class="grid grid-cols-[200px_repeat(8,1fr)] cursor-pointer border-b"
-        :class="selectedMatchResult === matchResult ? 'border-2 border-b-2 border-accent-foreground' : ''"
+        :class="
+          selectedMatchResult === matchResult ? 'border-2 border-b-2 border-accent-foreground' : ''
+        "
         @click="selectMatchResult(matchResult)"
       >
         <!-- Person -->
@@ -663,20 +683,26 @@ function determineFinishDate(taskToDetermine: TaskReferenceDtd): Date | undefine
             'border-l': index !== 0,
             'border-l-2 border-accent-foreground': isFridayToMonday(index),
             'bg-gray-100': isCurrentDay(day.date),
-            'bg-green-200': (sumEntriesForDay(matchResult, day.date) < matchResult.employee.workingHoursPerDay * 60),
-            'bg-yellow-200': (sumEntriesForDay(matchResult, day.date) === matchResult.employee.workingHoursPerDay * 60),
-            'bg-red-300': (sumEntriesForDay(matchResult, day.date) > matchResult.employee.workingHoursPerDay * 60)
+            'bg-green-200':
+              sumEntriesForDay(matchResult, day.date) <
+              matchResult.employee.workingHoursPerDay * 60,
+            'bg-yellow-200':
+              sumEntriesForDay(matchResult, day.date) ===
+              matchResult.employee.workingHoursPerDay * 60,
+            'bg-red-300':
+              sumEntriesForDay(matchResult, day.date) >
+              matchResult.employee.workingHoursPerDay * 60,
           }"
           @dragover.prevent
           @drop="onDrop(day.date, matchResult)"
         >
-
           <div class="flex items-center justify-end text-xs pb-1">
             {{
-              matchResult.employee.workingHoursPerDay - (sumEntriesForDay(matchResult, day.date) / 60)
+              matchResult.employee.workingHoursPerDay -
+              sumEntriesForDay(matchResult, day.date) / 60
             }}h
             <div class="pl-1">
-              <Clock class="w-3 h-3"/>
+              <Clock class="w-3 h-3" />
             </div>
           </div>
           <!-- calculated entries -->
@@ -710,8 +736,12 @@ function determineFinishDate(taskToDetermine: TaskReferenceDtd): Date | undefine
     <!-- Buttons -->
     <div class="flex justify-between">
       <div class="flex space-x-2">
-        <UserSelect v-model="selectedUser" placeholder="Weitere hinzufügen" label=""
-                    not-selected-text="Keinen"/>
+        <UserSelect
+          v-model="selectedUser"
+          placeholder="Weitere hinzufügen"
+          label=""
+          not-selected-text="Keinen"
+        />
         <Button class="cursor-pointer" @click="addCapacityOfSelectedEmployee">+</Button>
       </div>
       <Button class="cursor-pointer" @click="assignEmployee">Zuweisen</Button>
@@ -729,7 +759,6 @@ function determineFinishDate(taskToDetermine: TaskReferenceDtd): Date | undefine
     @abort="onModalAbort"
   >
   </Modal>
-
 
   <Modal
     title="Achtung: Blockierende Aufgaben"
@@ -767,7 +796,7 @@ function determineFinishDate(taskToDetermine: TaskReferenceDtd): Date | undefine
     :message="`Wie viele Stunden sollen von ${contextMenuTarget?.entry!.durationInMinutes! / 60}h aufgeteilt werden?`"
     variant="info"
     @_continue="confirmSplit"
-    @abort="() => showSplitModal = false"
+    @abort="() => (showSplitModal = false)"
   >
     <div class="p-4">
       <label class="block mb-2 text-sm font-medium">Stunden aufteilen:</label>
@@ -791,5 +820,4 @@ function determineFinishDate(taskToDetermine: TaskReferenceDtd): Date | undefine
       Aufteilen
     </button>
   </div>
-
 </template>

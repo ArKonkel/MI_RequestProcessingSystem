@@ -1,25 +1,28 @@
 <script setup lang="ts">
-import {onMounted, ref, watch} from 'vue'
-import {Input} from '@/components/ui/input'
-import {ScrollArea} from '@/components/ui/scroll-area'
-import {getAllUser} from '@/services/userService'
-import type {UserDtd} from '@/documentTypes/dtds/UserDtd'
-import {onClickOutside} from '@vueuse/core'
+import { onMounted, ref, watch } from 'vue'
+import { Input } from '@/components/ui/input'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { getAllUser } from '@/services/userService'
+import type { UserDtd } from '@/documentTypes/dtds/UserDtd'
+import { onClickOutside } from '@vueuse/core'
 
-const props = withDefaults(defineProps<{
-  modelValue: UserDtd | null,
-  disabled?: boolean,
-  label?: string,
-  notSelectedText?: string
-  placeholder?: string
-  withNotAssignedField?: boolean
-}>(), {
-  disabled: false,
-  label: 'Zugewiesene Person',
-  notSelectedText: 'Nicht zugewiesen',
-  placeholder: 'Keine Person zugewiesen',
-  withNotAssignedField: false,
-})
+const props = withDefaults(
+  defineProps<{
+    modelValue: UserDtd | null
+    disabled?: boolean
+    label?: string
+    notSelectedText?: string
+    placeholder?: string
+    withNotAssignedField?: boolean
+  }>(),
+  {
+    disabled: false,
+    label: 'Zugewiesene Person',
+    notSelectedText: 'Nicht zugewiesen',
+    placeholder: 'Keine Person zugewiesen',
+    withNotAssignedField: false,
+  },
+)
 
 const emit = defineEmits<{
   (emit: 'update:modelValue', value: UserDtd | null): void
@@ -49,7 +52,7 @@ function unassignUser() {
 }
 
 function selectNotAssigned() {
-  emit('update:modelValue', {id: -1, name: "Nicht zugewiesen", roles: []} as UserDtd)
+  emit('update:modelValue', { id: -1, name: 'Nicht zugewiesen', roles: [] } as UserDtd)
   search.value = ''
   dropdownOpen.value = false
 }
@@ -100,7 +103,11 @@ onClickOutside(dropdownRef, () => {
         <div class="p-2 hover:bg-blue-100 cursor-pointer text-gray-400" @click="unassignUser">
           {{ notSelectedText }}
         </div>
-        <div v-if="withNotAssignedField" class="p-2 hover:bg-blue-100 cursor-pointer" @click="selectNotAssigned">
+        <div
+          v-if="withNotAssignedField"
+          class="p-2 hover:bg-blue-100 cursor-pointer"
+          @click="selectNotAssigned"
+        >
           Nicht zugewiesen
         </div>
 

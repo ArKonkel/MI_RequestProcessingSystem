@@ -44,12 +44,12 @@ import type { UpdateCustomerRequestDtd } from '@/documentTypes/dtds/UpdateCustom
 import type { UserDtd } from '@/documentTypes/dtds/UserDtd.ts'
 import { ProjectStatusLabel } from '@/documentTypes/types/ProjectStatus.ts'
 import AttachmentList from '@/components/AttachmentList.vue'
-import {useUserStore} from "@/stores/userStore.ts";
+import { useUserStore } from '@/stores/userStore.ts'
 import {
   IsProjectClassification,
-  IsProjectClassificationLabel
-} from "@/documentTypes/types/IsProjectClassification.ts";
-import {Role} from "@/documentTypes/types/Role.ts";
+  IsProjectClassificationLabel,
+} from '@/documentTypes/types/IsProjectClassification.ts'
+import { Role } from '@/documentTypes/types/Role.ts'
 
 const userStore = useUserStore()
 const { hasAnyRole } = userStore
@@ -190,10 +190,13 @@ async function saveRequest() {
       estimatedScope: estimatedScope.value,
       chargeable: editableRequest.value.chargeable,
       scopeUnit: editableRequest.value.scopeUnit,
-      classifiedAsProject: editableRequest.value.classifiedAsProject
+      classifiedAsProject: editableRequest.value.classifiedAsProject,
     }
 
-    if (editableRequest.value.classifiedAsProject == IsProjectClassification.YES && editableRequest.value.projects.length > 0) {
+    if (
+      editableRequest.value.classifiedAsProject == IsProjectClassification.YES &&
+      editableRequest.value.projects.length > 0
+    ) {
       dto.classifiedAsProject = undefined
     }
 
@@ -209,8 +212,8 @@ async function saveRequest() {
 async function addComment() {
   if (!editableRequest.value || !commentText.value) return
 
-  if (userStore.user === null){
-    console.log("user is null")
+  if (userStore.user === null) {
+    console.log('user is null')
     return
   }
 
@@ -251,7 +254,7 @@ async function addComment() {
               <span class="font-semibold">Eingesendet von: </span><br />
               {{ editableRequest.contactFirstName }} {{ editableRequest.contactLastName }}
             </div>
-            <div v-if="editableRequest.contactPhoneNumber ">
+            <div v-if="editableRequest.contactPhoneNumber">
               <span class="font-semibold">Erreichbar unter: </span><br />
               {{ editableRequest.contactPhoneNumber }}
             </div>
@@ -314,13 +317,22 @@ async function addComment() {
                 <Button variant="ghost" @click="cancelTask">Abbrechen</Button>
               </div>
               <!-- Show Add Button -->
-              <div  class="flex justify-end">
-                <Button v-if="hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER])" @click="showAddingTask">+</Button>
+              <div class="flex justify-end">
+                <Button
+                  v-if="
+                    hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER])
+                  "
+                  @click="showAddingTask"
+                  >+</Button
+                >
               </div>
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem v-if="editableRequest.classifiedAsProject == IsProjectClassification.YES"  value="linked-projects">
+          <AccordionItem
+            v-if="editableRequest.classifiedAsProject == IsProjectClassification.YES"
+            value="linked-projects"
+          >
             <AccordionTrigger>Verknüpfte Projekte</AccordionTrigger>
             <AccordionContent class="flex flex-col gap-2">
               <!-- Projects -->
@@ -351,7 +363,11 @@ async function addComment() {
 
               <!-- Show Add Button -->
               <div class="flex justify-end">
-                <Button v-if="hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER])" @click="showAddingProject">+</Button>
+                <Button
+                  v-if="hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER])"
+                  @click="showAddingProject"
+                  >+</Button
+                >
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -366,10 +382,14 @@ async function addComment() {
     </ScrollArea>
 
     <!-- right sidebar -->
-    <div  class="w-[200px] space-y-4 p-4 border-l-2 border-accent-200 h-screen">
+    <div class="w-[200px] space-y-4 p-4 border-l-2 border-accent-200 h-screen">
       <div>
         <label class="text-sm font-semibold">Priorität</label>
-        <Select :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER])" v-model="editableRequest.priority" @update:modelValue="saveRequest">
+        <Select
+          :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER])"
+          v-model="editableRequest.priority"
+          @update:modelValue="saveRequest"
+        >
           <SelectTrigger>
             <SelectValue placeholder="Select..." />
           </SelectTrigger>
@@ -388,7 +408,11 @@ async function addComment() {
       <div>
         <label class="text-sm font-semibold">Status</label>
         <Select v-model="editableRequest.status" @update:modelValue="saveRequest">
-          <SelectTrigger :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER])">
+          <SelectTrigger
+            :disabled="
+              !hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER])
+            "
+          >
             <SelectValue placeholder="Offen" />
           </SelectTrigger>
           <SelectContent>
@@ -406,14 +430,25 @@ async function addComment() {
       <div>
         <label class="text-sm font-semibold">Als Projekt eingestuft:</label>
         <Select
-          :disabled = "editableRequest.classifiedAsProject === IsProjectClassification.YES && editableRequest.projects.length > 0"
-          v-model="editableRequest.classifiedAsProject" @update:modelValue="saveRequest">
-          <SelectTrigger :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER])">
+          :disabled="
+            editableRequest.classifiedAsProject === IsProjectClassification.YES &&
+            editableRequest.projects.length > 0
+          "
+          v-model="editableRequest.classifiedAsProject"
+          @update:modelValue="saveRequest"
+        >
+          <SelectTrigger
+            :disabled="
+              !hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER])
+            "
+          >
             <SelectValue placeholder="Offen" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem
-              v-for="[value, isProjectClassificationLabel] in Object.entries(IsProjectClassificationLabel)"
+              v-for="[value, isProjectClassificationLabel] in Object.entries(
+                IsProjectClassificationLabel,
+              )"
               :key="value"
               :value="value"
             >
@@ -423,15 +458,30 @@ async function addComment() {
         </Select>
       </div>
 
-      <UserSelect :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER])" v-model="assignee" @update:modelValue="updateAssignee" />
+      <UserSelect
+        :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER])"
+        v-model="assignee"
+        @update:modelValue="updateAssignee"
+      />
 
       <div>
         <label class="text-sm font-semibold">Geschätzte Zeit</label>
 
         <div class="flex space-x-2">
-          <Input :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER])" type="number" v-model="estimatedScope" placeholder="Schätzung in Minuten" />
+          <Input
+            :disabled="
+              !hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER])
+            "
+            type="number"
+            v-model="estimatedScope"
+            placeholder="Schätzung in Minuten"
+          />
           <Select v-model="editableRequest.scopeUnit" @update:modelValue="saveRequest">
-            <SelectTrigger :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER])">
+            <SelectTrigger
+              :disabled="
+                !hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER])
+              "
+            >
               <SelectValue placeholder="Zeiteinheit" />
             </SelectTrigger>
             <SelectContent>
@@ -450,7 +500,11 @@ async function addComment() {
       <div>
         <label class="text-sm font-semibold">Zu berechnen</label>
         <Select v-model="editableRequest.chargeable" @update:modelValue="saveRequest">
-          <SelectTrigger :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER])">
+          <SelectTrigger
+            :disabled="
+              !hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CUSTOMER_REQUEST_REVISER])
+            "
+          >
             <SelectValue placeholder="Zeiteinheit" />
           </SelectTrigger>
           <SelectContent>

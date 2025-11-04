@@ -44,7 +44,9 @@ export const useTaskStore = defineStore('taskStore', () => {
         task.processItem.id === id ? updatedTask : task,
       )
 
-      selectedTask = computed(() => taskData.tasks.find((task) => task.processItem.id === selectedTaskId.value) ?? null)
+      selectedTask = computed(
+        () => taskData.tasks.find((task) => task.processItem.id === selectedTaskId.value) ?? null,
+      )
     } catch (error) {
       console.error(`Fehler beim Laden des Tasks mit id ${id}`, error)
     }

@@ -4,9 +4,9 @@ import axios from 'axios'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import {useUserStore} from "@/stores/userStore.js";
-import {login} from "@/services/authService.ts";
-import type {LoginDtd} from "@/documentTypes/dtds/LoginDtd.ts";
+import { useUserStore } from '@/stores/userStore.js'
+import { login } from '@/services/authService.ts'
+import type { LoginDtd } from '@/documentTypes/dtds/LoginDtd.ts'
 
 const userStore = useUserStore()
 

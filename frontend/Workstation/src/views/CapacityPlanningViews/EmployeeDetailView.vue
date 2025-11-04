@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import {ref, watch, computed, onMounted} from 'vue'
-import {addDays, format, getYear, parseISO} from 'date-fns'
-import {de} from 'date-fns/locale'
-import {useEmployeeStore} from '@/stores/employeeStore.ts'
-import {useAlertStore} from '@/stores/useAlertStore.ts'
-import {ScrollArea} from '@/components/ui/scroll-area'
-import {Input} from '@/components/ui/input'
-import {Label} from '@/components/ui/label'
-import {Badge} from '@/components/ui/badge'
-import {Button} from '@/components/ui/button'
-import {getEmployeeCalendar, initCalendarOfEmployee} from '@/services/calendarService.ts'
-import type {CalendarDtd} from '@/documentTypes/dtds/CalendarDtd.ts'
-import type {EmployeeDtd} from '@/documentTypes/dtds/EmployeeDtd.ts'
-import {ExpertiseLevel, ExpertiseLevelLabel} from '@/documentTypes/types/ExpertiseLevel.ts'
+import { ref, watch, computed, onMounted } from 'vue'
+import { addDays, format, getYear, parseISO } from 'date-fns'
+import { de } from 'date-fns/locale'
+import { useEmployeeStore } from '@/stores/employeeStore.ts'
+import { useAlertStore } from '@/stores/useAlertStore.ts'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { getEmployeeCalendar, initCalendarOfEmployee } from '@/services/calendarService.ts'
+import type { CalendarDtd } from '@/documentTypes/dtds/CalendarDtd.ts'
+import type { EmployeeDtd } from '@/documentTypes/dtds/EmployeeDtd.ts'
+import { ExpertiseLevel, ExpertiseLevelLabel } from '@/documentTypes/types/ExpertiseLevel.ts'
 import {
   Select,
   SelectContent,
@@ -21,10 +21,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import ExpertiseSelect from '@/components/ExpertiseSelect.vue'
-import {addExpertiseToEmployee, updateEmployee} from '@/services/employeeService.ts'
-import type {EmployeeUpdateDtd} from '@/documentTypes/dtds/EmployeeUpdateDtd.ts'
-import {useRouter} from "vue-router";
-import {Clock} from "lucide-vue-next";
+import { addExpertiseToEmployee, updateEmployee } from '@/services/employeeService.ts'
+import type { EmployeeUpdateDtd } from '@/documentTypes/dtds/EmployeeUpdateDtd.ts'
+import { useRouter } from 'vue-router'
+import { Clock } from 'lucide-vue-next'
 //import { updateEmployee } from '@/services/employeeService.ts'
 
 const employeeStore = useEmployeeStore()
@@ -46,7 +46,7 @@ watch(
   () => employeeStore.selectedEmployees,
   async (newEmp) => {
     if (newEmp) {
-      editableEmployee.value = {...newEmp}
+      editableEmployee.value = { ...newEmp }
       ignoreNextUpdate.value = true
       await loadCalendar()
     } else {
@@ -54,19 +54,18 @@ watch(
       calendar.value = null
     }
   },
-  {immediate: true},
+  { immediate: true },
 )
-
 
 watch(
   () =>
     editableEmployee.value
       ? {
-        firstName: editableEmployee.value.firstName,
-        lastName: editableEmployee.value.lastName,
-        email: editableEmployee.value.email,
-        workingHoursPerDay: editableEmployee.value.workingHoursPerDay,
-      }
+          firstName: editableEmployee.value.firstName,
+          lastName: editableEmployee.value.lastName,
+          email: editableEmployee.value.email,
+          workingHoursPerDay: editableEmployee.value.workingHoursPerDay,
+        }
       : null,
   (newVal, oldVal) => {
     if (!newVal || !oldVal) return
@@ -82,7 +81,7 @@ watch(
 
     showSaveButton.value = hasChanged
   },
-  { deep: true }
+  { deep: true },
 )
 
 async function addExpertise() {
@@ -121,7 +120,7 @@ const days = computed(() => {
     if (dayOfWeek !== 0 && dayOfWeek !== 6) {
       result.push({
         date: format(current, 'yyyy-MM-dd'),
-        label: format(current, 'EE', {locale: de}).toUpperCase().substring(0, 2),
+        label: format(current, 'EE', { locale: de }).toUpperCase().substring(0, 2),
       })
     }
     current = addDays(current, 1)
@@ -137,7 +136,6 @@ async function loadCalendar() {
       format(startDate.value, 'yyyy-MM-dd'),
       format(addDays(startDate.value, visibleDays), 'yyyy-MM-dd'),
     )
-
   } catch (err: any) {
     console.error(err)
     alertStore.show('Fehler beim Laden des Kalenders', 'error')
@@ -196,29 +194,25 @@ async function saveEmployee() {
 }
 
 function routeToTask(taskId: number | undefined | null = null) {
-
   if (taskId) {
     router.push(`/tasks/${taskId}`)
   }
 }
 
 function formatDate(date: string | undefined | null): string {
-  if (!date) return '';
-  const parsedDate = parseISO(date);
-  return format(parsedDate, 'dd.MM.yyyy');
+  if (!date) return ''
+  const parsedDate = parseISO(date)
+  return format(parsedDate, 'dd.MM.yyyy')
 }
 
-function sumEntriesForDay(
-  calender: CalendarDtd,
-  date:  { date: string, label: string }
-): number {
-  let sum = 0;
+function sumEntriesForDay(calender: CalendarDtd, date: { date: string; label: string }): number {
+  let sum = 0
 
   for (const entry of calender.entries) {
-    if (entry.date === date.date) sum += entry.durationInMinutes;
+    if (entry.date === date.date) sum += entry.durationInMinutes
   }
 
-  return sum;
+  return sum
 }
 
 function isFridayToMonday(index: number) {
@@ -229,14 +223,14 @@ function isFridayToMonday(index: number) {
 }
 
 function isCurrentDay(date: string): boolean {
-  const inputDate = new Date(date);
-  const now = new Date();
+  const inputDate = new Date(date)
+  const now = new Date()
 
   return (
     inputDate.getFullYear() === now.getFullYear() &&
     inputDate.getMonth() === now.getMonth() &&
     inputDate.getDate() === now.getDate()
-  );
+  )
 }
 </script>
 
@@ -259,15 +253,15 @@ function isCurrentDay(date: string): boolean {
         <div class="grid grid-cols-2 gap-4">
           <div>
             <Label class="mb-1">Vorname</Label>
-            <Input v-model="editableEmployee.firstName" class="max-w-80"/>
+            <Input v-model="editableEmployee.firstName" class="max-w-80" />
           </div>
           <div>
             <Label class="mb-1">Nachname</Label>
-            <Input v-model="editableEmployee.lastName" class="max-w-80"/>
+            <Input v-model="editableEmployee.lastName" class="max-w-80" />
           </div>
           <div class="col-span-1">
             <Label class="mb-1">E-Mail</Label>
-            <Input v-model="editableEmployee.email" class="max-w-80"/>
+            <Input v-model="editableEmployee.email" class="max-w-80" />
           </div>
           <div>
             <Label class="mb-1">Arbeitszeit (h/Tag)</Label>
@@ -310,7 +304,7 @@ function isCurrentDay(date: string): boolean {
           <div class="flex justify-between gap-2 items-center">
             <Select v-model="selectedExpertiseLevel">
               <SelectTrigger class="min-w-50">
-                <SelectValue placeholder="Select..."/>
+                <SelectValue placeholder="Select..." />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem
@@ -323,10 +317,12 @@ function isCurrentDay(date: string): boolean {
               </SelectContent>
             </Select>
 
-            <ExpertiseSelect v-model="expertiseIdToAdd"/>
+            <ExpertiseSelect v-model="expertiseIdToAdd" />
 
             <Button class="cursor-pointer" @click="addExpertise">Erstellen</Button>
-            <Button class="cursor-pointer" variant="ghost" @click="cancelExpertise">Abbrechen</Button>
+            <Button class="cursor-pointer" variant="ghost" @click="cancelExpertise"
+              >Abbrechen</Button
+            >
           </div>
         </div>
         <div class="flex justify-end">
@@ -353,33 +349,32 @@ function isCurrentDay(date: string): boolean {
                   'border-l': index !== 0,
                   'border-l-2 border-accent-foreground': isFridayToMonday(index),
                   'bg-gray-200': isCurrentDay(day.date),
-                   }"
+                }"
               >
                 <span class="font-bold">{{ day.label }}</span>
-                <br/>
+                <br />
                 <span class="text-xs text-muted-foreground">{{ formatDate(day.date) }}</span>
               </div>
-
 
               <div v-for="(day, index) in days" :key="day.date">
                 <div
                   class="p-2 h-full align-top min-h-[100px] transition-colors"
                   :class="{
-                  'border-l': index !== 0,
-                  'border-l-2 border-accent-foreground': isFridayToMonday(index),
-                  'bg-gray-100': isCurrentDay(day.date),
-                  'bg-green-200': (sumEntriesForDay(calendar, day) < calendar.ownerWorkingHoursPerDay * 60),
-                  'bg-yellow-200': (sumEntriesForDay(calendar, day) === calendar.ownerWorkingHoursPerDay * 60),
-                  'bg-red-300': (sumEntriesForDay(calendar, day) > calendar.ownerWorkingHoursPerDay * 60)
-                   }"
-                  >
-
+                    'border-l': index !== 0,
+                    'border-l-2 border-accent-foreground': isFridayToMonday(index),
+                    'bg-gray-100': isCurrentDay(day.date),
+                    'bg-green-200':
+                      sumEntriesForDay(calendar, day) < calendar.ownerWorkingHoursPerDay * 60,
+                    'bg-yellow-200':
+                      sumEntriesForDay(calendar, day) === calendar.ownerWorkingHoursPerDay * 60,
+                    'bg-red-300':
+                      sumEntriesForDay(calendar, day) > calendar.ownerWorkingHoursPerDay * 60,
+                  }"
+                >
                   <div class="flex items-center justify-end text-xs pb-1">
-                    {{
-                      (calendar.ownerWorkingHoursPerDay - (sumEntriesForDay(calendar, day) / 60))
-                    }}h
+                    {{ calendar.ownerWorkingHoursPerDay - sumEntriesForDay(calendar, day) / 60 }}h
                     <div class="pl-1">
-                      <Clock class="w-3 h-3"/>
+                      <Clock class="w-3 h-3" />
                     </div>
                   </div>
                   <!-- calendar entries -->
@@ -387,9 +382,11 @@ function isCurrentDay(date: string): boolean {
                     v-for="entry in calendar.entries.filter((entry) => entry.date === day.date)"
                     :key="entry.title"
                     :class="{
-                    'bg-blue-300 text-xs rounded-sm px-2 py-1 border shadow-sm mb-1 truncate cursor-pointer hover:bg-sky-200 transition-colors': entry.taskId,
-                    'bg-accent text-xs rounded px-2 py-1 border shadow-sm mb-1 truncate': !entry.taskId
-                      }"
+                      'bg-blue-300 text-xs rounded-sm px-2 py-1 border shadow-sm mb-1 truncate cursor-pointer hover:bg-sky-200 transition-colors':
+                        entry.taskId,
+                      'bg-accent text-xs rounded px-2 py-1 border shadow-sm mb-1 truncate':
+                        !entry.taskId,
+                    }"
                     @click.prevent="routeToTask(entry.taskId)"
                   >
                     <strong :title="entry.title">{{ entry.title }}</strong>
@@ -403,8 +400,12 @@ function isCurrentDay(date: string): boolean {
         </div>
       </div>
       <div class="flex gap-4 justify-end">
-        <Button class="cursor-pointer" variant="secondary" @click="importOutlookCalendar">Outlook importieren</Button>
-        <Button class="cursor-pointer" variant="secondary" @click="loadCalendar">Kalender neu laden</Button>
+        <Button class="cursor-pointer" variant="secondary" @click="importOutlookCalendar"
+          >Outlook importieren</Button
+        >
+        <Button class="cursor-pointer" variant="secondary" @click="loadCalendar"
+          >Kalender neu laden</Button
+        >
       </div>
     </ScrollArea>
   </div>

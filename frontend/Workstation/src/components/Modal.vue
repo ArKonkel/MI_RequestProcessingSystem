@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed } from 'vue'
+import { computed } from 'vue'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
@@ -29,7 +29,6 @@ function abort() {
 function _continue() {
   emits('_continue')
 }
-
 
 const cardClass = computed(() => {
   return props.variant ? variantClasses[props.variant] : 'bg-green-200'

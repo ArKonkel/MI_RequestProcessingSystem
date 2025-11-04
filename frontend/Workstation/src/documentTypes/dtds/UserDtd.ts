@@ -1,4 +1,4 @@
-import type {RoleDtd} from "@/documentTypes/dtds/RoleDtd.ts";
+import type { RoleDtd } from '@/documentTypes/dtds/RoleDtd.ts'
 
 export interface UserDtd {
   id: number

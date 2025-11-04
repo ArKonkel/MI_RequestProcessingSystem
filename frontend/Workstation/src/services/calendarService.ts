@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type {CalendarDtd} from '@/documentTypes/dtds/CalendarDtd.ts'
+import type { CalendarDtd } from '@/documentTypes/dtds/CalendarDtd.ts'
 
 export async function getEmployeeCalendar(
   employeeId: number,
@@ -14,10 +14,7 @@ export async function initCalendarOfEmployee(employeeId: number, year: number): 
   await axios.post(`/api/calendars/${employeeId}/${year}`)
 }
 
-export async function getCalendars(
-  from: string,
-  to: string,
-): Promise<CalendarDtd[]> {
+export async function getCalendars(from: string, to: string): Promise<CalendarDtd[]> {
   const response = await axios.get<CalendarDtd[]>(`/api/calendars/${from}/${to}`)
   return response.data
 }

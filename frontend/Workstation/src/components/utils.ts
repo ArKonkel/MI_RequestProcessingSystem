@@ -1,9 +1,6 @@
 export const defaultTriggers = ['@']
 
-export function getTriggerOffset(
-  element: HTMLTextAreaElement,
-  triggers = defaultTriggers,
-) {
+export function getTriggerOffset(element: HTMLTextAreaElement, triggers = defaultTriggers) {
   const { value, selectionStart } = element
   for (let i = selectionStart; i >= 0; i--) {
     const char = value[i]
@@ -14,37 +11,24 @@ export function getTriggerOffset(
   return -1
 }
 
-export function getTrigger(
-  element: HTMLTextAreaElement,
-  triggers = defaultTriggers,
-) {
+export function getTrigger(element: HTMLTextAreaElement, triggers = defaultTriggers) {
   const { value, selectionStart } = element
   const previousChar = value[selectionStart - 1]
-  if (!previousChar)
-    return null
+  if (!previousChar) return null
   const secondPreviousChar = value[selectionStart - 2]
   const isIsolated = !secondPreviousChar || /\s/.test(secondPreviousChar)
-  if (!isIsolated)
-    return null
-  if (triggers.includes(previousChar))
-    return previousChar
+  if (!isIsolated) return null
+  if (triggers.includes(previousChar)) return previousChar
   return null
 }
 
-export function getSearchValue(
-  element: HTMLTextAreaElement,
-  triggers = defaultTriggers,
-) {
+export function getSearchValue(element: HTMLTextAreaElement, triggers = defaultTriggers) {
   const offset = getTriggerOffset(element, triggers)
-  if (offset === -1)
-    return ''
+  if (offset === -1) return ''
   return element.value.slice(offset + 1, element.selectionStart)
 }
 
-export function getAnchorRect(
-  element: HTMLTextAreaElement,
-  triggers = defaultTriggers,
-) {
+export function getAnchorRect(element: HTMLTextAreaElement, triggers = defaultTriggers) {
   const offset = getTriggerOffset(element, triggers)
   const { left, top, height } = getCaretCoordinates(element, offset + 1)
   const { x, y } = element.getBoundingClientRect()
@@ -61,7 +45,6 @@ export function replaceValue(
   searchValue: string,
   displayValue: string,
 ) {
-
   // Calculate startposition: Trigger '@' before searchValue
   const start = offset - searchValue.length - 1
   const before = prevValue.slice(0, start)
@@ -118,9 +101,15 @@ const properties: (keyof CSSStyleDeclaration)[] = [
 const isBrowser = typeof window !== 'undefined'
 const isFirefox = isBrowser && window.navigator.userAgent.toLowerCase().includes('firefox')
 
-function getCaretCoordinates(element: HTMLInputElement | HTMLTextAreaElement, position: number, options?: CaretOptions): CaretCoordinates {
+function getCaretCoordinates(
+  element: HTMLInputElement | HTMLTextAreaElement,
+  position: number,
+  options?: CaretOptions,
+): CaretCoordinates {
   if (!isBrowser) {
-    throw new Error('textarea-caret-position#getCaretCoordinates should only be called in a browser')
+    throw new Error(
+      'textarea-caret-position#getCaretCoordinates should only be called in a browser',
+    )
   }
 
   const debug = options?.debug ?? false
@@ -134,17 +123,14 @@ function getCaretCoordinates(element: HTMLInputElement | HTMLTextAreaElement, po
   const computed = window.getComputedStyle(element)
 
   style.whiteSpace = 'pre-wrap'
-  if (!isInput)
-    style.wordWrap = 'break-word'
+  if (!isInput) style.wordWrap = 'break-word'
   style.position = 'absolute'
-  if (!debug)
-    style.visibility = 'hidden'
+  if (!debug) style.visibility = 'hidden'
 
   properties.forEach((prop) => {
     if (isInput && prop === 'lineHeight') {
       handleInputLineHeight(style, computed)
-    }
-    else {
+    } else {
       style[prop] = computed[prop]
     }
   })
@@ -153,14 +139,12 @@ function getCaretCoordinates(element: HTMLInputElement | HTMLTextAreaElement, po
     if (element.scrollHeight > parseInt(computed.height)) {
       style.overflowY = 'scroll'
     }
-  }
-  else {
+  } else {
     style.overflow = 'hidden'
   }
 
   div.textContent = element.value.substring(0, position)
-  if (isInput)
-    div.textContent = div.textContent.replace(/\s/g, '\u00A0')
+  if (isInput) div.textContent = div.textContent.replace(/\s/g, '\u00A0')
 
   const span = document.createElement('span')
   span.textContent = element.value.substring(position) || '.'
@@ -174,8 +158,7 @@ function getCaretCoordinates(element: HTMLInputElement | HTMLTextAreaElement, po
 
   if (debug) {
     span.style.backgroundColor = '#aaa'
-  }
-  else {
+  } else {
     document.body.removeChild(div)
   }
 
@@ -185,23 +168,20 @@ function getCaretCoordinates(element: HTMLInputElement | HTMLTextAreaElement, po
 function handleInputLineHeight(style: CSSStyleDeclaration, computed: CSSStyleDeclaration): void {
   if (computed.boxSizing === 'border-box') {
     const height = parseInt(computed.height)
-    const outerHeight
-      = parseInt(computed.paddingTop)
-      + parseInt(computed.paddingBottom)
-      + parseInt(computed.borderTopWidth)
-      + parseInt(computed.borderBottomWidth)
+    const outerHeight =
+      parseInt(computed.paddingTop) +
+      parseInt(computed.paddingBottom) +
+      parseInt(computed.borderTopWidth) +
+      parseInt(computed.borderBottomWidth)
     const targetHeight = outerHeight + parseInt(computed.lineHeight)
     if (height > targetHeight) {
       style.lineHeight = `${height - outerHeight}px`
-    }
-    else if (height === targetHeight) {
+    } else if (height === targetHeight) {
       style.lineHeight = computed.lineHeight
-    }
-    else {
+    } else {
       style.lineHeight = '0'
     }
-  }
-  else {
+  } else {
     style.lineHeight = computed.height
   }
 }

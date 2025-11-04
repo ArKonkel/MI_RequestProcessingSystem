@@ -1,4 +1,4 @@
-import type {TaskStatus} from "@/documentTypes/types/TaskStatus.ts";
+import type { TaskStatus } from '@/documentTypes/types/TaskStatus.ts'
 
 export interface TaskReferenceDtd {
   id: number

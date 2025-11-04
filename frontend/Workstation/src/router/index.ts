@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory} from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import axios from 'axios' // 💡 Axios importieren
 
 import TaskView from '@/views/TaskViews/TaskView.vue'
@@ -11,11 +11,11 @@ import ProjectView from '@/views/ProjectViews/ProjectView.vue'
 import EmployeeView from '@/views/CapacityPlanningViews/EmployeeView.vue'
 import EmployeeDetailView from '@/views/CapacityPlanningViews/EmployeeDetailView.vue'
 import LoginView from '@/views/AuthenticationViews/LoginView.vue'
-import {useUserStore} from "@/stores/userStore.ts";
-import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
-import {Role} from "@/documentTypes/types/Role.ts";
-import ForbiddenView from "@/views/AuthenticationViews/ForbiddenView.vue";
-import EmployeeCalendarView from "@/views/CapacityPlanningViews/EmployeeCalendarView.vue";
+import { useUserStore } from '@/stores/userStore.ts'
+import type { UserDtd } from '@/documentTypes/dtds/UserDtd.ts'
+import { Role } from '@/documentTypes/types/Role.ts'
+import ForbiddenView from '@/views/AuthenticationViews/ForbiddenView.vue'
+import EmployeeCalendarView from '@/views/CapacityPlanningViews/EmployeeCalendarView.vue'
 
 const securityEnabled = import.meta.env.VITE_SECURITY_ENABLED === 'true'
 
@@ -45,7 +45,6 @@ const router = createRouter({
       path: '/forbidden',
       name: 'Forbidden',
       component: ForbiddenView,
-
     },
     {
       path: '/login',
@@ -60,13 +59,29 @@ const router = createRouter({
       path: '/requests',
       name: 'requestView',
       component: RequestView,
-      meta: {roles: [Role.ADMIN, Role.CUSTOMER_REQUEST_REVISER, Role.TASK_REVISER, Role.CAPACITY_PLANNER, Role.PROJECT_PLANNER]},
+      meta: {
+        roles: [
+          Role.ADMIN,
+          Role.CUSTOMER_REQUEST_REVISER,
+          Role.TASK_REVISER,
+          Role.CAPACITY_PLANNER,
+          Role.PROJECT_PLANNER,
+        ],
+      },
       children: [
         {
           path: ':requestId',
           name: 'requestDetailView',
           component: RequestDetailView,
-          meta: {roles: [Role.ADMIN, Role.CUSTOMER_REQUEST_REVISER, Role.TASK_REVISER, Role.CAPACITY_PLANNER, Role.PROJECT_PLANNER]},
+          meta: {
+            roles: [
+              Role.ADMIN,
+              Role.CUSTOMER_REQUEST_REVISER,
+              Role.TASK_REVISER,
+              Role.CAPACITY_PLANNER,
+              Role.PROJECT_PLANNER,
+            ],
+          },
         },
       ],
     },
@@ -74,13 +89,13 @@ const router = createRouter({
       path: '/projects',
       name: 'projectView',
       component: ProjectView,
-      meta: {roles: [Role.ADMIN, Role.PROJECT_PLANNER]},
+      meta: { roles: [Role.ADMIN, Role.PROJECT_PLANNER] },
       children: [
         {
           path: ':projectId',
           name: 'projectDetailView',
           component: ProjectDetailView,
-          meta: {roles: [Role.ADMIN, Role.PROJECT_PLANNER]},
+          meta: { roles: [Role.ADMIN, Role.PROJECT_PLANNER] },
         },
       ],
     },
@@ -88,13 +103,29 @@ const router = createRouter({
       path: '/tasks',
       name: 'taskView',
       component: TaskView,
-      meta: {roles: [Role.ADMIN, Role.CUSTOMER_REQUEST_REVISER, Role.TASK_REVISER, Role.CAPACITY_PLANNER, Role.PROJECT_PLANNER]},
+      meta: {
+        roles: [
+          Role.ADMIN,
+          Role.CUSTOMER_REQUEST_REVISER,
+          Role.TASK_REVISER,
+          Role.CAPACITY_PLANNER,
+          Role.PROJECT_PLANNER,
+        ],
+      },
       children: [
         {
           path: ':taskId',
           name: 'taskDetailView',
           component: TaskDetailView,
-          meta: {roles: [Role.ADMIN, Role.CUSTOMER_REQUEST_REVISER, Role.TASK_REVISER, Role.CAPACITY_PLANNER, Role.PROJECT_PLANNER]},
+          meta: {
+            roles: [
+              Role.ADMIN,
+              Role.CUSTOMER_REQUEST_REVISER,
+              Role.TASK_REVISER,
+              Role.CAPACITY_PLANNER,
+              Role.PROJECT_PLANNER,
+            ],
+          },
         },
       ],
     },
@@ -102,13 +133,13 @@ const router = createRouter({
       path: '/employees',
       name: 'employeeView',
       component: EmployeeView,
-      meta: {roles: [Role.ADMIN, Role.CAPACITY_PLANNER]},
+      meta: { roles: [Role.ADMIN, Role.CAPACITY_PLANNER] },
       children: [
         {
           path: ':employeeId',
           name: 'employeeDetailView',
           component: EmployeeDetailView,
-          meta: {roles: [Role.ADMIN, Role.CAPACITY_PLANNER]},
+          meta: { roles: [Role.ADMIN, Role.CAPACITY_PLANNER] },
         },
       ],
     },
@@ -116,13 +147,13 @@ const router = createRouter({
       path: '/employeeCalendar/',
       name: 'EmployeeCalendarView',
       component: EmployeeCalendarView,
-      meta: {roles: [Role.ADMIN, Role.CAPACITY_PLANNER]},
+      meta: { roles: [Role.ADMIN, Role.CAPACITY_PLANNER] },
     },
     {
       path: '/capacityPlanning/:taskId',
       name: 'capacityPlanningView',
       component: TaskCapacityPlanningView,
-      meta: {roles: [Role.ADMIN, Role.CAPACITY_PLANNER]},
+      meta: { roles: [Role.ADMIN, Role.CAPACITY_PLANNER] },
     },
   ],
 })
@@ -151,16 +182,15 @@ router.beforeEach((to, from, next) => {
   }
 
   //admin is allowed to do everything
-  const isAdmin = user?.roles?.some(role => role.name === Role.ADMIN)
+  const isAdmin = user?.roles?.some((role) => role.name === Role.ADMIN)
   if (isAdmin) {
     return next()
   }
 
-
- // Check if user has role
-  const hasRole = user?.roles?.some(role => allowedRoles.includes(role.name))
+  // Check if user has role
+  const hasRole = user?.roles?.some((role) => allowedRoles.includes(role.name))
   if (!hasRole) {
-    console.error("FORBIDDEN")
+    console.error('FORBIDDEN')
     return next('/forbidden')
   }
 

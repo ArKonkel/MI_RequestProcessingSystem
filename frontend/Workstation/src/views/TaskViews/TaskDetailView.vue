@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import {ref, watch} from 'vue'
+import { ref, watch } from 'vue'
 
-import {useTaskStore} from '@/stores/taskStore.ts'
-import {useAlertStore} from '@/stores/useAlertStore.ts'
+import { useTaskStore } from '@/stores/taskStore.ts'
+import { useAlertStore } from '@/stores/useAlertStore.ts'
 
-import {Badge} from '@/components/ui/badge'
-import {Input} from '@/components/ui/input'
-import {Textarea} from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Accordion,
   AccordionContent,
@@ -20,20 +20,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {ScrollArea} from '@/components/ui/scroll-area'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
-import {PriorityLabel} from '@/documentTypes/types/Priority.ts'
-import {TaskStatusLabel} from '@/documentTypes/types/TaskStatus.ts'
-import type {TaskDtd} from '@/documentTypes/dtds/TaskDtd.ts'
-import {useDebounceFn} from '@vueuse/core'
+import { PriorityLabel } from '@/documentTypes/types/Priority.ts'
+import { TaskStatusLabel } from '@/documentTypes/types/TaskStatus.ts'
+import type { TaskDtd } from '@/documentTypes/dtds/TaskDtd.ts'
+import { useDebounceFn } from '@vueuse/core'
 import CommentsAccordion from '@/components/CommentsAccordion.vue'
-import type {CommentCreateDtd} from '@/documentTypes/dtds/CommentCreateDtd.ts'
-import {addCommentToProcessItem, assignProcessItemToUser} from '@/services/processItemService.ts'
-import {TimeUnitLabel} from '@/documentTypes/types/TimeUnit.ts'
-import {addBlockingTask, addWorkingTime, updateTask} from '@/services/taskService.ts'
+import type { CommentCreateDtd } from '@/documentTypes/dtds/CommentCreateDtd.ts'
+import { addCommentToProcessItem, assignProcessItemToUser } from '@/services/processItemService.ts'
+import { TimeUnitLabel } from '@/documentTypes/types/TimeUnit.ts'
+import { addBlockingTask, addWorkingTime, updateTask } from '@/services/taskService.ts'
 import UserSelect from '@/components/UserSelect.vue'
-import type {DateValue} from '@internationalized/date'
-import {CalendarDate, DateFormatter, getLocalTimeZone} from '@internationalized/date'
+import type { DateValue } from '@internationalized/date'
+import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
 import {
   Dialog,
   DialogContent,
@@ -41,26 +41,26 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import {BookCheck, CalendarIcon} from 'lucide-vue-next'
+import { BookCheck, CalendarIcon } from 'lucide-vue-next'
 
-import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover'
-import {Button} from '@/components/ui/button'
-import {Calendar} from '@/components/ui/calendar'
-import type {UpdateTaskDtd} from '@/documentTypes/dtds/UpdateTaskDtd.ts'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
+import type { UpdateTaskDtd } from '@/documentTypes/dtds/UpdateTaskDtd.ts'
 import ExpertiseSelect from '@/components/ExpertiseSelect.vue'
-import {useRouter} from 'vue-router'
-import type {UserDtd} from '@/documentTypes/dtds/UserDtd.ts'
-import {WorkingTimeUnit, WorkingTimeUnitlabel} from '@/documentTypes/types/WorkingTimeUnit.ts'
+import { useRouter } from 'vue-router'
+import type { UserDtd } from '@/documentTypes/dtds/UserDtd.ts'
+import { WorkingTimeUnit, WorkingTimeUnitlabel } from '@/documentTypes/types/WorkingTimeUnit.ts'
 import AttachmentList from '@/components/AttachmentList.vue'
-import {useUserStore} from "@/stores/userStore.ts";
-import {deletePlannedCapacity} from "@/services/capacityService.ts";
-import {Role} from "@/documentTypes/types/Role.ts";
-import Modal from "@/components/Modal.vue";
-import TaskSelect from "@/components/TaskSelect.vue";
-import {format, parseISO} from "date-fns";
+import { useUserStore } from '@/stores/userStore.ts'
+import { deletePlannedCapacity } from '@/services/capacityService.ts'
+import { Role } from '@/documentTypes/types/Role.ts'
+import Modal from '@/components/Modal.vue'
+import TaskSelect from '@/components/TaskSelect.vue'
+import { format, parseISO } from 'date-fns'
 
 const userStore = useUserStore()
-const {hasAnyRole} = userStore
+const { hasAnyRole } = userStore
 const taskStore = useTaskStore()
 const alertStore = useAlertStore()
 const router = useRouter()
@@ -95,7 +95,7 @@ watch(
   () => taskStore.selectedTask,
   (newTask) => {
     if (newTask) {
-      editableTask.value = {...newTask}
+      editableTask.value = { ...newTask }
       ignoreNextUpdate.value = true
       description.value = newTask.processItem.description
       acceptanceCriteria.value = newTask.acceptanceCriteria
@@ -118,7 +118,7 @@ watch(
       dueDateValue.value = undefined
     }
   },
-  {immediate: true, deep: true},
+  { immediate: true, deep: true },
 )
 
 const debouncedSave = useDebounceFn(async () => {
@@ -173,7 +173,7 @@ async function saveTask() {
     }
     await updateTask(editableTask.value.processItem.id, dto)
   } catch (err: any) {
-    editableTask.value = {...taskStore.selectedTask} as TaskDtd
+    editableTask.value = { ...taskStore.selectedTask } as TaskDtd
     const msg = err.response?.data?.message || err.response?.data || err.message || String(err)
     alertStore.show('Fehler beim Speichern: ' + msg, 'error')
   }
@@ -209,7 +209,7 @@ async function addComment() {
   if (!editableTask.value || !commentText.value) return
 
   if (userStore.user === null) {
-    console.log("user is null")
+    console.log('user is null')
     return
   }
 
@@ -247,7 +247,7 @@ function moveToCapacityPlanning() {
   if (editableTask.value?.processItem.id) {
     router.push({
       name: 'capacityPlanningView',
-      params: {taskId: editableTask.value.processItem.id},
+      params: { taskId: editableTask.value.processItem.id },
     })
   } else {
     alert('Task Id fehlt')
@@ -283,14 +283,17 @@ async function submitRepeatPlanning() {
 
 function toggleAddBlockedByTask() {
   selectedBlockedByTask.value = null
-  addingBlockedByTask.value = !addingBlockedByTask.value;
+  addingBlockedByTask.value = !addingBlockedByTask.value
 }
 
 async function addBlockedByTask() {
   if (!editableTask.value || !selectedBlockedByTask.value) return
 
   try {
-    await addBlockingTask(editableTask.value.processItem.id, selectedBlockedByTask.value.processItem.id)
+    await addBlockingTask(
+      editableTask.value.processItem.id,
+      selectedBlockedByTask.value.processItem.id,
+    )
     alertStore.show(`Blockierung erfolgreich erstellt`, 'success')
     toggleAddBlockedByTask()
   } catch (err: any) {
@@ -301,20 +304,22 @@ async function addBlockedByTask() {
 
 function determineFinishDate() {
   if (!editableTask.value) return
-  if (!editableTask.value.calendarEntryDates || editableTask.value.calendarEntryDates.length === 0) return
+  if (!editableTask.value.calendarEntryDates || editableTask.value.calendarEntryDates.length === 0)
+    return
 
   //must be parsed to Date object to determine latest one
-  const maxTimestamp = Math.max(...editableTask.value.calendarEntryDates.map(date => new Date(date).getTime()))
+  const maxTimestamp = Math.max(
+    ...editableTask.value.calendarEntryDates.map((date) => new Date(date).getTime()),
+  )
 
   return new Date(maxTimestamp)
 }
 
 function formatDate(date: string | undefined | null): string {
-  if (!date) return '';
-  const parsedDate = parseISO(date);
-  return format(parsedDate, 'dd.MM.yyyy');
+  if (!date) return ''
+  const parsedDate = parseISO(date)
+  return format(parsedDate, 'dd.MM.yyyy')
 }
-
 </script>
 
 <template>
@@ -328,10 +333,15 @@ function formatDate(date: string | undefined | null): string {
               {{ editableTask.processItem.id }} - {{ editableTask.processItem.title }}
             </h2>
 
-            <div v-if="editableTask.isAlreadyPlanned" class="flex flex-col items-end space-x-2 text-right">
-              <BookCheck class="stroke-1"/>
+            <div
+              v-if="editableTask.isAlreadyPlanned"
+              class="flex flex-col items-end space-x-2 text-right"
+            >
+              <BookCheck class="stroke-1" />
               <p>Voraussichtlich fertiggestellt am:</p>
-              <div v-if="editableTask.calendarEntryDates && editableTask.calendarEntryDates.length > 0">
+              <div
+                v-if="editableTask.calendarEntryDates && editableTask.calendarEntryDates.length > 0"
+              >
                 {{ formatDate(determineFinishDate()?.toISOString()) }}
               </div>
             </div>
@@ -340,41 +350,45 @@ function formatDate(date: string | undefined | null): string {
             <Badge v-for="expertise in editableTask.expertise" :key="expertise.id">
               {{ expertise.name }}
             </Badge>
-            <Button v-if="hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER])"
-                    class="cursor-pointer" @click="toggleExpertise">+
+            <Button
+              v-if="hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER])"
+              class="cursor-pointer"
+              @click="toggleExpertise"
+              >+
             </Button>
           </div>
 
           <div v-if="showAddExpertise" class="flex pt-3 space-x-2">
-            <ExpertiseSelect v-model="expertiseIdToAdd"/>
+            <ExpertiseSelect v-model="expertiseIdToAdd" />
             <Button class="cursor-pointer" @click="addExpertise">Hinzufügen</Button>
-            <Button class="cursor-pointer" variant="secondary" @click="toggleExpertise">Abbrechen
+            <Button class="cursor-pointer" variant="secondary" @click="toggleExpertise"
+              >Abbrechen
             </Button>
           </div>
 
-
-          <div class="flex gap-6 mt-4 text-sm ">
-
+          <div class="flex gap-6 mt-4 text-sm">
             <div v-if="editableTask.requestId">
-              <span class="font-semibold">Anfrage</span><br/>
+              <span class="font-semibold">Anfrage</span><br />
               <RouterLink :to="`/requests/${editableTask.requestId}`">
                 {{ editableTask.requestId }} - {{ editableTask.requestTitle }}
               </RouterLink>
             </div>
 
             <div v-if="editableTask.projectId">
-              <span class="font-semibold">Projekt</span><br/>
+              <span class="font-semibold">Projekt</span><br />
               <RouterLink :to="`/projects/${editableTask.projectId}`">
                 {{ editableTask.projectId }} - {{ editableTask.projectTitle }}
               </RouterLink>
             </div>
 
             <div>
-              <span class="font-semibold">Geplant bis</span><br/>
+              <span class="font-semibold">Geplant bis</span><br />
               <Popover>
                 <PopoverTrigger as-child>
                   <Button
-                    :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER])"
+                    :disabled="
+                      !hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER])
+                    "
                     variant="outline"
                     class="cursor-pointer"
                     :class="[
@@ -382,7 +396,7 @@ function formatDate(date: string | undefined | null): string {
                       !dueDateValue ? 'text-muted-foreground' : '',
                     ]"
                   >
-                    <CalendarIcon class="mr-2 h-4 w-4"/>
+                    <CalendarIcon class="mr-2 h-4 w-4" />
                     {{
                       dueDateValue
                         ? dataFormatter.format(dueDateValue.toDate(getLocalTimeZone()))
@@ -391,7 +405,7 @@ function formatDate(date: string | undefined | null): string {
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent class="w-auto p-0">
-                  <Calendar v-model="dueDateValue" initial-focus @update:modelValue="saveTask"/>
+                  <Calendar v-model="dueDateValue" initial-focus @update:modelValue="saveTask" />
                 </PopoverContent>
               </Popover>
             </div>
@@ -402,14 +416,14 @@ function formatDate(date: string | undefined | null): string {
           <AccordionItem value="desc">
             <AccordionTrigger>Beschreibung</AccordionTrigger>
             <AccordionContent>
-              <Textarea v-model="description" class="mt-2 min-h-[200px] resize-none"/>
+              <Textarea v-model="description" class="mt-2 min-h-[200px] resize-none" />
             </AccordionContent>
           </AccordionItem>
 
           <AccordionItem value="acceptance">
             <AccordionTrigger>Akzeptanzkriterien</AccordionTrigger>
             <AccordionContent>
-              <Textarea v-model="acceptanceCriteria" class="mt-2 min-h-[130px] resize-none"/>
+              <Textarea v-model="acceptanceCriteria" class="mt-2 min-h-[130px] resize-none" />
             </AccordionContent>
           </AccordionItem>
 
@@ -431,7 +445,8 @@ function formatDate(date: string | undefined | null): string {
                 </RouterLink>
               </div>
 
-              <div v-if="editableTask.blocks.length > 0" class="text-xs">Diese Aufgabe blockiert:
+              <div v-if="editableTask.blocks.length > 0" class="text-xs">
+                Diese Aufgabe blockiert:
               </div>
               <div v-for="task in editableTask.blocks" :key="task.id">
                 <RouterLink :to="`/tasks/${task.id}`" class="block">
@@ -448,7 +463,7 @@ function formatDate(date: string | undefined | null): string {
               </div>
 
               <div v-if="addingBlockedByTask" class="flex gap-2 items-center pt-2">
-                <TaskSelect v-model="selectedBlockedByTask"/>
+                <TaskSelect v-model="selectedBlockedByTask" />
 
                 <Button class="cursor-pointer" @click="addBlockedByTask">Erstellen</Button>
                 <Button class="cursor-pointer" variant="ghost" @click="toggleAddBlockedByTask">
@@ -457,8 +472,11 @@ function formatDate(date: string | undefined | null): string {
               </div>
 
               <div class="flex justify-end">
-                <Button v-if="hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER])"
-                        class="cursor-pointer" @click="toggleAddBlockedByTask">+
+                <Button
+                  v-if="hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER])"
+                  class="cursor-pointer"
+                  @click="toggleAddBlockedByTask"
+                  >+
                 </Button>
               </div>
             </AccordionContent>
@@ -481,8 +499,11 @@ function formatDate(date: string | undefined | null): string {
           />
         </Accordion>
       </div>
-      <Button v-if="hasAnyRole([Role.ADMIN, Role.CAPACITY_PLANNER])" class="cursor-pointer"
-              @click="startCapacityPlanning">Zur Planung
+      <Button
+        v-if="hasAnyRole([Role.ADMIN, Role.CAPACITY_PLANNER])"
+        class="cursor-pointer"
+        @click="startCapacityPlanning"
+        >Zur Planung
       </Button>
     </ScrollArea>
 
@@ -492,8 +513,17 @@ function formatDate(date: string | undefined | null): string {
         <label class="text-sm font-semibold">Priorität</label>
         <Select v-model="editableTask.priority" @update:modelValue="saveTask">
           <SelectTrigger
-            :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER, Role.TASK_REVISER, Role.CUSTOMER_REQUEST_REVISER])">
-            <SelectValue placeholder="Select..."/>
+            :disabled="
+              !hasAnyRole([
+                Role.ADMIN,
+                Role.PROJECT_PLANNER,
+                Role.CAPACITY_PLANNER,
+                Role.TASK_REVISER,
+                Role.CUSTOMER_REQUEST_REVISER,
+              ])
+            "
+          >
+            <SelectValue placeholder="Select..." />
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -511,8 +541,17 @@ function formatDate(date: string | undefined | null): string {
         <label class="text-sm font-semibold">Status</label>
         <Select v-model="editableTask.status" @update:modelValue="saveTask">
           <SelectTrigger
-            :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER, Role.TASK_REVISER, Role.CUSTOMER_REQUEST_REVISER])">
-            <SelectValue placeholder="Offen"/>
+            :disabled="
+              !hasAnyRole([
+                Role.ADMIN,
+                Role.PROJECT_PLANNER,
+                Role.CAPACITY_PLANNER,
+                Role.TASK_REVISER,
+                Role.CUSTOMER_REQUEST_REVISER,
+              ])
+            "
+          >
+            <SelectValue placeholder="Offen" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -537,13 +576,32 @@ function formatDate(date: string | undefined | null): string {
 
         <div class="flex space-x-2 border-b border-gray-300 pb-2 mb-2">
           <Input
-            :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER, Role.TASK_REVISER])"
-            type="number" v-model="estimatedTime" placeholder="Schätzung in Minuten"/>
+            :disabled="
+              !hasAnyRole([
+                Role.ADMIN,
+                Role.PROJECT_PLANNER,
+                Role.CAPACITY_PLANNER,
+                Role.TASK_REVISER,
+              ])
+            "
+            type="number"
+            v-model="estimatedTime"
+            placeholder="Schätzung in Minuten"
+          />
 
           <Select v-model="editableTask.estimationUnit" @update:modelValue="saveTask">
             <SelectTrigger
-              :disabled="!hasAnyRole([Role.ADMIN, Role.PROJECT_PLANNER, Role.CAPACITY_PLANNER, Role.TASK_REVISER, Role.CUSTOMER_REQUEST_REVISER])">
-              <SelectValue placeholder="Zeiteinheit"/>
+              :disabled="
+                !hasAnyRole([
+                  Role.ADMIN,
+                  Role.PROJECT_PLANNER,
+                  Role.CAPACITY_PLANNER,
+                  Role.TASK_REVISER,
+                  Role.CUSTOMER_REQUEST_REVISER,
+                ])
+              "
+            >
+              <SelectValue placeholder="Zeiteinheit" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem
@@ -561,10 +619,12 @@ function formatDate(date: string | undefined | null): string {
       <div>
         <label class="text-sm font-semibold">Aufgewendete Zeit (min)</label>
         <div class="flex space-x-2">
-          <Input type="number" v-model="workingTimeInMinutes" disabled/>
+          <Input type="number" v-model="workingTimeInMinutes" disabled />
 
-          <Dialog v-if="hasAnyRole([Role.ADMIN, Role.TASK_REVISER])"
-                  v-model:open="showWorkingTimeDialog">
+          <Dialog
+            v-if="hasAnyRole([Role.ADMIN, Role.TASK_REVISER])"
+            v-model:open="showWorkingTimeDialog"
+          >
             <DialogTrigger as-child>
               <Button class="cursor-pointer">+</Button>
             </DialogTrigger>
@@ -582,7 +642,7 @@ function formatDate(date: string | undefined | null): string {
                 />
                 <Select v-model="unit" class="w-full">
                   <SelectTrigger>
-                    <SelectValue placeholder="Einheit wählen"/>
+                    <SelectValue placeholder="Einheit wählen" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem
@@ -595,9 +655,11 @@ function formatDate(date: string | undefined | null): string {
                   </SelectContent>
                 </Select>
                 <div class="flex justify-end space-x-2">
-                  <Button class="cursor-pointer" variant="secondary"
-                          @click="showWorkingTimeDialog = false"
-                  >Abbrechen
+                  <Button
+                    class="cursor-pointer"
+                    variant="secondary"
+                    @click="showWorkingTimeDialog = false"
+                    >Abbrechen
                   </Button>
                   <Button class="cursor-pointer" @click="submitWorkingTime">Hinzufügen</Button>
                 </div>
@@ -606,12 +668,11 @@ function formatDate(date: string | undefined | null): string {
           </Dialog>
         </div>
 
-
         <Modal
           title="Aufgabe bereits verplant."
           variant="warning"
           :show="showAlreadyPlannedDialog"
-          :message="`Diese Aufgabe ist bereits für  ${ editableTask.processItem.assignee?.name } verplant. Soll die Planung erneut durchgeführt werden?
+          :message="`Diese Aufgabe ist bereits für  ${editableTask.processItem.assignee?.name} verplant. Soll die Planung erneut durchgeführt werden?
                     Die bereits vorhandene Planung wird in diesem Fall gelöscht.`"
           @_continue="submitRepeatPlanning"
           @abort="showAlreadyPlannedDialog = false"
