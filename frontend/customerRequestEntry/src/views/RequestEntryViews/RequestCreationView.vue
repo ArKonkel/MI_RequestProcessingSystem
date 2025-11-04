@@ -188,7 +188,7 @@ function resetFrom() {
             </TooltipTrigger>
             <TooltipContent>
               <p class="text-xs">
-                Bitte gib deine Telefonnummer an, unter der wir dich für Rückfragen erreichen
+                Bitte gib Sie Ihre Telefonnummer an, unter der wir Sie bei Rückfragen erreichen
                 können.
               </p>
             </TooltipContent>
@@ -260,7 +260,7 @@ function resetFrom() {
               />
             </TooltipTrigger>
             <TooltipContent>
-              <p class="text-xs">Bitte gebe an in welchem Programm der Fehler auftaucht.</p>
+              <p class="text-xs">Bitte geben Sie an in welchem Programm der Fehler auftaucht.</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -280,7 +280,7 @@ function resetFrom() {
               />
             </TooltipTrigger>
             <TooltipContent>
-              <p class="text-xs">Bitte gebe an in welchem Modul eine Schulung benötigt wird.</p>
+              <p class="text-xs">Bitte geben Sie an in welchem Modul eine Schulung benötigt wird.</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -311,8 +311,8 @@ function resetFrom() {
             </TooltipTrigger>
             <TooltipContent>
               <p class="text-xs">
-                Bitte gebe die Emails der Empfänger an, die ebenfalls über die Anfrage
-                benachrichtigt werden sollen..
+                Bitte geben Sie die Emails der Empfänger an, die ebenfalls über die Anfrage
+                benachrichtigt werden sollen.
               </p>
             </TooltipContent>
           </Tooltip>
@@ -376,8 +376,8 @@ function resetFrom() {
             </TooltipTrigger>
             <TooltipContent>
               <p class="text-xs">
-                Bitte gebe eine möglichst genaue Beschreibung deiner Anfrage an. Jede Information
-                hilft uns Ihre Anfrage schnell zu bearbeiten.
+                Bitte geben Sie eine möglichst genaue Beschreibung deiner Anfrage an. Jede Information
+                hilft uns Ihre Anfrage schnellstmöglich zu bearbeiten.
               </p>
             </TooltipContent>
           </Tooltip>

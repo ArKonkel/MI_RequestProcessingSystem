@@ -63,14 +63,12 @@ Die Kommunikation erfolgt über **REST-Schnittstellen** sowie **STOMP-WebSockets
  npm install
  npm run dev
 ```
-
 ### Workstation  starten
 ```bash
  cd frontend/workstation 
  npm install
  npm run dev
 ```
-
 
 ### CustomerRequestProcessingServer starten
 ```bash
@@ -82,3 +80,22 @@ Die Kommunikation erfolgt über **REST-Schnittstellen** sowie **STOMP-WebSockets
 cd OutlookDummy
 ./gradlew bootRun
 ```
+
+## Benutzer und Rollen
+Für Testzwecke wurden Benutzer angelegt.
+
+### Kunden
+| Benutzername    | Passwort | Rolle |
+|-----------------|----------|-------|
+| WeinfestAG      | Gandalf  | Kunde |
+| BaumAG          | Gandalf  | Kunde |
+| Autohaus Krause | Gandalf  | Kunde |
+
+### Ausführende Rollen
+| Benutzername      | Passwort | Rolle                       |
+|-------------------|----------|-----------------------------|
+| Max Mustermann    | Gandalf  | Admin                       |
+| Sabine Musterfrau | Gandalf  | Kundenanfragenbearbeitung   |
+| Thomas Schneider  | Gandalf  | Kapazitätsplanung           |
+| Lisa Berger       | Gandalf  | Projektplanung              |
+| Julia Fischer     | Gandalf  | Aufgabenbearbeitung         |
