@@ -13,12 +13,10 @@ public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
 
     /**
-     * Retrieves a {@link Role} entity by its name. If no role is found with the given name,
-     * a {@link NotFoundException} is thrown.
+     * Retrieves a {@link Role} entity by its name.
      *
      * @param name the name of the role to retrieve
      * @return the {@link Role} associated with the provided name
-     * @throws NotFoundException if a role with the specified name is not found
      */
     @Override
     public Role getRoleByName(String name) {

@@ -43,7 +43,6 @@ public class CalendarServiceImpl implements CalendarService {
      * @param from the start date of the date range (inclusive)
      * @param to the end date of the date range (inclusive)
      * @return a CalendarDto containing the filtered calendar entries of the specified employee within the given date range
-     * @throws NoSuchElementException if the calendar for the specified employee is not found
      */
     @Override
     public CalendarDto getCalendarDtoOfEmployee(Long employeeId, LocalDate from, LocalDate to) {
@@ -73,7 +72,7 @@ public class CalendarServiceImpl implements CalendarService {
      *
      * @param from the start date of the range (inclusive)
      * @param to the end date of the range (inclusive)
-     * @return a list of {@code CalendarDto} objects containing filtered calendar entries
+     * @return a list of CalendarDto objects containing filtered calendar entries
      *         within the specified date range
      */
     @Override
@@ -107,7 +106,6 @@ public class CalendarServiceImpl implements CalendarService {
      * @param from the start date of the range within which calendar entries should fall
      * @param to the end date of the range within which calendar entries should fall
      * @return the filtered calendar object containing entries within the specified date range
-     * @throws NoSuchElementException if a calendar for the specified employee is not found
      */
     @Override
     public Calendar getCalendarOfEmployee(Long employeeId, LocalDate from, LocalDate to) {

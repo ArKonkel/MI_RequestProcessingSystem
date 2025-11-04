@@ -115,7 +115,6 @@ public class EmployeeServiceImpl implements EmployeeService {
      *
      * @param employeeId the unique identifier of the employee to be retrieved
      * @return the employee associated with the given identifier
-     * @throws NotFoundException if no employee with the given identifier exists
      */
     @Override
     public Employee getEmployeeById(Long employeeId) {

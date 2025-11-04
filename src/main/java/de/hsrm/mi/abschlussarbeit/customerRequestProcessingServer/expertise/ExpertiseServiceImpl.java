@@ -33,7 +33,6 @@ public class ExpertiseServiceImpl implements ExpertiseService {
      *
      * @param id the unique identifier of the expertise to retrieve
      * @return the expertise entity matching the specified identifier
-     * @throws NotFoundException if no expertise with the given identifier is found
      */
     @Override
     public Expertise getExpertiseById(Long id) {

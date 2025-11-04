@@ -290,12 +290,8 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
 
     /**
      * Identifies the employees who are able to complete a task the earliest based on their availability
-     * and capacity. The method analyzes the provided schedules and calculates which employees meet the
-     * criteria of having the earliest available date and the shortest duration for task completion.
+     * and capacity.
      *
-     * @param employeeWithCalendarEntriesOfTask a map where the key is an Employee and the value
-     *                                          is a list of CalculatedCapacityCalendarEntryVO objects that
-     *                                          represent their scheduled calendar entries for the task
      * @return a list of employees who are eligible to complete the task the earliest, based on the
      *         earliest date and the shortest duration among their entries
      */

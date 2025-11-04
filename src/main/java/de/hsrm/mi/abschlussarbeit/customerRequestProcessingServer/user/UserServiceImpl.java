@@ -36,7 +36,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
      *
      * @param id the unique identifier of the user to retrieve
      * @return the User associated with the given id
-     * @throws NotFoundException if no user is found with the specified id
      */
     @Override
     public User getUserById(Long id) {
@@ -50,7 +49,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
      *
      * @param name the name of the user to retrieve
      * @return the UserDto representation of the user with the specified name
-     * @throws NotFoundException if no user is found with the specified name
      */
     @Override
     public UserDto getUserByName(String name) {

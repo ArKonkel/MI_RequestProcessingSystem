@@ -65,7 +65,6 @@ public class AuthServiceImpl implements AuthService {
      * An exception is thrown if the customer linked to the provided email does not exist.
      *
      * @param registerDto an object containing the registration details, including username, email, and password
-     * @throws CustomerNotInSystemException if no customer is found in the system with the given email
      */
     @Override
     public void registerAsCustomer(RegisterDto registerDto) {
@@ -96,7 +95,6 @@ public class AuthServiceImpl implements AuthService {
      *
      * @param dto the login details including username and password
      * @return a signed JSON Web Token (JWT) as a string for the authenticated user
-     * @throws AccessDeniedException if authentication fails due to incorrect credentials or other issues
      */
     @Override
     public String login(LoginDto dto) throws AccessDeniedException {
@@ -131,7 +129,6 @@ public class AuthServiceImpl implements AuthService {
      * @param username the username for which the token is being generated
      * @param roles    the list of roles associated with the user
      * @return a signed JSON Web Token (JWT) as a string
-     * @throws JOSEException if there is an error during token signing
      */
     private String generateToken(String username, List<String> roles) throws JOSEException {
         var timeNow = LocalDateTime.now();

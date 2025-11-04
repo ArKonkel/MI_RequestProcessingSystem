@@ -29,7 +29,6 @@ public class OutlookServiceImpl implements MailService, OutlookCalendarService {
      * @param mail the {@link SendMailRequest} object containing the details of the message to be sent,
      *             including recipients and message content
      * @param senderMail the email address of the sender from which the message will be sent
-     * @throws IllegalArgumentException if the senderMail is null or empty
      */
     @Override
     public void sendMails(SendMailRequest mail, String senderMail) {
@@ -79,8 +78,6 @@ public class OutlookServiceImpl implements MailService, OutlookCalendarService {
      * @param end the end date and time of the range for which to fetch calendar events
      * @return an {@link OutlookCalendarViewResponse} object containing the list of calendar events
      *         for the specified employee and date-time range
-     * @throws IllegalArgumentException if the provided employee email is null or empty
-     * @throws RuntimeException if an error occurs while communicating with the API
      */
     @Override
     public OutlookCalendarViewResponse fetchCalendarEvents(String employeeMail, OffsetDateTime start, OffsetDateTime end) {

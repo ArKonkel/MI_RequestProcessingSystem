@@ -18,8 +18,6 @@ public class CustomerServiceImpl implements CustomerService {
      * Retrieves a customer by their unique identifier.
      *
      * @param id the unique identifier of the customer to fetch
-     * @return the {@code Customer} object corresponding to the provided id
-     * @throws NotFoundException if no customer with the specified id is found
      */
     @Override
     public Customer getCustomerById(Long id) {
@@ -31,8 +29,6 @@ public class CustomerServiceImpl implements CustomerService {
     /**
      * Retrieves a customer by their email address.
      *
-     * @param email the email address of the customer to fetch
-     * @return an {@code Optional<Customer>} containing the customer if found, or an empty {@code Optional} if no customer with the specified email exists
      */
     @Override
     public Optional<Customer> getCustomerByEmail(String email) {

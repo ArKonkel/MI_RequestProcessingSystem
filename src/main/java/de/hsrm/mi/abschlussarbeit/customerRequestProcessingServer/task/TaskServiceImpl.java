@@ -43,7 +43,6 @@ public class TaskServiceImpl implements TaskService {
      *
      * @param id the unique identifier of the Task to be retrieved
      * @return the Task object associated with the specified ID
-     * @throws NotFoundException if no Task is found with the specified ID
      */
     @Override
     @Transactional(readOnly = true) //Needed because fetching blob
@@ -82,13 +81,10 @@ public class TaskServiceImpl implements TaskService {
     /**
      * Creates a new task based on the provided task creation data.
      * This method initializes a new task with the specified details including title,
-     * description, due date, and priority. It associates the task with a customer request
-     * or project based on the provided identifiers. After saving the task, appropriate notifications
-     * are triggered to notify relevant systems or entities about the creation or updates.
+     * description, due date, and priority.
      *
      * @param createDto the data transfer object containing details needed to create the task.
-     *                  It includes attributes such as title, description, due date, priority,
-     *                  requestId, and projectId.
+
      * @return a TaskDto representation of the newly created task.
      */
     @Override
@@ -282,9 +278,6 @@ public class TaskServiceImpl implements TaskService {
      *
      * @param taskId the ID of the task that will be marked as blocked.
      * @param blockedByTaskId the ID of the task that will block the given task.
-     * @throws IllegalArgumentException if a task is set to block itself.
-     * @throws NotFoundException if either the task or the blocking task does not exist.
-     * @throws SaveException if an error occurs while saving the task relationships.
      */
     @Override
     @Transactional

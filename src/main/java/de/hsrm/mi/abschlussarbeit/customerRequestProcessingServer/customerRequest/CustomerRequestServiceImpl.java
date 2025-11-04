@@ -125,7 +125,6 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
      *
      * @param id the ID of the customer request to retrieve
      * @return the data transfer object of the retrieved customer request
-     * @throws NotFoundException if no customer request is found with the given ID
      */
     @Override
     @Transactional(readOnly = true)
@@ -142,8 +141,6 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
      * @param id the unique identifier of the customer request to update
      * @param updateDto the data containing the updates to apply to the customer request
      * @return a DTO representing the updated customer request
-     * @throws NotFoundException if no customer request with the given id is found
-     * @throws NotAllowedException if modifications to the classification as a project are not permitted
      */
     @Override
     @Transactional
@@ -205,7 +202,6 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
      *
      * @param id the unique identifier of the customer request to retrieve
      * @return the customer request associated with the given ID
-     * @throws NotFoundException if no customer request is found with the specified ID
      */
     @Override
     @Transactional(readOnly = true)
@@ -223,7 +219,6 @@ public class CustomerRequestServiceImpl implements CustomerRequestService {
      *
      * @param requestId the unique identifier of the customer request to check
      * @return true if the request is ready for processing, false otherwise
-     * @throws NoSuchElementException if no customer request is found with the specified ID
      */
     @Override
     public boolean isRequestReadyForProcessing(Long requestId) {

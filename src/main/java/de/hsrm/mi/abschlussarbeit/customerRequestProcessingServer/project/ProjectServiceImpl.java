@@ -51,7 +51,6 @@ public class ProjectServiceImpl implements ProjectService {
      *
      * @param projectId the unique identifier of the project to retrieve
      * @return a {@link ProjectDto} object representing the project
-     * @throws NotFoundException if no project is found with the specified identifier
      */
     @Override
     @Transactional(readOnly = true) //Needed because fetching blob
@@ -138,8 +137,6 @@ public class ProjectServiceImpl implements ProjectService {
      * @param projectId The ID of the project to be updated.
      * @param newStatus The new status to which the project should be updated.
      *                  Allowed values are READY, IN_PROGRESS, and FINISHED.
-     * @throws BlockedByDependencyException If the project cannot be moved to the new status
-     *                                       due to unmet dependencies or invalid transitions.
      */
     @Override
     @Transactional
@@ -252,7 +249,6 @@ public class ProjectServiceImpl implements ProjectService {
      * Determines whether a project can be moved to the "Ready" state based on its dependencies and their statuses.
      *
      * @param project the project whose readiness is being evaluated
-     * @return {@code true} if the project can be moved to the "Ready" state, {@code false} otherwise
      */
     private boolean canMoveToReady(Project project) {
         if (project.getIncomingDependencies() == null || project.getIncomingDependencies().isEmpty()) {

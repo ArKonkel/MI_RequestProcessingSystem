@@ -23,7 +23,6 @@ public class FileServiceImpl implements FileService {
      *
      * @param id the unique identifier of the file to retrieve
      * @return the file associated with the given identifier
-     * @throws NotFoundException if no file is found for the given identifier
      */
     @Override
     public File getFileById(String id) {

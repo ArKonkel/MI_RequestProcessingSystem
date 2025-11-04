@@ -21,8 +21,7 @@ public class NotificationServiceImpl implements NotificationService {
     /**
      * Handles a change notification event after the transaction has been committed.
      *
-     * @param event the change notification event containing details about the change,
-     *              including process item ID, change type, and target type
+     * @param event the change notification event
      */
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onChange(ChangeNotificationEvent event) {
@@ -32,8 +31,7 @@ public class NotificationServiceImpl implements NotificationService {
     /**
      * Handles a user notification event after the transaction has been committed.
      *
-     * @param event the user notification event containing details such as the notification type,
-     *              process item ID, title, list of user IDs to notify, notification text, timestamp, and target type
+     * @param event the user notification event
      */
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onUserNotification(UserNotificationEvent event) {
@@ -43,9 +41,7 @@ public class NotificationServiceImpl implements NotificationService {
     /**
      * Sends a user notification event by publishing it through the application event publisher.
      *
-     * @param event the user notification event containing details such as notification type,
-     *              process item ID, title, list of user IDs to notify, notification text,
-     *              timestamp, and target type
+     * @param event the user notification event
      */
     @Override
     public void sendUserNotification(UserNotificationEvent event) {
@@ -57,8 +53,7 @@ public class NotificationServiceImpl implements NotificationService {
     /**
      * Sends a change notification event by publishing it through the application event publisher.
      *
-     * @param event the change notification event containing details such as process item ID,
-     *              change type, and target type
+     * @param event the change notification event
      */
     @Override
     public void sendChangeNotification(ChangeNotificationEvent event) {
@@ -73,9 +68,7 @@ public class NotificationServiceImpl implements NotificationService {
      * based on the type of the notification. The type of the notification determines
      * which topic the event should be sent to for broadcasting updates.
      *
-     * @param event the user notification event containing details such as the notification type,
-     *              process item ID, process item title, list of user IDs to notify, notification text,
-     *              timestamp, and target type
+     * @param event the user notification event
      */
     private void performUserNotification(UserNotificationEvent event){
         log.info("Perform user notification event {}", event);
@@ -97,8 +90,7 @@ public class NotificationServiceImpl implements NotificationService {
      * based on the target type of the event. The target type determines which topic the
      * event should be sent to for broadcasting updates.
      *
-     * @param event the change notification event containing details such as the process
-     *              item ID, change type, and target type
+     * @param event the change notification event
      */
     private void performChangeNotification(ChangeNotificationEvent event){
         log.info("Perform change message event {}", event);
