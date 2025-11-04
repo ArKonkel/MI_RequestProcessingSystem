@@ -7,7 +7,7 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.Emplo
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeExpertise;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.employee.EmployeeService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItemService;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.ToMinutesCalculator;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.TimeCalculatorHelper;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.Task;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskService;
 import jakarta.transaction.Transactional;
@@ -20,6 +20,8 @@ import java.math.RoundingMode;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
+
+import static de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.Utils.addWorkDays;
 
 @Service
 @AllArgsConstructor
@@ -56,6 +58,8 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
         Task task = taskService.getTaskById(taskId);
 
         checkIfTaskReadyForCapacityPlanning(task);
+
+        checkIfTaskCanBeCompletedUntilDueDate(task);
 
         if (task.getIsAlreadyPlanned()) {
             throw new TaskAlreadyPlannedException("Task " + taskId + " is already planned");
@@ -108,6 +112,27 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
         return new MatchingEmployeeCapacitiesVO(task.getId(), results);
     }
 
+    /**
+     * Checks if a given task can be completed by its due date based on the estimated time required
+     * and the standard 8-hour workday. If the task cannot be completed on time,
+     * a {@link TaskNotReadyForCapacityPlanningException} is thrown.
+     *
+     */
+    private void checkIfTaskCanBeCompletedUntilDueDate(Task task) {
+        Long estimationInMinutes = TimeCalculatorHelper.timeUnitToMinutes(task.getEstimatedTime(), task.getEstimationUnit());
+        LocalDate dueDate = task.getDueDate();
+
+        double workDaysDouble = estimationInMinutes / (8 * 60.0);
+        long workDays = (long) Math.ceil(workDaysDouble); // round up to full days
+
+        LocalDate earliestFinishDate = addWorkDays(LocalDate.now(), workDays);
+
+        if (estimationInMinutes > 0 && dueDate != null) {
+            if (earliestFinishDate.isAfter(dueDate)) {
+                throw new TaskNotReadyForCapacityPlanningException("Task " + task.getId() + " cannot be completed until due date");
+            }
+        }
+    }
 
     /**
      * Assigns a task to an employee. Creates calendar entries for the employee and the task.
@@ -217,7 +242,7 @@ public class CapacityServiceImpl implements CapacityService, TaskMatcher, Capaci
         Calendar calendar = calendarService.getCalendarOfEmployee(employeeId, from, to);
         List<CalendarEntry> calendarEntries = calendar.getEntries();
 
-        long remainingTaskTimeInMinutes = ToMinutesCalculator.timeUnitToMinutes(task.getEstimatedTime(), task.getEstimationUnit());
+        long remainingTaskTimeInMinutes = TimeCalculatorHelper.timeUnitToMinutes(task.getEstimatedTime(), task.getEstimationUnit());
         List<CalculatedCapacityCalendarEntryVO> calculatedSlots = new ArrayList<>();
 
         // Iterate over each day in the range

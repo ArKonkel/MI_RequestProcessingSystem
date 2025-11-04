@@ -101,6 +101,7 @@ class TaskServiceWithoutMapperTest {
                 null,
                 false,
                 List.of(),
+                List.of(),
                 List.of()
         );
         when(taskMapper.toDto(existingTask)).thenReturn(expectedDto);

@@ -6,7 +6,7 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.ou
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.OutlookCalendarEvent;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.integration.outlook.graphTypes.OutlookCalendarViewResponse;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.TimeUnit;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.ToMinutesCalculator;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.TimeCalculatorHelper;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.Task;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskService;
 import jakarta.transaction.Transactional;
@@ -328,7 +328,7 @@ public class CalendarServiceImpl implements CalendarService {
                 entry.setTitle(event.subject());
                 entry.setDescription(event.body().content());
                 entry.setDate(curDay);
-                entry.setDurationInMinutes(ToMinutesCalculator.timeUnitToMinutes(entryHours, TimeUnit.HOUR));
+                entry.setDurationInMinutes(TimeCalculatorHelper.timeUnitToMinutes(entryHours, TimeUnit.HOUR));
 
                 calendarEntries.add(entry);
             }

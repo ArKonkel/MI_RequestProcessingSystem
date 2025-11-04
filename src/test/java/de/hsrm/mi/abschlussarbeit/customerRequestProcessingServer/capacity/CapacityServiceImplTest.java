@@ -8,7 +8,7 @@ import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.expertise.Expe
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.processItem.ProcessItemService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.Priority;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.TimeUnit;
-import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.ToMinutesCalculator;
+import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared.TimeCalculatorHelper;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.Task;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.task.TaskService;
 import de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.user.User;
@@ -50,7 +50,7 @@ class CapacityServiceImplTest {
 
     @Spy
     @InjectMocks
-    CapacityServiceImpl resourceCapacityService;
+    CapacityServiceImpl capacityService;
 
     @Test
     void findBestMatches_shouldFindMatches() {
@@ -97,23 +97,23 @@ class CapacityServiceImplTest {
 
         //stubbing own functions (Spy)
         doReturn(competenceMatches)
-                .when(resourceCapacityService)
+                .when(capacityService)
                 .findBestMatchingEmployees(task);
 
         doReturn(capacitiesEmployee1)
-                .when(resourceCapacityService)
+                .when(capacityService)
                 .calculateFreeCapacity(task, employee1.getId(), LocalDate.now(), dueDate);
 
         doReturn(capacitiesEmployee2)
-                .when(resourceCapacityService)
+                .when(capacityService)
                 .calculateFreeCapacity(task, employee2.getId(), LocalDate.now(), dueDate);
 
         doReturn(earliestEmployees)
-                .when(resourceCapacityService)
+                .when(capacityService)
                 .calculateEmployeesAbleToCompleteTaskEarliest(Mockito.anyMap());
 
         // WHEN
-        MatchingEmployeeCapacitiesVO result = resourceCapacityService.findBestMatches(taskId);
+        MatchingEmployeeCapacitiesVO result = capacityService.findBestMatches(taskId);
 
         // THEN
         assertEquals(task.getId(), result.taskId());
@@ -151,7 +151,7 @@ class CapacityServiceImplTest {
         when(taskService.getTaskById(taskId)).thenReturn(task);
         assertThrows(
                 NoCapacityUntilDueDateException.class,
-                () -> resourceCapacityService.findBestMatches(taskId)
+                () -> capacityService.findBestMatches(taskId)
         );
     }
 
@@ -169,9 +169,27 @@ class CapacityServiceImplTest {
 
         assertThrows(
                 TaskNotReadyForCapacityPlanningException.class,
-                () -> resourceCapacityService.findBestMatches(taskId)
+                () -> capacityService.findBestMatches(taskId)
         );
     }
+
+    @Test
+    void findBestMatches_ShouldThrowTaskNotReadyForResourcePlanningException_CannotBeDoneUntilDueDate() {
+        // Arrange
+        Task task = new Task();
+        task.setId(1L);
+        task.setEstimatedTime(BigDecimal.valueOf(16)); // 16 working hours = 2 wokring days
+        task.setEstimationUnit(TimeUnit.HOUR);
+        task.setDueDate(LocalDate.now().plusDays(1));
+
+        // WHEN + THEN
+        when(taskService.getTaskById(1L)).thenReturn(task);
+
+        assertThrows(TaskNotReadyForCapacityPlanningException.class, () -> {
+            capacityService.findBestMatches(1L);
+        });
+    }
+
     @Test
     void findBestMatches_ShouldThrowTaskNotReadyForResourcePlanningException_NoEstimation() {
         // GIVEN
@@ -186,7 +204,7 @@ class CapacityServiceImplTest {
 
         assertThrows(
                 TaskNotReadyForCapacityPlanningException.class,
-                () -> resourceCapacityService.findBestMatches(taskId)
+                () -> capacityService.findBestMatches(taskId)
         );
     }
 
@@ -209,7 +227,7 @@ class CapacityServiceImplTest {
 
         assertThrows(
                 TaskNotReadyForCapacityPlanningException.class,
-                () -> resourceCapacityService.findBestMatches(taskId)
+                () -> capacityService.findBestMatches(taskId)
         );
     }
 
@@ -279,7 +297,7 @@ class CapacityServiceImplTest {
         when(employeeService.getAllEmployeeExpertises())
                 .thenReturn(List.of(ee1, ee2, ee3, ee4));
 
-        Map<Employee, Integer> result = resourceCapacityService.findBestMatchingEmployees(task);
+        Map<Employee, Integer> result = capacityService.findBestMatchingEmployees(task);
 
         // THEN
         assertEquals(expected, result);
@@ -337,14 +355,14 @@ class CapacityServiceImplTest {
                 .thenReturn(calendar);
 
         List<CalculatedCapacityCalendarEntryVO> result =
-                resourceCapacityService.calculateFreeCapacity(task, employeeId, firstDay, lastDayToCheck);
+                capacityService.calculateFreeCapacity(task, employeeId, firstDay, lastDayToCheck);
 
         // THEN
         // Expected: Task should fit in first day (4h are free)
         CalculatedCapacityCalendarEntryVO expectedEntry = new CalculatedCapacityCalendarEntryVO(
                 task.getTitle(),
                 firstDay,
-                ToMinutesCalculator.timeUnitToMinutes(task.getEstimatedTime(), task.getEstimationUnit())
+                TimeCalculatorHelper.timeUnitToMinutes(task.getEstimatedTime(), task.getEstimationUnit())
         );
 
         assertEquals(List.of(expectedEntry), result);
@@ -402,7 +420,7 @@ class CapacityServiceImplTest {
                 .thenReturn(calendar);
 
         List<CalculatedCapacityCalendarEntryVO> result =
-                resourceCapacityService.calculateFreeCapacity(task, employeeId, firstDay, lastDayToCheck);
+                capacityService.calculateFreeCapacity(task, employeeId, firstDay, lastDayToCheck);
 
         // THEN
         // Expected: Task should fit first day 2h and second day 2h
@@ -476,7 +494,7 @@ class CapacityServiceImplTest {
                 .thenReturn(calendar);
 
         List<CalculatedCapacityCalendarEntryVO> result =
-                resourceCapacityService.calculateFreeCapacity(task, employeeId, firstDay, lastDayToCheck);
+                capacityService.calculateFreeCapacity(task, employeeId, firstDay, lastDayToCheck);
 
         //Excepted: empty result because no capacities
         assertEquals(0, result.size());
@@ -531,20 +549,20 @@ class CapacityServiceImplTest {
                 .thenReturn(calendar);
 
         List<CalculatedCapacityCalendarEntryVO> result =
-                resourceCapacityService.calculateFreeCapacity(task, employeeId, friday, monday);
+                capacityService.calculateFreeCapacity(task, employeeId, friday, monday);
 
         // THEN
         // Expected: Task should fit Friday 2h and Monday 2h
         CalculatedCapacityCalendarEntryVO expectedFriday = new CalculatedCapacityCalendarEntryVO(
                 task.getTitle(),
                 friday,
-                ToMinutesCalculator.timeUnitToMinutes(taskOccupiedTimeFriday, task.getEstimationUnit())
+                TimeCalculatorHelper.timeUnitToMinutes(taskOccupiedTimeFriday, task.getEstimationUnit())
         );
 
         CalculatedCapacityCalendarEntryVO expectedMonday = new CalculatedCapacityCalendarEntryVO(
                 task.getTitle(),
                 monday,
-                ToMinutesCalculator.timeUnitToMinutes(taskOccupiedTimeMonday, task.getEstimationUnit())
+                TimeCalculatorHelper.timeUnitToMinutes(taskOccupiedTimeMonday, task.getEstimationUnit())
         );
 
         assertEquals(List.of(expectedFriday, expectedMonday), result);
@@ -600,7 +618,7 @@ class CapacityServiceImplTest {
                 employee3, employee3TaskEntries);
 
         //WHEN
-        List<Employee> result = resourceCapacityService.calculateEmployeesAbleToCompleteTaskEarliest(employeeTaskEntries);
+        List<Employee> result = capacityService.calculateEmployeesAbleToCompleteTaskEarliest(employeeTaskEntries);
 
         //THEN
         //Second employee should be chosen because he can finish the task earliest
@@ -655,7 +673,7 @@ class CapacityServiceImplTest {
                 employee3, employee3TaskEntries);
 
         //WHEN
-        List<Employee> result = resourceCapacityService.calculateEmployeesAbleToCompleteTaskEarliest(employeeTaskEntries);
+        List<Employee> result = capacityService.calculateEmployeesAbleToCompleteTaskEarliest(employeeTaskEntries);
 
         //THEN
         //Second and third employee should be chosen because he can finish the task earliest
@@ -771,7 +789,7 @@ class CapacityServiceImplTest {
         when(capacityMapper.toVo(selectedMatch)).thenReturn(vo);
         when(employeeService.getEmployeeById(employee.getId())).thenReturn(employee);
 
-        resourceCapacityService.assignMatchToEmployee(taskId, selectedMatch);
+        capacityService.assignMatchToEmployee(taskId, selectedMatch);
 
         // THEN
 

@@ -3,7 +3,7 @@ package de.hsrm.mi.abschlussarbeit.customerRequestProcessingServer.shared;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public abstract class ToMinutesCalculator {
+public abstract class TimeCalculatorHelper {
 
     public static Long timeUnitToMinutes(BigDecimal value, TimeUnit unit) {
         if (value == null || unit == null) {

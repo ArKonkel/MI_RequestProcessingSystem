@@ -37,6 +37,7 @@ import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
 import UserSelect from "@/components/UserSelect.vue";
 import Modal from "@/components/Modal.vue";
 import type {TaskReferenceDtd} from "@/documentTypes/dtds/TaskReferenceDtd.ts";
+import {TimeUnitLabel} from "@/documentTypes/types/TimeUnit.ts";
 
 const route = useRoute()
 const router = useRouter()
@@ -96,7 +97,7 @@ onMounted(async () => {
     await loadCalendars() // initial Kalender laden
     calculateBestMatchPoints()
   } catch (err: any) {
-    if (err.response?.data.includes('Task not ready')) {
+    if (err.response?.data.includes('Task not ready') || err.response?.data.includes('cannot be completed')){
       router.back()
       alertStore.show(err.response?.data || 'Unbekannter Fehler', 'error')
     } else {
@@ -547,7 +548,7 @@ function determineFinishDate(taskToDetermine: TaskReferenceDtd): Date | undefine
           </div>
         </div>
         <div class="flex flex-col text-sm text-right">
-          <span>Geschätzte Zeit: <strong>{{ task?.estimatedTime }}h</strong></span>
+          <span>Geschätzte Zeit: <strong>{{ task?.estimatedTime }} {{ TimeUnitLabel[task?.estimationUnit!] }}</strong></span>
           <span>Geplant bis: <strong>{{ formatDate(task?.dueDate) }}</strong></span>
         </div>
       </CardHeader>
