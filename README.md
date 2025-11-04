@@ -1,5 +1,5 @@
-# RequestProcessingSystem
-Dieses Repository enthält das im Rahmen der Bachelorarbeit entwickelte Softwaresystem "RequestProcessingSystem".  
+# CustomerRequestProcessingSystem
+Dieses Repository enthält das im Rahmen der Bachelorarbeit entwickelte Softwaresystem "CustomerRequestProcessingSystem".  
 Das Ziel des Projekts ist es, ein System zur Erstellung von Anfragen, Planung von Projekten, Aufgaben und Kapazitäten zu entwerfen und als Prototyp umzusetzen.
 
 ---
@@ -16,7 +16,7 @@ Das Ziel des Projekts ist es, ein System zur Erstellung von Anfragen, Planung vo
 ---
 
 ## Hintergrund
-Das System wurde im Rahmen der Bachelorarbeit mit dem Titel **"Anfragenbearbeitungssystem mit integrierter Kapazitätssteuerung"**
+Das System wurde im Rahmen der Bachelorarbeit mit dem Titel **"Rollenbasiertes Auftragsplanungssystem mit integrierter Kapazitätssteuerung"**
 von **Artur Konkel** im Zeitraum vom 06.08.2025 – 05.11.2025 an der 
 **Hochschule RheinMain - Medieninformatik** in Zusammenarbeit mit dem Unternehmen
 **ORGA-SOFT** entwickelt. 
@@ -27,13 +27,12 @@ Nutzung von Outlook-Kalenderfunktionen.
 
 ---
 
-## Systemarchitektur
-Das System folgt den Prinzipien der **Clean Architecture** nach Robert C. Martin.  
-Es ist in folgende Hauptkomponenten unterteilt:
+## Systembestandteile
+Das System ist in folgende Hauptkomponenten unterteilt:
 
-- **Backend**: RequestProcessingServer (Spring Boot, Java)
-- **Frontend**: RequestClient und WorkstationClient (Vue.js)
-- **Externe Integration**: Microsoft Graph API (Outlook-Anbindung)
+- **Backend**: CustomerRequestProcessingServer (Spring Boot, Java)
+- **Frontend**: CustomerRequestEntry und Workstation (Vue.js)
+- **Externe Integration**: OutlookDummy – Microsoft Graph API (Outlook-Anbindung)
 - **Persistenz**: H2-Datenbank für den Prototyp
 
 Die Kommunikation erfolgt über **REST-Schnittstellen** sowie **STOMP-WebSockets** für Echtzeitbenachrichtigungen.
@@ -43,7 +42,7 @@ Die Kommunikation erfolgt über **REST-Schnittstellen** sowie **STOMP-WebSockets
 ## Technologien
 - **Backend**: Spring Boot (Java 21)
 - **Frontend**: Vue.js
-- **Datenbank**: Postgres (In-Memory)
+- **Datenbank**: Postgres
 - **Externe API**: Microsoft Graph API
 - **Build-Tool**: Gradle
 - **Weitere Tools**: Lombok, MapStruct
@@ -53,14 +52,33 @@ Die Kommunikation erfolgt über **REST-Schnittstellen** sowie **STOMP-WebSockets
 ## Voraussetzungen
 - **Java 21** oder höher
 - **Node.js** (Version >= 22)
-- Internetzugang für Microsoft Graph API-Anbindung
 
 ---
 
 ## Installation & Ausführung
-//How to start Backend
 
-### Backend starten
+### CustomerRequestEntry starten
 ```bash
+ cd frontend/customerRequestEntry
+ npm install
+ npm run dev
+```
+
+### Workstation  starten
+```bash
+ cd frontend/workstation 
+ npm install
+ npm run dev
+```
+
+
+### CustomerRequestProcessingServer starten
+```bash
+./gradlew bootRun
+```
+
+### OutlookDummy  starten
+```bash
+cd OutlookDummy
 ./gradlew bootRun
 ```
