@@ -4,9 +4,9 @@ import axios from 'axios'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import {useUserStore} from "@/stores/userStore.js";
-import type {LoginDtd} from "@/documentTypes/dtds/LoginDtd.ts";
-import {login} from "@/services/authService.ts";
+import { useUserStore } from '@/stores/userStore.js'
+import type { LoginDtd } from '@/documentTypes/dtds/LoginDtd.ts'
+import { login } from '@/services/authService.ts'
 
 const userStore = useUserStore()
 
@@ -49,7 +49,7 @@ async function handleLogin(event) {
 
 <template>
   <div class="flex min-h-screen items-center justify-center bg-gray-50">
-    <form @submit="handleLogin" class=" w-full max-w-sm space-y-6 bg-white p-8 rounded shadow">
+    <form @submit="handleLogin" class="w-full max-w-sm space-y-6 bg-white p-8 rounded shadow">
       <div v-if="errorMsg" class="text-red-500 mb-2">{{ errorMsg }}</div>
       <div>
         <Label for="username">Benutzername</Label>
@@ -71,6 +71,5 @@ async function handleLogin(event) {
         Registrieren
       </router-link>
     </form>
-
   </div>
 </template>

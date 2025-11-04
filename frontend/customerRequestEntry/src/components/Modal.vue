@@ -20,7 +20,7 @@ function close() {
 <template>
   <transition name="fade">
     <div v-if="props.show" class="fixed inset-0 z-50 flex items-center bg-black/50">
-      <Card class="p-6 mx-auto  max-w-150 bg-green-200">
+      <Card class="p-6 mx-auto max-w-150 bg-green-200">
         <CardHeader>
           <CardTitle>{{ props.title }}</CardTitle>
         </CardHeader>

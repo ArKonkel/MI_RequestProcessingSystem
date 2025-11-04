@@ -2,15 +2,15 @@ import type { ProcessItemDtd } from '@/documentTypes/dtds/ProcessItemDtd.ts'
 import type { Priority } from '@/documentTypes/types/Priority.ts'
 import type { RequestStatus } from '@/documentTypes/types/RequestStatus.ts'
 import type { Category } from '@/documentTypes/types/Category.ts'
-import type {Chargeable} from "@/documentTypes/types/Chargeable.ts";
-import type {CustomerDtd} from "@/documentTypes/dtds/CustomerDtd.ts";
-import type {TaskDtd} from "@/documentTypes/dtds/TaskDtd.ts";
-import type {ProjectDtd} from "@/documentTypes/dtds/ProjectDtd.ts";
+import type { Chargeable } from '@/documentTypes/types/Chargeable.ts'
+import type { CustomerDtd } from '@/documentTypes/dtds/CustomerDtd.ts'
+import type { TaskDtd } from '@/documentTypes/dtds/TaskDtd.ts'
+import type { ProjectDtd } from '@/documentTypes/dtds/ProjectDtd.ts'
 
 export interface RequestDtd {
   processItem: ProcessItemDtd
-  contactFirstName: string,
-  contactLastName: string,
+  contactFirstName: string
+  contactLastName: string
   priority: Priority
   estimatedScope: number
   status: RequestStatus

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import {reactive, ref} from 'vue'
+import { reactive, ref } from 'vue'
 
-import {Input} from '@/components/ui/input'
-import {Textarea} from '@/components/ui/textarea'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -10,29 +10,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {Button} from '@/components/ui/button'
-import type {RequestCreateDtd} from '@/documentTypes/dtds/RequestCreateDtd.ts'
-import {submitRequest} from '@/services/requestService.ts'
-import {useAlertStore} from '@/stores/useAlertStore.ts'
-import {PriorityLabel} from "@/documentTypes/types/Priority.ts";
-import {Category, CategoryLabel} from "@/documentTypes/types/Category.ts";
-import {Checkbox} from '@/components/ui/checkbox'
+import { Button } from '@/components/ui/button'
+import type { RequestCreateDtd } from '@/documentTypes/dtds/RequestCreateDtd.ts'
+import { submitRequest } from '@/services/requestService.ts'
+import { useAlertStore } from '@/stores/useAlertStore.ts'
+import { PriorityLabel } from '@/documentTypes/types/Priority.ts'
+import { Category, CategoryLabel } from '@/documentTypes/types/Category.ts'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   TagsInput,
   TagsInputInput,
   TagsInputItem,
   TagsInputItemDelete,
-  TagsInputItemText
-} from "@/components/ui/tags-input";
-import {useRequestStore} from "@/stores/requestStore.ts";
-import type {RequestDtd} from "@/documentTypes/dtds/RequestDtd.ts";
-import {useRouter} from "vue-router";
-import {useUserStore} from "@/stores/userStore.ts";
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
-import {useFileDialog} from "@vueuse/core";
-import {CircleQuestionMark, Trash} from 'lucide-vue-next'
-import Modal from "@/components/Modal.vue";
+  TagsInputItemText,
+} from '@/components/ui/tags-input'
+import { useRequestStore } from '@/stores/requestStore.ts'
+import type { RequestDtd } from '@/documentTypes/dtds/RequestDtd.ts'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/userStore.ts'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { useFileDialog } from '@vueuse/core'
+import { CircleQuestionMark, Trash } from 'lucide-vue-next'
+import Modal from '@/components/Modal.vue'
 
 const maxUploadeMb = 2
 
@@ -63,7 +63,7 @@ const requestForm = reactive<RequestCreateDtd>({
 const attachments = ref<File[]>([])
 const recipientStrings = ref<string[]>([])
 
-const addRecipients = ref<boolean>( false)
+const addRecipients = ref<boolean>(false)
 
 // Validation and errors
 const errors = reactive({
@@ -80,7 +80,7 @@ function goToRequests(createdRequest: RequestDtd) {
   requestStore.setSelectedRequest(createdRequest)
 }
 
-const {files, open, onChange} = useFileDialog({
+const { files, open, onChange } = useFileDialog({
   accept: '*/*',
 })
 
@@ -102,7 +102,9 @@ onChange(async (fileList) => {
 })
 
 function validate(): boolean {
-  errors.firstName = requestForm.contactFirstName.trim() ? '' : 'Bitte geben Sie Ihren Vornamen ein.'
+  errors.firstName = requestForm.contactFirstName.trim()
+    ? ''
+    : 'Bitte geben Sie Ihren Vornamen ein.'
   errors.lastName = requestForm.contactLastName.trim() ? '' : 'Bitte geben Sie Ihren Nachnamen ein.'
   errors.title = requestForm.processItem.title.trim() ? '' : 'Bitte geben Sie einen Titel ein.'
   errors.description = requestForm.processItem.description.trim() ? '' : ''
@@ -119,7 +121,7 @@ async function submit() {
   }
 
   requestForm.customerId = userStore.user?.customer.id
-  requestForm.toRecipients = recipientStrings.value.map(email => ({address: email}))
+  requestForm.toRecipients = recipientStrings.value.map((email) => ({ address: email }))
 
   //dont submit if validation fails
   if (!validate()) {
@@ -129,15 +131,13 @@ async function submit() {
   try {
     createdRequest.value = await submitRequest(requestForm, attachments.value)
     showSuccessModal.value = true
-
-
   } catch (error: any) {
     console.error(error)
     alertStore.show(error.response?.data || 'Unbekannter Fehler', 'error')
   }
 }
 
-function closeModal(){
+function closeModal() {
   resetFrom()
   goToRequests(createdRequest.value as RequestDtd)
   showSuccessModal.value = false
@@ -161,19 +161,16 @@ function resetFrom() {
 
 <template>
   <form @submit.prevent="submit" class="flex flex-col max-w-3xl mx-auto p-6 gap-6">
-
-    <h3 class="text-2xl font-semibold tracking-tight">
-      Kontaktinformationen
-    </h3>
+    <h3 class="text-2xl font-semibold tracking-tight">Kontaktinformationen</h3>
     <div class="flex flex-col md:flex-row gap-4">
       <div class="w-full">
         <label class="block text-sm font-medium mb-1">Vorname*</label>
-        <Input v-model="requestForm.contactFirstName" placeholder="Ihr Vorname"/>
+        <Input v-model="requestForm.contactFirstName" placeholder="Ihr Vorname" />
         <p v-if="errors.firstName" class="text-red-600 text-xs mt-1">{{ errors.firstName }}</p>
       </div>
       <div class="w-full">
         <label class="block text-sm font-medium mb-1">Nachname*</label>
-        <Input v-model="requestForm.contactLastName" placeholder="Ihr Nachname"/>
+        <Input v-model="requestForm.contactLastName" placeholder="Ihr Nachname" />
         <p v-if="errors.lastName" class="text-red-600 text-xs mt-1">{{ errors.lastName }}</p>
       </div>
     </div>
@@ -185,27 +182,30 @@ function resetFrom() {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
-              <CircleQuestionMark class="w-3 h-3 mb-2 text-gray-500 hover:text-gray-700 cursor-pointer" />
+              <CircleQuestionMark
+                class="w-3 h-3 mb-2 text-gray-500 hover:text-gray-700 cursor-pointer"
+              />
             </TooltipTrigger>
             <TooltipContent>
-              <p class="text-xs">Bitte gib deine Telefonnummer an, unter der wir dich für Rückfragen erreichen können.</p>
+              <p class="text-xs">
+                Bitte gib deine Telefonnummer an, unter der wir dich für Rückfragen erreichen
+                können.
+              </p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>
 
       <div class="flex gap-4">
-      <Input v-model="requestForm.contactPhoneNumber" placeholder="TelefonNr." />
-      <Input disabled class="border-none"/>
+        <Input v-model="requestForm.contactPhoneNumber" placeholder="TelefonNr." />
+        <Input disabled class="border-none" />
       </div>
     </div>
 
-    <h3 class="text-2xl font-semibold tracking-tight pt-5">
-      Ihre Anfrage
-    </h3>
+    <h3 class="text-2xl font-semibold tracking-tight pt-5">Ihre Anfrage</h3>
     <div class="flex-1">
       <label class="block text-sm font-medium mb-1">Titel*</label>
-      <Input v-model="requestForm.processItem.title" placeholder="Kurzer Titel"/>
+      <Input v-model="requestForm.processItem.title" placeholder="Kurzer Titel" />
       <p v-if="errors.title" class="text-red-600 text-xs mt-1">{{ errors.title }}</p>
     </div>
 
@@ -214,7 +214,7 @@ function resetFrom() {
         <label class="block text-sm font-medium mb-1">Kategorie*</label>
         <Select v-model="requestForm.category" :value="requestForm.category">
           <SelectTrigger class="w-full">
-            <SelectValue placeholder="Kategorie wählen"/>
+            <SelectValue placeholder="Kategorie wählen" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -233,7 +233,7 @@ function resetFrom() {
         <label class="block text-sm font-medium mb-1">Priorität*</label>
         <Select v-model="requestForm.priority" :value="requestForm.priority">
           <SelectTrigger class="w-full">
-            <SelectValue placeholder="Priorität wählen"/>
+            <SelectValue placeholder="Priorität wählen" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -250,14 +250,14 @@ function resetFrom() {
     </div>
 
     <div class="w-full" v-if="requestForm.category == Category.BUG_REPORT">
-
-
       <div class="flex space-x-2">
         <label class="block text-sm font-medium mb-1">INTEGRA® ProgrammNr.</label>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
-              <CircleQuestionMark class="w-3 h-3 mb-2 text-gray-500 hover:text-gray-700 cursor-pointer" />
+              <CircleQuestionMark
+                class="w-3 h-3 mb-2 text-gray-500 hover:text-gray-700 cursor-pointer"
+              />
             </TooltipTrigger>
             <TooltipContent>
               <p class="text-xs">Bitte gebe an in welchem Programm der Fehler auftaucht.</p>
@@ -266,7 +266,7 @@ function resetFrom() {
         </TooltipProvider>
       </div>
 
-      <Input v-model="requestForm.programNumber" placeholder="ProgrammNr."/>
+      <Input v-model="requestForm.programNumber" placeholder="ProgrammNr." />
     </div>
 
     <div class="w-full" v-if="requestForm.category == Category.TRAINING_REQUEST">
@@ -275,7 +275,9 @@ function resetFrom() {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
-              <CircleQuestionMark class="w-3 h-3 mb-2 text-gray-500 hover:text-gray-700 cursor-pointer" />
+              <CircleQuestionMark
+                class="w-3 h-3 mb-2 text-gray-500 hover:text-gray-700 cursor-pointer"
+              />
             </TooltipTrigger>
             <TooltipContent>
               <p class="text-xs">Bitte gebe an in welchem Modul eine Schulung benötigt wird.</p>
@@ -284,7 +286,7 @@ function resetFrom() {
         </TooltipProvider>
       </div>
 
-      <Input v-model="requestForm.module" placeholder="Modulbezeichnung"/>
+      <Input v-model="requestForm.module" placeholder="Modulbezeichnung" />
     </div>
 
     <div class="flex space-x-2">
@@ -298,28 +300,31 @@ function resetFrom() {
     </div>
 
     <div v-if="addRecipients" class="flex-1">
-
       <div class="flex space-x-2">
         <label class="block text-sm font-medium mb-1">Empfänger</label>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
-              <CircleQuestionMark class="w-3 h-3 mb-2 text-gray-500 hover:text-gray-700 cursor-pointer" />
+              <CircleQuestionMark
+                class="w-3 h-3 mb-2 text-gray-500 hover:text-gray-700 cursor-pointer"
+              />
             </TooltipTrigger>
             <TooltipContent>
-              <p class="text-xs">Bitte gebe die Emails der Empfänger an, die ebenfalls über die Anfrage benachrichtigt werden sollen..</p>
+              <p class="text-xs">
+                Bitte gebe die Emails der Empfänger an, die ebenfalls über die Anfrage
+                benachrichtigt werden sollen..
+              </p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>
 
-
       <TagsInput v-model="recipientStrings" placeholder="Emails...">
         <TagsInputItem v-for="item in recipientStrings" :key="item" :value="item">
-          <TagsInputItemText/>
-          <TagsInputItemDelete/>
+          <TagsInputItemText />
+          <TagsInputItemDelete />
         </TagsInputItem>
-        <TagsInputInput placeholder="Emails..."/>
+        <TagsInputInput placeholder="Emails..." />
       </TagsInput>
     </div>
 
@@ -361,17 +366,22 @@ function resetFrom() {
     <!-- Beschreibung -->
     <div>
       <div class="flex space-x-2">
-      <label class="block text-sm font-medium mb-1">Beschreibung</label>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger>
-            <CircleQuestionMark class="w-3 h-3 mb-2 text-gray-500 hover:text-gray-700 cursor-pointer" />
-          </TooltipTrigger>
-          <TooltipContent>
-            <p class="text-xs">Bitte gebe eine möglichst genaue Beschreibung deiner Anfrage an. Jede Information hilft uns Ihre Anfrage schnell zu bearbeiten.</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+        <label class="block text-sm font-medium mb-1">Beschreibung</label>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <CircleQuestionMark
+                class="w-3 h-3 mb-2 text-gray-500 hover:text-gray-700 cursor-pointer"
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p class="text-xs">
+                Bitte gebe eine möglichst genaue Beschreibung deiner Anfrage an. Jede Information
+                hilft uns Ihre Anfrage schnell zu bearbeiten.
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
       <Textarea
@@ -381,7 +391,6 @@ function resetFrom() {
       />
       <p v-if="errors.description" class="text-red-600 text-xs mt-1">{{ errors.description }}</p>
     </div>
-
 
     <!-- Buttons-->
     <div class="flex items-end justify-between gap-4">

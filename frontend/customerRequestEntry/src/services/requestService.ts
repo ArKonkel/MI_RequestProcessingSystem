@@ -2,11 +2,14 @@ import type { RequestCreateDtd } from '@/documentTypes/dtds/RequestCreateDtd.ts'
 import type { RequestDtd } from '@/documentTypes/dtds/RequestDtd.ts'
 import axios from 'axios'
 
-export async function submitRequest(request: RequestCreateDtd, attachments:File[]): Promise<RequestDtd> {
+export async function submitRequest(
+  request: RequestCreateDtd,
+  attachments: File[],
+): Promise<RequestDtd> {
   const formData = new FormData() //Formdata needed because of attachments
 
   formData.append('request', JSON.stringify(request))
-  attachments.forEach(file => {
+  attachments.forEach((file) => {
     formData.append('attachments', file)
   })
 

@@ -1,6 +1,5 @@
 <script setup lang="ts">
-
-import { LogOut } from "lucide-vue-next"
+import { LogOut } from 'lucide-vue-next'
 import {
   Card,
   CardContent,
@@ -9,10 +8,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import {useUserStore} from "@/stores/userStore.ts";
-import {Button} from "@/components/ui/button";
-import {useRouter} from "vue-router";
-import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar'
+import { useUserStore } from '@/stores/userStore.ts'
+import { Button } from '@/components/ui/button'
+import { useRouter } from 'vue-router'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 const securityEnabled = import.meta.env.VITE_SECURITY_ENABLED === 'true'
 
@@ -31,8 +30,6 @@ function handleLogout() {
   userStore.removeUser()
   router.push('/login')
 }
-
-
 </script>
 
 <template>

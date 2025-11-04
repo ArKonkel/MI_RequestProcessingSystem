@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import RequestCreationView from '@/views/RequestEntryViews/RequestCreationView.vue'
-import SentRequestView from "@/views/RequestEntryViews/SentRequestView.vue";
-import axios from "axios";
-import LoginView from "@/views/AuthenticationViews/LoginView.vue";
-import RegisterView from "@/views/AuthenticationViews/RegisterView.vue";
+import SentRequestView from '@/views/RequestEntryViews/SentRequestView.vue'
+import axios from 'axios'
+import LoginView from '@/views/AuthenticationViews/LoginView.vue'
+import RegisterView from '@/views/AuthenticationViews/RegisterView.vue'
 
 const securityEnabled = import.meta.env.VITE_SECURITY_ENABLED === 'true'
 

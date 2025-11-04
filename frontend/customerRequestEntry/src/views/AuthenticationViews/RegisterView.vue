@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import type { RegisterDtd } from '@/documentTypes/dtds/RegisterDtd.ts'
 import { register } from '@/services/authService.ts'
-import {useAlertStore} from "@/stores/useAlertStore.ts";
+import { useAlertStore } from '@/stores/useAlertStore.ts'
 
 const router = useRouter()
 const alertStore = useAlertStore()
@@ -27,7 +27,7 @@ async function handleRegister(event: Event) {
       password: password.value,
     } as RegisterDtd)
 
-    alertStore.show("Erfolgreich registriert", 'success')
+    alertStore.show('Erfolgreich registriert', 'success')
     router.push('/login')
   } catch (error: any) {
     alertStore.show(error.response?.data || 'Unbekannter Fehler', 'error')
@@ -50,7 +50,14 @@ async function handleRegister(event: Event) {
       </div>
       <div>
         <Label for="password">Passwort</Label>
-        <Input id="password" v-model="password" name="password" type="password" required class="mt-2" />
+        <Input
+          id="password"
+          v-model="password"
+          name="password"
+          type="password"
+          required
+          class="mt-2"
+        />
       </div>
       <Button type="submit" class="w-full mt-4">Registrieren</Button>
     </form>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {computed, onMounted, ref, watch} from 'vue'
-import {Button} from '@/components/ui/button'
+import { computed, onMounted, ref, watch } from 'vue'
+import { Button } from '@/components/ui/button'
 import {
   ComboboxAnchor,
   ComboboxContent,
@@ -8,14 +8,16 @@ import {
   ComboboxItem,
   ComboboxPortal,
   ComboboxRoot,
-  Label, type ReferenceElement, useFilter,
+  Label,
+  type ReferenceElement,
+  useFilter,
 } from 'reka-ui'
-import type {CommentDtd} from '@/documentTypes/dtds/CommentDtd.ts'
-import {AccordionContent, AccordionItem, AccordionTrigger} from '@/components/ui/accordion'
-import {getAllUser} from "@/services/userService.ts";
-import type {UserDtd} from "@/documentTypes/dtds/UserDtd.ts";
-import {getAnchorRect, getSearchValue, getTrigger, getTriggerOffset, replaceValue} from './utils'
-import {computedWithControl} from "@vueuse/core";
+import type { CommentDtd } from '@/documentTypes/dtds/CommentDtd.ts'
+import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { getAllUser } from '@/services/userService.ts'
+import type { UserDtd } from '@/documentTypes/dtds/UserDtd.ts'
+import { getAnchorRect, getSearchValue, getTrigger, getTriggerOffset, replaceValue } from './utils'
+import { computedWithControl } from '@vueuse/core'
 
 const users = ref<UserDtd[]>([])
 
@@ -26,8 +28,7 @@ const caretOffset = ref<number | null>(null)
 const open = ref(false)
 const searchValue = ref('')
 const textareaRef = ref<InstanceType<typeof ComboboxInput>>()
-const {contains} = useFilter({sensitivity: 'base'})
-
+const { contains } = useFilter({ sensitivity: 'base' })
 
 onMounted(async () => {
   users.value = await getAllUser()
@@ -53,7 +54,7 @@ watch(
 function getUser(trigger: string | null) {
   switch (trigger) {
     case '@':
-      return users.value.map(user => '@' + user.id + ' ' + user.name)
+      return users.value.map((user) => '@' + user.id + ' ' + user.name)
     default:
       return []
   }
@@ -65,23 +66,25 @@ function submitComment() {
   localCommentText.value = '' // reset input
 }
 
-
-const reference = computedWithControl(() => [searchValue.value, open.value], () => ({
-  getBoundingClientRect: () => {
-    if (textareaRef.value?.$el) {
-      const {x, y, height} = getAnchorRect(textareaRef.value?.$el)
-      return {x, y, height, top: y, left: x, width: 0}
-    } else {
-      return null
-    }
-  },
-}) as ReferenceElement)
+const reference = computedWithControl(
+  () => [searchValue.value, open.value],
+  () =>
+    ({
+      getBoundingClientRect: () => {
+        if (textareaRef.value?.$el) {
+          const { x, y, height } = getAnchorRect(textareaRef.value?.$el)
+          return { x, y, height, top: y, left: x, width: 0 }
+        } else {
+          return null
+        }
+      },
+    }) as ReferenceElement,
+)
 
 const userList = computed(() => {
   const _list = getUser(trigger.value)
-  return _list.filter(item => contains(item, searchValue.value))
+  return _list.filter((item) => contains(item, searchValue.value))
 })
-
 
 function handleChange(ev: InputEvent) {
   const target = ev.target as HTMLTextAreaElement
@@ -99,26 +102,28 @@ function handleChange(ev: InputEvent) {
   localCommentText.value = target.value
   searchValue.value = _searchValue
 
-  if (!_trigger)
-    open.value = false
+  if (!_trigger) open.value = false
 }
 
 function handleSelect(ev: CustomEvent) {
   const textarea = textareaRef.value?.$el
-  if (!textarea)
-    return
+  if (!textarea) return
 
   const offset = getTriggerOffset(textarea) + 1
 
   const displayValue = ev.detail.value.replace('@', '')
 
-  if (!displayValue)
-    return
+  if (!displayValue) return
 
   ev.preventDefault()
 
   trigger.value = null
-  localCommentText.value = replaceValue(localCommentText.value, offset, searchValue.value, displayValue)
+  localCommentText.value = replaceValue(
+    localCommentText.value,
+    offset,
+    searchValue.value,
+    displayValue,
+  )
   caretOffset.value = offset - searchValue.value.length - 1 + displayValue.length + 2
 }
 
@@ -127,7 +132,7 @@ function formatDate(ts: string | number | Date) {
 }
 
 function formatComment(commentText: string) {
-  return commentText.replace(/@\d+\s*/g, "");
+  return commentText.replace(/@\d+\s*/g, '')
 }
 </script>
 
@@ -135,8 +140,6 @@ function formatComment(commentText: string) {
   <AccordionItem value="comments">
     <AccordionTrigger>Kommentare</AccordionTrigger>
     <AccordionContent>
-
-
       <div class="space-y-4">
         <!-- Combobox for user mentioning -->
         <ComboboxRoot
@@ -149,20 +152,20 @@ function formatComment(commentText: string) {
             id="comment"
             ref="textareaRef"
             v-model="localCommentText"
-
             as="textarea"
             class="m-1 border rounded-md p-2 resize-none"
             rows="5"
             placeholder="Verfasse dein Kommentar"
             @input="handleChange"
             @pointerdown="open = false"
-            @keydown.enter="(ev: KeyboardEvent) => {
-        if (open)
-          ev.preventDefault()
-        }"
+            @keydown.enter="
+              (ev: KeyboardEvent) => {
+                if (open) ev.preventDefault()
+              }
+            "
             @keydown.left.right="open = false"
           />
-          <ComboboxAnchor :reference="reference"/>
+          <ComboboxAnchor :reference="reference" />
 
           <ComboboxPortal>
             <ComboboxContent
@@ -184,7 +187,6 @@ function formatComment(commentText: string) {
             </ComboboxContent>
           </ComboboxPortal>
         </ComboboxRoot>
-
 
         <div class="flex justify-end">
           <Button class="cursor-pointer" @click="submitComment">Senden</Button>

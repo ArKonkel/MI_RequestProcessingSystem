@@ -13,12 +13,12 @@ export const PriorityLabel: Record<Priority, string> = {
 export function getPriorityColor(priority: Priority) {
   switch (priority) {
     case Priority.HIGH:
-      return "destructive";
+      return 'destructive'
     case Priority.MEDIUM:
-      return "default";
+      return 'default'
     case Priority.LOW:
-      return "secondary";
+      return 'secondary'
     default:
-      return "outline";
+      return 'outline'
   }
 }

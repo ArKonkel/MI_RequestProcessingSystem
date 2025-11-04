@@ -1,4 +1,4 @@
 export interface CommentCreateDtd {
-  text: string,
+  text: string
   authorId: number
 }

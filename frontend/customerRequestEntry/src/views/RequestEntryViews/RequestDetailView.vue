@@ -1,43 +1,43 @@
 <script setup lang="ts">
-import {computed, ref} from "vue"
+import { computed, ref } from 'vue'
 
-import {Badge} from "@/components/ui/badge"
+import { Badge } from '@/components/ui/badge'
 import CommentsAccordion from '@/components/CommentsAccordion.vue'
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
-import {Textarea} from "@/components/ui/textarea";
+} from '@/components/ui/accordion'
+import { Textarea } from '@/components/ui/textarea'
 
-import {ScrollArea} from "@/components/ui/scroll-area";
-import {useRequestStore} from "@/stores/requestStore.ts";
-import {CategoryLabel} from "@/documentTypes/types/Category.ts";
-import type {RequestDtd} from "@/documentTypes/dtds/RequestDtd.ts";
-import {getPriorityColor, PriorityLabel} from "@/documentTypes/types/Priority.ts";
-import {RequestStatusLabel} from "@/documentTypes/types/RequestStatus.ts";
-import {addCommentToRequest} from "@/services/commentService.ts";
-import type {CommentCreateDtd} from "@/documentTypes/dtds/CommentCreateDtd.ts";
-import {useAlertStore} from "@/stores/useAlertStore.ts";
-import {useUserStore} from "@/stores/userStore.ts";
-import {TaskStatusLabel} from "@/documentTypes/types/TaskStatus.ts";
-import {ProjectStatusLabel} from "@/documentTypes/types/ProjectStatus.ts";
-import AttachmentList from "@/components/AttachmentList.vue";
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { useRequestStore } from '@/stores/requestStore.ts'
+import { CategoryLabel } from '@/documentTypes/types/Category.ts'
+import type { RequestDtd } from '@/documentTypes/dtds/RequestDtd.ts'
+import { getPriorityColor, PriorityLabel } from '@/documentTypes/types/Priority.ts'
+import { RequestStatusLabel } from '@/documentTypes/types/RequestStatus.ts'
+import { addCommentToRequest } from '@/services/commentService.ts'
+import type { CommentCreateDtd } from '@/documentTypes/dtds/CommentCreateDtd.ts'
+import { useAlertStore } from '@/stores/useAlertStore.ts'
+import { useUserStore } from '@/stores/userStore.ts'
+import { TaskStatusLabel } from '@/documentTypes/types/TaskStatus.ts'
+import { ProjectStatusLabel } from '@/documentTypes/types/ProjectStatus.ts'
+import AttachmentList from '@/components/AttachmentList.vue'
 
 const requestStore = useRequestStore()
-const request = computed<RequestDtd>(() => requestStore.requestData.selectedRequest!);
+const request = computed<RequestDtd>(() => requestStore.requestData.selectedRequest!)
 
 const alertStore = useAlertStore()
 const userStore = useUserStore()
 
-const commentText = ref("")
+const commentText = ref('')
 
 async function addComment() {
   if (!request.value || !commentText.value) return
 
   if (userStore.user === null) {
-    console.log("user is null")
+    console.log('user is null')
     return
   }
 
@@ -65,62 +65,55 @@ async function addComment() {
     <ScrollArea class="flex-1 overflow-auto">
       <div class="p-6 space-y-4">
         <div>
-          <Badge variant="secondary">{{
-              CategoryLabel[request.category]
-            }}
-          </Badge>
-          <h2 class="text-xl font-bold"> {{ request.processItem.id }} - {{
-              request.processItem.title
-            }}</h2>
+          <Badge variant="secondary">{{ CategoryLabel[request.category] }} </Badge>
+          <h2 class="text-xl font-bold">
+            {{ request.processItem.id }} - {{ request.processItem.title }}
+          </h2>
           <div>
             <div class="flex justify-between mt-4 text-sm">
               <div class="flex gap-6">
                 <div v-if="request.contactFirstName && request.contactLastName">
-                  <span class="font-semibold">Erstellt von: </span><br/>
+                  <span class="font-semibold">Erstellt von: </span><br />
                   {{ request.contactFirstName }} {{ request.contactLastName }}
                 </div>
 
                 <div>
-                  <span class="font-semibold">Eingegangen am: </span><br/>
-                  {{ new Date(request.processItem.creationDate!).toLocaleDateString("de-DE") }}
+                  <span class="font-semibold">Eingegangen am: </span><br />
+                  {{ new Date(request.processItem.creationDate!).toLocaleDateString('de-DE') }}
                 </div>
               </div>
-
 
               <div class="flex gap-4">
                 <!-- Hier werden Priorität und Status nebeneinander rechts -->
                 <div>
-                  <span class="font-semibold">Priorität: </span><br/>
+                  <span class="font-semibold">Priorität: </span><br />
                   <Badge :variant="getPriorityColor(request.priority)">
                     {{ PriorityLabel[request.priority] }}
                   </Badge>
                 </div>
 
                 <div>
-                  <span class="font-semibold">Status: </span><br/>
+                  <span class="font-semibold">Status: </span><br />
                   <Badge variant="outline">
                     {{ RequestStatusLabel[request.status] }}
                   </Badge>
-
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-
         <!-- Shadcn-Accordion -->
-        <Accordion type="multiple" class="w-full" collapsible
-                   :defaultValue="['desc', 'comments']">
+        <Accordion type="multiple" class="w-full" collapsible :defaultValue="['desc', 'comments']">
           <AccordionItem value="desc">
             <AccordionTrigger>Beschreibung</AccordionTrigger>
             <AccordionContent>
-          <Textarea
-            v-model="request.processItem.description"
-            class="mt-2 min-h-[200px] resize-none cursor-default"
-            readonly
-            style="pointer-events: none;"
-          />
+              <Textarea
+                v-model="request.processItem.description"
+                class="mt-2 min-h-[200px] resize-none cursor-default"
+                readonly
+                style="pointer-events: none"
+              />
             </AccordionContent>
           </AccordionItem>
 
@@ -129,9 +122,7 @@ async function addComment() {
             <AccordionContent class="flex flex-col gap-2">
               <!-- Tasks -->
               <div v-for="task in request.tasks" :key="task.processItem.id">
-                <div
-                  class="flex items-center justify-between border p-2 rounded"
-                >
+                <div class="flex items-center justify-between border p-2 rounded">
                   <div class="flex items-center gap-2">
                     <span>{{ task.processItem.id }}</span>
                     <span class="font-semibold">{{ task.processItem.title }}</span>
@@ -147,20 +138,17 @@ async function addComment() {
             <AccordionContent class="flex flex-col gap-2">
               <!-- Projects -->
               <div v-for="project in request.projects" :key="project.processItem.id">
-                  <div
-                    class="flex items-center justify-between border p-2 rounded"
-                  >
-                    <div class="flex items-center gap-2">
-                      <span>{{ project.processItem.id }}</span>
-                      <span class="font-semibold">{{ project.processItem.title }}</span>
-                    </div>
-
-                    <Badge variant="secondary">{{ ProjectStatusLabel[project.status] }}</Badge>
+                <div class="flex items-center justify-between border p-2 rounded">
+                  <div class="flex items-center gap-2">
+                    <span>{{ project.processItem.id }}</span>
+                    <span class="font-semibold">{{ project.processItem.title }}</span>
                   </div>
+
+                  <Badge variant="secondary">{{ ProjectStatusLabel[project.status] }}</Badge>
+                </div>
               </div>
             </AccordionContent>
           </AccordionItem>
-
 
           <AccordionItem value="attachment">
             <AccordionTrigger>Anhänge</AccordionTrigger>
@@ -177,7 +165,6 @@ async function addComment() {
             :comments="request.processItem.comments"
             @submit="addComment"
           />
-
         </Accordion>
       </div>
     </ScrollArea>

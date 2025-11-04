@@ -1,35 +1,35 @@
 <script setup lang="ts">
-import {computed, onMounted, ref} from "vue";
-import {useRequestStore} from "@/stores/requestStore.ts";
-import {ScrollArea} from "@/components/ui/scroll-area";
-import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
-import {Badge} from "@/components/ui/badge";
-import type {RequestDtd} from "@/documentTypes/dtds/RequestDtd.ts";
-import {CategoryLabel} from "@/documentTypes/types/Category.ts";
-import {getPriorityColor, PriorityLabel} from "@/documentTypes/types/Priority.ts";
-import {RequestStatusLabel} from "@/documentTypes/types/RequestStatus.ts";
-import {Button} from "@/components/ui/button";
-import {Plus} from 'lucide-vue-next'
-import {useRouter} from "vue-router";
+import { computed, onMounted, ref } from 'vue'
+import { useRequestStore } from '@/stores/requestStore.ts'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import type { RequestDtd } from '@/documentTypes/dtds/RequestDtd.ts'
+import { CategoryLabel } from '@/documentTypes/types/Category.ts'
+import { getPriorityColor, PriorityLabel } from '@/documentTypes/types/Priority.ts'
+import { RequestStatusLabel } from '@/documentTypes/types/RequestStatus.ts'
+import { Button } from '@/components/ui/button'
+import { Plus } from 'lucide-vue-next'
+import { useRouter } from 'vue-router'
 
-const router = useRouter();
+const router = useRouter()
 
-const requestStore = useRequestStore();
-const selectedRequestId = ref<number>(); // für Highlight
+const requestStore = useRequestStore()
+const selectedRequestId = ref<number>() // für Highlight
 
 onMounted(async () => {
-  await requestStore.fetchRequests();
-});
+  await requestStore.fetchRequests()
+})
 
-const requests = computed(() => requestStore.requestData?.requests ?? []);
+const requests = computed(() => requestStore.requestData?.requests ?? [])
 
 function formatDate(date: string | null) {
-  if (!date) return "Kein Eingangsdatum";
-  return new Date(date).toLocaleDateString("de-DE", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  if (!date) return 'Kein Eingangsdatum'
+  return new Date(date).toLocaleDateString('de-DE', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
 }
 
 function selectRequest(request: RequestDtd) {
@@ -37,7 +37,7 @@ function selectRequest(request: RequestDtd) {
 }
 
 function goToCreateRequest() {
-  router.push("/requests/create");
+  router.push('/requests/create')
 }
 </script>
 
@@ -56,7 +56,7 @@ function goToCreateRequest() {
         @click="selectRequest(request)"
         :class="[
           'hover:bg-accent/30 transition-colors cursor-pointer',
-          selectedRequestId === request.processItem.id ? 'bg-accent border-accent-foreground' : ''
+          selectedRequestId === request.processItem.id ? 'bg-accent border-accent-foreground' : '',
         ]"
       >
         <CardHeader>
@@ -80,10 +80,7 @@ function goToCreateRequest() {
         </CardContent>
 
         <CardFooter class="flex flex-row items-center justify-between gap-2">
-          <Badge
-            variant="secondary"
-            class="text-xs"
-          >
+          <Badge variant="secondary" class="text-xs">
             {{ CategoryLabel[request.category] }}
           </Badge>
           <p class="text-sm text-muted-foreground">
