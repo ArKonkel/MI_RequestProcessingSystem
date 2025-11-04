@@ -153,8 +153,7 @@ public class ProjectServiceImpl implements ProjectService {
         };
 
         if (!allowed)
-            throw new BlockedByDependencyException("Project cannot be moved to status " + newStatus + " because of dependencies." +
-                    " Project: " + project.getId() + " Status: " + project.getStatus() + " Dependencies: " + project.getIncomingDependencies());
+            throw new BlockedByDependencyException("Project " + project.getId() + " cannot be moved to status " + newStatus + " because of dependencies.");
 
         project.setStatus(newStatus);
         //projectRepository.save(project);
