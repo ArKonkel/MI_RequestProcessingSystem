@@ -7,9 +7,9 @@ export enum ProjectDependencyType {
 }
 
 export const ProjectDependencyTypeLabel: Record<ProjectDependencyType, string> = {
-  [ProjectDependencyType.FINISH_TO_START]: 'Fertigstellung bis Beginn',
-  [ProjectDependencyType.START_TO_START]: 'Beginn bis Beginn',
-  [ProjectDependencyType.FINISH_TO_FINISH]: 'Fertigstellung bis Abschluss',
+  [ProjectDependencyType.FINISH_TO_START]: 'Ende bis Anfang',
+  [ProjectDependencyType.START_TO_START]: 'Anfang bis Anfang',
+  [ProjectDependencyType.FINISH_TO_FINISH]: 'Ende bis Ende',
   [ProjectDependencyType.PART_OF]: 'Teil von',
   [ProjectDependencyType.USES_RESULT]: 'Verwendet Ergebnis',
 }
