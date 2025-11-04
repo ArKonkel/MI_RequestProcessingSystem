@@ -383,18 +383,22 @@ function openRequest(reqId: number) {
               <div>
                 <Label class="text-xs">Abhängig von folgenden Projekten:</Label>
                 <div v-for="dep in editableProject.incomingDependencies" :key="dep.sourceProjectId">
+                  <RouterLink :to="`/projects/${dep.sourceProjectId}`">
                   <span class="font-semibold"> {{ ProjectDependencyTypeLabel[dep.type] }}: </span>
                   {{ dep.sourceProjectId }} - {{ dep.sourceProjectTitle }}
+                  </RouterLink>
                 </div>
-
                 <div v-if="editableProject.incomingDependencies.length == 0">-</div>
               </div>
+
 
               <div class="space-y-4">
                 <Label class="text-xs">Abhängigkeiten zu folgenden Projekten:</Label>
                 <div v-for="dep in editableProject.outgoingDependencies" :key="dep.targetProjectId">
+                  <RouterLink :to="`/projects/${dep.targetProjectId}`">
                   <span class="font-semibold"> {{ ProjectDependencyTypeLabel[dep.type] }}: </span>
                   {{ dep.targetProjectId }} - {{ dep.targetProjectTitle }}
+                  </RouterLink>
                 </div>
                 <div v-if="editableProject.outgoingDependencies.length == 0">-</div>
 
