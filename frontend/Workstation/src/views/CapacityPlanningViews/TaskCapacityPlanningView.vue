@@ -50,6 +50,11 @@ const showAfterDueDateModal = ref(false);
 const showBlockedTasksModal = ref(false);
 const showBookingInPastModal = ref(false);
 
+const overbookingChecked = ref(false);
+const afterDueDateChecked = ref(false);
+const blockedTasksChecked = ref(false);
+const bookingInPastChecked = ref(false);
+
 const selectedUser = ref<UserDtd | null>(null)
 
 const visibleDays = 8
@@ -256,28 +261,12 @@ function isOverbooking() {
   return false
 }
 
-
-async function overBookingModalContinue() {
-  showOverbookingModal.value = false;
-  await performAssignment();
-}
-
-function overBookingModalAbort() {
-  showOverbookingModal.value = false;
-}
-
 function isBookingAfterDueDate() {
   if (!task.value) return;
   if (!selectedMatchResult.value) return;
 
   return selectedMatchResult.value.calculatedCalendarCapacities
     .some(calendarCapacity => calendarCapacity.date > task.value!.dueDate!);
-}
-
-async function afterDueDateModalContinue() {
-  showAfterDueDateModal.value = false;
-
-  await performAssignment();
 }
 
 function isBookingAfterBlockingTaskOrBlockingTaskNotPlanned() {
@@ -307,48 +296,62 @@ function isBookingAfterBlockingTaskOrBlockingTaskNotPlanned() {
   return false
 }
 
-function isBookingInPast(){
-    if (!task.value) return;
-    if (!selectedMatchResult.value) return;
+function isBookingInPast() {
+  if (!task.value) return;
+  if (!selectedMatchResult.value) return;
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); //Needed so the hours doesnt count
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); //Needed so the hours doesnt count
 
-    const earliestDateOfSelectedMatch = determineEarliestDate(selectedMatchResult.value.calculatedCalendarCapacities)
-    if (!earliestDateOfSelectedMatch) return
-    earliestDateOfSelectedMatch.setHours(0, 0, 0, 0);
+  const earliestDateOfSelectedMatch = determineEarliestDate(selectedMatchResult.value.calculatedCalendarCapacities)
+  if (!earliestDateOfSelectedMatch) return
+  earliestDateOfSelectedMatch.setHours(0, 0, 0, 0);
 
-    if (earliestDateOfSelectedMatch < today) {
-      return true
-    }
+  if (earliestDateOfSelectedMatch < today) {
+    return true
+  }
 
-    return false
+  return false
+}
+
+async function afterDueDateModalContinue() {
+  showAfterDueDateModal.value = false;
+  afterDueDateChecked.value = true
+
+  await assignEmployee();
 }
 
 async function afterBookingInPastModalContinue() {
   showBookingInPastModal.value = false;
+  bookingInPastChecked.value = true
 
-  await performAssignment();
+  await assignEmployee();
 }
 
-async function afterBookingInPastModalAbort() {
-  showBookingInPastModal.value = false;
+async function overBookingModalContinue() {
+  showOverbookingModal.value = false;
+  overbookingChecked.value = true
+
+  await assignEmployee();
 }
 
 async function afterBlockedTasksModalContinue() {
   showBlockedTasksModal.value = false;
+  blockedTasksChecked.value = true
 
-  await performAssignment();
+  await assignEmployee();
 }
 
-async function afterBlockedTasksModalAbort() {
-  showBlockedTasksModal.value = false;
+function onModalAbort() {
+  showOverbookingModal.value = false
+  showBookingInPastModal.value = false
+  showBlockedTasksModal.value = false
+  showAfterDueDateModal.value = false
 
-}
-
-
-function afterDueDateModalAbort() {
-  showAfterDueDateModal.value = false;
+  overbookingChecked.value = false
+  afterDueDateChecked.value = false
+  blockedTasksChecked.value = false
+  bookingInPastChecked.value = false
 }
 
 async function performAssignment() {
@@ -363,26 +366,25 @@ async function performAssignment() {
   }
 }
 
-
 async function assignEmployee() {
   if (!selectedMatchResult.value) return;
 
-  if (isBookingInPast()){
+  if (isBookingInPast() && !bookingInPastChecked.value) {
     showBookingInPastModal.value = true;
     return;
   }
 
-  if (isBookingAfterBlockingTaskOrBlockingTaskNotPlanned()){
+  if (isBookingAfterBlockingTaskOrBlockingTaskNotPlanned() && !blockedTasksChecked.value) {
     showBlockedTasksModal.value = true;
     return;
   }
 
-  if (isBookingAfterDueDate()) {
+  if (isBookingAfterDueDate() && !afterDueDateChecked.value) {
     showAfterDueDateModal.value = true;
     return;
   }
 
-  if (isOverbooking()) {
+  if (isOverbooking() && !overbookingChecked.value) {
     showOverbookingModal.value = true;
     return;
   }
@@ -723,7 +725,7 @@ function determineFinishDate(taskToDetermine: TaskReferenceDtd): Date | undefine
     message="Sie versuchen eine Buchung in der Vergangenheit vorzunehmen. Möchten Sie wirklich fortfahren?"
     variant="warning"
     @_continue="afterBookingInPastModalContinue"
-    @abort="afterBookingInPastModalAbort"
+    @abort="onModalAbort"
   >
   </Modal>
 
@@ -734,7 +736,7 @@ function determineFinishDate(taskToDetermine: TaskReferenceDtd): Date | undefine
     message="Es bestehen Blockierende Aufgaben die entweder nicht geplant sind oder nicht rechtzeitig vor der Bearbeitung dieser Aufgabe fertig werden. Möchten Sie wirklich fortfahren?"
     variant="warning"
     @_continue="afterBlockedTasksModalContinue"
-    @abort="afterBlockedTasksModalAbort"
+    @abort="onModalAbort"
   >
   </Modal>
 
@@ -744,7 +746,7 @@ function determineFinishDate(taskToDetermine: TaskReferenceDtd): Date | undefine
     message="Die Aufgabe wurde nach dem festgelegten Fertigstellungsdatum geplant. Möchten Sie wirklich fortfahren?"
     variant="warning"
     @_continue="afterDueDateModalContinue"
-    @abort="afterDueDateModalAbort"
+    @abort="onModalAbort"
   >
   </Modal>
 
@@ -754,7 +756,7 @@ function determineFinishDate(taskToDetermine: TaskReferenceDtd): Date | undefine
     message="Sie sind dabei einen Mitarbeitenden zu überbuchen. Möchten Sie wirklich fortfahren?"
     variant="warning"
     @_continue="overBookingModalContinue"
-    @abort="overBookingModalAbort"
+    @abort="onModalAbort"
   >
   </Modal>
 
